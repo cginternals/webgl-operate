@@ -1,0 +1,26 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2017 by original authors @ fontello.com</metadata>
+<defs>
+<font id="fontello" horiz-adv-x="1000" >
+<font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="resize-full" unicode="&#xe800;" d="M476 746l316 0 0-316-100 124-146-152-100 100 152 146z m-230-444l100-100-152-146 122-100-316 0 0 316 100-122z" horiz-adv-x="792" />
+
+<glyph glyph-name="resize-small" unicode="&#xe801;" d="M156 146l-106 100 296 0 0-296-100 106-146-156-100 100z m744 554l-154-144 104-100-294 0 0 294 100-104 144 154z" horiz-adv-x="900" />
+
+<glyph glyph-name="progress-0" unicode="&#xe802;" d="M1000 450l0-250q0-42-29-71t-71-29l-800 0q-40 0-70 29t-30 71l0 300q0 40 30 70t70 30l800 0q42 0 71-30t29-70l0-50z m-100-250l0 300-800 0 0-300 800 0z" horiz-adv-x="1000" />
+
+<glyph glyph-name="progress-1" unicode="&#xe803;" d="M1000 450l0-250q0-42-29-71t-71-29l-800 0q-40 0-70 29t-30 71l0 300q0 40 30 70t70 30l800 0q42 0 71-30t29-70l0-50z m-100-250l0 300-800 0 0-300 800 0z m-750 50l0 198 200 0 0-198-200 0z" horiz-adv-x="1000" />
+
+<glyph glyph-name="progress-2" unicode="&#xe804;" d="M1000 450l0-250q0-42-29-71t-71-29l-800 0q-40 0-70 29t-30 71l0 300q0 40 30 70t70 30l800 0q42 0 71-30t29-70l0-50z m-100-250l0 300-800 0 0-300 800 0z m-750 50l0 198 200 0 0-198-200 0z m250 0l0 198 200 0 0-198-200 0z" horiz-adv-x="1000" />
+
+<glyph glyph-name="progress-3" unicode="&#xe805;" d="M1000 450l0-250q0-42-29-71t-71-29l-800 0q-40 0-70 29t-30 71l0 300q0 40 30 70t70 30l800 0q42 0 71-30t29-70l0-50z m-100-250l0 300-800 0 0-300 800 0z m-750 50l0 198 200 0 0-198-200 0z m250 0l0 198 200 0 0-198-200 0z m250 198l200 0 0-198-200 0 0 198z" horiz-adv-x="1000" />
+
+<glyph glyph-name="code" unicode="&#xe806;" d="M380 636q16-14 16-32t-16-30l-246-224 246-226q16-12 16-30t-16-32q-30-30-60 0l-320 288 320 286q30 30 60 0z m302 0l318-286-318-288q-32-30-62 0-32 32 0 62l248 226-248 224q-32 30 0 62 30 30 62 0z" horiz-adv-x="1000" />
+
+<glyph glyph-name="cog" unicode="&#xe807;" d="M760 350q0-72 80-122-12-40-34-82-70 18-136-44-54-58-34-136-40-20-84-36-46 82-132 82t-132-82q-44 16-84 36 20 80-34 136-54 54-136 34-14 26-34 82 82 52 82 132 0 72-82 124 20 56 34 82 74-18 136 44 54 56 34 136 42 22 84 34 46-80 132-80t132 80q42-12 84-34-20-78 34-136 66-62 136-44 22-42 34-82-80-50-80-124z m-340-182q76 0 129 53t53 129-53 130-129 54-129-54-53-130 53-129 129-53z" horiz-adv-x="840" />
+</font>
+</defs>
+</svg>

@@ -1,0 +1,13 @@
+
+import * as glop from '../webgl-operate';
+
+
+describe('webgl-operate API', () => {
+
+    it('should expose debug and testing facilities', () => {
+        expect(glop.ExtensionsHash).toBeDefined();
+        expect(glop.ContextMasquerade).toBeDefined();
+    });
+
+});
+

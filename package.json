@@ -1,0 +1,62 @@
+{
+  "name": "webgl-operate",
+  "description": "A TypeScript based WebGL rendering framework.",
+  "version": "0.2.0",
+  "author": "CG Internals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cginternals/webgl-operate.git"
+  },
+  "contributors": [
+    {
+      "name": "Daniel Limberger",
+      "email": "daniel.limberger@cginternals.com"
+    },
+    {
+      "name": "Philipp Otto",
+      "email": "philipp.otto@cginternals.com"
+    },
+    {
+      "name": "Willy Scheibel",
+      "email": "willy.scheibel@cginternals.com"
+    }
+  ],
+  "devDependencies": {
+    "@types/jasmine": "2.8.3",
+    "bootstrap": "4.0.0-beta.3",
+    "//": "karma jasmin test dependencies start",
+    "es6-shim": "0.35.3",
+    "jasmine-core": "2.8.0",
+    "karma": "2.0.0",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-coverage": "1.1.1",
+    "karma-es6-shim": "1.0.0",
+    "karma-jasmine": "1.1.1",
+    "karma-junit-reporter": "1.2.0",
+    "karma-phantomjs-launcher": "1.0.4",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-webpack": "2.0.9",
+    "//": "karma jasmin test dependencies end",
+    "source-list-map": "2.0.0",
+    "ts-loader": "3.2.0",
+    "tslint": "5.9.1",
+    "typedoc": "0.9.0",
+    "typescript": "2.6.2",
+    "webpack": "3.10.0",
+    "webpack-glsl-loader": "1.0.1",
+    "webpack-sources": "1.1.0"
+  },
+  "scripts": {
+    "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
+    "test": "karma start karma.config.js",
+    "test-watch-and-debug": "karma start karma.watch-and-debug.config.js",
+    "build": "webpack",
+    "build-all": "webpack --config webpack.config.all.js",
+    "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
+    "examples": "jekyll build --source examples --destination dist/",
+    "examples-watch": "jekyll build --source examples --destination dist/ --watch --incremental",
+    "deploy": "npm run build && npm run examples",
+    "deploy-full": "npm run check && npm run test && npm run build && npm run build-all && npm run examples && npm run doc"
+  }
+}

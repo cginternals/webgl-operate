@@ -1,0 +1,52 @@
+{
+    // Use IntelliSense to learn about possible Node.js debug attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "trace": true,
+            "preLaunchTask": "build",
+            "name": "Launch",
+            "disableNetworkCache": true,
+            "timeout": 1000,
+            "url": "${workspaceRoot}/dist/index.html",
+            "webRoot": "${workspaceRoot}/dist",
+            "sourceMapPathOverrides": {
+                "webpack:///./~/*": "${webRoot}/../node_modules/*",
+                "webpack:///./*": "${webRoot}/../source/*"
+            },
+            "windows": {
+                "url": "${workspaceRoot}\\dist\\index.html",
+                "webRoot": "${workspaceRoot}\\dist",
+                "sourceMapPathOverrides": {
+                    "webpack:///./~/*": "${webRoot}\\..\\node_modules\\*",
+                    "webpack:///./*": "${webRoot}\\..\\source\\*"
+                }
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach",
+            "disableNetworkCache": true,
+            "timeout": 1000,
+            "url": "${workspaceRoot}/dist/index.html",
+            "webRoot": "${workspaceRoot}/dist",
+            "sourceMapPathOverrides": {
+                "webpack:///./~/*": "${webRoot}/../node_modules/*",
+                "webpack:///./*": "${webRoot}/../source/*"
+            },
+            "windows": {
+                "url": "${workspaceRoot}\\dist\\index.html",
+                "webRoot": "${workspaceRoot}\\dist",
+                "sourceMapPathOverrides": {
+                    "webpack:///./~/*": "${webRoot}\\..\\node_modules\\*",
+                    "webpack:///./*": "${webRoot}\\..\\source\\*"
+                }
+            }
+        }
+    ]
+}

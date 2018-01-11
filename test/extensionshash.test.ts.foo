@@ -1,0 +1,102 @@
+
+import { ExtensionsHash } from 'core/extensionshash';
+
+class ExtensionsHashMock extends ExtensionsHash {
+
+    static encode64(bitfield: number): string {
+        return super.encode64(bitfield);
+    }
+
+    static decode64(base64: string): number {
+        return super.decode64(base64);
+    }
+
+    static decode(hash: string): number {
+        return super.decode(hash);
+    }
+
+}
+
+
+describe('ExtensionsHash', () => {
+
+    const FIRST_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_float'
+        , 'EXT_color_buffer_half_float', 'EXT_disjoint_timer_query', 'EXT_frag_depth'];
+    const SOME_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_half_float'
+        , 'EXT_disjoint_timer_query', 'EXT_frag_depth', 'EXT_sRGB'];
+
+    it('should encode valid bitfields to base64', () => {
+        expect(ExtensionsHashMock.encode64(0b000000)).toEqual('0');
+        expect(ExtensionsHashMock.encode64(0b001001)).toEqual('9');
+        expect(ExtensionsHashMock.encode64(0b001010)).toEqual('a');
+        expect(ExtensionsHashMock.encode64(0b100011)).toEqual('z');
+        expect(ExtensionsHashMock.encode64(0b100100)).toEqual('A');
+        expect(ExtensionsHashMock.encode64(0b111101)).toEqual('Z');
+        expect(ExtensionsHashMock.encode64(0b111110)).toEqual('-');
+        expect(ExtensionsHashMock.encode64(0b111111)).toEqual('+');
+    });
+
+    it('should decode base64 to valid bitfields', () => {
+        expect(ExtensionsHashMock.decode64('0')).toEqual(0b000000);
+        expect(ExtensionsHashMock.decode64('9')).toEqual(0b001001);
+        expect(ExtensionsHashMock.decode64('a')).toEqual(0b001010);
+        expect(ExtensionsHashMock.decode64('z')).toEqual(0b100011);
+        expect(ExtensionsHashMock.decode64('A')).toEqual(0b100100);
+        expect(ExtensionsHashMock.decode64('Z')).toEqual(0b111101);
+        expect(ExtensionsHashMock.decode64('-')).toEqual(0b111110);
+        expect(ExtensionsHashMock.decode64('+')).toEqual(0b111111);
+    });
+
+    it('should throw on out of range bitfields for encoding', () => {
+        expect(() => ExtensionsHashMock.encode64(0)).not.toThrow();
+        expect(() => ExtensionsHashMock.encode64(63)).not.toThrow();
+
+        expect(() => ExtensionsHashMock.encode64(-1)).toThrow();
+        expect(() => ExtensionsHashMock.encode64(64)).toThrow();
+    });
+
+    it('should throw on unknown base64 input for decoding', () => {
+        expect(() => ExtensionsHashMock.decode64('0')).not.toThrow();
+        expect(() => ExtensionsHashMock.decode64('+')).not.toThrow();
+
+        expect(() => ExtensionsHashMock.decode64('00')).toThrow();
+        expect(() => ExtensionsHashMock.decode64('#')).toThrow();
+        expect(() => ExtensionsHashMock.decode64('?')).toThrow();
+    });
+
+    it('should encode version and backend in head', () => {
+        // version 0b000
+        expect(ExtensionsHash.encode('webgl1', [])[0]).toEqual('1');
+        expect(ExtensionsHash.encode('webgl2', [])[0]).toEqual('2');
+    });
+
+    it('should encode single extensions', () => {
+        expect(ExtensionsHash.encode('webgl1', SOME_6_000_EXTENSIONS).substring(1)).toEqual('Tg00000');
+        expect(ExtensionsHash.encode('webgl1', [SOME_6_000_EXTENSIONS[5]]).substring(1)).toEqual('0g00000');
+        expect(ExtensionsHash.encode('webgl1', FIRST_6_000_EXTENSIONS).substring(1)).toEqual('+000000');
+    });
+
+    it('should throw when decoding hash with invalid length', () => {
+        // length for version 0b000 hash is 1 + 7
+        expect(() => ExtensionsHashMock.decode('1000000')).toThrow();
+        expect(() => ExtensionsHashMock.decode('100000000')).toThrow();
+    });
+
+    it('should throw when decoding wrong characters in hash', () => {
+        expect(() => ExtensionsHashMock.decode('?*#')).toThrow();
+    });
+
+    it('should split version and backend when decoding', () => {
+        expect(ExtensionsHash.decode('10000000')[0]).toEqual('webgl1');
+        expect(ExtensionsHash.decode('20000000')[0]).toEqual('webgl2');
+        /* cannot test another versions yet :P ... */
+        // expect(ExtensionsHash.decode('90000000')[0]).toEqual(1);
+    });
+
+    it('should decode extensions', () => {
+        expect(ExtensionsHash.decode('1Tg00000')[1]).toEqual(SOME_6_000_EXTENSIONS);
+        expect(ExtensionsHash.decode('1+000000')[1]).toEqual(FIRST_6_000_EXTENSIONS);
+    });
+
+});
+

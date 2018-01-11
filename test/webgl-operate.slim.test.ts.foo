@@ -1,0 +1,12 @@
+
+import * as operate from '../source/webgl-operate';
+
+
+describe('webgl-operate API', () => {
+
+    it('should expose debug and testing facilities', () => {
+        expect(operate.ExtensionsHash).toBeDefined();
+        expect(operate.ContextMasquerade).toBeDefined();
+    });
+
+});

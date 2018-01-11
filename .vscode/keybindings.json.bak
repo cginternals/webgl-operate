@@ -1,0 +1,8 @@
+// Place your key bindings in this file to overwrite the defaults
+[
+    {
+        "key": "ctrl+alt+t",
+        "command": "workbench.action.tasks.runTask",
+        "when": "editorTextFocus"
+    }
+]
