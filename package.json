@@ -30,6 +30,7 @@
     "bootstrap": "4.0.0-beta.3",
     "chai": "4.1.2",
     "chai-spies": "0.7.1",
+    "coveralls": "^3.0.0",
     "mocha": "4.1.0",
     "mocha-junit-reporter": "1.15.0",
     "mocha-multi-reporters": "1.1.7",
@@ -48,6 +49,7 @@
   "scripts": {
     "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "webpack",
     "build-all": "webpack --config webpack.config.all.js",
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
@@ -56,9 +58,17 @@
     "deploy": "npm run build && npm run examples",
     "deploy-full": "npm run check && npm run test && npm run build && npm run build-all && npm run examples && npm run doc"
   },
+  "keywords": [
+    "webgl",
+    "rendering",
+    "engine"
+  ],
+  "pre-commit": [
+    "check",
+    "test"
+  ],
   "nyc": {
-    "check-coverage": true,
-    "lines": 50,
+    "check-coverage": false,
     "include": [
       "source/**/*.ts"
     ],
