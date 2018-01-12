@@ -1,3 +1,5 @@
+.nyc_output
+.git
 node_modules/
 dist/
 examples/_site
