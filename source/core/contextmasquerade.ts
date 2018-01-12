@@ -44,25 +44,22 @@ export class ContextMasquerade {
     private static readonly MASQUERADE_JSON: MasqueradePresets = require('../assets/masquerade.json');
 
     /**
-     * Defines the backend (currently either 'webgl1' or 'webgl2').
+     * @see {@link backend}
      */
     protected _backend: string | undefined = undefined;
 
     /**
-     * Extensions that the context should strive to support. The support can only go as far as the extensions are
-     * actually supported.
+     * @see {@link extensionsStrive}
      */
     protected _extensionsStrive = new Array<string>();
 
     /**
-     * Extensions that the context should conceal support of. This only affects supported extensions, which will
-     * be reported to be not supported.
+     * @see {@link extensionsConceal}
      */
     protected _extensionsConceal = new Array<string>();
 
     /**
-     * Functions that the context should delete during construction. Since WebGL context functions cannot be deleted
-     * they are undefined instead.
+     * @see {@link functionsUndefine}
      */
     protected _functionsUndefine = new Array<string>();
 
@@ -150,20 +147,32 @@ export class ContextMasquerade {
     }
 
     /**
-     * Getters
+     * Defines the backend (currently either 'webgl1' or 'webgl2').
      */
     get backend() {
         return this._backend;
     }
 
+    /**
+     * Extensions that the context should strive to support. The support can only go as far as the extensions are
+     * actually supported.
+     */
     get extensionsStrive() {
         return this._extensionsStrive;
     }
 
+    /**
+     * Extensions that the context should conceal support of. This only affects supported extensions, which will
+     * be reported to be not supported.
+     */
     get extensionsConceal() {
         return this._extensionsConceal;
     }
 
+    /**
+     * Functions that the context should delete during construction. Since WebGL context functions cannot be deleted
+     * they are undefined instead.
+     */
     get functionsUndefine() {
         return this._functionsUndefine;
     }
