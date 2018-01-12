@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "7"
 script":
-  - "npm run update"
-  - "npm run build-all"
-  - "npm run check"
-  - "npm run test"
+  - "npm run-script update"
+  - "npm run-script build-all"
+  - "npm run-script check"
+  - "npm run-script test"
