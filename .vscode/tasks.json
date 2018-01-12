@@ -1,0 +1,90 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "npm",
+    "isShellCommand": true,
+    "suppressTaskName": true,
+    "showOutput": "always",
+    "echoCommand": true,
+    "tasks": [
+        {
+            "taskName": "update packages",
+            "args": [
+                "update"
+            ]
+        },
+        {
+            "taskName": "build",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "build"
+            ]
+        },
+        {
+            "taskName": "build (min and slim)",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "build-all"
+            ]
+        },
+        {
+            "taskName": "deploy",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "deploy"
+            ]
+        },
+        {
+            "taskName": "deploy (full)",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "deploy-full"
+            ]
+        },
+        {
+            "taskName": "check sources",
+            "isTestCommand": true,
+            "args": [
+                "run-script",
+                "check"
+            ]
+        },
+        {
+            "taskName": "run tests",
+            "isTestCommand": true,
+            "args": [
+                "run-script",
+                "test"
+            ]
+        },
+        {
+            "taskName": "generate doc",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "doc"
+            ]
+        },
+        {
+            "taskName": "build examples",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "examples"
+            ]
+        },
+        {
+            "taskName": "build examples (watch)",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "examples-watch"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "allowSyntheticDefaultImports": false,
+        "lib": [
+            "dom",
+            "es2016"
+        ],
+        "target": "es5", /* UglifyJs does not yet support es6 */
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strictNullChecks": true
+        /*"declaration": true*/
+    },
+    "include": [
+        "source"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

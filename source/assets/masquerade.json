@@ -1,0 +1,34 @@
+{
+    "presets": [
+        {
+            "identifier": "chrome-61",
+            "extensions_hash": "288M01-o"
+        },
+        {
+            "identifier": "edge-40",
+            "extensions_hash": "1xf-01V0"
+        },
+        {
+            "identifier": "firefox-56",
+            "extensions_hash": "2a8M01-o"
+        },
+        {
+            "identifier": "ie-11",
+            "extensions_hash": "1wfM01U0"
+        },
+        {
+            "identifier": "safari-10.1",
+            "extensions_hash": "1N++01VU",
+            "functions_undefine": [
+                "readBuffer"
+            ]
+        },
+        {
+            "identifier": "no-WEBGL_draw_buffers",
+            "backend": "webgl1",
+            "extensions_conceal": [
+                "WEBGL_draw_buffers"
+            ]
+        }
+    ]
+}

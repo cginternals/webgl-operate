@@ -1,0 +1,10 @@
+--require ts-node/register
+--require source-map-support/register
+--use_strict
+--recursive
+--full-trace 
+--bail
+--check-leaks
+--reporter mocha-multi-reporters
+--reporter-options configFile=test/mocha-reporter-options.json
+test/**/*.test.ts

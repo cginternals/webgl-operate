@@ -1,0 +1,149 @@
+---
+# Front matter comment to ensure Jekyll properly reads file.
+---
+@charset "utf-8";
+
+@import "fonts", "fontello";
+
+
+// variables override
+
+$enable-rounded: false;
+$enable-transitions: false !default;
+
+$font-family-sans-serif: 'Source Sans Pro';
+$font-family-monospace: 'Source Code Pro';
+
+$headings-font-weight: 300;
+
+$font-weight-normal: 300;
+$font-weight-bold: 600;
+
+$link-hover-decoration: none;
+
+
+@import "bootstrap-custom";
+
+
+header {
+  margin-top: 4rem;
+
+  img {
+    height: 2.3rem;
+    vertical-align: baseline;
+  }
+}
+
+.fade {
+  opacity: 0;
+  -webkit-transition: opacity 0.125s linear;
+  -moz-transition: opacity 0.125s linear;
+  -o-transition: opacity 0.125s linear;
+  transition: opacity 0.125s linear;
+}
+.fade.in {
+  opacity: 1;
+}
+
+#canvas-status, #canvas-progress, #canvas-nav {
+  font-size: $small-font-size;
+}
+
+#canvas-debug {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  pointer-events: none;
+  
+  ul {
+    list-style: none;
+    font-size: $small-font-size;
+
+    li:not(.text-danger) > span.label {
+      color: $gray-light;
+    }
+    li {
+      padding: 0 1em;
+    }
+  }
+}
+
+canvas {
+  cursor: default;
+}
+
+#canvas-status {
+  color: $navbar-light-color;
+  position: absolute;
+  top: 0;
+}
+
+#canvas-progress {
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  color: $gray-light;
+}
+
+#canvas-nav {
+  position: absolute;
+  bottom: 0;
+  right: 1rem;
+
+  .nav-link {
+    color: $navbar-light-color;
+    @include hover-focus {
+      color: $navbar-light-hover-color;
+    }
+    &.disabled {
+      color: $navbar-light-disabled-color;
+    }
+  }
+  .open > .nav-link,
+  .active > .nav-link,
+  .nav-link.open,
+  .nav-link.active {
+    color: $navbar-light-active-color;
+  }
+}
+
+#settings, #internals {
+  display: none;
+  position: absolute;
+  bottom: 2rem;
+  right: 1.5rem;
+  margin-left: 1.5rem;
+
+  @media only screen and (min-width: #{map-get($grid-breakpoints, 'sm')}) {
+    width: 25rem;
+  }
+
+  .card {
+    hr {
+      clear: both;
+    }
+  }
+
+  small {
+    color: lighten($gray-light, 33%);
+  }
+}
+
+#webgl-operate {
+  background-color: $body-bg;
+}
+
+.fullscreen, .fullscreen .embed-responsive, .fullscreen .embed-responsive-item {
+  display: block;
+  position: absolute;
+  margin: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// common
+
