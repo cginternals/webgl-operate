@@ -1,2 +1,4 @@
+[![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat-square)]()
+
 # webgl-operate
-A HTML5 canvas and TypeScript based progressive rendering engine.
+A TypeScript based WebGL rendering framework.
