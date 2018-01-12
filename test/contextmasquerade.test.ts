@@ -1,12 +1,17 @@
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 const expect = chai.expect;
+const stub = sinon.stub;
 
+import * as common from '../source/core/common';
 import { ContextMasquerade } from '../source/core/contextmasquerade';
 
 /* tslint:disable:no-unused-expression */
 
 describe('ContextMasquerade', () => {
+
+    const getParameterStub = stub(common, 'GETparameter');
 
     it('should be initializable from hash', () => {
         const masquerade1 = ContextMasquerade.fromHash('1xf-01V0');
@@ -39,4 +44,33 @@ describe('ContextMasquerade', () => {
         expect(masquerade.extensionsConceal).to.include('WEBGL_draw_buffers');
     });
 
+    it('should be initializable by GET using hash', () => {
+        getParameterStub.reset();
+        getParameterStub.returns('1xf-01V0');
+
+        const masquerade = ContextMasquerade.fromGET();
+        expect(masquerade.backend).to.equal('webgl1');
+        expect(masquerade.extensionsStrive).to.include('ANGLE_instanced_arrays');
+        expect(masquerade.extensionsStrive).not.to.include('EXT_foo_bar');
+    });
+
+    it('should be initializable by GET using preset', () => {
+        getParameterStub.reset();
+        getParameterStub
+            .onFirstCall().returns(undefined)
+            .onSecondCall().returns('edge-40');
+
+        const masquerade = ContextMasquerade.fromGET();
+        expect(masquerade.backend).to.equal('webgl1');
+        expect(masquerade.extensionsStrive).to.include('ANGLE_instanced_arrays');
+        expect(masquerade.extensionsStrive).not.to.include('EXT_foo_bar');
+    });
+
+    it('should fail if GET values are not present', () => {
+        getParameterStub.reset();
+        getParameterStub.returns(undefined);
+
+        const masquerade = ContextMasquerade.fromGET();
+        expect(masquerade).to.be.undefined;
+    });
 });
