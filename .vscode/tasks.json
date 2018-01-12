@@ -63,14 +63,6 @@
             ]
         },
         {
-            "taskName": "run tests (watch and debug)",
-            "isTestCommand": true,
-            "args": [
-                "run",
-                "test-watch-and-debug"
-            ]
-        },
-        {
             "taskName": "generate doc",
             "isBuildCommand": true,
             "args": [

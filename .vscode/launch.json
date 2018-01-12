@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "${workspaceFolder}/test/**/*.test.ts"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "trace": true,
@@ -47,6 +57,6 @@
                     "webpack:///./*": "${webRoot}\\..\\source\\*"
                 }
             }
-        }
+        },
     ]
 }
