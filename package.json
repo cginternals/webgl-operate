@@ -53,19 +53,19 @@
     "build": "webpack",
     "build-all": "webpack --config webpack.config.all.js",
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-    "examples": "jekyll build --source examples --destination dist/",
-    "examples-watch": "jekyll build --source examples --destination dist/ --watch --incremental",
+    "examples": "",
+    "examples-watch": "",
     "deploy": "npm run build && npm run examples",
     "deploy-full": "npm run check && npm run test && npm run build && npm run build-all && npm run examples && npm run doc"
   },
   "keywords": [
     "webgl",
     "rendering",
-    "engine"
-  ],
-  "pre-commit": [
-    "check",
-    "test"
+    "canvas",
+    "engine",
+    "2d",
+    "3d",
+    "multiframe"
   ],
   "nyc": {
     "check-coverage": false,
