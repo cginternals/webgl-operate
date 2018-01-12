@@ -114,6 +114,21 @@ export class ContextMasquerade {
         }
         mask._functionsUndefine = preset.functions_undefine;
 
+        assert(mask._backend !== undefined,
+            'expected backend to be included in preset');
+
+        if (mask._extensionsStrive === undefined) {
+            mask._extensionsStrive = [];
+        }
+
+        if (mask._extensionsConceal === undefined) {
+            mask._extensionsConceal = [];
+        }
+
+        if (mask._functionsUndefine === undefined) {
+            mask._functionsUndefine = [];
+        }
+
         return mask;
     }
 
@@ -134,4 +149,22 @@ export class ContextMasquerade {
         return undefined;
     }
 
+    /**
+     * Getters
+     */
+    get backend() {
+        return this._backend;
+    }
+
+    get extensionsStrive() {
+        return this._extensionsStrive;
+    }
+
+    get extensionsConceal() {
+        return this._extensionsConceal;
+    }
+
+    get functionsUndefine() {
+        return this._functionsUndefine;
+    }
 }
