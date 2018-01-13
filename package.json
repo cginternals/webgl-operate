@@ -55,8 +55,8 @@
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
     "examples": "",
     "examples-watch": "",
-    "deploy": "npm run build && npm run examples",
-    "deploy-full": "npm run check && npm run test && npm run build && npm run build-all && npm run doc"
+    "deploy": "npm run check && npm run test && npm run build && npm run build-all && npm run doc",
+    "deploy-lite": "npm run build && npm run examples"
   },
   "keywords": [
     "webgl",

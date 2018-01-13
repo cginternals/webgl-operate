@@ -39,11 +39,11 @@
             ]
         },
         {
-            "taskName": "deploy (full)",
+            "taskName": "deploy (lite)",
             "isBuildCommand": true,
             "args": [
                 "run-script",
-                "deploy-full"
+                "deploy-lite"
             ]
         },
         {
@@ -63,7 +63,7 @@
             ]
         },
         {
-            "taskName": "generate doc",
+            "taskName": "build documentation",
             "isBuildCommand": true,
             "args": [
                 "run-script",
