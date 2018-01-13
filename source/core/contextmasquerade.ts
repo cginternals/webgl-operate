@@ -38,10 +38,9 @@ interface MasqueradePresets {
 export class ContextMasquerade {
 
     /**
-     * Presets for emulation of various browsers. This can be used to maintain multiple test configurations and
-     * simplify cross-browser testing without actually using different browsers.
+     * @see {@link presets}
      */
-    private static readonly MASQUERADE_JSON: MasqueradePresets = require('../assets/masquerade.json');
+    protected static readonly MASQUERADE_JSON: MasqueradePresets = require('../assets/masquerade.json');
 
     /**
      * @see {@link backend}
@@ -89,11 +88,13 @@ export class ContextMasquerade {
 
         const identifiers = new Array<string>();
         let preset: MasqueradePreset | undefined;
-        for (const p of ContextMasquerade.MASQUERADE_JSON.presets) {
+        for (const p of ContextMasquerade.presets()) {
             identifiers.push(p.identifier);
-            if (p.identifier === identifier) {
-                preset = p;
+            if (p.identifier !== identifier) {
+                continue;
             }
+            preset = p;
+            break;
         }
         assert(preset !== undefined
             , `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
@@ -144,6 +145,14 @@ export class ContextMasquerade {
             return ContextMasquerade.fromPreset(msqrdPreset);
         }
         return undefined;
+    }
+
+    /*
+     * Presets for emulation of various browsers. This can be used to maintain multiple test configurations and
+     * simplify cross-browser testing without actually using different browsers.
+     */
+    static presets() {
+        return ContextMasquerade.MASQUERADE_JSON.presets;
     }
 
     /**

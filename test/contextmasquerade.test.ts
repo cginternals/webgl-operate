@@ -36,6 +36,19 @@ describe('ContextMasquerade', () => {
         expect(safariMasquerade.functionsUndefine).to.include('readBuffer');
     });
 
+    it('should be initializable from empty preset', () => {
+        const jsonStub = stub(ContextMasquerade, 'presets');
+        jsonStub.returns([{ identifier: 'empty', backend: 'webgl1' }]);
+
+        const masquerade = ContextMasquerade.fromPreset('empty');
+        expect(masquerade.backend).to.equal('webgl1');
+        expect(masquerade.extensionsStrive).to.be.empty;
+        expect(masquerade.functionsUndefine).to.be.empty;
+        expect(masquerade.extensionsConceal).to.be.empty;
+
+        jsonStub.restore();
+    });
+
     it('should be initializable from hand written preset', () => {
         const masquerade = ContextMasquerade.fromPreset('no-WEBGL_draw_buffers');
         expect(masquerade.backend).to.equal('webgl1');
