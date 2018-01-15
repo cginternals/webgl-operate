@@ -2,7 +2,6 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 const expect = chai.expect;
-const stub = sinon.stub;
 
 import * as common from '../source/core/common';
 import { ContextMasquerade } from '../source/core/contextmasquerade';
@@ -11,7 +10,11 @@ import { ContextMasquerade } from '../source/core/contextmasquerade';
 
 describe('ContextMasquerade', () => {
 
-    const getParameterStub = stub(common, 'GETparameter');
+    const sandbox = sinon.sandbox.create();
+
+    afterEach(() => sandbox.restore());
+    after(() => sandbox.restore());
+
 
     it('should be initializable from hash', () => {
         const masquerade1 = ContextMasquerade.fromHash('1xf-01V0');
@@ -37,7 +40,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should be initializable from empty preset', () => {
-        const jsonStub = stub(ContextMasquerade, 'presets');
+        const jsonStub = sandbox.stub(ContextMasquerade, 'presets');
         jsonStub.returns([{ identifier: 'empty', backend: 'webgl1' }]);
 
         const masquerade = ContextMasquerade.fromPreset('empty');
@@ -58,7 +61,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should be initializable by GET using hash', () => {
-        getParameterStub.reset();
+        const getParameterStub = sandbox.stub(common, 'GETparameter');
         getParameterStub.returns('1xf-01V0');
 
         const masquerade = ContextMasquerade.fromGET();
@@ -68,7 +71,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should be initializable by GET using preset', () => {
-        getParameterStub.reset();
+        const getParameterStub = sandbox.stub(common, 'GETparameter');
         getParameterStub
             .onFirstCall().returns(undefined)
             .onSecondCall().returns('edge-40');
@@ -80,7 +83,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should fail if GET values are not present', () => {
-        getParameterStub.reset();
+        const getParameterStub = sandbox.stub(common, 'GETparameter');
         getParameterStub.returns(undefined);
 
         const masquerade = ContextMasquerade.fromGET();

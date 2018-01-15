@@ -1,4 +1,8 @@
 
+/* tslint:disable-next-line:no-var-requires */
+const queryString = require('query-string');
+
+
 namespace common {
 
     /**
@@ -130,7 +134,14 @@ namespace common {
     /**
      * Explicitly define an epsilon since, e.g., IE11 does not support Number.EPSILON.
      */
-    export const EPSILON: number = Number.EPSILON ? Number.EPSILON : 2.220446049250313e-16;
+    export const EPSILON: number = Number.EPSILON ? Number.EPSILON : 2.2204460492503130808472633361816e-16;
+
+    /**
+     * Queries window.location.search.
+     */
+    export function GETsearch(): string | undefined {
+        return window === undefined ? undefined : window.location.search;
+    }
 
     /**
      * Queries the value of a GET parameter.
@@ -138,20 +149,8 @@ namespace common {
      * @param parameter - Name/identifier of the parameter to query for.
      */
     export function GETparameter(parameter: string): string | undefined {
-        const href = decodeURI(window.location.href);
-        if (href.indexOf(parameter) < 0) {
-            return undefined;
-        }
-
-        /* tslint:disable-next-line:variable-name */
-        const GETparameters = href.split('?')[1].split('&');
-        for (const parameters of GETparameters) {
-            const paramAndValue = parameters.split('=');
-            if (paramAndValue[0] === parameter) {
-                return paramAndValue[1];
-            }
-        }
-        return undefined;
+        const params = queryString.parse(GETsearch());
+        return params[parameter];
     }
 }
 
