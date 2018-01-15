@@ -1,6 +1,5 @@
 
-/* tslint:disable-next-line:no-var-requires */
-const queryString = require('query-string');
+import { parse } from 'query-string';
 
 
 namespace common {
@@ -139,8 +138,8 @@ namespace common {
     /**
      * Queries window.location.search.
      */
-    export function GETsearch(): string | undefined {
-        return window === undefined ? undefined : window.location.search;
+    export function GETsearch(): string {
+        return window === undefined ? '' : window.location.search;
     }
 
     /**
@@ -149,7 +148,7 @@ namespace common {
      * @param parameter - Name/identifier of the parameter to query for.
      */
     export function GETparameter(parameter: string): string | undefined {
-        const params = queryString.parse(GETsearch());
+        const params = parse(GETsearch());
         return params[parameter];
     }
 }

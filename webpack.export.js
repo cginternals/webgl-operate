@@ -24,7 +24,7 @@ function createExportObject(target, minimize) {
 
         resolve: {
             modules: ['node_modules', 'source'],
-            extensions: ['.ts']
+            extensions: ['.ts', '.js']
         },
 
         module: {
