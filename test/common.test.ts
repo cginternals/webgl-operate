@@ -170,15 +170,6 @@ describe('common RAD2DEG and DEG2RAD', () => {
 });
 
 
-describe('common EPSILON', () => {
-
-    it('should be defined', () => {
-        expect(common.EPSILON).to.be.closeTo(2.220446049250313e-16, 1e-24);
-    });
-
-});
-
-
 describe('common GETparameter', () => {
 
     it('should return value of present parameters', () => {

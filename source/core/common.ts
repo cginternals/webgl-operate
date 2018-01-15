@@ -131,15 +131,10 @@ namespace common {
     export const DEG2RAD = 0.017453292519943295;
 
     /**
-     * Explicitly define an epsilon since, e.g., IE11 does not support Number.EPSILON.
-     */
-    export const EPSILON: number = Number.EPSILON ? Number.EPSILON : 2.2204460492503130808472633361816e-16;
-
-    /**
      * Queries window.location.search.
      */
     export function GETsearch(): string {
-        return window === undefined ? '' : window.location.search;
+        return window.location.search;
     }
 
     /**

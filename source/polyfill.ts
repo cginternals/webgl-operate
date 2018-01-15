@@ -33,3 +33,13 @@ if (Math.log10 === undefined) {
     /* tslint:disable-next-line:space-before-function-paren */
     Math.log10 = (x) => Math.log(x) * Math.LOG10E;
 }
+
+/**
+ * IE polyfill for Number.EPSILON.
+ */
+interface NumberPolyfill {
+    EPSILON: number;
+}
+if (Number.EPSILON === undefined) {
+    (Number as NumberPolyfill).EPSILON = Math.pow(2, -52);
+}
