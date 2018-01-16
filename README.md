@@ -1,6 +1,6 @@
 <br><a href="https://webgl-operate.org/"><img src="https://raw.githubusercontent.com/cginternals/webgl-operate/master/example/img/webgl-operate-logo.svg?sanitize=true" width="50%"></a>
 
-*webgl-operate* (or *gloperate for WebGL*) is a TypeScript based WebGL rendering framework.
+*webgl-operate* (or *[gloperate](https://github.com/cginternals/gloperate) for WebGL*) is a TypeScript based WebGL rendering framework.
 
 
 [![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat-square)](https://travis-ci.org/cginternals/webgl-operate)
