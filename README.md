@@ -9,8 +9,12 @@
 [![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://www.webgl-operate.org/doc)
 
 
-# webgl-operate
-A TypeScript based WebGL rendering framework.
+<a href="https://webgl-operate.org/">
+  <img src="webgl-operate-logo.svg" width="50%">
+</a><br>
+
+*webgl-operate* (or *gloperate for WebGL*) is a TypeScript based WebGL rendering framework.
+
 
 ## Getting Started
 
