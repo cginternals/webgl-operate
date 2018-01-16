@@ -1,29 +1,34 @@
+const path = require('path');
+const webpack = require('webpack');
 
-var path = require('path');
-var webpack = require('webpack');
 
-function createExportObject(target, minimize) {
+function createModuleExportObject(target, minimize) {
 
-    var uglify = minimize ? [new webpack.optimize.UglifyJsPlugin({ sourceMap: true })] : [];
+    var plugins = new Array();
+    if (minimize) {
+        plugins.push(new webpack.optimize.UglifyJsPlugin({ sourceMap: true }));
+    }
+
     var targetExt = minimize ? '.min.js' : '.js';
 
     return {
-        context: __dirname + '/source/',
+        name: target + targetExt,
+        context: __dirname + '/source',
+
         cache: true,
+        devtool: 'sourcemap',
+        plugins: plugins,
+
         entry: {
             main: ['./require.ts', './polyfill.ts', './' + target + '.ts']
         },
-
         output: {
-            path: __dirname + '/dist/js',
-            filename: target + targetExt,
+            path: __dirname + '/dist',
+            filename: 'js/' + target + targetExt,
             library: 'gloperate',
         },
-
-        name: target + targetExt,
-
         resolve: {
-            modules: ['node_modules', 'source'],
+            modules: [__dirname + '/node_modules', __dirname + '/source'],
             extensions: ['.ts', '.js']
         },
         module: {
@@ -31,7 +36,7 @@ function createExportObject(target, minimize) {
                 {
                     test: /\.tsx?$/,
                     include: /source/,
-                    exclude: /node_modules/,
+                    exclude: /(example|node_modules)/,
                     use: { loader: 'ts-loader' }
                 },
                 {
@@ -40,10 +45,9 @@ function createExportObject(target, minimize) {
                     use: { loader: 'webpack-glsl-loader' },
                 }]
         },
-
-        devtool: 'sourcemap',
-        plugins: uglify
     };
 };
 
-module.exports = createExportObject;
+module.exports = {
+    moduleObject: createModuleExportObject
+};

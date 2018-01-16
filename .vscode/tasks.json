@@ -75,15 +75,7 @@
             "isBuildCommand": true,
             "args": [
                 "run-script",
-                "examples"
-            ]
-        },
-        {
-            "taskName": "build examples (watch)",
-            "isBuildCommand": true,
-            "args": [
-                "run-script",
-                "examples-watch"
+                "example"
             ]
         }
     ]

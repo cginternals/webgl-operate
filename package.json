@@ -31,12 +31,12 @@
     "chai": "4.1.2",
     "chai-spies": "1.0.0",
     "coveralls": "3.0.0",
+    "glob": "^7.1.2",
     "mocha": "4.1.0",
     "mocha-junit-reporter": "1.15.0",
     "mocha-multi-reporters": "1.1.7",
     "nyc": "11.4.1",
     "pug": "2.0.0-rc.4",
-    "pug-loader": "2.3.0",
     "query-string": "5.0.1",
     "sinon": "4.1.5",
     "source-map-support": "0.5.0",
@@ -56,10 +56,9 @@
     "build": "webpack",
     "build-all": "webpack --config webpack.config.all.js",
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-    "examples": "",
-    "examples-watch": "",
-    "deploy": "npm run check && npm run test && npm run build && npm run build-all && npm run doc",
-    "deploy-lite": "npm run build && npm run examples"
+    "example": "node pug.config.js",
+    "deploy": "npm run check && npm run test && npm run build && npm run build-all && npm run doc && npm run example",
+    "deploy-lite": "npm run build && npm run example"
   },
   "keywords": [
     "webgl",

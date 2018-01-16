@@ -57,7 +57,6 @@ ToDo
 | `build`          | build and pack library with core, debug, and viewer facilities [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
 | `build-all`      | build and pack both minified and slim (no viewer and debug) libraries |
 | `examples`       | build example html pages to `dist` |
-| `examples-watch` | build example html pages to `dist` and watch for changes for continuous build |
 | `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |

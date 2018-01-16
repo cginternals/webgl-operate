@@ -1,8 +1,7 @@
 
 var path = require('path');
 var webpack = require('webpack');
-
-var createExportObject = require('./webpack.export.js');
+var base = require('./webpack.base.js');
 
 module.exports = [
-    createExportObject('webgl-operate', false)];
+    base.moduleObject('webgl-operate', false)];
