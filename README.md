@@ -1,5 +1,5 @@
 
-<a href="https://webgl-operate.org/"><img src="example/img/webgl-operate-logo.svg" width="50%"></a>
+<a href="https://webgl-operate.org/"><img src="https://github.com/cginternals/webgl-operate/raw/master/example/img/webgl-operate-logo.svg" width="50%"></a>
 
 *webgl-operate* (or *gloperate for WebGL*) is a TypeScript based WebGL rendering framework.
 
