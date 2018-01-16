@@ -46,7 +46,7 @@ function build() {
         fs.writeFileSync(dst, html);
         console.log('emitted:', dst);
     });
-};
+}
 
 // if (watch) {
 //     const watcher = fs.watch(baseDir, { recursive: true }, build());

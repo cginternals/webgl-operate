@@ -4,7 +4,7 @@
  */
 if (String.prototype.startsWith === undefined) {
     /* tslint:disable-next-line:space-before-function-paren */
-    String.prototype.startsWith = function (searchString, position): boolean {
+    String.prototype.startsWith = (searchString, position): boolean => {
         position = position || 0;
         return this.indexOf(searchString, position) === position;
     };
@@ -15,7 +15,7 @@ if (String.prototype.startsWith === undefined) {
  */
 if (Array.prototype.forEach === undefined) {
     /* tslint:disable-next-line:space-before-function-paren */
-    Array.prototype.forEach = function (action, that /*opt*/) {
+    Array.prototype.forEach = (action, that /*opt*/) => {
         const n = this.length;
         /* tslint:disable-prefer-for-of */
         for (let i = 0; i < n; i++) {
