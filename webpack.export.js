@@ -26,23 +26,22 @@ function createExportObject(target, minimize) {
             modules: ['node_modules', 'source'],
             extensions: ['.ts', '.js']
         },
-
         module: {
             rules: [
                 {
                     test: /\.tsx?$/,
                     include: /source/,
-                    exclude: /(node_modules|source\-todo)/,
+                    exclude: /node_modules/,
                     use: { loader: 'ts-loader' }
                 },
                 {
                     test: /(\.glsl|\.vert|\.frag)$/,
+                    include: /source\/shaders/,
                     use: { loader: 'webpack-glsl-loader' },
                 }]
         },
 
         devtool: 'sourcemap',
-
         plugins: uglify
     };
 };
