@@ -1,3 +1,9 @@
+
+<a href="https://webgl-operate.org/"><img src="example/img/webgl-operate-logo.svg" width="50%"></a>
+
+*webgl-operate* (or *gloperate for WebGL*) is a TypeScript based WebGL rendering framework.
+
+
 [![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat-square)](https://travis-ci.org/cginternals/webgl-operate)
 [![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat-square)](https://coveralls.io/github/cginternals/webgl-operate)
 [![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate)
@@ -9,8 +15,6 @@
 [![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://www.webgl-operate.org/doc)
 
 
-# webgl-operate
-A TypeScript based WebGL rendering framework.
 
 ## Getting Started
 
@@ -57,7 +61,6 @@ ToDo
 | `build`          | build and pack library with core, debug, and viewer facilities [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
 | `build-all`      | build and pack both minified and slim (no viewer and debug) libraries |
 | `examples`       | build example html pages to `dist` |
-| `examples-watch` | build example html pages to `dist` and watch for changes for continuous build |
 | `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |

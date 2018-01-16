@@ -94,7 +94,6 @@
 //     protected _gl2: GL2Facade;
 
 
-
 //     // MASQUERADE
 
 //     /**
@@ -114,14 +113,14 @@
 //     protected static _emulationBackend: string;
 
 
-//     /**
-//      * Generates a hash that encodes this WebGL contexts version and extension support. This is intended to be queried
-//      * whenever support for a given context on a foreign client is due. The hash can be used as masquerade input.
-//      */
+//   /**
+//    * Generates a hash that encodes this WebGL contexts version and extension support. This is intended to be queried
+//    * whenever support for a given context on a foreign client is due. The hash can be used as masquerade input.
+//    */
 //     get hash(): string {
 //         assert(this._backend !== undefined, `valid backend expected in order to generate hash`);
 
-//         /* Note that the version should be changed whenever the format, e.g., order and number of extensions, changes */
+//       /* Note that the version should be changed if the format, e.g., order and number of extensions, changes */
 //         const version = 0b0001;
 //         const backend = 0b0000 | this._backend as BackendType;
 
@@ -175,17 +174,17 @@
 
 //     // WEBGL 1 & 2 CONTEXT
 
-//     /**
-//      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
-//      * calls to getContext of an element will return null.
-//      *
-//      * @param element - Canvas element to request context from.
-//      * @param dataset - The attribute data-backend is supported; valid values are "auto", "webgl", and "webgl2". If
-//      * "auto" is provided, either a webgl2 or experimental-webgl2 context will be requested first. If this fails, a
-//      * webgl or experimental-webgl context is requested.
-//      *
-//      * @returns {Context} context providing either a WebGLRenderingContext, WebGL2RenderingContext, or no context.
-//      */
+//   /**
+//    * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
+//    * calls to getContext of an element will return null.
+//    *
+//    * @param element - Canvas element to request context from.
+//    * @param dataset - The attribute data-backend is supported; valid values are "auto", "webgl", and "webgl2". If
+//    * "auto" is provided, either a webgl2 or experimental-webgl2 context will be requested first. If this fails, a
+//    * webgl or experimental-webgl context is requested.
+//    *
+//    * @returns {Context} context providing either a WebGLRenderingContext, WebGL2RenderingContext, or no context.
+//    */
 //     static request(element: HTMLCanvasElement): Context {
 //         const dataset: DOMStringMap = element.dataset;
 
@@ -413,13 +412,13 @@
 //         return this._extensions.indexOf(extension) > -1;
 //     }
 
-//     /**
-//      * Queries all extensions for the current context and stores the result (supported or not supported). This is
-//      * relevant to avoid continuous searches or regexp matching or substring queries in the complete extension string.
-//      * Instead, the support is queried once and can be explicitly request in the public interface using properties.
-//      *
-//      * This function should get called only once per Context instance.
-//      */
+//   /**
+//    * Queries all extensions for the current context and stores the result (supported or not supported). This is
+//    * relevant to avoid continuous searches or regexp matching or substring queries in the complete extension string.
+//    * Instead, the support is queried once and can be explicitly request in the public interface using properties.
+//    *
+//    * This function should get called only once per Context instance.
+//    */
 //     protected queryExtensionSupport(): void {
 //         this._extensions = this._context.getSupportedExtensions();
 
@@ -429,9 +428,10 @@
 
 //             if (Context._emulationMode == EmulationMode.Enable) {
 //                 // Replace supported extensions by specified ones
-//                 let unsupportedEmulatedExtensions = Context._emulationExtensions.filter(a => this._extensions.indexOf(a) < 0);
-//                 log_if(unsupportedEmulatedExtensions.length > 0, LogLevel.Dev, `trying to emulate unsupported extensions: '${unsupportedEmulatedExtensions}'`);
-
+//                 let unsupportedEmulatedExtensions =
+//                     Context._emulationExtensions.filter(a => this._extensions.indexOf(a) < 0);
+//                 log_if(unsupportedEmulatedExtensions.length > 0, LogLevel.Dev,
+//                     `trying to emulate unsupported extensions: '${unsupportedEmulatedExtensions}'`);
 //                 emulatedExtensions = Context._emulationExtensions;
 //             }
 //             else {
