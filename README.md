@@ -9,7 +9,7 @@
 [![bitHound](https://img.shields.io/bithound/dependencies/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
 [![bitHound](https://img.shields.io/bithound/devDependencies/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
 
-[![Version](https://img.shields.io/github/package-json/v/cginternals/webgl-operate.svg?style=flat-square)](https://github.com/cginternals/webgl-operate/releases)
+[![npm Version](https://img.shields.io/npm/v/webgl-operate.svg?style=flat-square)](https://www.npmjs.com/package/webgl-operate)
 [![Examples](https://img.shields.io/badge/examples-online-blue.svg?style=flat-square)](https://www.webgl-operate.org)
 [![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://www.webgl-operate.org/doc)
 
