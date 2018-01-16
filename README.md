@@ -1,3 +1,9 @@
+
+<a href="https://webgl-operate.org/"><img src="webgl-operate-logo.svg" width="50%"></a>
+
+*webgl-operate* (or *gloperate for WebGL*) is a TypeScript based WebGL rendering framework.
+
+
 [![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat-square)](https://travis-ci.org/cginternals/webgl-operate)
 [![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat-square)](https://coveralls.io/github/cginternals/webgl-operate)
 [![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate)
@@ -9,8 +15,6 @@
 [![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://www.webgl-operate.org/doc)
 
 
-# webgl-operate
-A TypeScript based WebGL rendering framework.
 
 ## Getting Started
 
