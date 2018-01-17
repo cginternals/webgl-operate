@@ -80,11 +80,8 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
 Use `npm run-script build` to build the library and `npm run-script example` to build the examples (or `deploy-lite` to trigger `build` and `example` in a single step). The built examples are located in the `dist` directory.
 
-#### Deployment 
-
-For deployment `npm update` and subsequent `npm deploy` should be run.
-
-For publishing the package to npm login to npm via `npm login`, then update the package version using `npm version {major,minor,patch}`, and, finally, run `npm publish`.
+* For **deployment** `npm update` and subsequent `npm deploy` should be run.
+* For **publishing** the package to npm login to npm via `npm login`, then update the package version using `npm version {major,minor,patch}`, and, finally, run `npm publish`.
 
 ## Visual Studio Code configuration
 
