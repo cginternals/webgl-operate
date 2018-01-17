@@ -55,7 +55,7 @@
     "webpack-sources": "1.1.0"
   },
   "dependencies": {
-    "typescript": "2.6.2"
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "prepublish": "tsc --project tsconfig.npm.json && node prepublish.assets.js && npm run build-all",
