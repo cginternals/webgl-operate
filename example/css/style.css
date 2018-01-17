@@ -11,7 +11,7 @@ pre, code {
     font-family: 'Source Code Pro';
 }
 
-header {
+header, footer {
     margin-top: 6rem;
 }
 
