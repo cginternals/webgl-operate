@@ -20,10 +20,10 @@ html(lang = 'en')
           p webgl-operate enables hardware-accelerated 2D and 3D rendering on html canvases. It is use-case agnostic, i.e., it does not assume a specific type of rendering but facilitates arbitrary rendering approaches instead (e.g., procedural rendering, multi-frame sampling, raytracing, progressive pathtracing).
 
           mixin code(id, source, description)
-            small.mb-0.pb-0= description
+            p.mb-1.text-secondary= description
             div.btn-clipboard-parent
               div.btn-clipboard-parent 
-                button(type = 'button' data-clipboard-target = '#' + id).btn.btn-sm.btn-clipboard Copy to Clipboard
+                button(type = 'button' data-clipboard-target = '#' + id).btn.btn-sm.btn-clipboard.text-muted Copy to Clipboard
                 pre.alert.alert-secondary
                   code(id = id)= source
             
