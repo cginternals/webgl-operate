@@ -1,8 +1,6 @@
 .vscode/
 .git/
-examples/
-examples/
-examples/
+example/
 dist/**/*.html
 dist/test-results/
 dist/img/
@@ -10,10 +8,13 @@ dist/css/
 dist/js/
 dist/doc/
 node_modules/
+source/
 test/
 .gitignore
 .nyc_output
 .travis.yml
+copy.js
+prepublish.assets.js
 pugconfig.js
 tsconfig.json
 tsconfig.npm.json
