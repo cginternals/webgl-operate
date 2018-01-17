@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 function createModuleExportObject(target, minimize) {
 
-    var plugins = new Array();
+    var plugins = [];
     if (minimize) {
         plugins.push(new webpack.optimize.UglifyJsPlugin({ sourceMap: true }));
     }
@@ -24,7 +24,7 @@ function createModuleExportObject(target, minimize) {
         },
         output: {
             path: __dirname + '/dist',
-            filename: 'js/' + target + targetExt,
+            filename: target + targetExt,
             library: 'gloperate',
         },
         resolve: {
@@ -46,7 +46,7 @@ function createModuleExportObject(target, minimize) {
                 }]
         },
     };
-};
+}
 
 module.exports = {
     moduleObject: createModuleExportObject

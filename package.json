@@ -1,9 +1,15 @@
 {
   "name": "webgl-operate",
-  "description": "A TypeScript based WebGL rendering framework.",
   "version": "0.1.0",
-  "author": "CG Internals",
   "license": "MIT",
+  "description": "A TypeScript based WebGL rendering framework.",
+  "author": "CG Internals",
+  "homepage": "https://webgl-operate.org",
+  "main": "./lib/webgl-operate.js",
+  "bugs": {
+    "email": "contact@cginternals.com",
+    "url": "https://github.com/cginternals/webgl-operate/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/cginternals/webgl-operate.git"
@@ -38,26 +44,29 @@
     "nyc": "11.4.1",
     "pug": "2.0.0-rc.4",
     "query-string": "5.0.1",
-    "sinon": "4.1.5",
+    "sinon": "4.1.6",
     "source-map-support": "0.5.0",
     "ts-loader": "3.2.0",
     "ts-node": "4.1.0",
     "tslint": "5.9.1",
     "typedoc": "0.9.0",
-    "typescript": "2.6.2",
     "webpack": "3.10.0",
     "webpack-glsl-loader": "1.0.1",
     "webpack-sources": "1.1.0"
   },
+  "dependencies": {
+    "typescript": "^2.6.2"
+  },
   "scripts": {
+    "prepublish": "tsc --project tsconfig.npm.json && node prepublish.assets.js && npm run build-all",
     "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "webpack",
     "build-all": "webpack --config webpack.config.all.js",
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-    "example": "node pug.config.js",
-    "deploy": "npm run check && npm run test && npm run build && npm run build-all && npm run doc && npm run example",
+    "example": "node pugconfig.js",
+    "deploy": "npm run check && npm run test && npm run build-all && npm run doc && npm run example",
     "deploy-lite": "npm run build && npm run example"
   },
   "keywords": [

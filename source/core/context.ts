@@ -5,7 +5,7 @@
 // import { GPUAllocationRegister } from './gpuallocationregister';
 
 
-// /** @todo
+// /**
 //  * context.masquerade = 'preset' | undefined | mask object | 'hash'
 //  * context.hash -> returns webgl version and availability of all extensions + hash version
 //  * context.verify -> test if all available extensions are covered by an expicit interface
