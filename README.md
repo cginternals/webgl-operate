@@ -59,9 +59,9 @@ ToDo
 
 This package setup distinguishes between *develop*, *deploy*, and *publish* related scripts: 
 
-* deployment is covered by the script `deploy` and is intended to build bundles, examples, documentation, test-results etc. It is intended for non-npm deployment and triggeres a sequence of development scripts.
-* publishing is covered by the script `prepublish`and is intended to be triggered automatically by `npm publish`. It is intended for npm deployment and triggers a sequence of custom as well as other develpment scripts.
-* development scripts (all except `deploy` and `prepublish`) are intended for actual development of webgl-operate.
+* **deployment** is covered by the script `deploy` and is intended to build bundles, examples, documentation, test-results etc. It is intended for non-npm deployment and triggeres a sequence of development scripts.
+* **publishing** is covered by the script `prepublish`and is intended to be triggered automatically by `npm publish`. It is intended for npm deployment and triggers a sequence of custom as well as other develpment scripts.
+* **development** scripts (all except `deploy` and `prepublish`) are intended for actual development of webgl-operate.
 
 `package.json` specifies the following scripts that can be run by `npm run-script <command>`. 
 
