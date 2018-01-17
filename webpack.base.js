@@ -24,7 +24,7 @@ function createModuleExportObject(target, minimize) {
         },
         output: {
             path: __dirname + '/dist',
-            filename: 'js/' + target + targetExt,
+            filename: target + targetExt,
             library: 'gloperate',
         },
         resolve: {

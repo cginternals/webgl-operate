@@ -16,9 +16,10 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "skipLibCheck": true,
-        "sourceMap": true,
-        "strictNullChecks": true
-        /*"declaration": true // done by webpack */
+        "sourceMap": false,
+        "strictNullChecks": true,
+        "declaration": true,
+        "outDir": "lib"
     },
     "include": [
         "source"

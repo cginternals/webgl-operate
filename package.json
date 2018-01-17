@@ -1,9 +1,16 @@
 {
   "name": "webgl-operate",
-  "description": "A TypeScript based WebGL rendering framework.",
   "version": "0.1.0",
-  "author": "CG Internals",
   "license": "MIT",
+  "description": "A TypeScript based WebGL rendering framework.",
+  "author": "CG Internals",
+  "homepage": "https://webgl-operate.org",
+  "main": "./lib/index.js",
+  "types": "./dist/index.d.ts",
+  "bugs": {
+    "email": "contact@cginternals.com",
+    "url": "https://github.com/cginternals/webgl-operate/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/cginternals/webgl-operate.git"
@@ -50,14 +57,15 @@
     "webpack-sources": "1.1.0"
   },
   "scripts": {
+    "prepublish": "tsc --project tsconfig.npm.json && node prepublish.assets.js && npm run build-all",
     "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "webpack",
     "build-all": "webpack --config webpack.config.all.js",
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-    "example": "node pug.config.js",
-    "deploy": "npm run check && npm run test && npm run build && npm run build-all && npm run doc && npm run example",
+    "example": "node pugconfig.js",
+    "deploy": "npm run check && npm run test && npm run build-all && npm run doc && npm run example",
     "deploy-lite": "npm run build && npm run example"
   },
   "keywords": [

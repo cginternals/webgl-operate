@@ -7,7 +7,7 @@ import { ExtensionsHash } from './extensionshash';
 /**
  * Interfaces required to prevent implicit any when parsing masquerade.json.
  */
-interface MasqueradePreset {
+export interface MasqueradePreset {
     identifier: string;
     backend: string;
     extensions_hash: string;
@@ -15,7 +15,7 @@ interface MasqueradePreset {
     extensions_conceal: Array<string>;
     functions_undefine: Array<string>;
 }
-interface MasqueradePresets {
+export interface MasqueradePresets {
     presets: Array<MasqueradePreset>;
 }
 
