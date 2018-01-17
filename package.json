@@ -5,8 +5,7 @@
   "description": "A TypeScript based WebGL rendering framework.",
   "author": "CG Internals",
   "homepage": "https://webgl-operate.org",
-  "main": "./lib/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./lib/webgl-operate.js",
   "bugs": {
     "email": "contact@cginternals.com",
     "url": "https://github.com/cginternals/webgl-operate/issues"
@@ -51,10 +50,12 @@
     "ts-node": "4.1.0",
     "tslint": "5.9.1",
     "typedoc": "0.9.0",
-    "typescript": "2.6.2",
     "webpack": "3.10.0",
     "webpack-glsl-loader": "1.0.1",
     "webpack-sources": "1.1.0"
+  },
+  "dependencies": {
+    "typescript": "2.6.2"
   },
   "scripts": {
     "prepublish": "tsc --project tsconfig.npm.json && node prepublish.assets.js && npm run build-all",
