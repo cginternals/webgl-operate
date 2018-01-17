@@ -1,0 +1,11 @@
+nav.navbar.navbar-expand-md.navbar-dark.bg-dark
+  div.container
+    a(href = 'https://cginternals.gmbh').navbar-brand
+      img(src = 'img/cginternals.svg' alt = 'cginternals logo').img-fluid.align-top.mt-1.d-none.d-md-block
+      img(src = 'img/navicon.svg' alt = 'cginternals icon').img-fluid.align-top.mt-1.d-block.d-md-none
+
+    ul.navbar-nav.ml-auto
+      - var doc = 'Documentation'
+      - var git = 'GitHub'
+      li.nav-item #[a(href = 'doc/index.html').nav-link #{doc.toUpperCase()}]
+      li.nav-item #[a(href = 'https://github.com/cginternals/webgl-operate').nav-link #{git.toUpperCase()}]

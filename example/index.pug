@@ -1,40 +1,73 @@
 doctype html
 html(lang = 'en')
   include partial/head.pug
-  body
+  body.bg-light
+
+
+    include partial/navbar.pug
+
+
     section.container
-      header.jumbatron.my-5
-        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-50
+      header.jumbatron
+        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-50.d-none.d-md-block
+        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.d-block.d-md-none
         p.lead webgl-operate (or gloperate for WebGL) is a TypeScript based WebGL rendering framework.
 
-    section.container
-      div.row
-        div.col
-          h1 Getting Started
-          ul
-            li features
-            li example usage
-            li github page, how to fork
-            li npm package, how to install
-            li 
-              a(href = 'doc/index.html') documentation
 
     section.container
       div.row
         div.col
-          h1 Examples
-          ul
-            li example volume
-            li example logo
-            li example basic quad..
-            li example simson
-            li example textured box
-            li example treemap
-            li example path tracing cornell
-            li example multifram demo sponza
-            li example ray marching meta balls
-            li example sky triangle
-            li example terrain
-            li example text rendering
+          p webgl-operate enables hardware-accelerated 2D and 3D rendering on html canvases. It is use-case agnostic, i.e., it does not assume a specific type of rendering but facilitates arbitrary rendering approaches instead (e.g., procedural rendering, multi-frame sampling, raytracing, progressive pathtracing).
+
+          mixin code(id, source, description)
+            small.mb-0.pb-0= description
+            div.btn-clipboard-parent
+              div.btn-clipboard-parent 
+                button(type = 'button' data-clipboard-target = '#' + id).btn.btn-sm.btn-clipboard Copy to Clipboard
+                pre.alert.alert-secondary
+                  code(id = id)= source
+            
+          +code('jsdelivr', '<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.1.2/dist/webgl-operate.slim.min.js"></script>'
+            , 'You can integrate webgl-operate as bundled JavaScript in your HTML:')
+          +code('npm', 'npm install --save-dev webgl-operate'
+            , 'Or you can use webgl-operate as JavaScript or TypeScript library via npm:')
+
+
+    section.container
+      div.row
+        div.col
+
+          h4 Feature Excerpt 
+          ul.features.text-info
+            li Object-oriented WebGL2 Facade
+            li WebGL2 and WebGL Backend
+            li Shader Includes and Defines
+            li Extension Querying and Masquerade
+            li Observable Rendering Stats
+            li Cross-browser Compatible
+            li Desktop and Mobile
+            li Multiple Canvases
+            li Text Rendering
+            li Various Rendering Controller
+            li Multi-frame Sampling
+            li Post-processing Library
+            li Ray Tracing
+            li Progressive Path Tracing
+            li Tested
+            li Documented
+            li Professional Customer Support
+            li Professional Integration Service
+
+
+    section.container
+      div.row
+        div.col
+          h4 Examples
+
+          div.card-columns
+            - var examples = ['volume', 'basic quad', 'simson', 'textured box', 'logo', 'treemap', 'path tracing cornell', 'multiframe sponza', 'ray marching meta balls', 'sky triangle', 'terrain', 'text rendering']
+            each example, index in examples
+              include partial/example.pug
+
 
     include partial/foot.pug
