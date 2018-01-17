@@ -14,7 +14,6 @@ test/
 .gitignore
 .nyc_output
 .travis.yml
-package-lock.json
 pugconfig.js
 tsconfig.json
 tsconfig.npm.json
