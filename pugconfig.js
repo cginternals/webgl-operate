@@ -7,7 +7,7 @@
 // const watch = process.argv.indexOf('--watch') > 1;
 
 const fs = require('fs');
-const glob = require("glob")
+const glob = require("glob");
 const path = require('path');
 const pug = require('pug');
 
@@ -21,7 +21,6 @@ const entries = ['index.pug'];
 function build() {
 
     assets.forEach(asset => {
-
         glob(asset, { cwd: baseDir, strict: true }, function (error, files) {
             files.forEach(file => {
                 const src = path.join(baseDir, file);
@@ -32,7 +31,7 @@ function build() {
                 fs.createReadStream(src).pipe(fs.createWriteStream(dst));
                 console.log('emitted:', dst);
             });
-        })
+        });
     });
 
     entries.forEach((entry) => {
