@@ -15,9 +15,16 @@
 
 ## How to Install
 
+*webgl-operate* can be used both as npm module (TypeScript or JavaScript) and linked JavaScript bundle:
+
 ```sh
 npm install --save-dev webgl-operate
 ```
+
+```
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.1.2/dist/webgl-operate.slim.min.js" integrity="sha256-+idbqD7Jsz0r+R7GFodvfs89ZMX7iA03nFuvKSqlPQA=" crossorigin="anonymous"></script>
+```
+
 
 ## Getting Started
 

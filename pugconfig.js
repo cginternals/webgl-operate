@@ -18,7 +18,7 @@ const assets = ['css/*.css', 'js/*.js', 'img/*.{svg,png}'];
 const entries = ['index.pug'];
 
 const copy = require('./copy.js');
-copy(baseDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}']);
+copy(baseDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*']);
 
 entries.forEach((entry) => {
     const src = path.join(baseDir, entry);

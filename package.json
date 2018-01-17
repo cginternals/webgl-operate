@@ -5,6 +5,7 @@
   "description": "A TypeScript based WebGL rendering framework.",
   "author": "CG Internals",
   "homepage": "https://webgl-operate.org",
+  "jsdelivr": "./dist/webgl-operate.slim.min.js",
   "main": "./lib/webgl-operate.js",
   "bugs": {
     "email": "contact@cginternals.com",

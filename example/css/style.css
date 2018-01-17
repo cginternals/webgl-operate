@@ -1,0 +1,73 @@
+
+* {
+    border-radius: 0 !important;
+}
+
+body {
+    font-family: 'Source Sans Pro', sans-serif !important;
+}
+
+pre, code {
+    font-family: 'Source Code Pro';
+}
+
+header, footer {
+    margin-top: 6rem;
+}
+
+section {
+    margin-bottom: 2rem;
+}
+
+nav.navbar img {
+    height: 1.5rem;
+}
+nav ul.navbar-nav {
+    flex-direction: row;
+}
+nav ul.navbar-nav li.nav-item a.nav-link {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+ul.features {
+    list-style: none 0;
+    padding: 0;
+}
+ul.features li {
+    display: inline;
+    float: left;
+}
+ul.features li:after { 
+    content: "\2009\2013\2009"; 
+}
+ul.features li:last-child:after { 
+    content: none; 
+}
+
+@media screen and (min-width: 960px) {
+    .card-columns {
+        column-count: 3;
+    }
+}
+@media screen and (max-width: 960px) and (min-width: 540px) {
+    .card-columns {
+        column-count: 2;
+    }
+}
+
+.btn-clipboard-parent {
+    position: relative;
+}
+
+.btn-clipboard {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    z-index: 10;
+    display: block;
+    padding: .25rem .5rem;
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: .25rem;
+}
