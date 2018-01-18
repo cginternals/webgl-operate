@@ -3,7 +3,4 @@
 node_modules/
 dist/
 lib/
-examples/_site
-examples/.sass-cache
-examples/.jekyll-metadata
 .DS_Store
