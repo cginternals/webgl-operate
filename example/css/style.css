@@ -33,13 +33,17 @@ nav ul.navbar-nav li.nav-item a.nav-link {
 ul.features {
     list-style: none 0;
     padding: 0;
+    clear: both;
 }
 ul.features li {
     display: inline;
     float: left;
 }
 ul.features li:after { 
-    content: "\2009\2013\2009"; 
+    content: "\2009\2014\2009"; 
+}
+ul.features li:first-child:after { 
+    content: "\2009\2223\2009"; 
 }
 ul.features li:last-child:after { 
     content: none; 
