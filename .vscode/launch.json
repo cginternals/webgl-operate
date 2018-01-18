@@ -26,14 +26,14 @@
             "webRoot": "${workspaceRoot}/dist",
             "sourceMapPathOverrides": {
                 "webpack:///./~/*": "${webRoot}/../node_modules/*",
-                "webpack:///./*": "${webRoot}/../source/*"
+                "webpack:///./*": "${webRoot}/../src/*"
             },
             "windows": {
                 "url": "${workspaceRoot}\\dist\\index.html",
                 "webRoot": "${workspaceRoot}\\dist",
                 "sourceMapPathOverrides": {
                     "webpack:///./~/*": "${webRoot}\\..\\node_modules\\*",
-                    "webpack:///./*": "${webRoot}\\..\\source\\*"
+                    "webpack:///./*": "${webRoot}\\..\\src\\*"
                 }
             }
         },
@@ -47,14 +47,14 @@
             "webRoot": "${workspaceRoot}/dist",
             "sourceMapPathOverrides": {
                 "webpack:///./~/*": "${webRoot}/../node_modules/*",
-                "webpack:///./*": "${webRoot}/../source/*"
+                "webpack:///./*": "${webRoot}/../src/*"
             },
             "windows": {
                 "url": "${workspaceRoot}\\dist\\index.html",
                 "webRoot": "${workspaceRoot}\\dist",
                 "sourceMapPathOverrides": {
                     "webpack:///./~/*": "${webRoot}\\..\\node_modules\\*",
-                    "webpack:///./*": "${webRoot}\\..\\source\\*"
+                    "webpack:///./*": "${webRoot}\\..\\src\\*"
                 }
             }
         },

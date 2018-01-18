@@ -17,14 +17,6 @@
             ]
         },
         {
-            "taskName": "build (min and slim)",
-            "isBuildCommand": true,
-            "args": [
-                "run-script",
-                "build-all"
-            ]
-        },
-        {
             "taskName": "deploy",
             "isBuildCommand": true,
             "args": [
@@ -33,7 +25,7 @@
             ]
         },
         {
-            "taskName": "deploy (lite)",
+            "taskName": "deploy (build and examples)",
             "isBuildCommand": true,
             "args": [
                 "run-script",
@@ -41,7 +33,7 @@
             ]
         },
         {
-            "taskName": "check sources",
+            "taskName": "check",
             "isTestCommand": true,
             "args": [
                 "run-script",
@@ -49,7 +41,7 @@
             ]
         },
         {
-            "taskName": "run tests",
+            "taskName": "test",
             "isTestCommand": true,
             "args": [
                 "run-script",
@@ -57,7 +49,7 @@
             ]
         },
         {
-            "taskName": "build documentation",
+            "taskName": "documentation",
             "isBuildCommand": true,
             "args": [
                 "run-script",
@@ -65,7 +57,7 @@
             ]
         },
         {
-            "taskName": "build examples",
+            "taskName": "examples",
             "isBuildCommand": true,
             "args": [
                 "run-script",
