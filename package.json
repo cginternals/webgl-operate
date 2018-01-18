@@ -65,7 +65,7 @@
     "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ src/",
+    "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
     "example": "node pugconfig.js",
     "deploy": "npm run build-all && npm run check && npm run test && npm run example && npm run doc",
     "deploy-lite": "npm run build && npm run example",
@@ -83,7 +83,7 @@
   "nyc": {
     "check-coverage": false,
     "include": [
-      "src/**/*.ts"
+      "source/**/*.ts"
     ],
     "extension": [
       ".ts"

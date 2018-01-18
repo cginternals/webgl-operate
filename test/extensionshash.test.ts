@@ -4,7 +4,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 
-import { ExtensionsHash } from '../src/core/extensionshash';
+import { ExtensionsHash } from '../source/core/extensionshash';
 
 
 class ExtensionsHashMock extends ExtensionsHash {

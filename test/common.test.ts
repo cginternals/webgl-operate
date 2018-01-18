@@ -9,7 +9,7 @@ const expect = chai.expect;
 const spy = chai.spy;
 const stub = sinon.stub;
 
-import * as common from '../src/core/common';
+import * as common from '../source/core/common';
 
 
 /* tslint:disable:no-unused-expression */

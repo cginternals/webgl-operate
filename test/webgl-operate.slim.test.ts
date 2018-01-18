@@ -5,7 +5,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 
-import * as gloperate from '../src/webgl-operate';
+import * as gloperate from '../source/webgl-operate';
 
 /* tslint:disable:no-unused-expression */
 

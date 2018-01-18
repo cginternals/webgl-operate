@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    context: __dirname + '/src',
+    context: __dirname + '/source',
 
     cache: true,
     devtool: 'source-map',
@@ -23,20 +23,20 @@ module.exports = {
         filename: '[name].js'
     },
     resolve: {
-        modules: [__dirname + '/node_modules', __dirname + '/src'],
+        modules: [__dirname + '/node_modules', __dirname + '/source'],
         extensions: ['.ts', '.tsx', '.js']
     },
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                include: /src/,
+                include: /source/,
                 exclude: /(example|node_modules)/,
                 use: { loader: 'ts-loader' }
             },
             {
                 test: /(\.glsl|\.vert|\.frag)$/,
-                include: /src\/shaders/,
+                include: /source\/shaders/,
                 use: { loader: 'webpack-glsl-loader' },
             }]
     },
