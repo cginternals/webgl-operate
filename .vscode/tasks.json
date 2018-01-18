@@ -9,12 +9,6 @@
     "echoCommand": true,
     "tasks": [
         {
-            "taskName": "install packages",
-            "args": [
-                "install"
-            ]
-        },
-        {
             "taskName": "build",
             "isBuildCommand": true,
             "args": [
