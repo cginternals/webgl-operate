@@ -9,9 +9,9 @@
     "echoCommand": true,
     "tasks": [
         {
-            "taskName": "update packages",
+            "taskName": "install packages",
             "args": [
-                "update"
+                "install"
             ]
         },
         {

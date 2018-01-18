@@ -5,6 +5,7 @@
   "description": "A TypeScript based WebGL rendering framework.",
   "author": "CG Internals",
   "homepage": "https://webgl-operate.org",
+  "jsdelivr": "./dist/webgl-operate.slim.min.js",
   "main": "./lib/webgl-operate.js",
   "bugs": {
     "email": "contact@cginternals.com",
@@ -58,7 +59,7 @@
     "typescript": "^2.6.2"
   },
   "scripts": {
-    "prepublish": "tsc --project tsconfig.npm.json && node prepublish.assets.js && npm run build-all",
+    "prepublishOnly": "tsc --project tsconfig.npm.json && node prepublish.assets.js && npm run build-all",
     "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
