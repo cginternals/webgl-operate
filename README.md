@@ -75,19 +75,19 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 | command          | description |
 |------------------|-------------|
 | `build`          | build and pack library with core, debug, and viewer facilities [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
-| `build-all`      | build and pack both minified and slim (no viewer and debug) libraries |
+| `build-all`      | build both minified and slim (no viewer and debug) libraries to `dist` |
 | `example`        | build example html pages to `dist` |
 | `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
 | `deploy-lite`    | lite distribution deployment triggering only build and examples |
 | **`deploy`**     | full distribution deployment triggering `check`, `test`, `build-all`, `doc`, and `example` |
-| **`prepublish`** | copy assets and transpile sources to `lib` directory as well as `build-all` |
+| **`prepublish`** | transpile sources and declarations to `lib` and run `build-all` |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
 Use `npm run-script build` to build the library and `npm run-script example` to build the examples (or `deploy-lite` to trigger `build` and `example` in a single step). The built examples are located in the `dist` directory.
 
-* For **deployment** `npm update` and subsequent `npm deploy` should be run.
+* For **deployment** `npm update` and subsequent `npm run-script deploy` should be run.
 * For **publishing** the package to npm login to npm via `npm login`, then update the package version using `npm version {major,minor,patch}`, and, finally, run `npm publish`.
 
 ## Visual Studio Code configuration
@@ -97,7 +97,7 @@ Please not that the workspace configuration `.vscode/settings.json` has automati
 
 #### tasks
 
-All the above scripts, namely `build, build-all, check, deploy, deploy-lite, doc, examples, examples-watch` as well as `test` can be triggered from within Visual Studio Code.
+All the above scripts, namely `build, build-all, check, deploy, deploy-lite, doc, examples` as well as `test` can be triggered from within Visual Studio Code.
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 
