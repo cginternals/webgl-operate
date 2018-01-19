@@ -22,7 +22,7 @@ npm install --save-dev webgl-operate
 ```
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.1.2/dist/webgl-operate.slim.min.js" integrity="sha256-+idbqD7Jsz0r+R7GFodvfs89ZMX7iA03nFuvKSqlPQA=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.1.3/dist/webgl-operate.min.js"></script>
 ```
 
 
