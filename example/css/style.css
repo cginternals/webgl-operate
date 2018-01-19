@@ -9,6 +9,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
+    color: #1c75bc;
 }
 
 pre, code {
@@ -35,9 +36,9 @@ nav ul.navbar-nav li.nav-item a.nav-link {
 }
 
 ul.features {
-    list-style: none 0;
-    padding: 0;
-    clear: both;
+    padding-left: 0;
+    display: inline-block;
+    margin-bottom: 0;
 }
 ul.features li {
     display: inline;

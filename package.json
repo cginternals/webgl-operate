@@ -61,7 +61,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "build-all": "webpack --config webpack.config.all.js",
+    "build-all": "webpack --config webpack.config.dist.js",
     "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -69,7 +69,7 @@
     "example": "node pugconfig.js",
     "deploy": "npm run build-all && npm run check && npm run test && npm run example && npm run doc",
     "deploy-lite": "npm run build && npm run example",
-    "prepublishOnly": "npm run build-all"
+    "prepublishOnly": "webpack --config webpack.config.dist.js && webpack --config webpack.config.lib.js"
   },
   "keywords": [
     "webgl",
