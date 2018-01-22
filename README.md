@@ -59,7 +59,7 @@ ToDo
 | `source/debug`   | optional: various tools for run-time debugging |
 | `source/viewer`  | optional: generic viewer overlay and controller for webgl-operate based rendering |
 | `example`        | examples demonstrating webgl-operate features | 
-| `test`           | tests of sources located in `sources` |
+| `test`           | tests of sources located in `source` |
 
 
 ## NPM Configuration and Project Setup
