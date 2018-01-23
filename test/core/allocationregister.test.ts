@@ -27,6 +27,8 @@ describe('AllocationTracker', () => {
     it('should accumulate identifier allocations', () => {
         const tracker = new AllocationRegister();
         const id = tracker.createAndTrackUniqueIdentifier('foo');
+        tracker.allocate(id, 0);
+        expect(tracker.allocated(id)).to.equal(0);
         tracker.allocate(id, 1);
         tracker.allocate(id, 2);
         tracker.allocate(id, 3);
@@ -38,6 +40,8 @@ describe('AllocationTracker', () => {
         const tracker = new AllocationRegister();
         const id = tracker.createAndTrackUniqueIdentifier('foo');
         tracker.allocate(id, 3);
+        tracker.deallocate(id, 0);
+        expect(tracker.allocated(id)).to.equal(3);
         tracker.deallocate(id, 2);
         expect(tracker.allocated(id)).to.equal(1);
     });
@@ -132,6 +136,24 @@ describe('AllocationTracker', () => {
         expect(tracker.allocated()).to.equal(3);
         tracker.reallocate(id, 1);
         expect(tracker.allocated()).to.equal(1);
+    });
+
+    it('should pretty print allocated bytes by identifier', () => {
+        const tracker = new AllocationRegister();
+        const foo = tracker.createAndTrackUniqueIdentifier('foo');
+        const bar = tracker.createAndTrackUniqueIdentifier('bar');
+        tracker.allocate(foo, 123);
+        tracker.reallocate(bar, 456789);
+        expect(tracker.toString()).to.equal('foo: 123B, bar: 446.083KiB');
+    });
+
+    it('should be validate print allocated bytes by identifier', () => {
+        const tracker = new AllocationRegister();
+        const foo = tracker.createAndTrackUniqueIdentifier('foo');
+        const bar = tracker.createAndTrackUniqueIdentifier('bar');
+        tracker.allocate(foo, 123);
+        tracker.reallocate(bar, 456789);
+        expect(tracker.toString()).to.equal('foo: 123B, bar: 446.083KiB');
     });
 
 });

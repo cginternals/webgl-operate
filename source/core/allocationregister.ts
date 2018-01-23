@@ -163,23 +163,6 @@ export class AllocationRegister {
     }
 
     /**
-     * Validates the consistency of the number of overall allocated bytes and the sum of allocated bytes over all
-     * identifiers.
-     * @returns - True if allocated bytes registry is consistent.
-     */
-    validate(): boolean {
-        const iterator = this.bytesByIdentifier.values();
-        let result: IteratorResult<number> = iterator.next();
-
-        let totalBytes = 0;
-        while (!result.done) {
-            totalBytes = totalBytes + result.value;
-            result = iterator.next();
-        }
-        return totalBytes === this.bytes;
-    }
-
-    /**
      * Provides a pretty printed string of the allocated bytes of this register and their identifier. The output for a
      * register of three objects could be as follows:
      * ```
