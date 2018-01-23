@@ -14,6 +14,9 @@ function copy(base, dest, assets) {
                 if (!fs.existsSync(path.dirname(dst))) {
                     fs.mkdirSync(path.dirname(dst));
                 }
+                if(fs.existsSync(dst) && fs.statSync(dst).mtime >= fs.statSync(src).mtime) {
+                    return;
+                }
                 fs.createReadStream(src).pipe(fs.createWriteStream(dst));
                 console.log('emitted:', dst);
             });
