@@ -3,8 +3,8 @@ import * as sinon from 'sinon';
 
 const expect = chai.expect;
 
-import * as common from '../source/core/common';
-import { ContextMasquerade } from '../source/core/contextmasquerade';
+import * as common from '../../source/core/common';
+import { ContextMasquerade } from '../../source/core/contextmasquerade';
 
 /* tslint:disable:no-unused-expression */
 
