@@ -53,6 +53,7 @@ export class GL2Facade {
                 break;
 
             case BackendType.WebGL2:
+            /** tslint:disable-next-line:no-switch-case-fall-through */
             default:
                 this._halfFloat = context.gl.HALF_FLOAT;
                 break;
@@ -172,6 +173,7 @@ export class GL2Facade {
                 break;
 
             case BackendType.WebGL2:
+            /** tslint:disable-next-line:no-switch-case-fall-through */
             default:
                 this._colorAttachmentMin = context.gl.COLOR_ATTACHMENT0;
                 this._colorAttachmentMax = context.gl.COLOR_ATTACHMENT0
