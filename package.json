@@ -59,6 +59,9 @@
   "dependencies": {
     "typescript": "^2.6.2"
   },
+  "peerDependencies": {
+    "rxjs": "^5.5.0"
+  },
   "scripts": {
     "build": "webpack",
     "build-all": "webpack --config webpack.config.dist.js",

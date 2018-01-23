@@ -1,7 +1,7 @@
 
 import { assert, prettyPrintBytes } from './common';
 
-// import { Observable } from './observable'; @ToDo rxjs
+import { Subject } from 'rxjs/Subject';
 
 
 /**
@@ -9,18 +9,18 @@ import { assert, prettyPrintBytes } from './common';
  * memory alocation tracking. For it, a unique identifier for registration has to be created:
  * ```
  * let gpuAllocReg = this.context.gpuAllocationRegister;
- * this._identifier = gpuAllocReg.createAndTrackUniqueIdentifier(this._identifier);
+ * const identifier = gpuAllocReg.createAndTrackUniqueIdentifier('gpu-object');
  * ```
  *
  * Then allocations, deallocations, and reallocations can be registered:
  * ```
- * gpuAllocReg.allocate(this._identifier, this.sizeofRGBAColorAttachment());
- * gpuAllocReg.allocate(this._identifier, this.sizeofDepthStencilAttachment());
+ * gpuAllocReg.allocate(identifier, this.sizeofRGBAColorAttachment());
+ * gpuAllocReg.allocate(identifier, this.sizeofDepthStencilAttachment());
  * // ... reallocation
- * gpuAllocReg.reallocate(this._identifier,
+ * gpuAllocReg.reallocate(identifier,
  *     this.sizeofRGBAColorAttachment() + this.sizeofDepthStencilAttachment());
  * // ... uninitialize
- * gpuAllocReg.reallocate(this._identifier, 0);
+ * gpuAllocReg.reallocate(identifier, 0);
  * ```
  *
  * Requesting the allocated memory can be done as follows:
@@ -46,19 +46,20 @@ export class AllocationRegister {
      * bytes allocated over each identifier, which can be validated using validate().
      */
     protected bytes: number;
+    protected bytesSubject = new Subject<[number, string]>();
 
     /**
-     * Enables observation of (de)allocations and returns the number of bytes. This 'signal' can also be used to gather
-     * identifier specific items.
+     * Enables observation of (de)allocations and returns the number of bytes as number as well as pretty printed
+     * string. This 'signal' can also be used to gather identifier specific items.
      */
-    bytesObservable: Observable<number>;
+    allocatedObservable = this.bytesSubject.asObservable();
 
     /**
      * Constructor that resets the memory and configures the observable object.
      */
     constructor() {
         this.bytes = 0.0;
-        this.bytesObservable = new Observable<number>(() => this.allocated());
+        this.bytesSubject.next([this.bytes, this.bytesToString()]);
     }
 
     /**
@@ -106,7 +107,7 @@ export class AllocationRegister {
         this.bytesByIdentifier.set(identifier, bytes);
 
         this.bytes = this.bytes + allocate; // allocate total
-        this.bytesObservable.changed();
+        this.bytesSubject.next([this.bytes, this.bytesToString()]);
     }
 
     /**
@@ -128,7 +129,7 @@ export class AllocationRegister {
         this.bytesByIdentifier.set(identifier, bytes - deallocate);
 
         this.bytes = this.bytes - deallocate; // deallocate total
-        this.bytesObservable.changed();
+        this.bytesSubject.next([this.bytes, this.bytesToString()]);
     }
 
     /**
@@ -144,7 +145,7 @@ export class AllocationRegister {
         this.bytesByIdentifier.set(identifier, reallocate);
 
         this.bytes = this.bytes + reallocate; // allocate total
-        this.bytesObservable.changed();
+        this.bytesSubject.next([this.bytes, this.bytesToString()]);
     }
 
     /**
@@ -191,7 +192,6 @@ export class AllocationRegister {
         this.bytesByIdentifier.forEach((bytes: number, identifier: string) => {
             output.push(`${identifier}: ${prettyPrintBytes(bytes)}`);
         });
-
         return output.join(', ');
     }
 
