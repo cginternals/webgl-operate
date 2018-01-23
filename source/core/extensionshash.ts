@@ -59,8 +59,7 @@ export class ExtensionsHash {
 
     /**
      * Encodes a number of bitfield semantics (of 6 bits) into a base64 character.
-     *
-     * @param base64 - Bitfield of 6 bits (as number)
+     * @param base64 - Bitfield of 6 bits (as number).
      */
     protected static encode64(bitfield: number): string {
         assert(bitfield >= 0b000000 && bitfield <= 0b111111
@@ -70,8 +69,7 @@ export class ExtensionsHash {
 
     /**
      * Decodes a single base64 encoded character to a number of bitfield semantics.
-     *
-     * @param base64 single base64 encoded character (string)
+     * @param base64 - Single base64 encoded character (string).
      */
     protected static decode64(base64: string): number {
         assert(base64.length === 1, `expected single base64 character, given '${base64}'`);
@@ -83,7 +81,6 @@ export class ExtensionsHash {
     /**
      * Generates a hash that encodes the contexts webgl version and extension support. This is intended to be queried
      * whenever support for a given context on a foreign client is due. The hash can be used as masquerade input.
-     *
      * @param backend - WebGL version: 'webgl1' or 'webgl2'.
      * @param supported - Array of supported extensions to be encoded.
      */
@@ -114,9 +111,8 @@ export class ExtensionsHash {
 
     /**
      * Decodes a hash into a WebGL version and supported extensions.
-     *
      * @param hash - Versioned extension hash.
-     * @returns Tuple of webgl version and an array of extensions.
+     * @returns - Tuple of webgl version and an array of extensions.
      */
     static decode(hash: string): [string, Array<string>] {
 

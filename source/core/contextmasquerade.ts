@@ -64,7 +64,6 @@ export class ContextMasquerade {
 
     /**
      * Generates a mask based on an extensions hash (encoding backend and extensions_strive).
-     *
      * @param hash - Hash that is to be decoded for backend and extensions data.
      */
     static fromHash(hash: string): ContextMasquerade {
@@ -80,7 +79,6 @@ export class ContextMasquerade {
     /**
      * Creates a context mask based on a preset. Note that the presence of an extensions_hash overrides the backend,
      * extensions_strive, as well as extensions_conceal. Only the functions_undefine will be preserved in that case.
-     *
      * @param identifier - Name of a preset as specified in masquerade.json.
      */
     static fromPreset(identifier: string): ContextMasquerade {

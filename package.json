@@ -85,6 +85,10 @@
     "include": [
       "source/**/*.ts"
     ],
+    "exclude": [
+      "source/core/context.ts",
+      "source/core/gl2facade.ts"
+    ],
     "extension": [
       ".ts"
     ],

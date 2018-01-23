@@ -1,8 +1,8 @@
 
 import { assert, log_if, LogLevel } from './common';
 
+import { AllocationRegister } from './allocationregister';
 import { GL2Facade } from './gl2facade';
-// import { GPUAllocationRegister } from './gpuallocationregister';
 
 
 /**
@@ -13,7 +13,7 @@ export enum BackendType { Invalid, WebGL1, WebGL2 }
 
 /**
  * A controller for either a WebGLRenderingContext or WebGL2RenderingContext. It requests a context, tracks context
- * attributes, extensions as well as multi frame specific rendering information and a gpu-allocation registry.
+ * attributes, extensions as well as multi frame specific rendering information and a (gpu)allocation registry.
  *
  * An instance of `Context` can be created only implicitly by requesting a context given a canvas element and its
  * dataset:
@@ -86,13 +86,8 @@ export class Context {
     /**
      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
      * calls to getContext of an element will return null.
-     *
      * @param element - Canvas element to request context from.
-     * @param dataset - The attribute data-backend is supported; valid values are 'auto', 'webgl', and 'webgl2'. If
-     * 'auto' is provided, either a webgl2 or experimental-webgl2 context will be requested first. If this fails, a
-     * webgl or experimental-webgl context is requested.
-     *
-     * @returns {Context} context providing either a WebGLRenderingContext, WebGL2RenderingContext, or no context.
+     * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext, or no context.
      */
     static request(element: HTMLCanvasElement): Context {
         const dataset: DOMStringMap = element.dataset;
@@ -137,10 +132,8 @@ export class Context {
 
     /**
      * Helper that tries to create a WebGL 1 context (requests to 'webgl' and 'experimental-webgl' are made).
-     *
-     * @param {DOMElement} element - canvas element to request context from
-     *
-     * @returns {WebGLRenderingContext} webgl context object or null
+     * @param element - Canvas element to request context from.
+     * @returns {WebGLRenderingContext} - WebGL context object or null.
      */
     protected static requestWebGL1(element: HTMLCanvasElement) {
         let context = element.getContext('webgl', Context.CONTEXT_ATTRIBUTES);
@@ -155,10 +148,8 @@ export class Context {
 
     /**
      * Helper that tries to create a WebGL 2 context (requests to 'webgl2' and 'experimental-webgl2' are made).
-     *
-     * @param {DOMElement} element - canvas element to request context from
-     *
-     * @returns {WebGL2RenderingContext} webgl2 context object or null
+     * @param element - Canvas element to request context from.
+     * @returns {WebGL2RenderingContext} - WebGL2 context object or null.
      */
     protected static requestWebGL2(element: HTMLCanvasElement) {
         let context = element.getContext('webgl2', Context.CONTEXT_ATTRIBUTES);
@@ -328,10 +319,8 @@ export class Context {
      * ```
      * this.supports('ANGLE_instanced_arrays'); // asserts in WebGL2 since the extension is incorporated by default
      * ```
-     *
      * @param extension - Extension identifier to query support for.
-     *
-     * @returns True if the extension is supported, false otherwise.
+     * @returns - True if the extension is supported, false otherwise.
      */
     protected supports(extension: string): boolean {
         switch (this._backend) {
@@ -363,26 +352,6 @@ export class Context {
      */
     protected queryExtensionSupport(): void {
         this._extensions = this._context.getSupportedExtensions();
-
-        // // Overwrite extensions if emulation mode is enabled
-        // if (Context._emulationEnabled) {
-        //     let emulatedExtensions = [];
-
-        //     if (Context._emulationMode == EmulationMode.Enable) {
-        //         // Replace supported extensions by specified ones
-        //         let unsupportedEmulatedExtensions =
-        //             Context._emulationExtensions.filter(a => this._extensions.indexOf(a) < 0);
-        //         log_if(unsupportedEmulatedExtensions.length > 0, LogLevel.Dev,
-        //             `trying to emulate unsupported extensions: '${unsupportedEmulatedExtensions}'`);
-        //         emulatedExtensions = Context._emulationExtensions;
-        //     }
-        //     else {
-        //         // Remove specified extensions from all supported extensions
-        //         emulatedExtensions = this._extensions.filter(a => Context._emulationExtensions.indexOf(a) < 0);
-        //     }
-
-        //     this._extensions = emulatedExtensions;
-        // }
 
         if (this._backend === BackendType.WebGL1) {
             this.ANGLE_instanced_arrays_supported = this.supports('ANGLE_instanced_arrays');
@@ -424,11 +393,9 @@ export class Context {
      * Returns the cached extensions object for the given extension identifier. If no extensions is cached, it is
      * queried. Asserts if the extension is provided by default in the current backend, not supported in general, or
      * unknown to the specification.
-     *
      * @param out - Member the extension object is cached into.
      * @param extension - Extension identifier to query.
-     *
-     * @returns Extension object.
+     * @returns - Extension object.
      */
     protected extension(out: any, extension: string): any {
         if (out === undefined) {
@@ -464,30 +431,28 @@ export class Context {
 
         this.queryExtensionSupport();
 
-        // // create an instance for a gl2 facade (unifies mandatory interfaces of the webgl and webgl2 api)
-        // this._gl2 = new GL2Facade(this);
+        // create an instance for a gl2 facade (unifies mandatory interfaces of the webgl and webgl2 api)
+        this._gl2 = new GL2Facade(this);
     }
 
 
-    //     /**
-    //      * The context's GPU allocation register.
-    //      */
-    //     protected _gpuAllocationRegister = new GPUAllocationRegister();
+    /**
+     * The context's GPU allocation register.
+     */
+    protected _gpuAllocationRegister = new AllocationRegister();
 
-    //     /**
-    //      * The context's GPU allocation register for use of tracking memory allocations.
-    //      */
-    //     get gpuAllocationRegister(): GPUAllocationRegister {
-    //         return this._gpuAllocationRegister;
-    //     }
+    /**
+     * The context's GPU allocation register for use of tracking memory allocations.
+     */
+    get gpuAllocationRegister(): AllocationRegister {
+        return this._gpuAllocationRegister;
+    }
 
 
     /**
-     * Getter for the created rendering backend (webgl context type).
-     *
-     * @returns {string} backend that was created on construction,
-     * either 'webgl' or 'webgl2' based on which one was created
-     * successfully. If no context could be created null is returned.
+     * Getter for the created rendering backend (webgl context type), either 'webgl' or 'webgl2' based on which one was
+     * created successfully. If no context could be created null is returned.
+     * @returns - Backend that was created on construction.
      */
     get backend() {
         return this._backend;

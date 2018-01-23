@@ -204,8 +204,7 @@ export class GL2Facade {
     /**
      * Evaluate wether or not ANGLE_instanced_arrays is supported (either by extension or in WebGL2 by default) and, if
      * supported, binds the associated functions.
-     *
-     * @param context WebGL context to query extension support in
+     * @param context - WebGL context to query extension support in
      */
     protected queryInstancedArraySupport(context: Context): void {
         if (context.isWebGL2 || context.supportsInstancedArrays) {
@@ -240,10 +239,8 @@ export class GL2Facade {
     /**
      * Evaluate wether or not WEBGL_draw_buffers is supported (either by extension or in WebGL2 by default) and, if
      * supported, binds the associated functions.
-     *
-     * @param context WebGL context to query extension support in
-     *
-     * @returns True if WEBGL_draw_buffers is supported and associated functions are bound.
+     * @param context - WebGL context to query extension support in.
+     * @returns - True if WEBGL_draw_buffers is supported and associated functions are bound.
      */
     protected queryDrawBuffersSupport(context: Context): void {
         if (!context.isWebGL2 && !context.supportsDrawBuffers) {
@@ -270,8 +267,7 @@ export class GL2Facade {
 
     /**
      * Query and store the maximum number of floats, integers, or booleans that can be in storage for a vertex shader.
-     *
-     * @param context  WebGL context to query the value in
+     * @param context - WebGL context to query the value in.
      */
     protected queryMaxUniformVec3Components(context: Context): void {
         const gl = context.gl;
