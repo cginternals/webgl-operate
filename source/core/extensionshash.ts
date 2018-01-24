@@ -1,7 +1,7 @@
 
 import { assert } from './common';
 
-import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+import { WEBGL1_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
 
 export class ExtensionsHash {
 
