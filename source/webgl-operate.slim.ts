@@ -5,8 +5,12 @@ import { ExtensionsHash } from './core/extensionshash';
 
 export {
 
-    // Debug and testing facilities:
+    // core facilities
+
     Context,
     ContextMasquerade,
     ExtensionsHash,
+
+    // no! debug facilities
+    // no! viewer facilities
 };
