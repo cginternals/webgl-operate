@@ -96,6 +96,13 @@
             "extensions_conceal": [
                 "WEBGL_draw_buffers"
             ]
+        },
+        {
+            "identifier": "no-readBuffer",
+            "extensions_hash": "100000",
+            "functions_undefine": [
+                "readBuffer"
+            ]
         }
     ]
 }

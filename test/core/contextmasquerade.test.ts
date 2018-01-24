@@ -42,7 +42,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should respect functions being undefined', () => {
-        const safariMasquerade = ContextMasquerade.fromPreset('safari-10.1');
+        const safariMasquerade = ContextMasquerade.fromPreset('no-readBuffer');
         expect(safariMasquerade.functionsUndefine).to.include('readBuffer');
     });
 
