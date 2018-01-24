@@ -2,7 +2,7 @@
     "critics": {
         "lint": {
             "engine": "tslint",
-            "configLocation": "./tslint.yml"
+            "configLocation": "tslint.json"
         }
     }
 }

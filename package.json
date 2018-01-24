@@ -65,7 +65,7 @@
   "scripts": {
     "build": "webpack",
     "build-all": "webpack --config webpack.config.dist.js",
-    "check": "tslint --project tsconfig.json --force --format stylish --config tslint.yml",
+    "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
