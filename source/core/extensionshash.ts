@@ -1,10 +1,21 @@
 
 import { assert } from './common';
 
+import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+
 export class ExtensionsHash {
 
-    protected static readonly WEBGL_VERSIONS: Array<string> = ['webgl1', 'webgl2'];
+    protected static readonly WEBGL_BACKENDS: Array<string> = ['webgl1', 'webgl2'];
 
+    protected static readonly WEBGL_EXTENSIONS_BY_BACKEND = new Map<number, Array<string>>([
+        [0, WEBGL1_EXTENSIONS],
+        [1, WEBGL2_EXTENSIONS],
+    ]);
+
+    /**
+     * All known WebGL extensions (regardless of WebGL version). When new extensions become known, a new internal
+     * version has to be created, comprising all extensions again (some removed, some added w.r.t. previous versions).
+     */
     protected static readonly EXTENSIONS_BY_VERSION = new Map<number, Array<string>>([[
         0b000, [
             'ANGLE_instanced_arrays',
@@ -12,6 +23,7 @@ export class ExtensionsHash {
             'EXT_color_buffer_float',
             'EXT_color_buffer_half_float',
             'EXT_disjoint_timer_query',
+            'EXT_disjoint_timer_query_webgl2',
             'EXT_frag_depth',
             'EXT_shader_texture_lod',
             'EXT_sRGB',
@@ -20,31 +32,21 @@ export class ExtensionsHash {
             'OES_standard_derivatives',
             'OES_texture_float',
             'OES_texture_float_linear',
-            'OES_texture_float_linear',
             'OES_texture_half_float',
-            'OES_texture_half_float_linear',
             'OES_texture_half_float_linear',
             'OES_vertex_array_object',
             'WEBGL_color_buffer_float',
             'WEBGL_compressed_texture_astc',
-            'WEBGL_compressed_texture_astc',
-            'WEBGL_compressed_texture_atc',
             'WEBGL_compressed_texture_atc',
             'WEBGL_compressed_texture_etc',
-            'WEBGL_compressed_texture_etc',
-            'WEBGL_compressed_texture_etc1',
             'WEBGL_compressed_texture_etc1',
             'WEBGL_compressed_texture_pvrtc',
-            'WEBGL_compressed_texture_pvrtc',
             'WEBGL_compressed_texture_s3tc',
-            'WEBGL_compressed_texture_s3tc',
+            'WEBGL_compressed_texture_s3tc_srgb',
             'WEBGL_debug_renderer_info',
-            'WEBGL_debug_renderer_info',
-            'WEBGL_debug_shaders',
             'WEBGL_debug_shaders',
             'WEBGL_depth_texture',
             'WEBGL_draw_buffers',
-            'WEBGL_lose_context',
             'WEBGL_lose_context',
         ]],
     ]);
@@ -79,17 +81,17 @@ export class ExtensionsHash {
     }
 
     /**
-     * Generates a hash that encodes the contexts webgl version and extension support. This is intended to be queried
+     * Generates a hash that encodes the contexts webgl backend and extension support. This is intended to be queried
      * whenever support for a given context on a foreign client is due. The hash can be used as masquerade input.
-     * @param backend - WebGL version: 'webgl1' or 'webgl2'.
+     * @param backend - WebGL backend: 'webgl1' or 'webgl2'.
      * @param supported - Array of supported extensions to be encoded.
      */
     static encode(backend: string, supported: Array<string>): string {
         const version = ExtensionsHash.LATEST_VERSION; // should always be set to the latest version
         const extensions = ExtensionsHash.EXTENSIONS_BY_VERSION.get(version) as Array<string>;
 
-        const backendIndex = ExtensionsHash.WEBGL_VERSIONS.indexOf(backend);
-        assert(backendIndex > -1, `expected valid backend ${ExtensionsHash.WEBGL_VERSIONS}, given ${backend} `);
+        const backendIndex = ExtensionsHash.WEBGL_BACKENDS.indexOf(backend);
+        assert(backendIndex > -1, `expected valid backend ${ExtensionsHash.WEBGL_BACKENDS}, given ${backend} `);
 
         let hash: string = ExtensionsHash.encode64((version << 3) | (backendIndex + 1));
         if (supported.length === 0) {
@@ -110,9 +112,9 @@ export class ExtensionsHash {
     }
 
     /**
-     * Decodes a hash into a WebGL version and supported extensions.
+     * Decodes a hash into a WebGL backend and supported extensions.
      * @param hash - Versioned extension hash.
-     * @returns - Tuple of webgl version and an array of extensions.
+     * @returns - Tuple of webgl backend and an array of extensions.
      */
     static decode(hash: string): [string, Array<string>] {
 
@@ -120,10 +122,10 @@ export class ExtensionsHash {
         const version = hashHead >> 3;
 
         const backendIndex = (hashHead & 0b000111) - 1;
-        assert(backendIndex < ExtensionsHash.WEBGL_VERSIONS.length
+        assert(backendIndex < ExtensionsHash.WEBGL_BACKENDS.length
             , `expected valid backend index, given ${backendIndex}`);
 
-        const backend = ExtensionsHash.WEBGL_VERSIONS[backendIndex];
+        const backend = ExtensionsHash.WEBGL_BACKENDS[backendIndex];
 
         assert(ExtensionsHash.EXTENSIONS_BY_VERSION.has(version), `expected valid hash version, given ${version}`);
         const extensions = ExtensionsHash.EXTENSIONS_BY_VERSION.get(version) as Array<string>;
@@ -158,6 +160,19 @@ export class ExtensionsHash {
             }
         }
         return [backend, supported];
+    }
+
+    /**
+     * For a given set of extensions, this generates the complementary set of extensions for a given backend.
+     * @param backend - WebGL backend: 'webgl1' or 'webgl2'.
+     * @param extensions - Array of extensions to be complemented to all extensions available to the backend.
+     */
+    static complement(backend: string, extensions: Array<string>): Array<string> {
+        const backendIndex = ExtensionsHash.WEBGL_BACKENDS.indexOf(backend);
+        assert(backendIndex > -1, `expected valid backend ${ExtensionsHash.WEBGL_BACKENDS}, given ${backend} `);
+
+        const webglExtensions = ExtensionsHash.WEBGL_EXTENSIONS_BY_BACKEND.get(backendIndex) as Array<string>;
+        return webglExtensions.filter((ext) => extensions.indexOf(ext) < 0);
     }
 
 }

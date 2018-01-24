@@ -39,7 +39,7 @@ function build() {
 }
 
 
-build() // trigger initial build
+build(); // trigger initial build
 
 if (watch) {
     fs.watch(baseDir, { recursive: true }, function () {

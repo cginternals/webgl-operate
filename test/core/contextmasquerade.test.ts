@@ -17,21 +17,28 @@ describe('ContextMasquerade', () => {
 
 
     it('should be initializable from hash', () => {
-        const masquerade1 = ContextMasquerade.fromHash('1xf-01V0');
+        const masquerade1 = ContextMasquerade.fromHash('1w0000');
         expect(masquerade1.backend).to.equal('webgl1');
         expect(masquerade1.extensionsStrive).to.include('ANGLE_instanced_arrays');
         expect(masquerade1.extensionsStrive).not.to.include('EXT_foo_bar');
 
-        const masquerade2 = ContextMasquerade.fromHash('288M01-o');
+        const masquerade2 = ContextMasquerade.fromHash('288M01');
         expect(masquerade2.backend).to.equal('webgl2');
     });
 
     it('should be initializable from browser preset', () => {
-        const edgeMasquerade = ContextMasquerade.fromPreset('edge-40');
-        expect(edgeMasquerade.backend).to.equal('webgl1');
-        expect(edgeMasquerade.extensionsStrive).to.include('ANGLE_instanced_arrays');
-        expect(edgeMasquerade.extensionsStrive).not.to.include('EXT_foo_bar');
-        expect(edgeMasquerade.extensionsConceal).to.be.empty;
+        const mask = ContextMasquerade.fromPreset('chrome-63');
+        const UNSUPPORTED_EXTS = ['OES_texture_half_float_linear', 'WEBGL_compressed_texture_astc'
+            , 'WEBGL_compressed_texture_atc', 'WEBGL_compressed_texture_etc', 'WEBGL_compressed_texture_etc1'
+            , 'WEBGL_compressed_texture_pvrtc'];
+
+        expect(mask.backend).to.equal('webgl2');
+        expect(mask.extensionsStrive).to.include('EXT_color_buffer_float');
+        expect(mask.extensionsStrive).to.include('WEBGL_compressed_texture_s3tc');
+        expect(mask.extensionsStrive).not.to.contain.members(UNSUPPORTED_EXTS);
+
+        expect(mask.extensionsConceal.length).to.equal(UNSUPPORTED_EXTS.length);
+        expect(mask.extensionsConceal).to.contain.members(UNSUPPORTED_EXTS);
     });
 
     it('should respect functions being undefined', () => {
@@ -62,7 +69,7 @@ describe('ContextMasquerade', () => {
 
     it('should be initializable by GET using hash', () => {
         const getParameterStub = sandbox.stub(common, 'GETparameter');
-        getParameterStub.returns('1xf-01V0');
+        getParameterStub.returns('1w0000');
 
         const masquerade = ContextMasquerade.fromGET();
         expect(masquerade.backend).to.equal('webgl1');
@@ -74,7 +81,7 @@ describe('ContextMasquerade', () => {
         const getParameterStub = sandbox.stub(common, 'GETparameter');
         getParameterStub
             .onFirstCall().returns(undefined)
-            .onSecondCall().returns('edge-40');
+            .onSecondCall().returns('edge-41');
 
         const masquerade = ContextMasquerade.fromGET();
         expect(masquerade.backend).to.equal('webgl1');

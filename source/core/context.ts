@@ -2,6 +2,8 @@
 import { assert, log_if, LogLevel } from './common';
 
 import { AllocationRegister } from './allocationregister';
+import { ContextMasquerade } from './contextmasquerade';
+import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
 import { GL2Facade } from './gl2facade';
 
 
@@ -44,7 +46,6 @@ export class Context {
 
     /**
      * The list of valid backend identifiers that can be matched to backend types.
-     *
      * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
      */
     protected static readonly VALID_BACKENDS =
@@ -69,17 +70,46 @@ export class Context {
     protected _backend: BackendType | undefined;
 
     /**
-     * Created context.
-     *
-     * The actual type depends on the created context.
+     * Created context. The actual type depends on the created context.
      */
     protected _context: any; // WebGLRenderingContext | WebGL2RenderingContext;
+
+    /**
+     * Masquerade object applied to a context instance.
+     */
+    protected _mask: ContextMasquerade | undefined;
 
     /**
      * WebGL2 facade for WebGL2 API like access to features mandatory to this engine.
      */
     protected _gl2: GL2Facade;
 
+
+    /**
+     * Creates a masquerade object that can be used for debugging. This is intended to be called when requesting a
+     * context, i.e., before actually requesting it. For creation of a masquerade object, the following masquerade
+     * specifiers are evaluated in the following order:
+     *  1. msqrd_h GET parameter,
+     *  2. msqrd_p GET parameter,
+     *  3. data-msqrd-h attribute of the canvas element, and, finally,
+     *  4. data-msqrd-p attribute of the canvas element.
+     * If no specifier can be found, no object is created and undefined is returned.
+     * @param dataset - Dataset of the canvas element that might provide a data-msqrd-{h,p} attribute.
+     * @returns - Masquerade object when a specifier was found. If none was found undefined is returned.
+     */
+    protected static createMasqueradeFromGETorDataAttribute(dataset: DOMStringMap): ContextMasquerade | undefined {
+        const mask = ContextMasquerade.fromGET();
+        if (mask) {
+            return mask;
+        }
+        if (dataset.msqrdH) {
+            return ContextMasquerade.fromHash(dataset.msqrdH as string);
+        }
+        if (dataset.msqrdP) {
+            return ContextMasquerade.fromPreset(dataset.msqrdP as string);
+        }
+        return undefined;
+    }
 
     // WEBGL 1 & 2 CONTEXT
 
@@ -89,11 +119,13 @@ export class Context {
      * @param element - Canvas element to request context from.
      * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext, or no context.
      */
-    static request(element: HTMLCanvasElement): Context {
+    static request(element: HTMLCanvasElement): Context | undefined {
         const dataset: DOMStringMap = element.dataset;
+        const mask = Context.createMasqueradeFromGETorDataAttribute(dataset);
 
-        let context;
-        let request = dataset.backend ? (dataset.backend as string).toLowerCase() : '';
+        /** Favor backend specification by masquerade over specification by data attribute. */
+        let request = mask ? (mask.backend as string) :
+            dataset.backend ? (dataset.backend as string).toLowerCase() : '';
 
         if (!Context.VALID_BACKENDS.test(request)) {
             log_if(true, LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
@@ -116,18 +148,18 @@ export class Context {
                 request = 'auto';
         }
 
+        let context;
         if (request !== 'webgl') {
             context = this.requestWebGL2(element);
         }
-
         if (!context) {
             context = this.requestWebGL1(element);
             log_if(context !== undefined && request === 'webgl2', LogLevel.Dev,
-                `backend changed to 'webgl', given '${dataset.backend}'`);
+                `backend changed to 'webgl', given '${request}'`);
         }
 
         assert(!!context, `creating a context failed`);
-        return new Context(context);
+        return context ? new Context(context, mask) : undefined;
     }
 
     /**
@@ -242,78 +274,6 @@ export class Context {
     protected _extensions: Array<string> = new Array<string>();
 
     /**
-     * All extensions specified for WebGL. This array is used to verify extension queries in WebGL contexts. Most of
-     * these extensions should not be queried in WebGL2.
-     */
-    protected static readonly WEBGL1_EXTENSIONS: Array<string> = [
-        'ANGLE_instanced_arrays',
-        'EXT_blend_minmax',
-        'EXT_color_buffer_half_float',
-        'EXT_disjoint_timer_query',
-        'EXT_frag_depth',
-        'EXT_sRGB',
-        'EXT_shader_texture_lod',
-        'EXT_texture_filter_anisotropic',
-        'OES_element_index_uint',
-        'OES_standard_derivatives',
-        'OES_texture_float',
-        'OES_texture_float_linear',
-        'OES_texture_half_float',
-        'OES_texture_half_float_linear',
-        'OES_vertex_array_object',
-        'WEBGL_color_buffer_float',
-        'WEBGL_compressed_texture_astc',
-        'WEBGL_compressed_texture_atc',
-        'WEBGL_compressed_texture_etc',
-        'WEBGL_compressed_texture_etc1',
-        'WEBGL_compressed_texture_pvrtc',
-        'WEBGL_compressed_texture_s3tc',
-        'WEBGL_debug_renderer_info',
-        'WEBGL_debug_shaders',
-        'WEBGL_depth_texture',
-        'WEBGL_draw_buffers',
-        'WEBGL_lose_context',
-    ];
-
-    /**
-     * All extensions specified for WebGL2. This array is used to verify extension queries in WebGL2 contexts.
-     */
-    protected static readonly WEBGL2_EXTENSIONS: Array<string> = [
-        'EXT_color_buffer_float',
-        'EXT_disjoint_timer_query',
-        'EXT_texture_filter_anisotropic',
-        'OES_texture_float_linear',
-        'OES_texture_half_float_linear',
-        'WEBGL_compressed_texture_astc',
-        'WEBGL_compressed_texture_atc',
-        'WEBGL_compressed_texture_etc',
-        'WEBGL_compressed_texture_etc1',
-        'WEBGL_compressed_texture_pvrtc',
-        'WEBGL_compressed_texture_s3tc',
-        'WEBGL_debug_renderer_info',
-        'WEBGL_debug_shaders',
-        'WEBGL_lose_context',
-    ];
-
-    /**
-     * WebGL extensions that are supported by default in WebGL2.
-     */
-    protected static readonly WEBGL2_DEFAULT_EXTENSIONS: Array<string> = [
-        'ANGLE_instanced_arrays',
-        'EXT_blend_minmax',
-        'EXT_frag_depth',
-        'EXT_sRGB',
-        'EXT_shader_texture_lod',
-        'OES_element_index_uint',
-        'OES_standard_derivatives',
-        'OES_texture_float',
-        'OES_texture_half_float',
-        'OES_vertex_array_object',
-        'WEBGL_depth_texture',
-        'WEBGL_draw_buffers',
-    ];
-
-    /**
      * Checks if the given extension is supported. Please note that a 'supports' call asserts whether or not the
      * extension is related to the WebGL version. For example, the following code would lead to an Error:
      * ```
@@ -325,14 +285,14 @@ export class Context {
     protected supports(extension: string): boolean {
         switch (this._backend) {
             case BackendType.WebGL1:
-                assert(Context.WEBGL1_EXTENSIONS.indexOf(extension) > -1
+                assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1
                     , `extension ${extension} not available to WebGL1`);
                 break;
 
             case BackendType.WebGL2:
-                assert(Context.WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
+                assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
                     `extension ${extension} supported by default in WebGL2`);
-                assert(Context.WEBGL2_EXTENSIONS.indexOf(extension) > -1
+                assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1
                     , `extension ${extension} not available to WebGL2`);
                 break;
 
@@ -355,35 +315,42 @@ export class Context {
 
         if (this._backend === BackendType.WebGL1) {
             this.ANGLE_instanced_arrays_supported = this.supports('ANGLE_instanced_arrays');
+
             this.EXT_blend_minmax_supported = this.supports('EXT_blend_minmax');
             this.EXT_color_buffer_half_float_supported = this.supports('EXT_color_buffer_half_float');
+            this.EXT_disjoint_timer_query_supported = this.supports('EXT_disjoint_timer_query');
             this.EXT_frag_depth_supported = this.supports('EXT_frag_depth');
             this.EXT_sRGB_supported = this.supports('EXT_sRGB');
             this.EXT_shader_texture_lod_supported = this.supports('EXT_shader_texture_lod');
+
             this.OES_element_index_uint_supported = this.supports('OES_element_index_uint');
             this.OES_standard_derivatives_supported = this.supports('OES_standard_derivatives');
             this.OES_texture_float_supported = this.supports('OES_texture_float');
             this.OES_texture_half_float_supported = this.supports('OES_texture_half_float');
             this.OES_vertex_array_object_supported = this.supports('OES_vertex_array_object');
+
             this.WEBGL_color_buffer_float_supported = this.supports('WEBGL_color_buffer_float');
-            this.WEBGL_draw_buffers_supported = this.supports('WEBGL_draw_buffers');
             this.WEBGL_depth_texture_supported = this.supports('WEBGL_depth_texture');
+            this.WEBGL_draw_buffers_supported = this.supports('WEBGL_draw_buffers');
         }
 
         if (this._backend === BackendType.WebGL2) {
             this.EXT_color_buffer_float_supported = this.supports('EXT_color_buffer_float');
+            this.EXT_disjoint_timer_query_webgl2_supported = this.supports('EXT_disjoint_timer_query_webgl2');
         }
 
-        this.EXT_disjoint_timer_query_supported = this.supports('EXT_disjoint_timer_query');
         this.EXT_texture_filter_anisotropic_supported = this.supports('EXT_texture_filter_anisotropic');
+
         this.OES_texture_float_linear_supported = this.supports('OES_texture_float_linear');
         this.OES_texture_half_float_linear_supported = this.supports('OES_texture_half_float_linear');
+
         this.WEBGL_compressed_texture_astc_supported = this.supports('WEBGL_compressed_texture_astc');
         this.WEBGL_compressed_texture_atc_supported = this.supports('WEBGL_compressed_texture_atc');
         this.WEBGL_compressed_texture_etc_supported = this.supports('WEBGL_compressed_texture_etc');
         this.WEBGL_compressed_texture_etc1_supported = this.supports('WEBGL_compressed_texture_etc1');
         this.WEBGL_compressed_texture_pvrtc_supported = this.supports('WEBGL_compressed_texture_pvrtc');
         this.WEBGL_compressed_texture_s3tc_supported = this.supports('WEBGL_compressed_texture_s3tc');
+        this.WEBGL_compressed_texture_s3tc_srgb_supported = this.supports('WEBGL_compressed_texture_s3tc_srgb');
         this.WEBGL_debug_renderer_info_supported = this.supports('WEBGL_debug_renderer_info');
         this.WEBGL_debug_shaders_supported = this.supports('WEBGL_debug_shaders');
         this.WEBGL_lose_context_supported = this.supports('WEBGL_lose_context');
@@ -400,10 +367,8 @@ export class Context {
     protected extension(out: any, extension: string): any {
         if (out === undefined) {
             assert(this.supports(extension), `extension ${extension} expected to be supported`);
-
             out = this._context.getExtension(extension);
         }
-
         return out;
     }
 
@@ -412,8 +377,9 @@ export class Context {
      * constructor is protected to enforce context creation using `request`. It queries extension support and
      * configures context specifics for convenience, e.g., HALF_FLOAT format.
      */
-    protected constructor(context: any) {
+    protected constructor(context: any, mask: ContextMasquerade | undefined) {
         this._context = context;
+        this._mask = mask;
 
         const contextString = context.toString();
 
@@ -480,6 +446,13 @@ export class Context {
     }
 
     /**
+     * Access to a context's masquerade object.
+     */
+    get mask() {
+        return this._mask;
+    }
+
+    /**
      * Access to either the WebGLRenderingContext or WebGL2RenderingContext.
      */
     get gl() {
@@ -540,7 +513,7 @@ export class Context {
         return this.extension(this.EXT_color_buffer_half_float, 'EXT_color_buffer_half_float');
     }
 
-    // WebGL1, WebGL2
+    // WebGL1
     protected EXT_disjoint_timer_query: any;
     protected EXT_disjoint_timer_query_supported: boolean;
     get supportsDisjointTimerQuery(): boolean {
@@ -548,6 +521,16 @@ export class Context {
     }
     get disjointTimerQuery(): any {
         return this.extension(this.EXT_disjoint_timer_query, 'EXT_disjoint_timer_query');
+    }
+
+    // WebGL2
+    protected EXT_disjoint_timer_query_webgl2: any;
+    protected EXT_disjoint_timer_query_webgl2_supported: boolean;
+    get supportsDisjointTimerQueryWebGL2(): boolean {
+        return this.EXT_disjoint_timer_query_webgl2_supported;
+    }
+    get disjointTimerQueryWebGL2(): any {
+        return this.extension(this.EXT_disjoint_timer_query_webgl2, 'EXT_disjoint_timer_query_webgl2');
     }
 
     // WebGL1, WebGL2-default
@@ -745,6 +728,16 @@ export class Context {
     }
     get compressedTextureS3TC(): any {
         return this.extension(this.WEBGL_compressed_texture_s3tc, 'WEBGL_compressed_texture_s3tc');
+    }
+
+    // WebGL1, WebGL2
+    protected WEBGL_compressed_texture_s3tc_srgb: any;
+    protected WEBGL_compressed_texture_s3tc_srgb_supported: boolean;
+    get supportsCompressedTextureS3TCSRGB(): boolean {
+        return this.WEBGL_compressed_texture_s3tc_srgb_supported;
+    }
+    get compressedTextureS3TCSRGB(): any {
+        return this.extension(this.WEBGL_compressed_texture_s3tc_srgb, 'WEBGL_compressed_texture_s3tc_srgb');
     }
 
     // WebGL1, WebGL2
