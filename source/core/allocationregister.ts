@@ -63,6 +63,14 @@ export class AllocationRegister {
     }
 
     /**
+     * Asserts existence of an identifier.
+     * @param identifier - Identifier to assert the existence of.
+     */
+    protected assertIdentifier(identifier: string): void {
+        assert(this.bytesByIdentifier.has(identifier), `allocation identifier unknown`);
+    }
+
+    /**
      * Creates a unique identifier based on a given identifier: if the identifier is already unique it is returned as
      * is. If not, an enumerated identifier is returned, e.g., 'TempFBO-2' when 'TempFBO' already exists. This also
      * enables tracking for the identifier, thus, it should always be called before tracking/monitoring.
@@ -80,14 +88,6 @@ export class AllocationRegister {
 
         this.bytesByIdentifier.set(uniqueIdentifier, 0);
         return uniqueIdentifier;
-    }
-
-    /**
-     * Asserts existence of an identifier.
-     * @param identifier - Identifier to assert the existence of.
-     */
-    protected assertIdentifier(identifier: string): void {
-        assert(this.bytesByIdentifier.has(identifier), `allocation identifier unknown`);
     }
 
     /**
