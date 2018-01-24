@@ -17,6 +17,13 @@ html(lang = 'en')
     section.container
       div.row
         div.col
+          - var id = 'test-canvas'
+          include partial/canvas.pug
+
+
+    section.container
+      div.row
+        div.col
           p webgl-operate enables hardware-accelerated 2D and 3D rendering on html canvases. It is use-case agnostic, i.e., it does not assume a specific type of rendering but facilitates arbitrary rendering approaches instead (e.g., procedural rendering, multi-frame sampling, raytracing, progressive pathtracing).
 
           mixin code(id, source, description)
@@ -91,15 +98,6 @@ html(lang = 'en')
               | #[span.text-dark  &#x025FC;] &#x02002;implemented &#x02003;
               | #[span.text-info  &#x025FC;] &#x02002;in progress &#x02003;
               | #[span.text-muted &#x025FC;] &#x02002;pending &#x02003;
-
-
-    section.container
-      div.row
-        div.col
-          h4 Test Canvas
-
-          - var id = 'test-canvas'
-          include partial/canvas.pug
 
 
     include partial/example.pug
