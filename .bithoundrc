@@ -1,9 +1,1 @@
-{
-    "critics": {
-        "lint": {
-            "engine": "tslint",
-            "config": "tslint.yml",
-            "configFile": "tslint.yml"
-            }
-    }
-}
+{ "critics": { "lint": { "engine": "tslint" } } }
