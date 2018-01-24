@@ -2,7 +2,7 @@ mixin example(source, author, title, caption)
   div(id = source).card.my-2
     img(src = 'https://picsum.photos/300/200/?blur&random&' + source).card-img-top
     div.card-body
-      h5.card-title.text-info ToDo | #{title.toUpperCase()}
+      h5.card-title.text-info #{title.toUpperCase()}
       p.card-text #{caption}
     div.card-footer.text-right
       small.text-muted by #{author}
