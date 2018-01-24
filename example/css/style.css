@@ -106,3 +106,8 @@ ul.features li:last-child:after {
     margin-top: -0.25px;
     margin-right: -0.25px;
 }
+
+.github-corner svg {
+    border-top: 1px solid #dddfe2;
+    border-right: 1px solid #dddfe2;
+}
