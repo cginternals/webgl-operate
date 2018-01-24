@@ -24,14 +24,16 @@ section {
     margin-bottom: 2rem;
 }
 
+
+
 nav.navbar img {
     height: 1.5rem;
+    width: auto;
 }
 nav ul.navbar-nav {
     flex-direction: row;
 }
-nav ul.navbar-nav li.nav-item a.nav-link {
-    padding-right: 0.5rem;
+nav ul#nav.navbar-nav li.nav-item a.nav-link {
     padding-left: 0.5rem;
 }
 

@@ -1,10 +1,14 @@
 nav.navbar.navbar-expand-md.navbar-dark.bg-dark
   div.container
-    a(href = 'https://cginternals.gmbh').navbar-brand
-      img(src = 'img/cginternals.svg' alt = 'cginternals logo').img-fluid.align-top.mt-1.d-none.d-md-block
-      img(src = 'img/navicon.svg' alt = 'cginternals icon').img-fluid.align-top.mt-1.d-block.d-md-none
+    ul#brand-logo.nav.navbar-nav
+      li.nav-item
+        a(href = 'https://cginternals.gmbh').nav-link.px-0
+          span.d-none.d-md-block
+            img(src = 'img/cginternals.svg' alt = 'cginternals logo').img-fluid.mt-0
+          span.d-block.d-md-none
+            img(src = 'img/navicon.svg' alt = 'cginternals icon').img-fluid.mt-0
 
-    ul.navbar-nav.ml-auto
+    ul#nav.navbar-nav.ml-auto
       - var doc = 'Documentation'
       - var git = 'GitHub'
       li.nav-item #[a(href = 'doc/index.html').nav-link #{doc.toUpperCase()}]
