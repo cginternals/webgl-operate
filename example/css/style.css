@@ -80,3 +80,27 @@ ul.features li:last-child:after {
     background-color: transparent;
     border-radius: .25rem;
 }
+
+
+/* Copyright (c) 2016 Tim Holman - http://tholman.com - https://github.com/tholman/github-corners */
+
+.github-corner:hover .octo-arm{
+    animation:octocat-wave 560ms ease-in-out
+}
+@keyframes octocat-wave{
+    0%,100%{ transform:rotate(  0deg) }
+    20%,60%{ transform:rotate(-25deg) }
+    40%,80%{ transform:rotate( 10deg) }
+}
+@media (max-width:500px){
+    .github-corner:hover .octo-arm{ animation:none }
+    .github-corner .octo-arm{ animation:octocat-wave 560ms ease-in-out }
+}
+
+.github-corner {
+    color: #343a40;
+    fill: #e7e8ea;
+    position: absolute;
+    border: 0;
+    right: 15px;
+}
