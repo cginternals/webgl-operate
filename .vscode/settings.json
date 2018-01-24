@@ -15,5 +15,6 @@
         "**/.git": true, // this is a default value
         "**/node_modules": true, // this excludes all folders 
         "node_modules": true
-    }
+    },
+    "tslint.configFile": ".tslintrc.yml"
 }
