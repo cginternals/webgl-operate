@@ -1,0 +1,90 @@
+{
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "callable-types": false,
+        "no-bitwise": false,
+        "indent": [
+            true,
+            "spaces",
+            4
+        ],
+        "member-ordering": [
+            true,
+            {
+                "order": [
+                    "static-before-instance",
+                    "variables-before-functions"
+                ]
+            }
+        ],
+        "no-console": [
+            true,
+            "debug",
+            "info",
+            "time",
+            "timeEnd",
+            "trace"
+        ],
+        "no-empty": false,
+        "no-inferrable-types": [
+            true,
+            "ignore-params"
+        ],
+        "no-string-literal": false,
+        "no-switch-case-fall-through": true,
+        "object-literal-sort-keys": false,
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "whitespace": [
+            true,
+            "check-branch",
+            "check-decl",
+            "check-operator",
+            "check-separator",
+            "check-type",
+            "check-module",
+            "check-preblock"
+        ],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore"
+        ],
+        "forin": false,
+        "member-access": false,
+        "no-shadowed-variable": false,
+        "no-sparse-arrays": true,
+        "array-type": false,
+        "restrict-plus-operands": false,
+        "align": [
+            true,
+            "statements",
+            "members"
+        ],
+        "no-consecutive-blank-lines": [
+            true,
+            2
+        ],
+        "no-irregular-whitespace": true,
+        "object-literal-key-quotes": [
+            true,
+            "as-needed"
+        ],
+        "one-variable-per-declaration": [
+            true
+        ],
+        "space-before-function-paren": [
+            true,
+            "never"
+        ],
+        "interface-name": false,
+        "no-namespace": false,
+        "no-null-keyword": true,
+        "triple-equals": true
+    }
+}

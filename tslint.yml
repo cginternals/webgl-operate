@@ -1,6 +1,9 @@
 ---
+# PLEASE NOTE: when changing this file, .tslintrc should be adjusted as well (bithound ci)
+
 extends: "tslint:recommended"
 rules:
+
 #   https://palantir.github.io/tslint/rules/ 
 #
 #   RECOMMENDED (default in recommended) 
