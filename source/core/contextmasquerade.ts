@@ -45,7 +45,7 @@ export class ContextMasquerade {
     /**
      * @see {@link backend}
      */
-    protected _backend: string | undefined = undefined;
+    protected _backend: string;
 
     /**
      * @see {@link extensionsStrive}
@@ -63,8 +63,8 @@ export class ContextMasquerade {
     protected _functionsUndefine = new Array<string>();
 
     /**
-     * Generates a mask based on an extensions hash (encoding backend and extensions_strive).
-     *
+     * Generates a mask based on an extensions hash (encoding backend and extensions_strive). If extensions are strived
+     * for, all extensions that are not explicitly mentioned will be added to the list of concealed extensions.
      * @param hash - Hash that is to be decoded for backend and extensions data.
      */
     static fromHash(hash: string): ContextMasquerade {
@@ -73,6 +73,7 @@ export class ContextMasquerade {
 
         mask._backend = tuple[0];
         mask._extensionsStrive = tuple[1];
+        mask._extensionsConceal = ExtensionsHash.complement(mask._backend, mask._extensionsStrive);
 
         return mask;
     }
@@ -80,7 +81,6 @@ export class ContextMasquerade {
     /**
      * Creates a context mask based on a preset. Note that the presence of an extensions_hash overrides the backend,
      * extensions_strive, as well as extensions_conceal. Only the functions_undefine will be preserved in that case.
-     *
      * @param identifier - Name of a preset as specified in masquerade.json.
      */
     static fromPreset(identifier: string): ContextMasquerade {
@@ -117,6 +117,8 @@ export class ContextMasquerade {
 
         if (mask._extensionsStrive === undefined) {
             mask._extensionsStrive = [];
+        } else {
+            mask._extensionsConceal = ExtensionsHash.complement(mask._backend, mask._extensionsStrive);
         }
 
         if (mask._extensionsConceal === undefined) {

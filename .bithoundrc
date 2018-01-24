@@ -1,0 +1,11 @@
+{
+    "critics": {
+        "lint": {
+            "engine": "tslint",
+            "configLocation": "tslint.json"
+        },
+        "wc": { 
+            "limit": 2048
+        }
+    }
+}

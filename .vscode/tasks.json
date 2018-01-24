@@ -17,19 +17,19 @@
             ]
         },
         {
-            "taskName": "deploy",
+            "taskName": "build (watch)",
             "isBuildCommand": true,
             "args": [
                 "run-script",
-                "deploy"
+                "build-watch"
             ]
         },
         {
-            "taskName": "deploy (build and examples)",
+            "taskName": "build all",
             "isBuildCommand": true,
             "args": [
                 "run-script",
-                "deploy-lite"
+                "build-all"
             ]
         },
         {
@@ -62,6 +62,38 @@
             "args": [
                 "run-script",
                 "example"
+            ]
+        },
+        {
+            "taskName": "examples (watch)",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "example-watch"
+            ]
+        },
+        {
+            "taskName": "deploy",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "deploy"
+            ]
+        },
+        {
+            "taskName": "deploy lite",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "deploy-lite"
+            ]
+        },
+        {
+            "taskName": "deploy lite (watch)",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "deploy-watch"
             ]
         }
     ]

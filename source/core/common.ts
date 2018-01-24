@@ -25,7 +25,6 @@ export enum LogLevel { User, Dev, ModuleDev }
  * ```
  * assert(foo <= threshold, `value of foo ${foo} exceeds threshold of ${threshold}`);
  * ```
- *
  * @param expression - Result of an expression expected to be true.
  * @param message - Message to be passed to the error (if thrown).
  */
@@ -43,7 +42,6 @@ export function assert(expression: boolean, message: string): void {
  * ```
  * assert_range(foo >= 0, `value of foo expected to be positive`);
  * ```
- *
  * @param expression - Result of an expression expected to be true.
  * @param message - Message to be passed to the error (if thrown).
  */
@@ -62,9 +60,8 @@ export function assert_range(expression: boolean, message: string): void {
  * log_if(!vec2.equals(this._scale, scale),
  *     `scale changed to ${scale}, given ${this._scale}`);
  * ```
- *
  * @param expression - Result of an expression expected to be true.
- * @param verbosity - Verbosity of log level: is it interesting for the user, developer, or module developer
+ * @param verbosity - Verbosity of log level: user, developer, or module developer.
  * @param message - Message to be passed to the error (if thrown).
  */
 export function log_if(expression: boolean, verbosity: LogLevel, message: string): void {
@@ -78,11 +75,9 @@ export function log_if(expression: boolean, verbosity: LogLevel, message: string
 
 /**
  * Generates a random value within a given range [min,max].
- *
  * @param min - Minimum random value possible.
  * @param max - Maximum random value possible.
- *
- * @return Random number in the range [min,max].
+ * @return - Random number in the range [min,max].
  */
 export function rand(min: number = 0.0, max: number = 1.0): number {
     return Math.random() * (max - min) + min;
@@ -99,7 +94,6 @@ const prefixes: Array<string> = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', '
  * ```
  * prettyPrintBytes(27738900); // returns '26.454MiB'
  * ```
- *
  * @param bytes - Number of bytes in plain bytes.
  */
 export function prettyPrintBytes(bytes: number): string {
@@ -137,8 +131,7 @@ export function GETsearch(): string {
 
 /**
  * Queries the value of a GET parameter.
- *
- * @param parameter - Name/identifier of the parameter to query for.
+ *  * @param parameter - Name/identifier of the parameter to query for.
  */
 export function GETparameter(parameter: string): string | undefined {
     const params = parse(GETsearch());

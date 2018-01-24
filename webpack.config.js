@@ -20,7 +20,10 @@ module.exports = {
     },
     output: {
         path: __dirname + '/dist',
-        filename: '[name].js'
+        filename: '[name].js',
+        library: 'gloperate',
+        libraryTarget: 'umd'
+
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],

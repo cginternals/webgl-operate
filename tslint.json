@@ -1,44 +1,6 @@
 {
-    "extends": [
-        "tslint:recommended"
-    ],
-    "rules": { /* https://palantir.github.io/tslint/rules/ */
-        /*
-         * RECOMMENDED (default in recommended) 
-
-           "class-name": true,
-           "comment-format": [true, "check-space"],
-           "curly": true,
-           "eofline": true,
-           "import-spacing": true,
-           "interface-over-type-literal": true,
-           "label-position": true,
-           "max-line-length": [true, 120],
-           "no-arg": true,
-           "no-construct": true,
-           "no-debugger": true,
-           "no-duplicate-variable": true,
-           "no-empty-interface": true,
-           "no-eval": true,
-           "no-reference": true,
-           "no-string-throw": true,
-           "no-trailing-whitespace": true,
-           "no-unused-expression": true,
-           "no-unused-variable": true, -- implicit when 'no-unused-locals' and 'no-unused-parameters' compiler options
-           "no-use-before-declare": false,
-           "no-var-keyword": true,
-           "one-line": [ true , "check-catch", "check-else", "check-finally", "check-open-brace", "check-whitespace" ],
-           "prefer-const": true,
-           "radix": true,
-           "semicolon": ["always"],
-           "typeof-compare": true,
-           "unified-signatures": true,
-        */
-        /*
-         *
-         * CUSTOMIZED 
-         */
-        /* "callable-types": true, -- what is the rationale here, interfaces should be preferred */
+    "extends": "tslint:recommended",
+    "rules": {
         "callable-types": false,
         "no-bitwise": false,
         "indent": [
@@ -48,8 +10,25 @@
         ],
         "member-ordering": [
             true,
-            "static-before-instance",
-            "variables-before-functions"
+            {
+                "order": [
+                    "private-static-field",
+                    "protected-static-field",
+                    "public-static-field",
+                    "private-instance-field",
+                    "protected-instance-field",
+                    "public-instance-field",
+                    "private-static-method",
+                    "protected-static-method",
+                    "public-static-method",
+                    "public-constructor",
+                    "protected-constructor",
+                    "private-constructor",
+                    "private-instance-method",
+                    "protected-instance-method",
+                    "public-instance-method"
+                ]
+            }
         ],
         "no-console": [
             true,
@@ -95,7 +74,6 @@
         "restrict-plus-operands": false,
         "align": [
             true,
-            /* "parameters", -- prohibits using line break in parameter lists for compact lambdas -> bloats code */
             "statements",
             "members"
         ],
@@ -117,9 +95,6 @@
         ],
         "interface-name": false,
         "no-namespace": false,
-        /* https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines#null-and-undefined
-           https://medium.com/@basarat/null-vs-undefined-in-typescript-land-dc0c7a5f240a 
-           note: might cause issue with native WebGL calls in edge and ie (still requires null) */
         "no-null-keyword": true,
         "triple-equals": true
     }

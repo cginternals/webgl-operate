@@ -3,8 +3,8 @@ import * as chai from 'chai';
 
 const expect = chai.expect;
 
-
-import { ExtensionsHash } from '../source/core/extensionshash';
+import { WEBGL2_EXTENSIONS } from '../../source/core/extensions';
+import { ExtensionsHash } from '../../source/core/extensionshash';
 
 
 class ExtensionsHashMock extends ExtensionsHash {
@@ -22,7 +22,7 @@ class ExtensionsHashMock extends ExtensionsHash {
 describe('ExtensionsHash', () => {
 
     const FIRST_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_float'
-        , 'EXT_color_buffer_half_float', 'EXT_disjoint_timer_query', 'EXT_frag_depth'];
+        , 'EXT_color_buffer_half_float', 'EXT_disjoint_timer_query', 'EXT_disjoint_timer_query_webgl2'];
     const SOME_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_half_float'
         , 'EXT_disjoint_timer_query', 'EXT_frag_depth', 'EXT_sRGB'];
 
@@ -72,15 +72,15 @@ describe('ExtensionsHash', () => {
     });
 
     it('should encode single extensions', () => {
-        expect(ExtensionsHash.encode('webgl1', SOME_6_000_EXTENSIONS).substring(1)).to.equal('Tg00000');
-        expect(ExtensionsHash.encode('webgl1', [SOME_6_000_EXTENSIONS[5]]).substring(1)).to.equal('0g00000');
-        expect(ExtensionsHash.encode('webgl1', FIRST_6_000_EXTENSIONS).substring(1)).to.equal('+000000');
+        expect(ExtensionsHash.encode('webgl1', SOME_6_000_EXTENSIONS).substring(1)).to.equal('SE000');
+        expect(ExtensionsHash.encode('webgl1', [SOME_6_000_EXTENSIONS[5]]).substring(1)).to.equal('08000');
+        expect(ExtensionsHash.encode('webgl1', FIRST_6_000_EXTENSIONS).substring(1)).to.equal('+0000');
     });
 
     it('should throw when decoding hash with invalid length', () => {
-        // length for version 0b000 hash is 1 + 7
+        // length for version 0b000 hash is 1 + 6
+        expect(() => ExtensionsHashMock.decode('10000')).to.throw();
         expect(() => ExtensionsHashMock.decode('1000000')).to.throw();
-        expect(() => ExtensionsHashMock.decode('100000000')).to.throw();
     });
 
     it('should throw when decoding wrong characters in hash', () => {
@@ -88,16 +88,29 @@ describe('ExtensionsHash', () => {
     });
 
     it('should split version and backend when decoding', () => {
-        expect(ExtensionsHash.decode('10000000')[0]).to.equal('webgl1');
-        expect(ExtensionsHash.decode('20000000')[0]).to.equal('webgl2');
+        expect(ExtensionsHash.decode('100000')[0]).to.equal('webgl1');
+        expect(ExtensionsHash.decode('200000')[0]).to.equal('webgl2');
         /* cannot test another versions yet :P ... */
         // expect(ExtensionsHash.decode('90000000')[0]).to.equal(1);
     });
 
     it('should decode extensions', () => {
-        expect(ExtensionsHash.decode('1Tg00000')[1]).to.deep.equal(SOME_6_000_EXTENSIONS);
-        expect(ExtensionsHash.decode('1+000000')[1]).to.deep.equal(FIRST_6_000_EXTENSIONS);
+        expect(ExtensionsHash.decode('1SE000')[1]).to.deep.equal(SOME_6_000_EXTENSIONS);
+        expect(ExtensionsHash.decode('1+0000')[1]).to.deep.equal(FIRST_6_000_EXTENSIONS);
     });
+
+    it('should complement a set of extensions', () => {
+        const SOME_WEBGL2_EXTS = ['EXT_color_buffer_float', 'EXT_disjoint_timer_query_webgl2'
+            , 'EXT_texture_filter_anisotropic', 'OES_texture_float_linear', 'OES_texture_half_float_linear'];
+        const complement = ExtensionsHash.complement('webgl2', SOME_WEBGL2_EXTS);
+        expect(complement.length + SOME_WEBGL2_EXTS.length).to.equal(WEBGL2_EXTENSIONS.length);
+
+        expect(complement).to.not.deep.include(SOME_WEBGL2_EXTS);
+
+        expect(WEBGL2_EXTENSIONS).to.contains.members(complement);
+        expect(WEBGL2_EXTENSIONS).to.contains.members(SOME_WEBGL2_EXTS);
+    });
+
 
 });
 

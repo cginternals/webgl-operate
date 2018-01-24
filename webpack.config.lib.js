@@ -10,4 +10,5 @@ module.exports.module.rules[0].use = {
     options: { compilerOptions: { declaration: true } }
 };
 
+module.exports.output.library = undefined;
 module.exports.output.libraryTarget = 'commonjs2';

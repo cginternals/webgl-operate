@@ -75,12 +75,15 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 | command          | description |
 |------------------|-------------|
 | `build`          | build and pack library with core, debug, and viewer facilities [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
+| `build-watch`    | `build` command in watch (for modifications) mode |
 | `build-all`      | build both minified and slim (no viewer and debug) libraries to `dist` |
 | `example`        | build example html pages to `dist` |
+| `example-watch`  | `example` command in watch (for modifications) mode |
 | `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
 | `deploy-lite`    | lite distribution deployment triggering only build and examples |
+| `deploy-watch`   | `deploy-lite` command in watch (for modifications) mode |
 | **`deploy`**     | full distribution deployment triggering `check`, `test`, `build-all`, `doc`, and `example` |
 | **`prepublish`** | transpile sources and declarations to `lib` and run `build-all` |
 
@@ -97,7 +100,7 @@ Please not that the workspace configuration `.vscode/settings.json` has automati
 
 #### tasks
 
-All the above scripts, namely `build, build-all, check, deploy, deploy-lite, doc, examples` as well as `test` can be triggered from within Visual Studio Code.
+All the above scripts, namely `build, build-watch, build-all, check, deploy-lite, deploy-watch, deploy, doc, example, example-watch` as well as `test` can be triggered from within Visual Studio Code.
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 

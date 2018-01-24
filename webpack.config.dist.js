@@ -7,6 +7,3 @@ module.exports.entry = {
     'webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
     'webgl-operate.slim.min': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts']
 };
-
-module.exports.output.library = 'gloperate';
-module.exports.output.libraryTarget = 'umd';
