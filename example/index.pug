@@ -96,12 +96,37 @@ html(lang = 'en')
     section.container
       div.row
         div.col
+          h4 Test Canvas
+
+          - var id = 'test-canvas'
+          include partial/canvas.pug
+
+
+    include partial/example.pug
+
+    section.container
+      div.row
+        div.col
           h4 Examples
 
           div.card-columns
-            - var examples = ['volume', 'basic quad', 'simson', 'textured box', 'logo', 'treemap', 'path tracing cornell', 'multiframe sponza', 'ray marching meta balls', 'sky triangle', 'terrain', 'text rendering']
+
+            - var examples = []
+            - examples.push({ source: 'dicom',          author: 'Author Name',     title: 'DICOM Volume',      caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'basic-quad',     author: 'Author Name',     title: 'Basic Quad',        caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'textured-cube',  author: 'Author Name',     title: 'Textured Cube',     caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'simson',         author: 'Author Name',     title: 'Simson',            caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'tone-mapping',   author: 'Author Name',     title: 'Tone Mapping',      caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'moon',           author: 'Author Name',     title: 'Moon',              caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'openll',         author: 'Author Name',     title: 'OpenLL Text',       caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'pp-cornell',     author: 'Author Name',     title: 'Cornell Box',       caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'mf-sponza',      author: 'Author Name',     title: 'Basic Quad',        caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'rm-meta-balls',  author: 'Author Name',     title: 'Meta Balls',        caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'sky-triangle',   author: 'Author Name',     title: 'Sky Triangle',      caption: 'Some quick example text to build on the card title and make up the bulk of the card content.' })
+            - examples.push({ source: 'terrain',        author: 'Author Name',     title: 'Terrain',           caption: 'Some"quick example text to build on the card title and make up the bulk of the card content.' })
+
             each example, index in examples
-              include partial/example.pug
+              +example(example.source, example.author, example.title, example.caption)
 
 
     include partial/foot.pug
