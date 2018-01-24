@@ -1,6 +1,6 @@
 
-var canvas = undefined;
-var context = undefined;
+var canvas;
+var context;
 
 $(document).ready(function () {
     new Clipboard('.btn-clipboard');

@@ -279,10 +279,15 @@ export class Context {
      * ```
      * this.supports('ANGLE_instanced_arrays'); // asserts in WebGL2 since the extension is incorporated by default
      * ```
+     * If the context is masked by a ContextMasquerade the support of an extension might be concealed.
      * @param extension - Extension identifier to query support for.
      * @returns - True if the extension is supported, false otherwise.
      */
     protected supports(extension: string): boolean {
+        if (this._mask && this._mask.extensionsConceal.indexOf(extension) > -1) {
+            return false;
+        }
+
         switch (this._backend) {
             case BackendType.WebGL1:
                 assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1
@@ -360,6 +365,7 @@ export class Context {
      * Returns the cached extensions object for the given extension identifier. If no extensions is cached, it is
      * queried. Asserts if the extension is provided by default in the current backend, not supported in general, or
      * unknown to the specification.
+     * Please not that the availability of an extension might be concealed by the context's mask.
      * @param out - Member the extension object is cached into.
      * @param extension - Extension identifier to query.
      * @returns - Extension object.
@@ -396,6 +402,13 @@ export class Context {
             `context is neither webgl nor webgl2, given ${contextString}`);
 
         this.queryExtensionSupport();
+
+        // undefine all masked functions
+        if (this._mask && this._mask.functionsUndefine) {
+            for (const func in this._mask.functionsUndefine) {
+                (this._context as any)[func] = undefined;
+            }
+        }
 
         // create an instance for a gl2 facade (unifies mandatory interfaces of the webgl and webgl2 api)
         this._gl2 = new GL2Facade(this);
@@ -496,10 +509,10 @@ export class Context {
     // WebGL1, WebGL2-default
     protected EXT_blend_minmax: any;
     protected EXT_blend_minmax_supported: boolean;
-    get supportsBlendMinmaxSupported(): boolean {
+    get supportsBlendMinmax(): boolean {
         return this.EXT_blend_minmax_supported;
     }
-    get blendMinmaxSupported(): any {
+    get blendMinmax(): any {
         return this.extension(this.EXT_blend_minmax, 'EXT_blend_minmax');
     }
 
