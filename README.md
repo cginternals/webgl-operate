@@ -3,15 +3,15 @@
 *webgl-operate* (or *[gloperate](https://github.com/cginternals/gloperate) for WebGL*) is a TypeScript based WebGL rendering framework.
 
 
-[![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat-square)](https://travis-ci.org/cginternals/webgl-operate)
-[![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat-square)](https://coveralls.io/github/cginternals/webgl-operate)
-[![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate)
-[![bitHound](https://img.shields.io/bithound/dependencies/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
-[![bitHound](https://img.shields.io/bithound/devDependencies/github/cginternals/webgl-operate.svg?style=flat-square)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
+[![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat&logo=travis)](https://travis-ci.org/cginternals/webgl-operate)
+[![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat)](https://coveralls.io/github/cginternals/webgl-operate)
+[![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate)
+[![bitHound](https://img.shields.io/bithound/dependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
+[![bitHound](https://img.shields.io/bithound/devDependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
 
-[![npm Version](https://img.shields.io/npm/v/webgl-operate.svg?style=flat-square)](https://www.npmjs.com/package/webgl-operate)
-[![Examples](https://img.shields.io/badge/examples-online-blue.svg?style=flat-square)](https://www.webgl-operate.org)
-[![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://www.webgl-operate.org/doc)
+[![npm Version](https://img.shields.io/npm/v/webgl-operate.svg?style=flat)](https://www.npmjs.com/package/webgl-operate)
+[![Examples](https://img.shields.io/badge/examples-online-blue.svg?style=flat)](https://www.webgl-operate.org)
+[![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat)](https://www.webgl-operate.org/doc)
 
 ## How to Install
 
