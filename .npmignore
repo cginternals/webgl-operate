@@ -16,8 +16,9 @@ source/
 test/
 
 dist/test-results/
-dist/img/
 dist/css/
+dist/fonts/
+dist/img/
 dist/js/
 dist/doc/
 dist/**/*.html

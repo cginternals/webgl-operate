@@ -103,7 +103,8 @@
     ],
     "reporter": [
       "text",
-      "cobertura"
+      "cobertura",
+      "lcov"
     ],
     "report-dir": "dist/test-results",
     "sourceMap": true,
