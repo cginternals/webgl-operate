@@ -37,7 +37,8 @@ nav ul.navbar-nav {
     flex-direction: row;
 }
 nav ul#nav.navbar-nav li.nav-item a.nav-link {
-    padding-left: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 0;
 }
 
 ul.features {
