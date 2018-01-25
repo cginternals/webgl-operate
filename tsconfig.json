@@ -17,7 +17,8 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "allowSyntheticDefaultImports": false,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "experimentalDecorators": true
     },
     "include": [
         "source"
