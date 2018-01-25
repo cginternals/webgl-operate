@@ -5,6 +5,7 @@
 
 [![Travis](https://img.shields.io/travis/cginternals/webgl-operate.svg?style=flat&logo=travis)](https://travis-ci.org/cginternals/webgl-operate)
 [![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat)](https://coveralls.io/github/cginternals/webgl-operate)
+[![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate)](https://github.com/Aaronepower/tokei)
 [![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate)
 [![bitHound](https://img.shields.io/bithound/dependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
 [![bitHound](https://img.shields.io/bithound/devDependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
