@@ -17,7 +17,7 @@ export function initialize() {
             , `expected an 'initialize(...args: any[]): boolean' method to be decorated by @initialize`);
 
         const initialize = descriptor.value;
-        /* tslint:disable-next-line:space-before-function-paren */
+        /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
         descriptor.value = function (): boolean {
             assert(this._initialized === false, `re-initialization of initialized object not anticipated`);
 
@@ -47,7 +47,7 @@ export function uninitialize() {
             , `expected an 'uninitialize(): void' method to be decorated by @uninitialize`);
 
         const uninitialize = descriptor.value;
-        /* tslint:disable-next-line:space-before-function-paren */
+        /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
         descriptor.value = function (): void {
             assert(this._initialized === true, `expected object to be initialized in order to uninitialize`);
 
