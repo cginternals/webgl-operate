@@ -68,6 +68,15 @@ describe('Initializable', () => {
         expect(() => initializable.publicAssertInitialized()).not.to.throw();
     });
 
+    it('asserting for initialized should fail after beeing uninitialized', () => {
+        const initializable = new Initializable();
+        initializable.initialize();
+        initializable.uninitialize();
+        expect(() => initializable.publicAssertInitialized()).to.throw();
+        expect(() => initializable.publicAssertUninitialized()).not.to.throw();
+    });
+
+
     it('asserting for uninitialized should fail when initialized', () => {
         const initializable = new Initializable();
         expect(() => initializable.publicAssertUninitialized()).not.to.throw();
@@ -80,6 +89,7 @@ describe('Initializable', () => {
         expect(() => initializable.publicAssertUninitialized()).not.to.throw();
         initializable.initialize(false);
         expect(initializable.initialized).to.be.false;
+        expect(() => initializable.publicAssertInitialized()).to.throw();
         expect(() => initializable.publicAssertUninitialized()).not.to.throw();
     });
 
