@@ -14,7 +14,7 @@ const pug = require('pug');
 const baseDir = './example';
 const distDir = './dist';
 
-const assets = ['css/*.css', 'js/*.js', 'img/*.{svg,png}'];
+const assets = ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'];
 const entries = ['index.pug'];
 
 const copy = require('./copy.js');
@@ -22,7 +22,7 @@ const copy = require('./copy.js');
 var build_pending = false;
 function build() {
 
-    copy(baseDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*']);
+    copy(baseDir, distDir, assets);
 
     entries.forEach((entry) => {
         const src = path.join(baseDir, entry);
