@@ -106,13 +106,6 @@ ul.features li:last-child:after {
     color: #343a40;
     fill: #e7e8ea;
     position: absolute;
-    border: 0;
+    border: none;
     right: 15px;
-    margin-top: -0.33px;
-    margin-right: -0.33px;
-}
-
-.github-corner svg {
-    border-top: 1px solid #dddfe2;
-    border-right: 1px solid #dddfe2;
 }
