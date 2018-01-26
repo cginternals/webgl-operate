@@ -77,7 +77,7 @@ export class AllocationRegister {
      * @param identifier - Requested identifier for allocation registration.
      * @returns - Unique identifier (might differ from given identifier) for which allocation registration is enabled.
      */
-    createAndTrackUniqueIdentifier(identifier: string): string {
+    createUniqueIdentifier(identifier: string): string {
         let uniqueIdentifier: string = identifier;
         let count = 2;
 
@@ -88,6 +88,15 @@ export class AllocationRegister {
 
         this.bytesByIdentifier.set(uniqueIdentifier, 0);
         return uniqueIdentifier;
+    }
+
+    /**
+     * Removes a previously created unique identifier from the allocation registry.
+     * @param identifier - Identifier that is to be deleted from allocation registration.
+     */
+    deleteUniqueIdentifier(identifier: string): void {
+        assert(this.bytesByIdentifier.has(identifier), `identifier expected to be known for allocation registration`);
+        this.bytesByIdentifier.delete(identifier);
     }
 
     /**

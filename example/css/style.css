@@ -89,7 +89,7 @@ ul.features li:last-child:after {
 
 
 /* Copyright (c) 2016 Tim Holman - http://tholman.com - https://github.com/tholman/github-corners */
-
+/* 
 .github-corner:hover .octo-arm{
     animation:octocat-wave 560ms ease-in-out
 }
@@ -109,4 +109,4 @@ ul.features li:last-child:after {
     position: absolute;
     border: none;
     right: 15px;
-}
+} */

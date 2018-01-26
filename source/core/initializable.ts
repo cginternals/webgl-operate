@@ -7,7 +7,13 @@ const assertInitializedFalse = (object: Initializable) =>
 const assertUninitializedFalse = (object: Initializable) =>
     assert(false, `instance of ${object.constructor.name} not expected to be initialized`);
 
-
+/**
+ * Method decorator for initialization of Initializable inheritors. This decorator asserts the initialization status
+ * of the instance that is to be initialized, invokes its initialization with arbitrary number of parameters,
+ * and sets the initialization status to the initialization success (either false or true).
+ * In order to encourage the use of `assertInitialized` and `assertUninitialized` they are dynamically
+ * bound to either a static, always-failing assert or an empty/undefined function.
+ */
 export function initialize() {
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
@@ -38,6 +44,12 @@ export function initialize() {
     };
 }
 
+/**
+ * Method decorator for uninitialization of Initializable inheritors. This decorator asserts the initialization status
+ * of the instance that is to be uninitialized, invokes its uninitialization, and falsifies the initialization status.
+ * In order to encourage the use of `assertInitialized` and `assertUninitialized` they are dynamically
+ * bound to a static, always-failing assert and an empty/undefined function respectively.
+ */
 export function uninitialize() {
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
@@ -93,7 +105,7 @@ export function uninitialize() {
 export abstract class Initializable {
 
     /**
-     * Initialization status of an initializable instance.
+     * @see {@link initialized}
      */
     private _initialized = false;
 
@@ -113,7 +125,6 @@ export abstract class Initializable {
     /**
      * Should implement actual initialization and has to be decorated by @initialize in order to assert initialization
      * status and update the initialization status (based on return value).
-     *
      * @param args - All args are passed to the onInitialize function a subclass must override.
      * @returns - True if initialization was successful.
      */
@@ -126,7 +137,7 @@ export abstract class Initializable {
     abstract uninitialize(): void;
 
     /**
-     * Property getter for readonly access to initialization status.
+     * Property getter for readonly access to the initialization status of an initializable instance.
      */
     get initialized() {
         return this._initialized;
