@@ -60,7 +60,7 @@ export abstract class Bindable<T> extends Initializable {
     /**
      * @override
      * Ensure that an object handle is created at the point of initialization. When overriding this function
-     * super.initialize() has to be invoked immediately/first. Please note that initialization of invalid 
+     * super.initialize() has to be invoked immediately/first. Please note that initialization of invalid
      * object raises an assertion in order to prevent further actions without a valid WebGL object.
      */
     @initialize()
@@ -76,7 +76,7 @@ export abstract class Bindable<T> extends Initializable {
 
     /**
      * @override
-     * Ensure that an object handle is deleted, invalidated, and its allocated GPU resources are set to zero. 
+     * Ensure that an object handle is deleted, invalidated, and its allocated GPU resources are set to zero.
      * When overriding this function super.uninitialize() has to be invoked last/at the end.
      */
     @uninitialize()
