@@ -65,22 +65,23 @@ export class Context {
     };
 
     /**
-     * The current backend type
+     * @see {@link backend}
      */
     protected _backend: BackendType | undefined;
 
     /**
      * Created context. The actual type depends on the created context.
+     * @see {@link gl}
      */
     protected _context: any; // WebGLRenderingContext | WebGL2RenderingContext;
 
     /**
-     * Masquerade object applied to a context instance.
+     * @see {@link mask}
      */
     protected _mask: ContextMasquerade | undefined;
 
     /**
-     * WebGL2 facade for WebGL2 API like access to features mandatory to this engine.
+     * @see {@link gl2facade}
      */
     protected _gl2: GL2Facade;
 
@@ -416,20 +417,20 @@ export class Context {
 
 
     /**
-     * The context's GPU allocation register.
+     * @see {@link allocationRegister}
      */
-    protected _gpuAllocationRegister = new AllocationRegister();
+    protected _allocationRegister = new AllocationRegister();
 
     /**
      * The context's GPU allocation register for use of tracking memory allocations.
      */
-    get gpuAllocationRegister(): AllocationRegister {
-        return this._gpuAllocationRegister;
+    get allocationRegister(): AllocationRegister {
+        return this._allocationRegister;
     }
 
 
     /**
-     * Getter for the created rendering backend (webgl context type), either 'webgl' or 'webgl2' based on which one was
+     * The created rendering backend (webgl context type), either 'webgl' or 'webgl2' based on which one was
      * created successfully. If no context could be created null is returned.
      * @returns - Backend that was created on construction.
      */
@@ -459,7 +460,7 @@ export class Context {
     }
 
     /**
-     * Access to a context's masquerade object.
+     * Masquerade object applied to a context instance.
      */
     get mask() {
         return this._mask;
@@ -473,7 +474,7 @@ export class Context {
     }
 
     /**
-     * WebGL2 facade for mandatory webgl2 interfaces and fallback implementation.
+     * WebGL2 facade for WebGL2 API like access to features mandatory to this engine.
      */
     get gl2facade() {
         return this._gl2;
