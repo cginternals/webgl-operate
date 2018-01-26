@@ -45,6 +45,7 @@ export abstract class Bindable<T> extends Initializable {
 
         switch (type) {
             case undefined: // must be first, in case any other type is not defined
+            /* falls through */
             default:
                 assert(false, `size of type ${type} is unknown`);
                 return 0;
