@@ -6,6 +6,9 @@ import { ExtensionsHash } from './core/extensionshash';
 import { Bindable } from './core/bindable';
 import { Initializable } from './core/initializable';
 
+import { gpuByteSizeOfFormat } from './core/gpubytesizes';
+
+
 export {
 
     // core facilities
@@ -23,5 +26,6 @@ export {
 
     Bindable,
     Initializable,
+    gpuByteSizeOfFormat,
 
 };

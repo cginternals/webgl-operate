@@ -103,6 +103,14 @@
             "functions_undefine": [
                 "readBuffer"
             ]
+        },
+        {
+            "identifier": "webgl1",
+            "extensions_hash": "1+++++"
+        },
+        {
+            "identifier": "webgl2",
+            "extensions_hash": "2+++++"
         }
     ]
 }
