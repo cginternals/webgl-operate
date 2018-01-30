@@ -146,25 +146,25 @@ describe('common RAD2DEG and DEG2RAD', () => {
     });
 
     it('should convert degree to radian for sample set', () => {
-        expect(common.DEG2RAD * 45.0).to.be.closeTo(Math.PI / 4, 8);
-        expect(common.DEG2RAD * 90.0).to.be.closeTo(Math.PI / 2, 8);
-        expect(common.DEG2RAD * 135.0).to.be.closeTo(3 * Math.PI / 4, 8);
-        expect(common.DEG2RAD * 180.0).to.be.closeTo(Math.PI, 8);
-        expect(common.DEG2RAD * 225.0).to.be.closeTo(5 * Math.PI / 4, 8);
-        expect(common.DEG2RAD * 270.0).to.be.closeTo(3 * Math.PI / 2, 8);
-        expect(common.DEG2RAD * 315.0).to.be.closeTo(7 * Math.PI / 4, 8);
-        expect(common.DEG2RAD * 360.0).to.be.closeTo(2 * Math.PI, 8);
+        expect(common.DEG2RAD * 45.0).to.be.closeTo(Math.PI / 4, 1e-8);
+        expect(common.DEG2RAD * 90.0).to.be.closeTo(Math.PI / 2, 1e-8);
+        expect(common.DEG2RAD * 135.0).to.be.closeTo(3 * Math.PI / 4, 1e-8);
+        expect(common.DEG2RAD * 180.0).to.be.closeTo(Math.PI, 1e-8);
+        expect(common.DEG2RAD * 225.0).to.be.closeTo(5 * Math.PI / 4, 1e-8);
+        expect(common.DEG2RAD * 270.0).to.be.closeTo(3 * Math.PI / 2, 1e-8);
+        expect(common.DEG2RAD * 315.0).to.be.closeTo(7 * Math.PI / 4, 1e-8);
+        expect(common.DEG2RAD * 360.0).to.be.closeTo(2 * Math.PI, 1e-8);
     });
 
     it('should convert radian to degree for sample set', () => {
-        expect(common.RAD2DEG * Math.PI / 4).to.be.closeTo(45.0, 8);
-        expect(common.RAD2DEG * Math.PI / 2).to.be.closeTo(90.0, 8);
-        expect(common.RAD2DEG * 3 * Math.PI / 4).to.be.closeTo(135.0, 8);
-        expect(common.RAD2DEG * Math.PI).to.be.closeTo(180.0, 8);
-        expect(common.RAD2DEG * 5 * Math.PI / 4).to.be.closeTo(225.0, 8);
-        expect(common.RAD2DEG * 3 * Math.PI / 2).to.be.closeTo(270.0, 8);
-        expect(common.RAD2DEG * 7 * Math.PI / 4).to.be.closeTo(315.0, 8);
-        expect(common.RAD2DEG * 2 * Math.PI).to.be.closeTo(360.0, 8);
+        expect(common.RAD2DEG * Math.PI / 4).to.be.closeTo(45.0, 1e-8);
+        expect(common.RAD2DEG * Math.PI / 2).to.be.closeTo(90.0, 1e-8);
+        expect(common.RAD2DEG * 3 * Math.PI / 4).to.be.closeTo(135.0, 1e-8);
+        expect(common.RAD2DEG * Math.PI).to.be.closeTo(180.0, 1e-8);
+        expect(common.RAD2DEG * 5 * Math.PI / 4).to.be.closeTo(225.0, 1e-8);
+        expect(common.RAD2DEG * 3 * Math.PI / 2).to.be.closeTo(270.0, 1e-8);
+        expect(common.RAD2DEG * 7 * Math.PI / 4).to.be.closeTo(315.0, 1e-8);
+        expect(common.RAD2DEG * 2 * Math.PI).to.be.closeTo(360.0, 1e-8);
     });
 
 });

@@ -7,6 +7,8 @@ const expect = chai.expect;
 import { Initializable as AbstractInitializable, initialize, uninitialize } from '../../source/core/initializable';
 
 
+/* tslint:disable:no-unused-expression */
+
 class Initializable extends AbstractInitializable {
 
     @initialize()
