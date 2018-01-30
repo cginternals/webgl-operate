@@ -130,15 +130,16 @@ export function abs3(out: vec3, x: vec3): vec3 {
 const one256ths: number = 1.0 / 256.0;
 
 /**
- * Encodes a 24bit floating point int three 8bit components (vec3 of uint8).
+ * Encodes a 24bit floating point in [0,1] into three 8bit components (vec3 of uint8).
  * @param out - The vector to encode into.
  * @param x - 24bit floating point number to encode.
  * @returns - Vector with the float encoded.
  */
 export function encode_float24x1_to_uint8x3(out: vec3, x: number): vec3 {
-    const v: vec3 = vec3.floor(vec3.create(), vec3.fromValues(
-        x * 256.0, fract(x * 256.0) * 256.0, fract(x * 65536.0) * 256.0));
-    return vec3.scale(out, v, one256ths);
+    out[0] = Math.floor(x * 256.0);
+    out[1] = Math.floor(fract(x * 256.0) * 256.0);
+    out[2] = Math.floor(fract(x * 65536.0) * 256.0);
+    return out;
 }
 
 /**

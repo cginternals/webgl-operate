@@ -7,8 +7,8 @@ import { vec2, vec3, vec4 } from 'gl-matrix';
 import {
     abs2, abs3, abs4,
     clamp, clamp2, clamp3, clamp4,
-    decode_uint24_from_rgb8, decode_uint32_from_rgba8,
-    encode_uint24_to_rgb8, encode_uint32_to_rgba8,
+    decode_float24x1_from_uint8x3, decode_uint24_from_rgb8, decode_uint32_from_rgba8,
+    encode_float24x1_to_uint8x3, encode_uint24_to_rgb8, encode_uint32_to_rgba8,
     fract, fromVec3, fromVec4,
     mix,
     parseVec2, parseVec3, parseVec4,
@@ -216,17 +216,17 @@ describe('gl-matrix extensions (un)packing', () => {
         expect(vec3.equals(uint8x3, vec3.fromValues(0xAD, 0xD1, 0x03))).to.be.true;
     });
 
+    it('should unpack a uint24 from a uint8x3', () => {
+        const uint8x3: vec3 = vec3.fromValues(0xAD, 0xD1, 0x03);
+        const uint24: number = decode_uint24_from_rgb8(uint8x3);
+        expect(uint24).to.equal(250285);
+    });
+
     it('should pack a uint32 into a uint8x4', () => {
         const uint32 = 250285; // 3D1AD > AD, D1, 03, 00
         const uint8x4: vec4 = vec4.create();
         encode_uint32_to_rgba8(uint8x4, uint32);
         expect(vec4.equals(uint8x4, vec4.fromValues(0xAD, 0xD1, 0x03, 0x00))).to.be.true;
-    });
-
-    it('should unpack a uint24 from a uint8x3', () => {
-        const uint8x3: vec3 = vec3.fromValues(0xAD, 0xD1, 0x03);
-        const uint24: number = decode_uint24_from_rgb8(uint8x3);
-        expect(uint24).to.equal(250285);
     });
 
     it('should unpack a uint32 from a uint8x4', () => {
@@ -235,5 +235,17 @@ describe('gl-matrix extensions (un)packing', () => {
         expect(uint32).to.equal(250285);
     });
 
+    it('should pack a float24 into a uint8x3', () => {
+        const float24 = 0.12345678;
+        const uint8x3: vec3 = vec3.create();
+        encode_float24x1_to_uint8x3(uint8x3, float24);
+        expect(vec3.equals(uint8x3, vec3.fromValues(0x1F, 0x9A, 0xDD))).to.be.true;
+    });
+
+    it('should unpack a float24 from uint8x3', () => {
+        const uint8x3: vec3 = vec3.fromValues(0x1F, 0x9A, 0xDD);
+        const float24 = decode_float24x1_from_uint8x3(uint8x3);
+        expect(float24).to.be.closeTo(0.12345678, 1e-8);
+    });
 });
 
