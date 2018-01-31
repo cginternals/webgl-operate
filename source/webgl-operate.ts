@@ -3,10 +3,9 @@ import { Context } from './core/context';
 import { ContextMasquerade } from './core/contextmasquerade';
 import { ExtensionsHash } from './core/extensionshash';
 
-import { Bindable } from './core/bindable';
-import { Initializable } from './core/initializable';
+import { Shader } from './core/shader';
 
-import { gpuByteSizeOfFormat } from './core/gpubytesizes';
+import { byteSizeOfFormat } from './core/formatbytesizes';
 
 
 export {
@@ -17,6 +16,8 @@ export {
     ContextMasquerade,
     ExtensionsHash,
 
+    Shader,
+
     // debug facilities
 
 
@@ -24,8 +25,6 @@ export {
 
     // development facilities (should be none when publishing)
 
-    Bindable,
-    Initializable,
-    gpuByteSizeOfFormat,
+    byteSizeOfFormat,
 
 };
