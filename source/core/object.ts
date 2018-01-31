@@ -1,5 +1,5 @@
 
-import { assert } from './common';
+import { assert, log_if, LogLevel } from './common';
 
 import { Context } from './context';
 import { Initializable, initialize, uninitialize } from './initializable';
@@ -68,20 +68,20 @@ export abstract class AbstractObject<T> extends Initializable {
      * @override
      * Ensure that an object handle is created at the point of initialization. When overriding this function
      * super.initialize() has to be invoked immediately/first. Please note that initialization of invalid
-     * object raises an assertion in order to prevent further actions without a valid WebGL object.
+     * object raises an assertion in order to prevent further actions without a valid WebGL object. After
+     * object creation the valid property is expected to be set accordingly.
      */
     @initialize()
     initialize(...args: any[]): boolean {
         this._identifier = this._context.allocationRegister.createUniqueIdentifier(this._identifier);
-        this._object = this.create(args);
+        this.create.apply(this, args);
 
-        const valid = this._object !== undefined;
-        if (!valid) {
+        const complete = this._object !== undefined && this._valid;
+        if (!complete) {
             this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
+            log_if(true, LogLevel.Dev, `initialization of '${this._identifier}' failed`);
         }
-        assert(valid, `initialization of '${this._identifier}' failed`);
-
-        return valid;
+        return complete;
     }
 
     /**
@@ -92,15 +92,12 @@ export abstract class AbstractObject<T> extends Initializable {
      */
     @uninitialize()
     uninitialize() {
-        /* tslint:disable-next-line:no-null-keyword */
-        // assert(this instanceof DefaultFramebuffer || (this._object !== undefined && this._object !== null)
-        //     , `expected object handle to be created`);
-
         this._context.allocationRegister.reallocate(this._identifier, 0);
         this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
 
         this.delete();
-        this._object = undefined;
+        assert(this._object === undefined, `expected object '${this._identifier}' to be undefined after delete`);
+        assert(this._valid === false, `expected object '${this._identifier}' to be invalid after delete`);
     }
 
 
@@ -134,7 +131,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * @returns - True if the object status is complete, false otherwise.
      */
     get valid(): boolean {
-        return this.initialized;
+        return this._valid;
     }
 
     /**
@@ -152,5 +149,5 @@ export abstract class AbstractObject<T> extends Initializable {
         assert(this._referenceCount > 0, `expected object to be referenced in order to decrease its reference count`);
         --this._referenceCount;
     }
-}
 
+}

@@ -1,7 +1,9 @@
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 const expect = chai.expect;
+const stub = sinon.stub;
 
 
 import { AllocationRegister } from '../../source/core/allocationregister';
@@ -33,8 +35,15 @@ class ObjectMock extends AbstractObject<string> {
         return result;
     }
 
-    create(): string { return this._fakeFail ? undefined : 'object'; }
-    delete(): void { }
+    create(): string {
+        this._object = this._fakeFail ? undefined : 'object';
+        this._valid = !this._fakeFail;
+        return this._object;
+    }
+    delete(): void {
+        this._object = undefined;
+        this._valid = false;
+    }
 
     bind(target?: GLenum): void { }
     unbind(target?: GLenum): void { }
@@ -87,8 +96,10 @@ describe('Object', () => {
 
     it('asserting for valid object after creation', () => {
         const context = new ContextMock();
+        const consoleLogStub = stub(console, 'log');
         const object = new ObjectMock(true, context, 'object');
-        expect(() => object.initialize()).to.throw();
+        expect(() => object.initialize()).not.to.throw();
+        consoleLogStub.restore();
     });
 
     it('should pass arguments on initialization', () => {

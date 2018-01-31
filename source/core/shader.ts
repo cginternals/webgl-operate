@@ -15,7 +15,7 @@ import { AbstractObject } from './object';
 export class Shader extends AbstractObject<WebGLShader> {
 
     /**
-     * Either GL_VERTEX_SHADER or GL_FRAGMENT_SHADER.
+     * @see {@link type}
      */
     protected _type: GLenum;
 
@@ -33,33 +33,50 @@ export class Shader extends AbstractObject<WebGLShader> {
     /**
      * @override
      * Creates a shader, sets the shader source, and compiles the shader. If the shader source cannot be compiled, the
-     * identifier and an info log are logged to console and the shader object is deleted.
+     * identifier and an info log are logged to console and the shader object is deleted. Note that a '#version 300 es'
+     * is added in case the shader source is compiled in a WebGL2 context.
      * @param source - Shader source.
      * @returns - Either a new shader or undefined if compilation failed.
      */
     protected create(source: string): WebGLShader | undefined {
         const gl = this._context.gl;
-        const object = gl.createShader(this._type);
-        assert(object && object instanceof WebGLShader, `expected WebGLShader object to be created`);
+        this._object = gl.createShader(this._type);
+        assert(this._object instanceof WebGLShader, `expected WebGLShader object to be created`);
 
-        gl.shaderSource(object, source);
-        gl.compileShader(object);
+        if (this._context.isWebGL2) {
+            source = '#version 300 es\n' + source;
+        }
 
-        if (!gl.getShaderParameter(object, gl.COMPILE_STATUS)) {
-            const infoLog: string = gl.getShaderInfoLog(object);
-            log_if(true, LogLevel.Dev, `compilation of WebGLShader '${this._identifier}' failed: ${infoLog}`);
+        gl.shaderSource(this._object, source);
+        gl.compileShader(this._object);
 
-            gl.deleteShader(object);
+        if (!gl.getShaderParameter(this._object, gl.COMPILE_STATUS)) {
+            const infoLog: string = gl.getShaderInfoLog(this._object);
+            log_if(true, LogLevel.Dev, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
+
+            this.delete();
             return undefined;
         }
-        return object;
+
+        this._valid = gl.isShader(this._object);
+        return this._object;
     }
 
     /**
      * Delete the shader object. This should have the reverse effect of `create`.
      */
     protected delete(): void {
+        assert(this._object !== undefined, `expected WebGLShader object`);
         this._context.gl.deleteShader(this._object);
+        this._object = undefined;
+        this._valid = false;
+    }
+
+    /**
+     * Either VERTEX_SHADER or FRAGMENT_SHADER.
+     */
+    get type() {
+        return this._type;
     }
 
 }
