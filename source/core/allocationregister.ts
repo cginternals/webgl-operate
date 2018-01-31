@@ -39,27 +39,27 @@ export class AllocationRegister {
     /**
      * Map that provides access to the accumulated memory allocations for all registered identifiers.
      */
-    protected bytesByIdentifier = new Map<string, number>();
+    protected _bytesByIdentifier = new Map<string, number>();
 
     /**
      * Cache for the overall number of allocated bytes (over all identifiers). This should always be the sum of the
      * bytes allocated over each identifier, which can be validated using validate().
      */
-    protected bytes: number;
-    protected bytesSubject = new Subject<[number, string]>();
+    protected _bytes: number;
+    protected _bytesSubject = new Subject<[number, string]>();
 
     /**
      * Enables observation of (de)allocations and returns the number of bytes as number as well as pretty printed
      * string. This 'signal' can also be used to gather identifier specific items.
      */
-    allocatedObservable = this.bytesSubject.asObservable();
+    allocatedObservable = this._bytesSubject.asObservable();
 
     /**
      * Constructor that resets the memory and configures the observable object.
      */
     constructor() {
-        this.bytes = 0.0;
-        this.bytesSubject.next([this.bytes, this.bytesToString()]);
+        this._bytes = 0.0;
+        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -67,7 +67,7 @@ export class AllocationRegister {
      * @param identifier - Identifier to assert the existence of.
      */
     protected assertIdentifier(identifier: string): void {
-        assert(this.bytesByIdentifier.has(identifier), `allocation identifier unknown`);
+        assert(this._bytesByIdentifier.has(identifier), `allocation identifier unknown`);
     }
 
     /**
@@ -81,12 +81,12 @@ export class AllocationRegister {
         let uniqueIdentifier: string = identifier;
         let count = 2;
 
-        while (this.bytesByIdentifier.has(uniqueIdentifier)) {
+        while (this._bytesByIdentifier.has(uniqueIdentifier)) {
             uniqueIdentifier = `${identifier}-${count}`;
             ++count;
         }
 
-        this.bytesByIdentifier.set(uniqueIdentifier, 0);
+        this._bytesByIdentifier.set(uniqueIdentifier, 0);
         return uniqueIdentifier;
     }
 
@@ -95,8 +95,8 @@ export class AllocationRegister {
      * @param identifier - Identifier that is to be deleted from allocation registration.
      */
     deleteUniqueIdentifier(identifier: string): void {
-        assert(this.bytesByIdentifier.has(identifier), `identifier expected to be known for allocation registration`);
-        this.bytesByIdentifier.delete(identifier);
+        assert(this._bytesByIdentifier.has(identifier), `identifier expected to be known for allocation registration`);
+        this._bytesByIdentifier.delete(identifier);
     }
 
     /**
@@ -112,11 +112,11 @@ export class AllocationRegister {
             return;
         }
 
-        const bytes = this.bytesByIdentifier.get(identifier) as number + allocate;
-        this.bytesByIdentifier.set(identifier, bytes);
+        const bytes = this._bytesByIdentifier.get(identifier) as number + allocate;
+        this._bytesByIdentifier.set(identifier, bytes);
 
-        this.bytes = this.bytes + allocate; // allocate total
-        this.bytesSubject.next([this.bytes, this.bytesToString()]);
+        this._bytes = this._bytes + allocate; // allocate total
+        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -127,7 +127,7 @@ export class AllocationRegister {
     deallocate(identifier: string, deallocate: number): void {
         this.assertIdentifier(identifier);
 
-        const bytes = this.bytesByIdentifier.get(identifier) as number;
+        const bytes = this._bytesByIdentifier.get(identifier) as number;
         assert(deallocate >= 0, `positive number of bytes expected for deallocation, given ${deallocate}`);
         assert(deallocate <= bytes, `deallocation cannot exceed previous allocations of ${bytes}, given ${deallocate}`);
 
@@ -135,10 +135,10 @@ export class AllocationRegister {
             return;
         }
 
-        this.bytesByIdentifier.set(identifier, bytes - deallocate);
+        this._bytesByIdentifier.set(identifier, bytes - deallocate);
 
-        this.bytes = this.bytes - deallocate; // deallocate total
-        this.bytesSubject.next([this.bytes, this.bytesToString()]);
+        this._bytes = this._bytes - deallocate; // deallocate total
+        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -150,11 +150,11 @@ export class AllocationRegister {
         this.assertIdentifier(identifier);
         assert(reallocate >= 0, `positive number of bytes expected for reallocation, given ${reallocate}`);
 
-        this.bytes = this.bytes - (this.bytesByIdentifier.get(identifier) as number); // deallocate total
-        this.bytesByIdentifier.set(identifier, reallocate);
+        this._bytes = this._bytes - (this._bytesByIdentifier.get(identifier) as number); // deallocate total
+        this._bytesByIdentifier.set(identifier, reallocate);
 
-        this.bytes = this.bytes + reallocate; // allocate total
-        this.bytesSubject.next([this.bytes, this.bytesToString()]);
+        this._bytes = this._bytes + reallocate; // allocate total
+        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -165,10 +165,10 @@ export class AllocationRegister {
      */
     allocated(identifier?: string): number {
         if (identifier === undefined) {
-            return this.bytes;
+            return this._bytes;
         }
         this.assertIdentifier(identifier);
-        return this.bytesByIdentifier.get(identifier) as number;
+        return this._bytesByIdentifier.get(identifier) as number;
     }
 
     /**
@@ -181,7 +181,7 @@ export class AllocationRegister {
      */
     toString(): string {
         const output = new Array<string>();
-        this.bytesByIdentifier.forEach((bytes: number, identifier: string) => {
+        this._bytesByIdentifier.forEach((bytes: number, identifier: string) => {
             output.push(`${identifier}: ${prettyPrintBytes(bytes)}`);
         });
         return output.join(', ');

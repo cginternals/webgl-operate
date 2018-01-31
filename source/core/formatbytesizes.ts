@@ -13,7 +13,7 @@ import { Context } from './context';
  * @param format - Format identifier of the target internal OpenGL data type.
  * @return - The size in bytes of one type instance on the GPU.
  */
-export function gpuByteSizeOfFormat(context: Context, format: GLenum): number {
+export function byteSizeOfFormat(context: Context, format: GLenum): number {
     const gl = context.gl;
     const gl2facade = context.gl2facade;
 

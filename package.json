@@ -95,9 +95,13 @@
       "source/**/*.ts"
     ],
     "exclude": [
+      "source/core/bindable.ts",
       "source/core/context.ts",
       "source/core/gl2facade.ts",
-      "source/core/gpubytesizes.ts"
+      "source/core/formatbytesizes.ts",
+      "source/core/shader.ts",
+      "source/core/program.ts",
+      "source/core/object.ts"
     ],
     "extension": [
       ".ts"
