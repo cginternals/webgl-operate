@@ -35,7 +35,14 @@ module.exports = {
                 test: /\.tsx?$/,
                 include: /source/,
                 exclude: /(example|node_modules)/,
-                use: { loader: 'ts-loader' }
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        compilerOptions: {
+                            noUnusedLocals: false
+                        }
+                    }
+                }
             },
             {
                 test: /(\.glsl|\.vert|\.frag)$/,
