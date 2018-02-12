@@ -24,6 +24,7 @@ export class GL2Facade {
         this.queryColorAttachments(context);
         this.queryInstancedArraySupport(context);
         this.queryDrawBuffersSupport(context);
+        this.queryVertexArrayObjectSupport(context);
         this.queryMaxUniformVec3Components(context);
     }
 
@@ -209,7 +210,7 @@ export class GL2Facade {
      * @param context - WebGL context to query extension support in
      */
     protected queryInstancedArraySupport(context: Context): void {
-        if (context.isWebGL2 || context.supportsInstancedArrays) {
+        if (!context.isWebGL2 && !context.supportsInstancedArrays) {
             return;
         }
 
@@ -248,9 +249,55 @@ export class GL2Facade {
         if (!context.isWebGL2 && !context.supportsDrawBuffers) {
             return;
         }
+
         this.drawBuffers = context.isWebGL2 ?
             (buffers: Array<GLenum>) => context.gl.drawBuffers(buffers) :
             (buffers: Array<GLenum>) => context.drawBuffers.drawBuffersWEBGL(buffers);
+    }
+
+
+    // VERTEX ARRAY
+
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/createVertexArray
+     */
+    createVertexArray: () => any /* WebGLVertexArrayObject */;
+
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/createVertexArray
+     */
+    deleteVertexArray: (arrayObject: any /* WebGLVertexArrayObject */) => void;
+
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/isVertexArray
+     */
+    isVertexArray: (arrayObject: any /* WebGLVertexArrayObject */) => GLboolean;
+
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/bindVertexArray
+     */
+    bindVertexArray: (arrayObject: any /* WebGLVertexArrayObject */) => void;
+
+    protected queryVertexArrayObjectSupport(context: Context): void {
+        if (!context.isWebGL2 && !context.supportsVertexArrayObject) {
+            return;
+        }
+
+        this.createVertexArray = context.isWebGL2 ?
+            () => context.gl.createVertexArray() :
+            () => context.vertexArrayObject.createVertexArrayOES();
+
+        this.deleteVertexArray = context.isWebGL2 ?
+            (arrayObject: any) => context.gl.deleteVertexArray(arrayObject) :
+            (arrayObject: any) => context.vertexArrayObject.deleteVertexArrayOES(arrayObject);
+
+        this.isVertexArray = context.isWebGL2 ?
+            (arrayObject: any) => context.gl.isVertexArray(arrayObject) :
+            (arrayObject: any) => context.vertexArrayObject.isVertexArrayOES(arrayObject);
+
+        this.bindVertexArray = context.isWebGL2 ?
+            (arrayObject: any) => context.gl.bindVertexArray(arrayObject) :
+            (arrayObject: any) => context.vertexArrayObject.bindVertexArrayOES(arrayObject);
     }
 
 
