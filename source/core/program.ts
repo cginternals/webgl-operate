@@ -26,6 +26,12 @@ import { Shader } from './shader';
 export class Program extends AbstractObject<WebGLProgram> implements Bindable {
 
     /**
+     * Default program, e.g., used for unbind.
+     */
+    static readonly DEFAULT_PROGRAM = undefined;
+
+
+    /**
      * Attaches and references all given shaders. Attach is expected to be called once within creation of a Program.
      * Shaders that are not initialized will be skipped/not attached.
      * @param shaders - All shaders to be attached to the program for linking.
@@ -148,7 +154,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      */
     unbind(): void {
         this.assertInitialized();
-        this._context.gl.useProgram(undefined);
+        this._context.gl.useProgram(Program.DEFAULT_PROGRAM);
     }
 
 
