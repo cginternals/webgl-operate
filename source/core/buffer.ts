@@ -2,6 +2,7 @@
 import { assert } from './common';
 
 import { Bindable } from './bindable';
+import { assert_initialized } from './initializable';
 import { AbstractObject } from './object';
 
 
@@ -33,7 +34,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         const gl = this._context.gl;
 
         this._object = gl.createBuffer();
-        this._valid = gl.isBuffer(this._object);
+        /* note that gl.isBuffer requires the buffer to be bound */
+        this._valid = this._object instanceof WebGLBuffer;
 
         if (this._valid) {
             this._target = target;
@@ -60,8 +62,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Binds the buffer object as buffer to predefined target.
      */
+    @assert_initialized()
     bind(): void {
-        this.assertInitialized();
         assert(this._target === this._context.gl.ARRAY_BUFFER || this._target === this._context.gl.ELEMENT_ARRAY_BUFFER
             , `expected either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER as buffer target`);
         this._context.gl.bindBuffer(this._target, this._object);
@@ -70,8 +72,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Binds null as current buffer to predefined target;
      */
+    @assert_initialized()
     unbind(): void {
-        this.assertInitialized();
         this.context.gl.bindBuffer(this._target, Buffer.DEFAULT_BUFFER);
     }
 
@@ -96,8 +98,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param usage - Usage pattern of the data store.
      * @param noBindUnbind - Allows to skip binding the object (when binding is handled outside).
      */
+    @assert_initialized()
     data(data: ArrayBufferView, usage: GLenum, noBindUnbind: boolean = false): void {
-        this.assertInitialized();
         const gl = this.context.gl;
 
         if (!noBindUnbind) {
@@ -123,9 +125,9 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param offset - Offset in bytes of the first component in the vertex attribute array.
      * @param noBindUnbind - Allows to skip binding and unbinding the object (when binding is handled outside).
      */
+    @assert_initialized()
     attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false
         , stride: GLsizei = 0, offset: GLintptr = 0, noBindUnbind: [boolean, boolean] = [false, true]): void {
-        this.assertInitialized();
         const gl = this.context.gl;
 
         if (!noBindUnbind[0]) {
@@ -143,8 +145,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param index - Index of the vertex attribute that is to be disabled.
      * @param noBindUnbind - Allows to skip binding and unbinding the object (when binding is handled outside).
      */
+    @assert_initialized()
     attribDisable(index: GLuint, noBindUnbind: [boolean, boolean] = [false, false]): void {
-        this.assertInitialized();
         const gl = this.context.gl;
 
         if (!noBindUnbind[0]) {
@@ -155,4 +157,5 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
             this.unbind();
         }
     }
+
 }

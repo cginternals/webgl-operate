@@ -2,6 +2,7 @@
 import { assert } from './common';
 import { GL2Facade } from './gl2facade';
 
+import { assert_initialized } from '../core/initializable';
 import { Bindable } from './bindable';
 import { AbstractObject } from './object';
 
@@ -20,12 +21,12 @@ import { AbstractObject } from './object';
  *     draw(): void { ... }
  * }
  *
- * export class ScreenAlignedTriangleVAO extends vao<ScreenAlignedTriangle> { }
+ * export class ScreenFillingTriangleVAO extends VertexArray<ScreenFillingTriangle> { }
  * ```
  *
- * With that the screen-aligned triangle can be drawn as follows:
+ * With that the screen-filling triangle can be drawn as follows:
  * ```
- * this.someSATriangleVAO.draw();
+ * this.someTriangleVAO.draw();
  * ```
  */
 export class VertexArray extends AbstractObject<any> implements Bindable {
@@ -39,7 +40,7 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     /**
      * Flag to track one-time initialization (in case vertex arrays are supported).
      */
-    protected _vbosBound = false;
+    protected _buffersBound = false;
 
     /**
      * The feature specific bind function. This is mapped on initialization either to native VAO bind, extension based
@@ -61,19 +62,20 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
      */
     protected create(bindBOs: () => void, unbindBOs: () => void): any /* WebGLVertexArrayObject */ | undefined {
 
-        if (this.context.supportsVertexArrayObject) {
+        if (this.context.isWebGL2 || this.context.supportsVertexArrayObject) {
             const gl2facade = this.context.gl2facade;
 
             this._object = gl2facade.createVertexArray();
-            this._valid = gl2facade.isVertexArray(this._object);
+            /* note that gl.isVertexArray requires the vertex array to be bound */
+            this._valid = this._object !== undefined;
 
             this._bind = () => {
                 gl2facade.bindVertexArray(this.object);
-                if (this._vbosBound) {
+                if (this._buffersBound) {
                     return;
                 }
                 bindBOs();
-                this._vbosBound = true;
+                this._buffersBound = true;
             };
             this._unbind = () => gl2facade.bindVertexArray(VertexArray.DEFAULT_VERTEX_ARRAY);
 
@@ -91,7 +93,7 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
      * used directly).
      */
     protected delete(): void {
-        if (!this.context.supportsVertexArrayObject) {
+        if (!this.context.isWebGL2 && !this.context.supportsVertexArrayObject) {
             this._valid = false;
             return;
         }
@@ -103,22 +105,22 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
         this._object = undefined;
         this._valid = false;
 
-        this._vbosBound = false;
+        this._buffersBound = false;
     }
 
     /**
      * Invokes the preset bind function.
      */
+    @assert_initialized()
     bind(): void {
-        this.assertInitialized();
         this._bind();
     }
 
     /**
      * Invokes the preset unbind function.
      */
+    @assert_initialized()
     unbind(): void {
-        this.assertInitialized();
         this._unbind();
     }
 
