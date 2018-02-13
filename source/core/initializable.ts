@@ -76,6 +76,43 @@ export function uninitialize() {
 }
 
 /**
+ * Method decorator for asserting the initialization status of an initializable to be true.
+ * @see { @link Initializable.assertInitialized }
+ */
+export function assert_initialized() {
+    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+
+        const initialize = descriptor.value;
+        /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
+        descriptor.value = function () {
+            this.assertInitialized();
+            /* call actual initialization and set initialization status */
+            initialize.apply(this, arguments);
+        };
+        return descriptor;
+    };
+}
+
+/**
+ * Method decorator for asserting the initialization status of an initializable to be false.
+ * @see { @link Initializable.assertUninitialized }
+ */
+export function assert_uninitialized() {
+    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+
+        const initialize = descriptor.value;
+        /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
+        descriptor.value = function () {
+            this.assertUninitialized();
+            /* call actual initialization and set initialization status */
+            initialize.apply(this, arguments);
+        };
+        return descriptor;
+    };
+}
+
+
+/**
  * Mixin that incorporates basic (un)initialization workflow. The inheritor should specialize initialize and
  * uninitialize and decorate them with @initialize and @uninitialize respectively. When the object gets constructed it
  * is not initialized. It can be initialized only when it is not initialized and uninitialized vice versa. Failure
@@ -98,6 +135,11 @@ export function uninitialize() {
  *
  *     doStuffWhenInitialized(): void {
  *         this.assertInitialized();
+ *         ...
+ *     }
+ *     // ... or alternatively:
+ *     @assert_initialized()
+ *     doOtherStuffWhenInitialized(): void {
  *         ...
  *     }
  * ```

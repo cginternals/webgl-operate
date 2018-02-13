@@ -58,9 +58,9 @@ export abstract class AbstractObject<T> extends Initializable {
      */
     protected abstract create(...args: any[]): T | undefined;
 
-    // /**
-    //  * Object deletion which is invoked on uninitialization.
-    //  */
+    /**
+     * Object deletion which is invoked on uninitialization.
+     */
     protected abstract delete(): void;
 
 
@@ -91,7 +91,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * Note that an object cannot be uninitialized if it is referenced (reference count > 0).
      */
     @uninitialize()
-    uninitialize() {
+    uninitialize(): void {
         this._context.allocationRegister.reallocate(this._identifier, 0);
         this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
 

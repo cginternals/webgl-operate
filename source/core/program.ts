@@ -1,5 +1,6 @@
 
 import { assert, log_if, LogLevel } from './common';
+import { assert_initialized } from './initializable';
 
 import { Bindable } from './bindable';
 import { AbstractObject } from './object';
@@ -24,6 +25,12 @@ import { Shader } from './shader';
  * ```
  */
 export class Program extends AbstractObject<WebGLProgram> implements Bindable {
+
+    /**
+     * Default program, e.g., used for unbind.
+     */
+    static readonly DEFAULT_PROGRAM = undefined;
+
 
     /**
      * Attaches and references all given shaders. Attach is expected to be called once within creation of a Program.
@@ -138,17 +145,17 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
     /**
      * Activates this program for use.
      */
+    @assert_initialized()
     bind(): void {
-        this.assertInitialized();
         this._context.gl.useProgram(this._object);
     }
 
     /**
      * Deactivates this/any program for use.
      */
+    @assert_initialized()
     unbind(): void {
-        this.assertInitialized();
-        this._context.gl.useProgram(undefined);
+        this._context.gl.useProgram(Program.DEFAULT_PROGRAM);
     }
 
 
@@ -156,8 +163,8 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      * Requests the location of a uniform of the program.
      * @param uniform - Uniform identifier to request location of.
      */
+    @assert_initialized()
     uniform(uniform: string): WebGLUniformLocation {
-        this.assertInitialized();
         return this._context.gl.getUniformLocation(this._object, uniform);
     }
 
@@ -167,8 +174,8 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      * @param location - Attribute location (if WebGL2 location is used)
      * @returns - Location of the attribute (or location parameter if provided).
      */
+    @assert_initialized()
     attribute(attribute: string, location?: GLuint): GLint {
-        this.assertInitialized();
         if (this._context.isWebGL2 && location !== undefined) {
             this._context.gl.bindAttribLocation(this._object, location, attribute);
             return location as GLuint;
