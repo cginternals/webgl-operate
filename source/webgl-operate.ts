@@ -4,6 +4,7 @@ import { ContextMasquerade } from './core/contextmasquerade';
 import { ExtensionsHash } from './core/extensionshash';
 
 import { Buffer } from './core/buffer';
+import { Geometry } from './core/geometry';
 import { Program } from './core/program';
 import { Shader } from './core/shader';
 import { VertexArray } from './core/vertexarray';
@@ -23,6 +24,7 @@ export {
     ExtensionsHash,
 
     Buffer,
+    Geometry,
     Program,
     Shader,
     VertexArray,
