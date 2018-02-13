@@ -5,6 +5,7 @@ const expect = chai.expect;
 
 
 import { Initializable as AbstractInitializable, initialize, uninitialize } from '../../source/core/initializable';
+import { assert_initialized, assert_uninitialized } from '../../source/core/initializable';
 
 
 /* tslint:disable:no-unused-expression */
@@ -21,6 +22,12 @@ class Initializable extends AbstractInitializable {
 
     publicAssertInitialized = () => this.assertInitialized();
     publicAssertUninitialized = () => this.assertUninitialized();
+
+    @assert_initialized()
+    expectInitialized(): void { }
+
+    @assert_uninitialized()
+    expectUninitialized(): void { }
 }
 
 
@@ -93,6 +100,15 @@ describe('Initializable', () => {
         expect(initializable.initialized).to.be.false;
         expect(() => initializable.publicAssertInitialized()).to.throw();
         expect(() => initializable.publicAssertUninitialized()).not.to.throw();
+    });
+
+    it('should support assert (un)initialized by means of decorators', () => {
+        const initializable = new Initializable();
+        expect(() => initializable.expectUninitialized()).not.to.throw();
+        expect(() => initializable.expectInitialized()).to.throw();
+        initializable.initialize();
+        expect(() => initializable.expectUninitialized()).to.throw();
+        expect(() => initializable.expectInitialized()).not.to.throw();
     });
 
 });
