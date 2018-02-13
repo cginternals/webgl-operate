@@ -98,12 +98,15 @@
       "source/core/bindable.ts",
       "source/core/buffer.ts",
       "source/core/context.ts",
+      "source/core/geometry.ts",
       "source/core/gl2facade.ts",
       "source/core/formatbytesizes.ts",
       "source/core/shader.ts",
       "source/core/program.ts",
       "source/core/object.ts",
-      "source/core/vertexarray.ts"
+      "source/core/vertexarray.ts",
+      "source/assets/ndcfillingrectangle.ts",
+      "source/assets/ndcfillingtriangle.ts"
     ],
     "extension": [
       ".ts"

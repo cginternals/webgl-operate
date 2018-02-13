@@ -1,13 +1,11 @@
 
 import { assert } from '../core/common';
 
-import { Bindable } from '../core/bindable';
-import { assert_initialized, Initializable, initialize, uninitialize } from '../core/initializable';
+import { assert_initialized } from '../core/initializable';
 
 import { Buffer } from '../core/buffer';
 import { Context } from '../core/context';
 import { Geometry } from '../core/geometry';
-import { VertexArray } from '../core/vertexarray';
 
 
 /**

@@ -1,6 +1,5 @@
 
 import { assert } from './common';
-import { GL2Facade } from './gl2facade';
 
 import { assert_initialized } from '../core/initializable';
 import { Bindable } from './bindable';
