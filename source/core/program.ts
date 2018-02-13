@@ -1,10 +1,10 @@
 
 import { assert, log_if, LogLevel } from './common';
+import { assert_initialized } from './initializable';
 
 import { Bindable } from './bindable';
 import { AbstractObject } from './object';
 import { Shader } from './shader';
-import { assert_initialized } from './initializable';
 
 
 /**
