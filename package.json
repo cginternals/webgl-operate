@@ -95,7 +95,6 @@
       "source/**/*.ts"
     ],
     "exclude": [
-      "source/core/bindable.ts",
       "source/core/buffer.ts",
       "source/core/context.ts",
       "source/core/geometry.ts",
