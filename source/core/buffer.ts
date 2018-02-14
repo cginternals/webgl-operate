@@ -18,7 +18,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
 
 
     /**
-     * @see {@link target}
+     * @see {@link size}
      */
     protected _size = 0;
 
@@ -38,6 +38,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         this._valid = this._object instanceof WebGLBuffer;
 
         if (this._valid) {
+            assert(target === gl.ARRAY_BUFFER || target === gl.ELEMENT_ARRAY_BUFFER
+                , `either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER expected as buffer target`);
             this._target = target;
         }
         return this._object;
@@ -48,14 +50,12 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      */
     protected delete(): void {
         const gl = this._context.gl;
-        assert(this._object !== undefined, `expected WebGLBuffer object`);
+        assert(this._object instanceof WebGLBuffer, `expected WebGLBuffer object`);
 
         gl.deleteBuffer(this._object);
         this._object = undefined;
         this._valid = false;
 
-        assert(this._target === gl.ARRAY_BUFFER || this._target === gl.ELEMENT_ARRAY_BUFFER
-            , `either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER expected as buffer target`);
         this._target = Buffer.DEFAULT_BUFFER;
     }
 
@@ -96,17 +96,18 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * Creates the buffer object's data store and updates the objects status.
      * @param data - Data that will be copied into the objects data store.
      * @param usage - Usage pattern of the data store.
-     * @param noBindUnbind - Allows to skip binding the object (when binding is handled outside).
+     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @assert_initialized()
-    data(data: ArrayBufferView, usage: GLenum, noBindUnbind: boolean = false): void {
+    data(data: ArrayBufferView, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
-        if (!noBindUnbind) {
+        if (bind) {
             this.bind();
         }
         gl.bufferData(gl.ARRAY_BUFFER, data, usage);
-        if (!noBindUnbind) {
+        if (unbind) {
             this.unbind();
         }
 
@@ -123,19 +124,19 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param normalized - Whether integer data values should be normalized when being casted to a float.
      * @param stride - Offset in bytes between the beginning of consecutive vertex attributes.
      * @param offset - Offset in bytes of the first component in the vertex attribute array.
-     * @param noBindUnbind - Allows to skip binding and unbinding the object (when binding is handled outside).
+     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @assert_initialized()
     attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false
-        , stride: GLsizei = 0, offset: GLintptr = 0, noBindUnbind: [boolean, boolean] = [false, true]): void {
+        , stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
-
-        if (!noBindUnbind[0]) {
+        if (bind) {
             this.bind();
         }
         gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
         gl.enableVertexAttribArray(index);
-        if (!noBindUnbind[1]) {
+        if (unbind) {
             this.unbind();
         }
     }
@@ -143,17 +144,17 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Disables a buffer binding point.
      * @param index - Index of the vertex attribute that is to be disabled.
-     * @param noBindUnbind - Allows to skip binding and unbinding the object (when binding is handled outside).
+     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @assert_initialized()
-    attribDisable(index: GLuint, noBindUnbind: [boolean, boolean] = [false, false]): void {
+    attribDisable(index: GLuint, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
-
-        if (!noBindUnbind[0]) {
+        if (bind) {
             this.bind();
         }
         gl.disableVertexAttribArray(index);
-        if (!noBindUnbind[1]) {
+        if (unbind) {
             this.unbind();
         }
     }
