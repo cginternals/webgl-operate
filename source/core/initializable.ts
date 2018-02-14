@@ -77,7 +77,7 @@ export function uninitialize() {
 
 /**
  * Method decorator for asserting the initialization status of an initializable to be true.
- * @see { @link Initializable.assertInitialized }
+ * @see {@link Initializable.assertInitialized }
  */
 export function assert_initialized() {
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -95,7 +95,7 @@ export function assert_initialized() {
 
 /**
  * Method decorator for asserting the initialization status of an initializable to be false.
- * @see { @link Initializable.assertUninitialized }
+ * @see {@link Initializable.assertUninitialized }
  */
 export function assert_uninitialized() {
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

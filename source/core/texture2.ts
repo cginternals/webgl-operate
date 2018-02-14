@@ -1,6 +1,4 @@
 
-import { vec2 } from 'gl-matrix';
-
 import { assert } from './common';
 import { byteSizeOfFormat } from './formatbytesizes';
 
@@ -24,34 +22,34 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     static readonly DEFAULT_TEXTURE = undefined;
 
     /**
-     * Caches whether or not image data was passed to the texture object in order to track allocated bytes.
+     * @see {@link bytes}
      */
     protected _bytes: GLsizei = 0;
 
     /**
      * @see {@link width}
      */
-    protected _width: GLsizei;
+    protected _width: GLsizei = 0;
 
     /**
      * @see {@link height}
      */
-    protected _height: GLsizei;
+    protected _height: GLsizei = 0;
 
     /**
      * @see {@link internalFormat}
      */
-    protected _internalFormat: GLenum | undefined;
+    protected _internalFormat: GLenum | undefined = undefined;
 
     /**
      * @see {@link format}
      */
-    protected _format: GLenum | undefined;
+    protected _format: GLenum | undefined = undefined;
 
     /**
      * @see {@link type}
      */
-    protected _type: GLenum | undefined;
+    protected _type: GLenum | undefined = undefined;
 
     /**
      * Create a texture object on the GPU.
@@ -63,15 +61,13 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum, format: GLenum, type: GLenum
         , data?: ArrayBufferView): WebGLTexture | undefined {
+        assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
         const gl = this._context.gl;
 
         this._object = gl.createTexture();
 
-        assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
-
         this._width = width;
         this._height = height;
-
         this._internalFormat = internalFormat;
         this._format = format;
         this._type = type;
@@ -85,7 +81,6 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = this._object instanceof WebGLTexture;
-
         return this._object;
     }
 
@@ -93,8 +88,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Delete the texture object on the GPU. This should have the reverse effect of `create`.
      */
     protected delete(): void {
-        const gl = this._context.gl;
         assert(this._object instanceof WebGLTexture, `expected WebGLTexture object`);
+        const gl = this._context.gl;
 
         gl.deleteTexture(this._object);
         this._object = undefined;
@@ -152,17 +147,18 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
             this.unbind();
         }
 
-        if (data !== undefined) {
-            this._bytes = this.width * this.height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+        if (data === undefined) {
+            this._bytes = 0;
+        } else {
+            this._bytes = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
             // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
             if (this._type === this.context.gl2facade.HALF_FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
                 this._bytes *= 2;
             } else if (this._type === this.context.gl.FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
                 this._bytes *= 4;
             }
-        } else {
-            this._bytes = 0;
         }
+
         this.context.allocationRegister.reallocate(this._identifier, this._bytes);
     }
 
@@ -211,7 +207,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
     /**
      * This can be used to reformat the texture image without creating a new texture object. Please note that this
-     * resets the texture's image data to undefined. @see { @link data } for setting new image data.
+     * resets the texture's image data to undefined. @see {@link data} for setting new image data.
      * @param internalFormat - Internal format of the texture object.
      * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
@@ -242,7 +238,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
     /**
      * This should be used to implement efficient resize the texture.
-     * @param size - Targeted texture resolution in pixel.
+     * @param width - Targeted/new width of the texture in px.
+     * @param height - Targeted/new height of the texture in px.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
@@ -251,11 +248,15 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (width === this._width && height === this._height) {
             return;
         }
+        this._width = width;
+        this._height = height;
+
         this.data(undefined, bind, unbind);
     }
 
     /**
-     * Returns the number of bytes this object approximately allocates on the GPU.
+     * Returns the number of bytes this object approximately allocates on the GPU. The size will be zero when no
+     * image data was passed to the texture object.
      */
     @assert_initialized()
     get bytes(): GLsizei {
