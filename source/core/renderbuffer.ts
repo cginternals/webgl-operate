@@ -119,32 +119,32 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     /**
      * Returns the number of bytes this object approximately allocates on the GPU.
      */
-    @assert_initialized()
-    get bytes(): number {
+    get bytes(): GLsizei {
+        this.assertInitialized();
         return this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
     }
 
     /**
      * Readonly access to the internal format of the renderbuffer object. This can only be changed by re-initialization.
      */
-    @assert_initialized()
     get internalFormat(): GLenum {
+        this.assertInitialized();
         return this._internalFormat as GLenum;
     }
 
     /**
      * Convenience accessor: returns the width of the texture object.
      */
-    @assert_initialized()
     get width(): GLsizei {
+        this.assertInitialized();
         return this._width;
     }
 
     /**
      * Convenience accessor: returns the height of the texture object.
      */
-    @assert_initialized()
     get height(): GLsizei {
+        this.assertInitialized();
         return this._height;
     }
 

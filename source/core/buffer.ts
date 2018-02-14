@@ -18,9 +18,9 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
 
 
     /**
-     * @see {@link size}
+     * @see {@link bytes}
      */
-    protected _size = 0;
+    protected _bytes = 0;
 
     /**
      * @see {@link target}
@@ -49,8 +49,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * Delete the buffer object on the GPU. This should have the reverse effect of `create`.
      */
     protected delete(): void {
-        const gl = this._context.gl;
         assert(this._object instanceof WebGLBuffer, `expected WebGLBuffer object`);
+        const gl = this._context.gl;
 
         gl.deleteBuffer(this._object);
         this._object = undefined;
@@ -78,21 +78,6 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     }
 
     /**
-     * Size of the buffer data.
-     */
-    get size(): number {
-        return this._size;
-    }
-
-    /**
-     * Target to which the buffer object is bound (either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER).
-     * Readonly access to the target (as specified on initialization) the buffer will be bound to.
-     */
-    get target(): GLenum | undefined {
-        return this._target;
-    }
-
-    /**
      * Creates the buffer object's data store and updates the objects status.
      * @param data - Data that will be copied into the objects data store.
      * @param usage - Usage pattern of the data store.
@@ -112,8 +97,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         }
 
         this._valid = gl.isBuffer(this._object) && gl.getError() === gl.NO_ERROR;
-        this._size = this._valid ? data.byteLength : 0;
-        this.context.allocationRegister.reallocate(this._identifier, this._size);
+        this._bytes = this._valid ? data.byteLength : 0;
+        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
     }
 
     /**
@@ -157,6 +142,23 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         if (unbind) {
             this.unbind();
         }
+    }
+
+    /**
+     * Returns the number of bytes this object approximately allocates on the GPU.
+     */
+    get bytes(): GLsizei {
+        this.assertInitialized();
+        return this._bytes;
+    }
+
+    /**
+     * Target to which the buffer object is bound (either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER).
+     * Readonly access to the target (as specified on initialization) the buffer will be bound to.
+     */
+    get target(): GLenum {
+        this.assertInitialized();
+        return this._target as GLenum;
     }
 
 }

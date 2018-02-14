@@ -11,7 +11,7 @@ import { AbstractObject } from './object';
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
  * ```
- * this.texture.initialize
+ * @todo add usage example
  * ```
  */
 export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
@@ -258,16 +258,16 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Returns the number of bytes this object approximately allocates on the GPU. The size will be zero when no
      * image data was passed to the texture object.
      */
-    @assert_initialized()
     get bytes(): GLsizei {
+        this.assertInitialized();
         return this._bytes;
     }
 
     /**
      * Cached internal format of the texture for efficient resize. This can only be changed by re-initialization.
      */
-    @assert_initialized()
     get internalFormat(): GLenum {
+        this.assertInitialized();
         return this._internalFormat as GLenum;
     }
 
@@ -275,8 +275,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Cached format of the data provided to the texture object for efficient resize. This is set on initialization and
      * might change on data transfers.
      */
-    @assert_initialized()
     get format(): GLenum {
+        this.assertInitialized();
         return this._format as GLenum;
     }
 
@@ -284,24 +284,24 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Cached type of the data provided to the texture used for efficient resize. This is set on initialization and
      * might change on data transfers.
      */
-    @assert_initialized()
     get type(): GLenum {
+        this.assertInitialized();
         return this._type as GLenum;
     }
 
     /**
      * Convenience accessor: returns the width of the texture object.
      */
-    @assert_initialized()
     get width(): GLsizei {
+        this.assertInitialized();
         return this._width;
     }
 
     /**
      * Convenience accessor: returns the height of the texture object.
      */
-    @assert_initialized()
     get height(): GLsizei {
+        this.assertInitialized();
         return this._height;
     }
 

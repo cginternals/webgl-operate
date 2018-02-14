@@ -82,6 +82,7 @@ export class Shader extends AbstractObject<WebGLShader> {
      * Either VERTEX_SHADER or FRAGMENT_SHADER.
      */
     get type() {
+        this.assertInitialized();
         return this._type;
     }
 
