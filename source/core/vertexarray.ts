@@ -97,10 +97,9 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
             return;
         }
 
-        const gl2facade = this._context.gl2facade;
         assert(this._object !== undefined, `expected WebGLVertexArrayObject object`);
+        this._context.gl2facade.deleteVertexArray(this._object);
 
-        gl2facade.deleteVertexArray(this._object);
         this._object = undefined;
         this._valid = false;
 

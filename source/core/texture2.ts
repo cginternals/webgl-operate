@@ -59,8 +59,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
      */
-    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum, format: GLenum, type: GLenum
-        , data?: ArrayBufferView): WebGLTexture | undefined {
+    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum
+        , format: GLenum, type: GLenum): WebGLTexture | undefined {
         assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
         const gl = this._context.gl;
 
@@ -72,12 +72,13 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         this._format = format;
         this._type = type;
 
-        this.filter(gl.NEAREST, gl.NEAREST, true, false);
-        this.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE, false, false);
-        if (data !== undefined) {
-            this.data(data, false, false);
-        }
-        this.unbind();
+        gl.bindTexture(gl.TEXTURE_2D, this._object);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+        this.context.allocationRegister.reallocate(this._identifier, 0);
 
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = this._object instanceof WebGLTexture;
@@ -89,9 +90,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     protected delete(): void {
         assert(this._object instanceof WebGLTexture, `expected WebGLTexture object`);
-        const gl = this._context.gl;
+        this._context.gl.deleteTexture(this._object);
 
-        gl.deleteTexture(this._object);
         this._object = undefined;
         this._valid = false;
 
@@ -147,18 +147,20 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
             this.unbind();
         }
 
+        // update allocated bytes
         if (data === undefined) {
             this._bytes = 0;
         } else {
+
             this._bytes = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
             // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
             if (this._type === this.context.gl2facade.HALF_FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
                 this._bytes *= 2;
-            } else if (this._type === this.context.gl.FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
+            } else if (this
+                ._type === this.context.gl.FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
                 this._bytes *= 4;
             }
         }
-
         this.context.allocationRegister.reallocate(this._identifier, this._bytes);
     }
 

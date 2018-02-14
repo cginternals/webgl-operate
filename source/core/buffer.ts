@@ -50,9 +50,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      */
     protected delete(): void {
         assert(this._object instanceof WebGLBuffer, `expected WebGLBuffer object`);
-        const gl = this._context.gl;
+        this._context.gl.deleteBuffer(this._object);
 
-        gl.deleteBuffer(this._object);
         this._object = undefined;
         this._valid = false;
 

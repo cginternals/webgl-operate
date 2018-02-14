@@ -22,6 +22,11 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     static readonly DEFAULT_RENDER_BUFFER = undefined;
 
     /**
+     * @see {@link bytes}
+     */
+    protected _bytes: GLsizei = 0;
+
+    /**
      * @see {@link width}
      */
     protected _width: GLsizei;
@@ -50,10 +55,12 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         this._height = height;
         this._internalFormat = internalFormat;
 
-        this.bind();
-        gl.renderbufferStorage(gl.RENDERBUFFER, this._internalFormat, this._width, this._height);
-        this.context.allocationRegister.allocate(this._identifier, this.bytes);
-        this.unbind();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, this._object);
+        gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, Renderbuffer.DEFAULT_RENDER_BUFFER);
+
+        this._bytes = width * height * byteSizeOfFormat(this.context, internalFormat as GLenum);
+        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
 
         /* note that gl.isRenderbuffer requires the renderbuffer to be bound */
         this._valid = this._object instanceof WebGLRenderbuffer;
@@ -61,16 +68,19 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     }
 
     /**
-     * Delete the renderbuffer object on the GPU.
-     * This should have the reverse effect of ```create```.
+     * Delete the renderbuffer object on the GPU. This should have the reverse effect of `create`.
      */
     protected delete(): void {
+        assert(this._object instanceof WebGLRenderbuffer, `expected WebGLRenderbuffer object`);
         this.context.gl.deleteRenderbuffer(this._object);
-        this.context.allocationRegister.reallocate(this._identifier, 0);
+
+        this._object = undefined;
+        this._valid = false;
+
+        this._internalFormat = undefined;
 
         this._width = 0;
         this._height = 0;
-        this._internalFormat = undefined;
     }
 
     /**
@@ -86,7 +96,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
      */
     @assert_initialized()
     unbind(): void {
-        this.context.gl.bindRenderbuffer(this.context.gl.RENDERBUFFER, undefined);
+        this.context.gl.bindRenderbuffer(this.context.gl.RENDERBUFFER, Renderbuffer.DEFAULT_RENDER_BUFFER);
     }
 
     /**
@@ -109,11 +119,14 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         if (bind) {
             this.bind();
         }
-        gl.renderbufferStorage(gl.RENDERBUFFER, this._internalFormat, this._width, this._height);
-        this.context.allocationRegister.reallocate(this._identifier, this.bytes);
+        gl.renderbufferStorage(gl.RENDERBUFFER, this._internalFormat, width, height);
         if (unbind) {
             this.unbind();
         }
+
+        // update allocated bytes
+        this._bytes = width * height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
     }
 
     /**
