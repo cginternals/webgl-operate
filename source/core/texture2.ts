@@ -11,7 +11,10 @@ import { AbstractObject } from './object';
 
 /**
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
- * initialization implementations.
+ * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
+ * ```
+ * this.texture.initialize
+ * ```
  */
 export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
@@ -186,7 +189,6 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
     /**
      * Sets the texture object's wrapping function for s and t coordinates.
-     *
      * @param wrap_s - Value for the TEXTURE_WRAP_S parameter.
      * @param wrap_t - Value for the TEXTURE_WRAP_T parameter.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
