@@ -1,6 +1,4 @@
 
-import { vec2, vec4 } from 'gl-matrix';
-
 import { assert, bitInBitfield, log_if, LogLevel } from './common';
 
 import { Bindable } from './bindable';
@@ -38,7 +36,8 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      */
     protected _clearDepth: GLfloat;
     protected _clearStencil: GLint;
-    protected _clearColors: Array<vec4>;
+    protected _clearColors = new Array<GLclampf>(4);
+
     /**
      * Queue of all draw buffers that are to be cleared on `clear`.
      */
@@ -372,7 +371,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      * the minimal width and height as the renderable size/area of this framebuffer is returned as size.
      * @returns The minimal size of the renderable size over all attachments.
      */
-    get size(): vec2 {
+    get width(): vec2 {
         this.assertInitialized();
 
         const size: vec2 = vec2.fromValues(undefined, undefined);

@@ -246,7 +246,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @assert_initialized()
-    resize(width: GLsizei, height: GLsizei, bind: boolean = false, unbind: boolean = false): void {
+    resize(width: GLsizei, height: GLsizei, bind: boolean = true, unbind: boolean = true): void {
         if (width === this._width && height === this._height) {
             return;
         }
@@ -292,7 +292,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     }
 
     /**
-     * Convenience accessor: returns the width of the texture object.
+     * The width of the texture object.
      */
     get width(): GLsizei {
         this.assertInitialized();
@@ -300,7 +300,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     }
 
     /**
-     * Convenience accessor: returns the height of the texture object.
+     * The height of the texture object.
      */
     get height(): GLsizei {
         this.assertInitialized();
