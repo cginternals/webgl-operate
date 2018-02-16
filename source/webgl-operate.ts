@@ -14,6 +14,8 @@ import { VertexArray } from './core/vertexarray';
 import { NdcFillingRectangle } from './assets/ndcfillingrectangle';
 import { NdcFillingTriangle } from './assets/ndcfillingtriangle';
 
+import { Color } from './core/color';
+
 import { byteSizeOfFormat } from './core/formatbytesizes';
 
 
@@ -35,6 +37,8 @@ export {
 
     NdcFillingRectangle,
     NdcFillingTriangle,
+
+    Color,
 
     // debug facilities
 

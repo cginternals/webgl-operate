@@ -1,8 +1,11 @@
 
-import { assert } from './common';
+import { vec3, vec4 } from 'gl-matrix';
+import { clamp, clamp3, clamp4 } from './gl-matrix-ext';
+
+import { assert, log_if, LogLevel } from './common';
 
 
-enum GrayscaleAlgorithm {
+export enum GrayscaleAlgorithm {
     Average,
     LinearLuminance, /* CIE1931 */
     LeastSaturatedVariant,
@@ -17,11 +20,42 @@ type GLclampf5 = [GLclampf, GLclampf, GLclampf, GLclampf, GLclampf];
 
 /**
  * Color that allows for specification and conversion of colors in various color spaces. Please not that most of the
- * color conversion math is based on  {@link https://www.easyrgb.com/en/math.php}.
+ * color conversion math is based on  {@link https://www.easyrgb.com/en/math.php}. The internal color representation is
+ * a 4-tuple of GLclampf components in RGB color space and additional alpha. All color conversion, e.g., getters is
+ * computed on the fly, not cached, and is not optimized for, e.g., massive pixel processing.
  */
 export class Color {
 
-    protected _rgba: GLclampf4 = [0.0, 0.0, 0.0, 1.0];
+    protected static readonly DEFAULT_ALPHA: GLclampf = 1.0;
+    protected static readonly HEX_FORMAT_REGEX = new RegExp(/^(#|0x)?(([0-9a-f]{3}){1,2}|([0-9a-f]{4}){1,2})$/i);
+
+    protected _rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
+
+    protected static clampf(value: GLclampf, semantic?: string): GLclampf {
+        const valueV1 = clamp(value, 0.0, 1.0);
+        log_if(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.User
+            , `${semantic} clamped to [${valueV1}] | given [${value}]`);
+        return valueV1;
+    }
+
+    protected static clampf3(tuple: GLclampf3, semantic?: string): GLclampf3 {
+        const tupleV3: vec3 = vec3.fromValues(tuple[0], tuple[1], tuple[2]);
+        if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 || tuple[2] < 0.0 || tuple[2] > 1.0) {
+            clamp3(tupleV3, tupleV3, vec3.fromValues(0.0, 0.0, 0.0), vec3.fromValues(1.0, 1.0, 1.0));
+            log_if(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV3}] | given [${tuple}]`);
+        }
+        return [tupleV3[0], tupleV3[1], tupleV3[2]];
+    }
+
+    protected static clampf4(tuple: GLclampf4, semantic?: string): GLclampf4 {
+        const tupleV4: vec4 = vec4.fromValues(tuple[0], tuple[1], tuple[2], tuple[3]);
+        if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 ||
+            tuple[2] < 0.0 || tuple[2] > 1.0 || tuple[3] < 0.0 || tuple[3] > 1.0) {
+            clamp4(tupleV4, tupleV4, vec4.fromValues(0.0, 0.0, 0.0, 0.0), vec4.fromValues(1.0, 1.0, 1.0, 1.0));
+            log_if(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV4}] | given [${tuple}]`);
+        }
+        return [tupleV4[0], tupleV4[1], tupleV4[2], tupleV4[3]];
+    }
 
     /**
      * Converts a hue value into an rgb value.
@@ -52,22 +86,17 @@ export class Color {
      * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0].
      */
     static hsl2rgb(hsl: GLclampf3): GLclampf3 {
-        const rgb: GLclampf3 = [0.0, 0.0, 0.0];
+        const hslF = this.clampf3(hsl, 'HSL input');
 
-        if (hsl[1] === 0.0) {
-            rgb[0] = hsl[2];
-            rgb[1] = hsl[2];
-            rgb[2] = hsl[2];
-
-        } else {
-            const q = hsl[2] < 0.5 ? hsl[2] * (1.0 + hsl[2]) : (hsl[2] + hsl[1]) - (hsl[1] * hsl[2]);
-            const p = 2.0 * hsl[2] - q;
-
-            rgb[0] = Color.hue2rgb(p, q, hsl[0] + (1.0 / 3.0));
-            rgb[1] = Color.hue2rgb(p, q, hsl[0]);
-            rgb[2] = Color.hue2rgb(p, q, hsl[0] - (1.0 / 3.0));
+        if (hslF[1] === 0.0) {
+            return [hslF[2], hslF[2], hslF[2]];
         }
-        return rgb;
+
+        const q = hslF[2] < 0.5 ? hslF[2] * (1.0 + hslF[1]) : (hslF[2] + hslF[1]) - (hslF[1] * hslF[2]);
+        const p = 2.0 * hslF[2] - q;
+
+        return [Color.hue2rgb(p, q, hslF[0] + (1.0 / 3.0))
+            , Color.hue2rgb(p, q, hslF[0]), Color.hue2rgb(p, q, hslF[0] - (1.0 / 3.0))];
     }
 
     /**
@@ -76,10 +105,11 @@ export class Color {
      * @returns - HSL color tuple: hue, saturation, and lightness, each in [0.0, 1.0].
      */
     static rgb2hsl(rgb: GLclampf3): GLclampf3 {
+        const rgbF = this.clampf3(rgb, 'RGB input');
         const hsl: GLclampf3 = [0.0, 0.0, 0.0];
 
-        const min = Math.min(rgb[0], rgb[1], rgb[2]);
-        const max = Math.max(rgb[0], rgb[1], rgb[2]);
+        const min = Math.min(rgbF[0], rgbF[1], rgbF[2]);
+        const max = Math.max(rgbF[0], rgbF[1], rgbF[2]);
         const delta = max - min;
 
         hsl[2] = (max + min) * 0.5;
@@ -90,22 +120,16 @@ export class Color {
 
         hsl[1] = hsl[2] < 0.5 ? delta / (max + min) : delta / (2.0 - max - min);
 
-        const deltaR = (((max - rgb[0]) / 6.0) + (delta / 2.0)) / delta;
-        const deltaG = (((max - rgb[1]) / 6.0) + (delta / 2.0)) / delta;
-        const deltaB = (((max - rgb[2]) / 6.0) + (delta / 2.0)) / delta;
+        const deltaR = (((max - rgbF[0]) / 6.0) + (delta / 2.0)) / delta;
+        const deltaG = (((max - rgbF[1]) / 6.0) + (delta / 2.0)) / delta;
+        const deltaB = (((max - rgbF[2]) / 6.0) + (delta / 2.0)) / delta;
 
-        if (rgb[0] === max) {
+        if (rgbF[0] === max) {
             hsl[0] = deltaB - deltaG;
-        } else if (rgb[1] === max) {
+        } else if (rgbF[1] === max) {
             hsl[0] = deltaR - deltaB + (1.0 / 3.0);
-        } else if (rgb[2] === max) {
+        } else { // if (rgbF[2] === max) {
             hsl[0] = deltaG - deltaR + (2.0 / 3.0);
-        }
-
-        if (hsl[0] < 0.0) {
-            hsl[0] += 1.0;
-        } else if (hsl[0] > 1.0) {
-            hsl[0] -= 1.0;
         }
         return hsl;
     }
@@ -114,51 +138,74 @@ export class Color {
     /**
      * Converts a color from LAB space to XYZ space.
      * @param lab - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
-     * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0] @todo check this.
+     * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static lab2xyz(lab: GLclampf3): GLclampf3 {
+        const labF = this.clampf3(lab, 'LAB input');
 
-        const yr = (lab[0] + 16.0) / 116.0;
-        const xr = lab[1] / 500.0 + yr;
-        const zr = yr - lab[2] / 200.0;
+        const yr = (labF[0] * 100.0 + 16.0) / 116.0;
+        const xr = labF[1] * 100 / 500.0 + yr;
+        const zr = yr - labF[2] * 100 / 200.0;
 
         const yr3 = yr * yr * yr;
         const xr3 = xr * xr * xr;
         const zr3 = zr * zr * zr;
 
-        /* white reference for XYZ conversion */
-        const y = 0.01 * (yr3 > 0.008856 ? yr3 : (yr - 16.0 / 116.0) / 7.787);
-        const x = 0.01 * (xr3 > 0.008856 ? xr3 : (xr - 16.0 / 116.0) / 7.787);
-        const z = 0.01 * (zr3 > 0.008856 ? zr3 : (zr - 16.0 / 116.0) / 7.787);
+        /* D65/2° illuminant for XYZ conversion */
+        const y = 1.00000 * (yr3 > 0.008856 ? yr3 : (yr - 16.0 / 116.0) / 7.787);
+        const x = 0.95047 * (xr3 > 0.008856 ? xr3 : (xr - 16.0 / 116.0) / 7.787);
+        const z = 1.08883 * (zr3 > 0.008856 ? zr3 : (zr - 16.0 / 116.0) / 7.787);
 
-        /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
         return [x, y, z];
     }
 
     /**
      * Converts a color from XYZ space to LAB space.
-     * @param xyz- XYZ color tuple: x, y, and z, each in [0.0, 1.0] @todo check this.
+     * @param xyz- XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      * @returns - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      */
     static xyz2lab(xyz: GLclampf3): GLclampf3 {
+        // DO NOT CLAMP! const xyzF = this.clampf3(xyz, 'XYZ input');
+        const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
+
         /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
-        const x = xyz[0] > 0.008856 ? xyz[0] ^ (1.0 / 3.0) : (7.787 * xyz[0]) + (16.0 / 116.0);
-        const y = xyz[1] > 0.008856 ? xyz[1] ^ (1.0 / 3.0) : (7.787 * xyz[1]) + (16.0 / 116.0);
-        const z = xyz[2] > 0.008856 ? xyz[2] ^ (1.0 / 3.0) : (7.787 * xyz[2]) + (16.0 / 116.0);
-        return [116.0 * y - 16.0, 500.0 * (x - y), 200.0 * (y - z)];
+        const x = xyzF[0] > 0.008856 ? Math.pow(xyzF[0], 1.0 / 3.0) : (7.787 * xyzF[0]) + (16.0 / 116.0);
+        const y = xyzF[1] > 0.008856 ? Math.pow(xyzF[1], 1.0 / 3.0) : (7.787 * xyzF[1]) + (16.0 / 116.0);
+        const z = xyzF[2] > 0.008856 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
+
+        return this.clampf3([
+            0.01 * (116.0 * y - 16.0),
+            0.01 * (500.0 * (x - y)),
+            0.01 * (200.0 * (y - z))]);
     }
 
 
     /**
      * Converts a color from XYZ space to Adobe-RGB space.
-     * @param xyz - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
+     * @param xyz - XYZ color tuple: x, y, and z, and refer to the D65/2° illuminant.
      * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0]
      */
     static xyz2rgb(xyz: GLclampf3): GLclampf3 {
-        const r = xyz[0] * -2.04159 + xyz[1] * -0.56501 + xyz[2] * -0.34473;
-        const g = xyz[0] * -0.96924 + xyz[1] * +1.87597 + xyz[2] * +0.03342;
-        const b = xyz[0] * -0.01344 + xyz[1] * -0.11836 + xyz[2] * +1.34926;
-        return [Math.pow(r, 1.0 / 2.19921875), Math.pow(g, 1.0 / 2.19921875), Math.pow(b, 1.0 / 2.19921875)];
+        // DO NOT CLAMP! const xyzF = this.clampf3(xyz, 'XYZ input');
+
+        const r = xyz[0] * +2.04159 + xyz[1] * -0.56501 + xyz[2] * -0.34473;
+        const g = xyz[0] * -0.96924 + xyz[1] * +1.87597 + xyz[2] * +0.04156;
+        const b = xyz[0] * +0.01344 + xyz[1] * -0.11836 + xyz[2] * +1.01517;
+
+        return this.clampf3([
+            Math.pow(r, 1.0 / 2.19921875),
+            Math.pow(g, 1.0 / 2.19921875),
+            Math.pow(b, 1.0 / 2.19921875)]);
+
+        // Standard-RGB
+        // let r = xyz[0] * +3.2406 + xyz[1] * -1.5372 + xyz[2] * -0.4986;
+        // let g = xyz[0] * -0.9689 + xyz[1] * +1.8758 + xyz[2] * +0.0415;
+        // let b = xyz[0] * +0.0557 + xyz[1] * -0.2040 + xyz[2] * +1.0570;
+
+        // r = r > 0.0031308 ? 1.055 * Math.pow(r, 1.0 / 2.4) - 0.055 : 12.92 * r;
+        // g = g > 0.0031308 ? 1.055 * Math.pow(g, 1.0 / 2.4) - 0.055 : 12.92 * g;
+        // b = b > 0.0031308 ? 1.055 * Math.pow(b, 1.0 / 2.4) - 0.055 : 12.92 * b;
+        // return [r, g, b];
     }
 
     /**
@@ -167,9 +214,11 @@ export class Color {
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static rgb2xyz(rgb: GLclampf3): GLclampf3 {
-        const r = Math.pow(rgb[0], 2.19921875) * 100.0;
-        const g = Math.pow(rgb[1], 2.19921875) * 100.0;
-        const b = Math.pow(rgb[2], 2.19921875) * 100.0;
+        const rgbF = this.clampf3(rgb, 'RGB input');
+
+        const r = Math.pow(rgbF[0], 2.19921875);
+        const g = Math.pow(rgbF[1], 2.19921875);
+        const b = Math.pow(rgbF[2], 2.19921875);
 
         const x = r * 0.57667 + g * 0.18556 + b * 0.18823;
         const y = r * 0.29734 + g * 0.62736 + b * 0.07529;
@@ -203,8 +252,10 @@ export class Color {
      * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0]
      */
     static cmyk2rgb(cmyk: GLclampf4): GLclampf3 {
-        const k = 1.0 - cmyk[3];
-        return [(1.0 - cmyk[0]) * k, (1.0 - cmyk[1]) * k, (1.0 - cmyk[2]) * k];
+        const cmykF = this.clampf4(cmyk, 'CMYK input');
+
+        const k = 1.0 - cmykF[3];
+        return [(1.0 - cmykF[0]) * k, (1.0 - cmykF[1]) * k, (1.0 - cmykF[2]) * k];
     }
 
     /**
@@ -213,63 +264,110 @@ export class Color {
      * @returns - CMYK color tuple: cyan, magenta, yellow, and key, each in [0.0, 1.0].
      */
     static rgb2cmyk(rgb: GLclampf3): GLclampf4 {
-        const k1 = 1.0 - Math.max(rgb[0], rgb[1], rgb[2]);
+        const rgbF = this.clampf3(rgb, 'RGB input');
+
+        const k1 = 1.0 - Math.max(rgbF[0], rgbF[1], rgbF[2]);
         const k2 = 1.0 - k1;
-        const k3 = 1.0 / k2;
-        return [(k2 - rgb[0]) * k3, (k2 - rgb[1]) * k3, (k2 - rgb[2]) * k3, k1];
+        const k3 = k2 === 0.0 ? 0.0 : 1.0 / k2;
+        return [(k2 - rgbF[0]) * k3, (k2 - rgbF[1]) * k3, (k2 - rgbF[2]) * k3, k1];
     }
 
 
     /**
-     * Converts a color from HEX string to RGB space. The hex string can start with '#' or '0x' or neither of these.
+     * Converts a color from HEX string to RGBA space. The hex string can start with '#' or '0x' or neither of these.
      * @param hex - Hexadecimal color string: red, green, and blue, each in ['00', 'ff'].
-     * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0]
+     * @returns - RGBA color tuple: red, green, blue, and alpha, each in [0.0, 1.0]. On error [0, 0, 0, 0] is returned.
      */
-    static hex2rgb(hex: string): GLclampf3 {
+    static hex2rgba(hex: string): GLclampf4 {
+        const rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
+
+        if (!Color.HEX_FORMAT_REGEX.test(hex)) {
+            log_if(true, LogLevel.User, `hexadecimal RGBA color string must conform to either \
+'0x0000', '#0000', '0000', '0x00000000', '#00000000', or '00000000' | given '${hex}'`);
+            return rgba;
+        }
+
         const offset = hex.startsWith('0x') ? 2 : hex.startsWith('#') ? 1 : 0;
-        const r = hex.substr(offset + 0, 2).toLowerCase();
-        const g = hex.substr(offset + 2, 2).toLowerCase();
-        const b = hex.substr(offset + 4, 2).toLowerCase();
-        return [parseInt(r, 16) / 255.0, parseInt(b, 16) / 255.0, parseInt(b, 16) / 255.0];
+        const length = Math.floor((hex.length - offset) / 3);
+        const stride = length - 1;
+
+        rgba[0] = parseInt(hex[offset + 0 * length] + hex[offset + 0 * length + stride], 16) / 255.0;
+        rgba[1] = parseInt(hex[offset + 1 * length] + hex[offset + 1 * length + stride], 16) / 255.0;
+        rgba[2] = parseInt(hex[offset + 2 * length] + hex[offset + 2 * length + stride], 16) / 255.0;
+        if ((hex.length - offset) === 4 || (hex.length - offset) === 8) {
+            rgba[3] = parseInt(hex[offset + 3 * length] + hex[offset + 3 * length + stride], 16) / 255.0;
+        }
+
+        assert(!isNaN(rgba[0]) && !isNaN(rgba[1]) && !isNaN(rgba[2]) && !isNaN(rgba[3]),
+            `expected well formated hexadecimal RGBA string | given '${hex}'`);
+        return rgba;
     }
 
     /**
      * Converts a color from RGB space to HEX string.
      * @param rgb - RGB color tuple: red, green, and blue, each in [0.0, 1.0]
-     * @returns - Hexadecimal color string: red, green, and blue, each in ['00', 'ff'], no prefix.
+     * @returns - Hexadecimal color string: red, green, and blue, each in ['00', 'ff'], with '#' prefix
      */
     static rgb2hex(rgb: GLclampf3): string {
-        const r = (rgb[0] * 255) & 0xff;
-        const g = (rgb[1] * 255) & 0xff;
-        const b = (rgb[2] * 255) & 0xff;
-        return r.toString(16) + g.toString(16) + b.toString(16);
-    }
+        const rgbF = this.clampf3(rgb, 'RGB input');
 
-    /**
-     * Converts a color from HEX string to RGBA space. The hex string can start with '#' or '0x' or neither of these.
-     * @param hex - Hexadecimal color string: red, green, and blue, each in ['00', 'ff'].
-     * @returns - RGBA color tuple: red, green, blue, and alpha, each in [0.0, 1.0]
-     */
-    static hex2rgba(hex: string): GLclampf4 {
-        const offset = hex.startsWith('0x') ? 2 : hex.startsWith('#') ? 1 : 0;
-        const r = hex.substr(offset + 0, 2).toLowerCase();
-        const g = hex.substr(offset + 2, 2).toLowerCase();
-        const b = hex.substr(offset + 4, 2).toLowerCase();
-        const a = hex.substr(offset + 6, 2).toLowerCase();
-        return [parseInt(r, 16) / 255.0, parseInt(b, 16) / 255.0, parseInt(b, 16) / 255.0, parseInt(a, 16) / 255.0];
+        const r = (rgbF[0] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[0] * 255).toString(16);
+        const g = (rgbF[1] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[1] * 255).toString(16);
+        const b = (rgbF[2] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[2] * 255).toString(16);
+        return '#' + r + g + b;
     }
 
     /**
      * Converts a color from RGBA space to HEX string.
      * @param rgba - RGBA color tuple: red, green, blue, and alpha, each in [0.0, 1.0]
-     * @returns - Hexadecimal color string: red, green, blue, and alpha, each in ['00', 'ff'], no prefix.
+     * @returns - Hexadecimal color string: red, green, blue, and alpha, each in ['00', 'ff'], with '#' prefix
      */
     static rgba2hex(rgba: GLclampf4): string {
-        const r = (rgba[0] * 255) & 0xff;
-        const g = (rgba[1] * 255) & 0xff;
-        const b = (rgba[2] * 255) & 0xff;
-        const a = (rgba[3] * 255) & 0xff;
-        return r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
+        const rgbaF = this.clampf4(rgba, 'RGBA input');
+
+        const r = (rgbaF[0] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[0] * 255).toString(16);
+        const g = (rgbaF[1] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[1] * 255).toString(16);
+        const b = (rgbaF[2] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[2] * 255).toString(16);
+        const a = (rgbaF[3] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[3] * 255).toString(16);
+        return '#' + r + g + b + a;
+    }
+
+    /**
+     * Creates an instance of color (a 4-tuple in RGBA space).
+     * @param rgba - Either RGB tuple or RGBA tuple. If none is provided, default will be kept.
+     * @param alpha - If RGB tuple is provided an additional alpha value can be specified.
+     */
+    constructor(rgba?: GLclampf3 | GLclampf4, alpha?: GLclampf) {
+        if (rgba === undefined) {
+            return;
+        }
+        this._rgba[0] = Color.clampf(rgba[0], 'red value');
+        this._rgba[1] = Color.clampf(rgba[1], 'green value');
+        this._rgba[2] = Color.clampf(rgba[2], 'blue value');
+
+        if (rgba.length === 3 && alpha !== undefined) {
+            this._rgba[3] = Color.clampf(alpha, 'alpha value');
+        } else if (rgba.length === 4) {
+            this._rgba[3] = Color.clampf(rgba[3], 'alpha value');
+            assert(alpha === undefined, `expected alpha to be undefined when given an 4-tuple in RGBA`);
+        }
+    }
+
+    /**
+     * Specifies the internal rgba store using a color in unsigned int (8bit) RGBA colors.
+     * @param red - Red color component in [0, 255]
+     * @param green - Green color component in [0, 255]
+     * @param blue - Blue color component in [0, 255]
+     * @param alpha - Alpha color component in [0, 255]
+     * @returns - The color instance (this).
+     */
+    fromUI8(red: GLubyte, green: GLubyte, blue: GLubyte
+        , alpha: GLubyte = Math.floor(Color.DEFAULT_ALPHA * 255)): Color {
+        this._rgba[0] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(red)));
+        this._rgba[1] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(green)));
+        this._rgba[2] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(blue)));
+        this._rgba[3] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(alpha)));
+        return this;
     }
 
 
@@ -279,11 +377,14 @@ export class Color {
      * @param saturation - Saturation color component in [0.0, 1.0]
      * @param lightness - Lightness color component in [0.0, 1.0]
      * @param alpha - Alpha color component in [0.0, 1.0]
+     * @returns - The color instance (this).
      */
     fromHSL(hue: GLclampf, saturation: GLclampf, lightness: GLclampf
-        , alpha: GLclampf = 1.0): void {
+        , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
         const rgb = Color.hsl2rgb([hue, saturation, lightness]);
-        this._rgba = [rgb[0], rgb[1], rgb[2], alpha];
+        const alphaf = Color.clampf(alpha, 'ALPHA input');
+        this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
+        return this;
     }
 
     /**
@@ -292,11 +393,14 @@ export class Color {
      * @param greenRed - Green-Red/a color component in [0.0, 1.0]
      * @param blueYellow - Blue-Yellow/b color component in [0.0, 1.0]
      * @param alpha - Alpha color component in [0.0, 1.0]
+     * @returns - The color instance (this).
      */
-    fromLab(lightness: GLclampf, greenRed: GLclampf, blueYellow: GLclampf
-        , alpha: GLclampf = 1.0): void {
+    fromLAB(lightness: GLclampf, greenRed: GLclampf, blueYellow: GLclampf
+        , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
         const rgb = Color.lab2rgb([lightness, greenRed, blueYellow]);
-        this._rgba = [rgb[0], rgb[1], rgb[2], alpha];
+        const alphaf = Color.clampf(alpha, 'ALPHA input');
+        this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
+        return this;
     }
 
     /**
@@ -306,29 +410,24 @@ export class Color {
      * @param yellow - Yellow color component in [0.0, 1.0]
      * @param key - Key/Black color component in [0.0, 1.0]
      * @param alpha - Alpha color component in [0.0, 1.0]
+     * @returns - The color instance (this).
      */
     fromCMYK(cyan: GLclampf, magenta: GLclampf, yellow: GLclampf, key: GLclampf
-        , alpha: GLclampf = 1.0): void {
+        , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
         const rgb = Color.cmyk2rgb([cyan, magenta, yellow, key]);
-        this._rgba = [rgb[0], rgb[1], rgb[2], alpha];
+        const alphaf = Color.clampf(alpha, 'ALPHA input');
+        this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
+        return this;
     }
 
     /**
      * Specifies the internal rgba store using a hexadecimal color string.
-     * @param hex - Hexadecimal color string: red, green, and blue, each in ['00', 'ff'].
-     * @param alpha - Alpha color component in [0.0, 1.0]
+     * @param hex - Hexadecimal color string: red, green, blue, and alpha (optional) each in ['00', 'ff'].
+     * @returns - The color instance (this).
      */
-    fromHexRGB(hex: string, alpha: GLclampf = 1.0): void {
-        const rgb = Color.hex2rgb(hex);
-        this._rgba = [rgb[0], rgb[1], rgb[2], alpha];
-    }
-
-    /**
-     * Specifies the internal rgba store using a hexadecimal rgba color string.
-     * @param hex - Hexadecimal color string: red, green, blue, and alpha, each in ['00', 'ff'].
-     */
-    fromHexRGBA(hex: string): void {
+    fromHex(hex: string): Color {
         this._rgba = Color.hex2rgba(hex);
+        return this;
     }
 
 
@@ -364,27 +463,43 @@ export class Color {
         return [this._rgba[0], this._rgba[1], this._rgba[2]];
     }
 
-    get rgbf(): Float32Array {
-        const rgbf = new Float32Array(3);
-        rgbf[0] = this._rgba[0];
-        rgbf[1] = this._rgba[1];
-        rgbf[2] = this._rgba[2];
-        return rgbf;
+    get rgbUI8(): Uint8Array {
+        const ui8Array = new Uint8Array(3);
+        ui8Array[0] = Math.round(this._rgba[0] * 255);
+        ui8Array[1] = Math.round(this._rgba[1] * 255);
+        ui8Array[2] = Math.round(this._rgba[2] * 255);
+        return ui8Array;
+    }
+
+    get rgbF32(): Float32Array {
+        const f32Array = new Float32Array(3);
+        f32Array[0] = this._rgba[0];
+        f32Array[1] = this._rgba[1];
+        f32Array[2] = this._rgba[2];
+        return f32Array;
     }
 
     get rgba(): GLclampf4 {
         return this._rgba;
     }
 
-    get rgbaf(): Float32Array {
-        const rgbaf = new Float32Array(4);
-        rgbaf[0] = this._rgba[0];
-        rgbaf[1] = this._rgba[1];
-        rgbaf[2] = this._rgba[2];
-        rgbaf[3] = this._rgba[3];
-        return rgbaf;
+    get rgbaUI8(): Uint8Array {
+        const ui8Array = new Uint8Array(4);
+        ui8Array[0] = Math.round(this._rgba[0] * 255);
+        ui8Array[1] = Math.round(this._rgba[1] * 255);
+        ui8Array[2] = Math.round(this._rgba[2] * 255);
+        ui8Array[3] = Math.round(this._rgba[3] * 255);
+        return ui8Array;
     }
 
+    get rgbaF32(): Float32Array {
+        const f32Array = new Float32Array(4);
+        f32Array[0] = this._rgba[0];
+        f32Array[1] = this._rgba[1];
+        f32Array[2] = this._rgba[2];
+        f32Array[3] = this._rgba[3];
+        return f32Array;
+    }
 
     get r(): GLclampf {
         return this._rgba[0];
