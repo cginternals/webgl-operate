@@ -1,7 +1,7 @@
 
 import { Bindable } from '../core/bindable';
 import { Buffer } from '../core/buffer';
-import { assert_initialized, Initializable, initialize, uninitialize } from '../core/initializable';
+import { Initializable } from '../core/initializable';
 
 import { Context } from '../core/context';
 import { VertexArray } from '../core/vertexarray';
@@ -59,7 +59,7 @@ export abstract class Geometry extends Initializable implements Bindable {
      * @param {Array<GLenum>} targets - Targets to initialize the buffers for.
      * @param {Array<GLuint>} indices - Binding points that are passed to the inheritors (un)bind buffer methods.
      */
-    @initialize()
+    @Initializable.initialize()
     initialize(...args: any[]): boolean {
         const targets = args[0] as Array<GLenum>;
         const indices = args[1] as Array<GLuint>;
@@ -76,7 +76,7 @@ export abstract class Geometry extends Initializable implements Bindable {
     /**
      * Uninitialize the vertex array object and the rectangle.
      */
-    @uninitialize()
+    @Initializable.uninitialize()
     uninitialize(): void {
         this._vertexArray.uninitialize();
         for (const buffer of this._buffers) {
@@ -88,7 +88,7 @@ export abstract class Geometry extends Initializable implements Bindable {
     /**
      * Binds the vertex array object.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     bind(): void {
         this._vertexArray.bind();
     }
@@ -96,7 +96,7 @@ export abstract class Geometry extends Initializable implements Bindable {
     /**
      * Unbinds the vertex array object.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     unbind(): void {
         this._vertexArray.unbind();
     }

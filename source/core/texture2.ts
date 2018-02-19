@@ -1,9 +1,9 @@
 
-import { assert } from './common';
+import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 
 import { Bindable } from './bindable';
-import { assert_initialized } from './initializable';
+import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
 
@@ -106,7 +106,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     /**
      * Bind the texture object to a texture unit.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     bind(unit?: GLenum): void {
         const gl = this.context.gl;
         if (unit) {
@@ -118,7 +118,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     /**
      * Unbind the texture object from a texture unit.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     unbind(unit?: GLenum): void {
         const gl = this.context.gl;
         if (unit) {
@@ -133,7 +133,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     data(data: ArrayBufferView | undefined, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
@@ -171,7 +171,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     filter(mag: GLenum, min: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
@@ -192,7 +192,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     /* tslint:disable-next-line:variable-name */
     wrap(wrap_s: GLenum, wrap_t: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
@@ -216,7 +216,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     reformat(internalFormat: GLenum, format?: GLenum, type?: GLenum
         , bind: boolean = true, unbind: boolean = true): void {
 
@@ -245,7 +245,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     resize(width: GLsizei, height: GLsizei, bind: boolean = true, unbind: boolean = true): void {
         if (width === this._width && height === this._height) {
             return;

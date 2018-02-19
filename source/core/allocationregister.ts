@@ -1,5 +1,5 @@
 
-import { assert, prettyPrintBytes } from './common';
+import { assert, prettyPrintBytes } from './auxiliaries';
 
 import { Subject } from 'rxjs/Subject';
 

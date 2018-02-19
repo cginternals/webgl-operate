@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './common';
+import { assert, log_if, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { AbstractObject } from './object';

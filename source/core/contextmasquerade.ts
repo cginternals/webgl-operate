@@ -1,5 +1,5 @@
 
-import { assert, GETparameter } from './common';
+import { assert, GETparameter } from './auxiliaries';
 
 import { ExtensionsHash } from './extensionshash';
 

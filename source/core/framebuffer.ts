@@ -1,5 +1,5 @@
 
-// import { assert, bitInBitfield, log_if, LogLevel } from './common';
+// import { assert, bitInBitfield, log_if, LogLevel } from './auxiliaries';
 
 // import { Bindable } from './bindable';
 // import { assert_initialized } from './initializable';
@@ -9,8 +9,8 @@
 
 
 // /**
-//  * WebGL Framebuffer base implementation providing size accessors and requiring for bind, unbind, resize, validity, and
-//  * initialization implementations.
+//  * WebGL Framebuffer base implementation providing size accessors and requiring for bind, unbind, resize, validity,
+//  * and initialization implementations.
 //  */
 // export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bindable {
 
@@ -201,8 +201,8 @@
 //      * @param mask - A GLbitfield bitwise OR mask that indicates the buffers to be cleared.
 //      * @param bind - Allows to skip binding the framebuffer (e.g., when binding is handled outside).
 //      * @param unbind - Allows to skip unbinding the framebuffer (e.g., when binding is handled outside).
-//      * @param colorClearQueue - Allows to specify a specific queue of color attachments to be cleared. If no parameter
-//      * is given, the webgl2 implementation clears all color attachments.
+//      * @param colorClearQueue - Allows to specify a specific queue of color attachments to be cleared. If no
+//      * parameter is given, the webgl2 implementation clears all color attachments.
 //      */
 //     @assert_initialized()
 //     protected es3Clear(mask: GLbitfield, bind: boolean = true, unbind: boolean = true
@@ -243,8 +243,8 @@
 
 //         } else if (clearStencil) {
 //             /**
-//              * Unfortunately, the following code doesn't work, at least in Chrome, -> fallback to WebGL 1 interface for
-//              * clearing depth and stencil.
+//              * Unfortunately, the following code doesn't work, at least in Chrome, -> fallback to WebGL 1 interface
+//              * for clearing depth and stencil.
 //              */
 //             // gl.clearBufferiv(gl.STENCIL, 0, [this._clearStencil]);
 //             gl.clearStencil(this._clearStencil);
@@ -257,8 +257,8 @@
 //     }
 
 //     /**
-//      * 
-//      * @param attachment - 
+//      *
+//      * @param attachment -
 //      */
 //     protected hasAttachment(attachment: GLenum): boolean {
 //         return this._texturesByAttachment.has(attachment) || this._buffersByAttachment.has(attachment);
@@ -290,9 +290,9 @@
 
 
 //     /**
-//      * Sets the clear color used for clearing a draw buffer. In order to have transparency working, the canvas needs to
-//      * have the alpha  attribute enabled. This stage also supports premultiplied alpha, which is applied automatically
-//      * when the context's `premultipliedAlpha` attribute is set.
+//      * Sets the clear color used for clearing a draw buffer. In order to have transparency working, the canvas needs
+//      * to have the alpha  attribute enabled. This stage also supports premultiplied alpha, which is applied
+//      * automatically when the context's `premultipliedAlpha` attribute is set.
 //      * @param drawBuffer - The draw buffer index.
 //      * @param color - RGBA clear color.
 //      */

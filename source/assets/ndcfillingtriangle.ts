@@ -1,11 +1,11 @@
 
-import { assert } from '../core/common';
+import { assert } from '../core/auxiliaries';
 
-import { assert_initialized } from '../core/initializable';
 
 import { Buffer } from '../core/buffer';
 import { Context } from '../core/context';
 import { Geometry } from '../core/geometry';
+import { Initializable } from '../core/initializable';
 
 
 /**
@@ -90,7 +90,7 @@ export class NdcFillingTriangle extends Geometry {
     /**
      * Specifies/invokes the draw of this screen-aligned triangle.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     draw(): void {
         const gl = this.context.gl;
         gl.drawArrays(gl.TRIANGLES, 0, 3);

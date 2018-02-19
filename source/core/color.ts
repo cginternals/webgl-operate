@@ -1,8 +1,8 @@
 
 import { vec3, vec4 } from 'gl-matrix';
-import { clamp, clamp3, clamp4 } from './gl-matrix-ext';
+import { clamp, clamp3, clamp4 } from './gl-matrix-extensions';
 
-import { assert, log_if, LogLevel } from './common';
+import { assert, log_if, LogLevel } from './auxiliaries';
 
 
 export enum GrayscaleAlgorithm {
@@ -19,9 +19,9 @@ type GLclampf5 = [GLclampf, GLclampf, GLclampf, GLclampf, GLclampf];
 
 
 /**
- * Color that allows for specification and conversion of colors in various color spaces. Please not that most of the
- * color conversion math is based on  {@link https://www.easyrgb.com/en/math.php}. The internal color representation is
- * a 4-tuple of GLclampf components in RGB color space and additional alpha. All color conversion, e.g., getters is
+ * Color class that allows for specification and conversion of colors in various color spaces. Please not that most of
+ * the color conversion math is based on  {@link https://www.easyrgb.com/en/math.php}. The internal color representation
+ * is a 4-tuple of GLclampf components in RGB color space and additional alpha. All color conversion, e.g., getters is
  * computed on the fly, not cached, and is not optimized for, e.g., massive pixel processing.
  */
 export class Color {
@@ -161,7 +161,7 @@ export class Color {
 
     /**
      * Converts a color from XYZ space to LAB space.
-     * @param xyz- XYZ color tuple: x, y, and z, each in [0.0, 1.0].
+     * @param xyz - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      * @returns - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      */
     static xyz2lab(xyz: GLclampf3): GLclampf3 {

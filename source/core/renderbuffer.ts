@@ -1,9 +1,9 @@
 
-import { assert } from './common';
+import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 
 import { Bindable } from './bindable';
-import { assert_initialized } from './initializable';
+import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
 
@@ -86,7 +86,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     /**
      * Bind the renderbuffer object.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     bind(): void {
         this.context.gl.bindRenderbuffer(this.context.gl.RENDERBUFFER, this._object);
     }
@@ -94,7 +94,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     /**
      * Unbind the renderbuffer object.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     unbind(): void {
         this.context.gl.bindRenderbuffer(this.context.gl.RENDERBUFFER, Renderbuffer.DEFAULT_RENDER_BUFFER);
     }
@@ -106,7 +106,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
      * @param bind - Allows to skip binding the renderbuffer (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the renderbuffer (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     resize(width: GLsizei, height: GLsizei, bind: boolean = false, unbind: boolean = false): void {
         if (width === this._width && height === this._height) {
             return;

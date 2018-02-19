@@ -1,8 +1,8 @@
 
-import { assert } from './common';
+import { assert } from './auxiliaries';
 
 import { Bindable } from './bindable';
-import { assert_initialized } from './initializable';
+import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
 
@@ -61,7 +61,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Binds the buffer object as buffer to predefined target.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     bind(): void {
         assert(this._target === this._context.gl.ARRAY_BUFFER || this._target === this._context.gl.ELEMENT_ARRAY_BUFFER
             , `expected either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER as buffer target`);
@@ -71,7 +71,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Binds null as current buffer to predefined target;
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     unbind(): void {
         this.context.gl.bindBuffer(this._target, Buffer.DEFAULT_BUFFER);
     }
@@ -83,7 +83,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     data(data: ArrayBufferView, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
@@ -111,7 +111,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false
         , stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
@@ -131,7 +131,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     attribDisable(index: GLuint, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
         if (bind) {

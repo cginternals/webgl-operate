@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 
 const expect = chai.expect;
 
-import * as common from '../../source/core/common';
+import * as aux from '../../source/core/auxiliaries';
 import { ContextMasquerade } from '../../source/core/contextmasquerade';
 
 
@@ -69,7 +69,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should be initializable by GET using hash', () => {
-        const getParameterStub = sandbox.stub(common, 'GETparameter');
+        const getParameterStub = sandbox.stub(aux, 'GETparameter');
         getParameterStub.returns('1w0000');
 
         const masquerade = ContextMasquerade.fromGET();
@@ -79,7 +79,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should be initializable by GET using preset', () => {
-        const getParameterStub = sandbox.stub(common, 'GETparameter');
+        const getParameterStub = sandbox.stub(aux, 'GETparameter');
         getParameterStub
             .onFirstCall().returns(undefined)
             .onSecondCall().returns('edge-41');
@@ -91,7 +91,7 @@ describe('ContextMasquerade', () => {
     });
 
     it('should fail if GET values are not present', () => {
-        const getParameterStub = sandbox.stub(common, 'GETparameter');
+        const getParameterStub = sandbox.stub(aux, 'GETparameter');
         getParameterStub.returns(undefined);
 
         const masquerade = ContextMasquerade.fromGET();
