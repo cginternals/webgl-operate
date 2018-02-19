@@ -43,9 +43,11 @@ export abstract class Initializable {
 
 
     protected static readonly assertInitializedFalse = (object: Initializable) =>
-        assert(false, `instance of ${object.constructor.name} expected to be initialized`)
+        /* tslint:disable-next-line:semicolon */
+        assert(false, `instance of ${object.constructor.name} expected to be initialized`);
     protected static readonly assertUninitializedFalse = (object: Initializable) =>
-        assert(false, `instance of ${object.constructor.name} not expected to be initialized`)
+        /* tslint:disable-next-line:semicolon */
+        assert(false, `instance of ${object.constructor.name} not expected to be initialized`);
 
     /**
      * Method decorator for initialization of Initializable inheritors. This decorator asserts the initialization status
