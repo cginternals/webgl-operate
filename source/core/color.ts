@@ -453,6 +453,7 @@ export class Color {
                 return Math.max(this._rgba[0], this._rgba[1], this._rgba[2]);
 
             case GrayscaleAlgorithm.LinearLuminance:
+            /* falls through */
             default:
                 return this._rgba[0] * 0.2126 + this._rgba[1] * 0.7152 + this._rgba[2] * 0.0722;
         }

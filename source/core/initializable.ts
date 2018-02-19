@@ -117,7 +117,7 @@ export abstract class Initializable {
 
     /**
      * Method decorator for asserting the initialization status of an initializable to be true.
-     * @see {@link Initializable.assertInitialized}
+     * @see {@link assertInitialized}
      */
     static assert_initialized() {
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
