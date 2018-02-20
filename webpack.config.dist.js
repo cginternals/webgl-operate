@@ -10,5 +10,9 @@ module.exports.entry = {
 
 module.exports.module.rules[0].use = {
     loader: 'ts-loader',
-    options: {}
+    options: {
+        compilerOptions: {
+            removeComments: true
+        }
+    }
 };

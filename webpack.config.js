@@ -39,7 +39,8 @@ module.exports = {
                     loader: 'ts-loader',
                     options: {
                         compilerOptions: {
-                            noUnusedLocals: false
+                            noUnusedLocals: false,
+                            removeComments: true
                         }
                     }
                 }

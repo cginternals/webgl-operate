@@ -519,7 +519,7 @@ export class Color {
 
 }
 
-
+/* istanbul ignore next */
 export namespace Color {
 
     export enum GrayscaleAlgorithm {

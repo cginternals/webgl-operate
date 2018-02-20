@@ -4,7 +4,7 @@
             "engine": "tslint",
             "configLocation": "tslint.json"
         },
-        "wc": { 
+        "wc": {
             "limit": 2048
         }
     }
