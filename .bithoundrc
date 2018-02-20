@@ -13,6 +13,7 @@
             "typescript"
         ],
         "mute": [
+            "@types/gl-matrix",
             "gl-matrix"
         ]
     }
