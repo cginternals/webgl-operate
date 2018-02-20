@@ -11,6 +11,7 @@
     "exclude": [
         "source/core/buffer.ts",
         "source/core/context.ts",
+        "source/core/defaultframebuffer.ts",
         "source/core/framebuffer.ts",
         "source/core/geometry.ts",
         "source/core/gl2facade.ts",

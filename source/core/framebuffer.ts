@@ -289,12 +289,12 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      * Sets the clear color used for clearing a draw buffer. In order to have transparency working, the canvas needs
      * to have the alpha  attribute enabled. This stage also supports premultiplied alpha, which is applied
      * automatically when the context's `premultipliedAlpha` attribute is set.
-     * @param drawBuffer - The draw buffer index.
      * @param color - RGBA clear color.
+     * @param drawBuffer - The draw buffer index. If no index is provided, the color will be applied to all buffers.
      */
     @Initializable.assert_initialized()
-    clearColor(drawBuffer: GLint, color: GLclampf4): void {
-        assert(drawBuffer === 0 || this.context.isWebGL2 || this.context.supportsDrawBuffers
+    clearColor(color: GLclampf4, drawBuffer?: GLint): void {
+        assert(drawBuffer === undefined || drawBuffer === 0 || this.context.isWebGL2 || this.context.supportsDrawBuffers
             , `WebGL2 context expected for clearing multiple color attachments.`);
 
         const alphaIssue: boolean = color[3] < 1.0 && !this.context.alpha;
@@ -311,7 +311,14 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
             color2[1] *= color2[3];
             color2[2] *= color2[3];
         }
-        this._clearColors[drawBuffer] = color2;
+
+        if (drawBuffer) {
+            this._clearColors[drawBuffer] = color2;
+        } else {
+            for (let i = 0; i < this._clearColors.length; ++i) {
+                this._clearColors[i] = color2;
+            }
+        }
     }
 
     @Initializable.assert_initialized()
