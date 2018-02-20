@@ -5,7 +5,7 @@ import { clamp, clamp3, clamp4 } from './gl-matrix-extensions';
 import { log_if, LogLevel } from './auxiliaries';
 
 
-namespace gl_clampf {
+namespace clampf {
 
     /**
      * Auxiliary 3-tuple of GLclampf values to prevent export of gl-matrix vec3 to the public API.
@@ -72,4 +72,4 @@ namespace gl_clampf {
 
 }
 
-export = gl_clampf;
+export = clampf;
