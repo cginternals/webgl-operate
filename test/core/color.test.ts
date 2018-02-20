@@ -9,7 +9,7 @@ const expect = chai.expect;
 const spy = chai.spy;
 const stub = sinon.stub;
 
-import { Color, GrayscaleAlgorithm } from '../../source/core/color';
+import { Color } from '../../source/core/color';
 
 
 describe('Color', () => {
@@ -320,14 +320,15 @@ describe('Color', () => {
 
     it('should compute various grayscales', () => {
         const color = new Color();
+        color.fromUI8(48, 96, 192);
 
-        expect(color.fromUI8(48, 96, 192).gray(GrayscaleAlgorithm.Average)).to.be.closeTo(0.4392, 1e-4);
-        expect(color.fromUI8(48, 96, 192).gray(GrayscaleAlgorithm.LeastSaturatedVariant)).to.be.closeTo(0.2824, 1e-4);
-        expect(color.fromUI8(48, 96, 192).gray(GrayscaleAlgorithm.LinearLuminance)).to.be.closeTo(0.3636, 1e-4);
-        expect(color.fromUI8(48, 96, 192).gray(GrayscaleAlgorithm.MaximumDecomposition)).to.be.closeTo(0.7529, 1e-4);
-        expect(color.fromUI8(48, 96, 192).gray(GrayscaleAlgorithm.MinimumDecomposition)).to.be.closeTo(0.1882, 1e-4);
+        expect(color.gray(Color.GrayscaleAlgorithm.Average)).to.be.closeTo(0.4392, 1e-4);
+        expect(color.gray(Color.GrayscaleAlgorithm.LeastSaturatedVariant)).to.be.closeTo(0.2824, 1e-4);
+        expect(color.gray(Color.GrayscaleAlgorithm.LinearLuminance)).to.be.closeTo(0.3636, 1e-4);
+        expect(color.gray(Color.GrayscaleAlgorithm.MaximumDecomposition)).to.be.closeTo(0.7529, 1e-4);
+        expect(color.gray(Color.GrayscaleAlgorithm.MinimumDecomposition)).to.be.closeTo(0.1882, 1e-4);
 
-        expect(color.fromUI8(48, 96, 192).gray()).to.be.closeTo(0.3636, 1e-4);
+        expect(color.gray()).to.be.closeTo(0.3636, 1e-4);
     });
 
 });

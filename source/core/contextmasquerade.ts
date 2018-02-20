@@ -5,22 +5,6 @@ import { ExtensionsHash } from './extensionshash';
 
 
 /**
- * Interfaces required to prevent implicit any when parsing masquerade.json.
- */
-export interface MasqueradePreset {
-    identifier: string;
-    backend: string;
-    extensions_hash: string;
-    extensions_strive: Array<string>;
-    extensions_conceal: Array<string>;
-    functions_undefine: Array<string>;
-}
-export interface MasqueradePresets {
-    presets: Array<MasqueradePreset>;
-}
-
-
-/**
  * Mask object for context masquerade. It is used to artificially restrict the capabilities of context instances.
  * It is intended to simplify cross-browser testing without actually using different browsers.
  *
@@ -40,7 +24,7 @@ export class ContextMasquerade {
     /**
      * @see {@link presets}
      */
-    protected static readonly MASQUERADE_JSON: MasqueradePresets = require('../assets/masquerade.json');
+    protected static readonly MASQUERADE_JSON: ContextMasquerade.Presets = require('../assets/masquerade.json');
 
     /**
      * @see {@link backend}
@@ -87,7 +71,7 @@ export class ContextMasquerade {
         const mask = new ContextMasquerade();
 
         const identifiers = new Array<string>();
-        let preset: MasqueradePreset | undefined;
+        let preset: ContextMasquerade.Preset | undefined;
         for (const p of ContextMasquerade.presets()) {
             identifiers.push(p.identifier);
             if (p.identifier !== identifier) {
@@ -99,7 +83,7 @@ export class ContextMasquerade {
         assert(preset !== undefined
             , `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
 
-        preset = preset as MasqueradePreset;
+        preset = preset as ContextMasquerade.Preset;
 
         if (preset.extensions_hash !== undefined) {
             const tuple = ExtensionsHash.decode(preset.extensions_hash);
@@ -187,4 +171,28 @@ export class ContextMasquerade {
     get functionsUndefine() {
         return this._functionsUndefine;
     }
+}
+
+
+namespace ContextMasquerade {
+
+    /**
+     * Interfaces required to prevent implicit any when parsing masquerade.json.
+     */
+    export interface Preset {
+        identifier: string;
+        backend: string;
+        extensions_hash: string;
+        extensions_strive: Array<string>;
+        extensions_conceal: Array<string>;
+        functions_undefine: Array<string>;
+    }
+
+    /**
+     * Interfaces required to prevent implicit any when parsing masquerade.json.
+     */
+    export interface Presets {
+        presets: Array<Preset>;
+    }
+
 }

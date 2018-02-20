@@ -5,14 +5,6 @@ import { clamp, clamp3, clamp4 } from './gl-matrix-extensions';
 import { assert, log_if, LogLevel } from './auxiliaries';
 
 
-export enum GrayscaleAlgorithm {
-    Average,
-    LinearLuminance, /* CIE1931 */
-    LeastSaturatedVariant,
-    MinimumDecomposition,
-    MaximumDecomposition,
-}
-
 type GLclampf3 = [GLclampf, GLclampf, GLclampf];
 type GLclampf4 = [GLclampf, GLclampf, GLclampf, GLclampf];
 type GLclampf5 = [GLclampf, GLclampf, GLclampf, GLclampf, GLclampf];
@@ -431,28 +423,28 @@ export class Color {
     }
 
 
-    gray(algorithm: GrayscaleAlgorithm = GrayscaleAlgorithm.LinearLuminance): GLclampf {
+    gray(algorithm: Color.GrayscaleAlgorithm = Color.GrayscaleAlgorithm.LinearLuminance): GLclampf {
 
         switch (algorithm) {
 
             /* does not represent shades of grayscale w.r.t. human perception of luminosity. */
-            case GrayscaleAlgorithm.Average:
+            case Color.GrayscaleAlgorithm.Average:
                 return (this._rgba[0] + this._rgba[1] + this._rgba[2]) / 3.0;
 
             /* flat (reduced contrast) and dark grayscale */
-            case GrayscaleAlgorithm.LeastSaturatedVariant:
+            case Color.GrayscaleAlgorithm.LeastSaturatedVariant:
                 return (Math.max(this._rgba[0], this._rgba[1], this._rgba[2])
                     - Math.min(this._rgba[0], this._rgba[1], this._rgba[2])) * 0.5;
 
             /* provides a darker grayscale */
-            case GrayscaleAlgorithm.MinimumDecomposition:
+            case Color.GrayscaleAlgorithm.MinimumDecomposition:
                 return Math.min(this._rgba[0], this._rgba[1], this._rgba[2]);
 
             /* provides a brighter grayscale */
-            case GrayscaleAlgorithm.MaximumDecomposition:
+            case Color.GrayscaleAlgorithm.MaximumDecomposition:
                 return Math.max(this._rgba[0], this._rgba[1], this._rgba[2]);
 
-            case GrayscaleAlgorithm.LinearLuminance:
+            case Color.GrayscaleAlgorithm.LinearLuminance:
             /* falls through */
             default:
                 return this._rgba[0] * 0.2126 + this._rgba[1] * 0.7152 + this._rgba[2] * 0.0722;
@@ -555,6 +547,19 @@ export class Color {
     get cmyka(): GLclampf5 {
         const cmyk = Color.rgb2cmyk(this.rgb);
         return [cmyk[0], cmyk[1], cmyk[2], cmyk[3], this._rgba[3]];
+    }
+
+}
+
+
+export namespace Color {
+
+    export enum GrayscaleAlgorithm {
+        Average,
+        LinearLuminance, /* CIE1931 */
+        LeastSaturatedVariant,
+        MinimumDecomposition,
+        MaximumDecomposition,
     }
 
 }

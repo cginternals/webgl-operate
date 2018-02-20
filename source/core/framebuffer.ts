@@ -2,7 +2,7 @@
 // import { assert, bitInBitfield, log_if, LogLevel } from './auxiliaries';
 
 // import { Bindable } from './bindable';
-// import { assert_initialized } from './initializable';
+// import { Initializable } from './initializable';
 // import { AbstractObject } from './object';
 // import { Renderbuffer } from './renderbuffer';
 // import { Texture2 } from './texture2';
@@ -36,7 +36,7 @@
 //      */
 //     protected _clearDepth: GLfloat;
 //     protected _clearStencil: GLint;
-//     protected _clearColors: Array<GLclampf> = new Array<number>(3);;
+//     protected _clearColors: GLclampf3Array<GLclampf> = new Array<number>(3);
 //     /**
 //      * Queue of all draw buffers that are to be cleared on `clear`.
 //      */
