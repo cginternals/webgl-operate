@@ -9,6 +9,9 @@
         }
     },
     "dependencies": {
+        "unused-ignores": [
+            "typescript"
+        ],
         "mute": [
             "gl-matrix"
         ]
