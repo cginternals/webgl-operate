@@ -1,7 +1,7 @@
 
 import { assert, log_if, LogLevel } from './auxiliaries';
 
-import { clampf, clampf3, clampf4, GLclampf3, GLclampf4, GLclampf5 } from './clampf';
+import { clampf, clampf3, clampf4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
 
 
 /**

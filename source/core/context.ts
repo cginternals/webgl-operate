@@ -118,9 +118,9 @@ export class Context {
      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
      * calls to getContext of an element will return null.
      * @param element - Canvas element to request context from.
-     * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext, or no context.
+     * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext.
      */
-    static request(element: HTMLCanvasElement): Context | undefined {
+    static request(element: HTMLCanvasElement): Context {
         const dataset: DOMStringMap = element.dataset;
         const mask = Context.createMasqueradeFromGETorDataAttribute(dataset);
 
@@ -160,7 +160,7 @@ export class Context {
         }
 
         assert(!!context, `creating a context failed`);
-        return context ? new Context(context, mask) : undefined;
+        return new Context(context, mask);
     }
 
     /**

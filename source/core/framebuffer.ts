@@ -1,6 +1,6 @@
 
 import { assert, bitInBitfield, log_if, LogLevel } from './auxiliaries';
-import { GLclampf4 } from './clampf';
+import { GLclampf4 } from './tuples';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
