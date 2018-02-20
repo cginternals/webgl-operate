@@ -1,13 +1,8 @@
 
-import { vec3, vec4 } from 'gl-matrix';
-import { clamp, clamp3, clamp4 } from './gl-matrix-extensions';
-
 import { assert, log_if, LogLevel } from './auxiliaries';
 
+import { clampf, clampf3, clampf4, GLclampf3, GLclampf4, GLclampf5 } from './clampf';
 
-type GLclampf3 = [GLclampf, GLclampf, GLclampf];
-type GLclampf4 = [GLclampf, GLclampf, GLclampf, GLclampf];
-type GLclampf5 = [GLclampf, GLclampf, GLclampf, GLclampf, GLclampf];
 
 
 /**
@@ -22,32 +17,6 @@ export class Color {
     protected static readonly HEX_FORMAT_REGEX = new RegExp(/^(#|0x)?(([0-9a-f]{3}){1,2}|([0-9a-f]{4}){1,2})$/i);
 
     protected _rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
-
-    protected static clampf(value: GLclampf, semantic?: string): GLclampf {
-        const valueV1 = clamp(value, 0.0, 1.0);
-        log_if(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.User
-            , `${semantic} clamped to [${valueV1}] | given [${value}]`);
-        return valueV1;
-    }
-
-    protected static clampf3(tuple: GLclampf3, semantic?: string): GLclampf3 {
-        const tupleV3: vec3 = vec3.fromValues(tuple[0], tuple[1], tuple[2]);
-        if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 || tuple[2] < 0.0 || tuple[2] > 1.0) {
-            clamp3(tupleV3, tupleV3, vec3.fromValues(0.0, 0.0, 0.0), vec3.fromValues(1.0, 1.0, 1.0));
-            log_if(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV3}] | given [${tuple}]`);
-        }
-        return [tupleV3[0], tupleV3[1], tupleV3[2]];
-    }
-
-    protected static clampf4(tuple: GLclampf4, semantic?: string): GLclampf4 {
-        const tupleV4: vec4 = vec4.fromValues(tuple[0], tuple[1], tuple[2], tuple[3]);
-        if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 ||
-            tuple[2] < 0.0 || tuple[2] > 1.0 || tuple[3] < 0.0 || tuple[3] > 1.0) {
-            clamp4(tupleV4, tupleV4, vec4.fromValues(0.0, 0.0, 0.0, 0.0), vec4.fromValues(1.0, 1.0, 1.0, 1.0));
-            log_if(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV4}] | given [${tuple}]`);
-        }
-        return [tupleV4[0], tupleV4[1], tupleV4[2], tupleV4[3]];
-    }
 
     /**
      * Converts a hue value into an rgb value.
@@ -78,7 +47,7 @@ export class Color {
      * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0].
      */
     static hsl2rgb(hsl: GLclampf3): GLclampf3 {
-        const hslF = this.clampf3(hsl, 'HSL input');
+        const hslF = clampf3(hsl, 'HSL input');
 
         if (hslF[1] === 0.0) {
             return [hslF[2], hslF[2], hslF[2]];
@@ -97,7 +66,7 @@ export class Color {
      * @returns - HSL color tuple: hue, saturation, and lightness, each in [0.0, 1.0].
      */
     static rgb2hsl(rgb: GLclampf3): GLclampf3 {
-        const rgbF = this.clampf3(rgb, 'RGB input');
+        const rgbF = clampf3(rgb, 'RGB input');
         const hsl: GLclampf3 = [0.0, 0.0, 0.0];
 
         const min = Math.min(rgbF[0], rgbF[1], rgbF[2]);
@@ -133,7 +102,7 @@ export class Color {
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static lab2xyz(lab: GLclampf3): GLclampf3 {
-        const labF = this.clampf3(lab, 'LAB input');
+        const labF = clampf3(lab, 'LAB input');
 
         const yr = (labF[0] * 100.0 + 16.0) / 116.0;
         const xr = labF[1] * 100 / 500.0 + yr;
@@ -157,7 +126,7 @@ export class Color {
      * @returns - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      */
     static xyz2lab(xyz: GLclampf3): GLclampf3 {
-        // DO NOT CLAMP! const xyzF = this.clampf3(xyz, 'XYZ input');
+        // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
         const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
 
         /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
@@ -165,7 +134,7 @@ export class Color {
         const y = xyzF[1] > 0.008856 ? Math.pow(xyzF[1], 1.0 / 3.0) : (7.787 * xyzF[1]) + (16.0 / 116.0);
         const z = xyzF[2] > 0.008856 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
 
-        return this.clampf3([
+        return clampf3([
             0.01 * (116.0 * y - 16.0),
             0.01 * (500.0 * (x - y)),
             0.01 * (200.0 * (y - z))]);
@@ -178,13 +147,13 @@ export class Color {
      * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0]
      */
     static xyz2rgb(xyz: GLclampf3): GLclampf3 {
-        // DO NOT CLAMP! const xyzF = this.clampf3(xyz, 'XYZ input');
+        // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
 
         const r = xyz[0] * +2.04159 + xyz[1] * -0.56501 + xyz[2] * -0.34473;
         const g = xyz[0] * -0.96924 + xyz[1] * +1.87597 + xyz[2] * +0.04156;
         const b = xyz[0] * +0.01344 + xyz[1] * -0.11836 + xyz[2] * +1.01517;
 
-        return this.clampf3([
+        return clampf3([
             Math.pow(r, 1.0 / 2.19921875),
             Math.pow(g, 1.0 / 2.19921875),
             Math.pow(b, 1.0 / 2.19921875)]);
@@ -206,7 +175,7 @@ export class Color {
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static rgb2xyz(rgb: GLclampf3): GLclampf3 {
-        const rgbF = this.clampf3(rgb, 'RGB input');
+        const rgbF = clampf3(rgb, 'RGB input');
 
         const r = Math.pow(rgbF[0], 2.19921875);
         const g = Math.pow(rgbF[1], 2.19921875);
@@ -244,7 +213,7 @@ export class Color {
      * @returns - RGB color tuple: red, green, and blue, each in [0.0, 1.0]
      */
     static cmyk2rgb(cmyk: GLclampf4): GLclampf3 {
-        const cmykF = this.clampf4(cmyk, 'CMYK input');
+        const cmykF = clampf4(cmyk, 'CMYK input');
 
         const k = 1.0 - cmykF[3];
         return [(1.0 - cmykF[0]) * k, (1.0 - cmykF[1]) * k, (1.0 - cmykF[2]) * k];
@@ -256,7 +225,7 @@ export class Color {
      * @returns - CMYK color tuple: cyan, magenta, yellow, and key, each in [0.0, 1.0].
      */
     static rgb2cmyk(rgb: GLclampf3): GLclampf4 {
-        const rgbF = this.clampf3(rgb, 'RGB input');
+        const rgbF = clampf3(rgb, 'RGB input');
 
         const k1 = 1.0 - Math.max(rgbF[0], rgbF[1], rgbF[2]);
         const k2 = 1.0 - k1;
@@ -301,7 +270,7 @@ export class Color {
      * @returns - Hexadecimal color string: red, green, and blue, each in ['00', 'ff'], with '#' prefix
      */
     static rgb2hex(rgb: GLclampf3): string {
-        const rgbF = this.clampf3(rgb, 'RGB input');
+        const rgbF = clampf3(rgb, 'RGB input');
 
         const r = (rgbF[0] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[0] * 255).toString(16);
         const g = (rgbF[1] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[1] * 255).toString(16);
@@ -315,7 +284,7 @@ export class Color {
      * @returns - Hexadecimal color string: red, green, blue, and alpha, each in ['00', 'ff'], with '#' prefix
      */
     static rgba2hex(rgba: GLclampf4): string {
-        const rgbaF = this.clampf4(rgba, 'RGBA input');
+        const rgbaF = clampf4(rgba, 'RGBA input');
 
         const r = (rgbaF[0] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[0] * 255).toString(16);
         const g = (rgbaF[1] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[1] * 255).toString(16);
@@ -333,14 +302,14 @@ export class Color {
         if (rgba === undefined) {
             return;
         }
-        this._rgba[0] = Color.clampf(rgba[0], 'red value');
-        this._rgba[1] = Color.clampf(rgba[1], 'green value');
-        this._rgba[2] = Color.clampf(rgba[2], 'blue value');
+        this._rgba[0] = clampf(rgba[0], 'red value');
+        this._rgba[1] = clampf(rgba[1], 'green value');
+        this._rgba[2] = clampf(rgba[2], 'blue value');
 
         if (rgba.length === 3 && alpha !== undefined) {
-            this._rgba[3] = Color.clampf(alpha, 'alpha value');
+            this._rgba[3] = clampf(alpha, 'alpha value');
         } else if (rgba.length === 4) {
-            this._rgba[3] = Color.clampf(rgba[3], 'alpha value');
+            this._rgba[3] = clampf(rgba[3], 'alpha value');
             assert(alpha === undefined, `expected alpha to be undefined when given an 4-tuple in RGBA`);
         }
     }
@@ -374,7 +343,7 @@ export class Color {
     fromHSL(hue: GLclampf, saturation: GLclampf, lightness: GLclampf
         , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
         const rgb = Color.hsl2rgb([hue, saturation, lightness]);
-        const alphaf = Color.clampf(alpha, 'ALPHA input');
+        const alphaf = clampf(alpha, 'ALPHA input');
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
         return this;
     }
@@ -390,7 +359,7 @@ export class Color {
     fromLAB(lightness: GLclampf, greenRed: GLclampf, blueYellow: GLclampf
         , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
         const rgb = Color.lab2rgb([lightness, greenRed, blueYellow]);
-        const alphaf = Color.clampf(alpha, 'ALPHA input');
+        const alphaf = clampf(alpha, 'ALPHA input');
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
         return this;
     }
@@ -407,7 +376,7 @@ export class Color {
     fromCMYK(cyan: GLclampf, magenta: GLclampf, yellow: GLclampf, key: GLclampf
         , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
         const rgb = Color.cmyk2rgb([cyan, magenta, yellow, key]);
-        const alphaf = Color.clampf(alpha, 'ALPHA input');
+        const alphaf = clampf(alpha, 'ALPHA input');
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
         return this;
     }
