@@ -7,5 +7,10 @@
         "wc": {
             "limit": 2048
         }
+    },
+    "dependencies": {
+        "mute": [
+            "gl-matrix"
+        ]
     }
 }
