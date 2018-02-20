@@ -78,10 +78,10 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+        /* note that gl.isTexture requires the texture to be bound */
+        this._valid = gl.isTexture(this._object);
         this.context.allocationRegister.reallocate(this._identifier, 0);
 
-        /* note that gl.isTexture requires the texture to be bound */
-        this._valid = this._object instanceof WebGLTexture;
         return this._object;
     }
 

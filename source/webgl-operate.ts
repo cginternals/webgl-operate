@@ -4,6 +4,7 @@ import { ContextMasquerade } from './core/contextmasquerade';
 import { ExtensionsHash } from './core/extensionshash';
 
 import { Buffer } from './core/buffer';
+import { Framebuffer } from './core/framebuffer';
 import { Geometry } from './core/geometry';
 import { Program } from './core/program';
 import { Renderbuffer } from './core/renderbuffer';
@@ -28,6 +29,7 @@ export {
     ExtensionsHash,
 
     Buffer,
+    Framebuffer,
     Geometry,
     Program,
     Renderbuffer,

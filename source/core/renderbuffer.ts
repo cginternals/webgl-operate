@@ -57,13 +57,13 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, this._object);
         gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
+        /* note that gl.isRenderbuffer requires the renderbuffer to be bound */
+        this._valid = gl.isRenderbuffer(this._object);
         gl.bindRenderbuffer(gl.RENDERBUFFER, Renderbuffer.DEFAULT_RENDER_BUFFER);
 
         this._bytes = width * height * byteSizeOfFormat(this.context, internalFormat as GLenum);
         this.context.allocationRegister.reallocate(this._identifier, this._bytes);
 
-        /* note that gl.isRenderbuffer requires the renderbuffer to be bound */
-        this._valid = this._object instanceof WebGLRenderbuffer;
         return this.context.gl.createRenderbuffer();
     }
 
