@@ -63,12 +63,13 @@
         "typescript": "^2.7.2"
     },
     "peerDependencies": {
-        "rxjs": "^5.5.1"
+        "rxjs": "^5.5.6"
     },
     "scripts": {
         "build": "webpack",
         "build-watch": "webpack --watch",
         "build-all": "webpack --config webpack.config.dist.js",
+        "build-lib": "webpack --config webpack.config.lib.js",
         "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
         "test": "nyc mocha",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -78,7 +79,7 @@
         "deploy": "npm run build-all && npm run check && npm run test && npm run example && npm run doc",
         "deploy-lite": "npm run build && npm run example",
         "deploy-watch": "npm run build-watch | npm run example-watch",
-        "prepublishOnly": "webpack --config webpack.config.dist.js && webpack --config webpack.config.lib.js"
+        "prepublishOnly": "npm run build-all && npm run build-lib"
     },
     "keywords": [
         "webgl",

@@ -1,6 +1,7 @@
 
 import { assert, prettyPrintBytes } from './auxiliaries';
 
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 
@@ -52,7 +53,7 @@ export class AllocationRegister {
      * Enables observation of (de)allocations and returns the number of bytes as number as well as pretty printed
      * string. This 'signal' can also be used to gather identifier specific items.
      */
-    allocatedObservable = this._bytesSubject.asObservable();
+    allocatedObservable: Observable<[number, string]> = this._bytesSubject.asObservable();
 
     /**
      * Constructor that resets the memory and configures the observable object.

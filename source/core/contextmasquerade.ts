@@ -138,7 +138,7 @@ export class ContextMasquerade {
      * simplify cross-browser testing without actually using different browsers.
      */
     static presets() {
-        return ContextMasquerade.MASQUERADE_JSON.presets;
+        return this.MASQUERADE_JSON.presets;
     }
 
     /**
@@ -174,7 +174,7 @@ export class ContextMasquerade {
 }
 
 
-namespace ContextMasquerade {
+export namespace ContextMasquerade {
 
     /**
      * Interfaces required to prevent implicit any when parsing masquerade.json.

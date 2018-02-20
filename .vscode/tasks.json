@@ -33,6 +33,14 @@
             ]
         },
         {
+            "taskName": "build lib",
+            "isBuildCommand": true,
+            "args": [
+                "run-script",
+                "build-lib"
+            ]
+        },
+        {
             "taskName": "check",
             "isTestCommand": true,
             "args": [
