@@ -4,7 +4,6 @@ import { assert, log_if, LogLevel } from './auxiliaries';
 import { clampf, clampf3, clampf4, GLclampf3, GLclampf4, GLclampf5 } from './clampf';
 
 
-
 /**
  * Color class that allows for specification and conversion of colors in various color spaces. Please not that most of
  * the color conversion math is based on  {@link https://www.easyrgb.com/en/math.php}. The internal color representation
@@ -530,5 +529,4 @@ export namespace Color {
         MinimumDecomposition,
         MaximumDecomposition,
     }
-
 }
