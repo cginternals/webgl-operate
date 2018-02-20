@@ -1,6 +1,6 @@
 
 
-import { assert } from './common';
+import { assert } from './auxiliaries';
 
 import { BackendType, Context } from './context';
 

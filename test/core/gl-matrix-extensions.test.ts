@@ -14,7 +14,7 @@ import {
     parseVec2, parseVec3, parseVec4,
     sign,
     v2, v3, v4,
-} from '../../source/core/gl-matrix-ext';
+} from '../../source/core/gl-matrix-extensions';
 
 
 /* tslint:disable:no-unused-expression */

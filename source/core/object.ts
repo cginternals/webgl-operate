@@ -1,8 +1,8 @@
 
-import { assert, log_if, LogLevel } from './common';
+import { assert, log_if, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
-import { Initializable, initialize, uninitialize } from './initializable';
+import { Initializable } from './initializable';
 
 
 /**
@@ -71,7 +71,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * object raises an assertion in order to prevent further actions without a valid WebGL object. After
      * object creation the valid property is expected to be set accordingly.
      */
-    @initialize()
+    @Initializable.initialize()
     initialize(...args: any[]): boolean {
         this._identifier = this._context.allocationRegister.createUniqueIdentifier(this._identifier);
         this.create.apply(this, args);
@@ -90,7 +90,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * When overriding this function super.uninitialize() has to be invoked last/at the end.
      * Note that an object cannot be uninitialized if it is referenced (reference count > 0).
      */
-    @uninitialize()
+    @Initializable.uninitialize()
     uninitialize(): void {
         this._context.allocationRegister.reallocate(this._identifier, 0);
         this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);

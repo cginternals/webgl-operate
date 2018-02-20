@@ -4,8 +4,17 @@
             "engine": "tslint",
             "configLocation": "tslint.json"
         },
-        "wc": { 
+        "wc": {
             "limit": 2048
         }
+    },
+    "dependencies": {
+        "unused-ignores": [
+            "typescript"
+        ],
+        "mute": [
+            "@types/gl-matrix",
+            "gl-matrix"
+        ]
     }
 }

@@ -14,7 +14,7 @@
         "noUnusedParameters": false,
         "noUnusedLocals": true,
         "strictNullChecks": true,
-        "removeComments": true,
+        "removeComments": false,
         "preserveConstEnums": true,
         "allowSyntheticDefaultImports": false,
         "skipLibCheck": true,

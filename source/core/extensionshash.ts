@@ -1,5 +1,5 @@
 
-import { assert } from './common';
+import { assert } from './auxiliaries';
 
 import { WEBGL1_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
 

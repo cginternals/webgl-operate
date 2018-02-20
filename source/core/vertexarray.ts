@@ -1,7 +1,7 @@
 
-import { assert } from './common';
+import { assert } from './auxiliaries';
 
-import { assert_initialized } from '../core/initializable';
+import { Initializable } from '../core/initializable';
 import { Bindable } from './bindable';
 import { AbstractObject } from './object';
 
@@ -97,10 +97,9 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
             return;
         }
 
-        const gl2facade = this._context.gl2facade;
         assert(this._object !== undefined, `expected WebGLVertexArrayObject object`);
+        this._context.gl2facade.deleteVertexArray(this._object);
 
-        gl2facade.deleteVertexArray(this._object);
         this._object = undefined;
         this._valid = false;
 
@@ -110,7 +109,7 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     /**
      * Invokes the preset bind function.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     bind(): void {
         this._bind();
     }
@@ -118,7 +117,7 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     /**
      * Invokes the preset unbind function.
      */
-    @assert_initialized()
+    @Initializable.assert_initialized()
     unbind(): void {
         this._unbind();
     }

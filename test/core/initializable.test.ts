@@ -4,29 +4,28 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 
-import { Initializable as AbstractInitializable, initialize, uninitialize } from '../../source/core/initializable';
-import { assert_initialized, assert_uninitialized } from '../../source/core/initializable';
+import { Initializable as AbstractInitializable } from '../../source/core/initializable';
 
 
 /* tslint:disable:no-unused-expression */
 
 class Initializable extends AbstractInitializable {
 
-    @initialize()
+    @Initializable.initialize()
     initialize(result: boolean = true): boolean {
         return result;
     }
 
-    @uninitialize()
+    @Initializable.uninitialize()
     uninitialize(): void { }
 
     publicAssertInitialized = () => this.assertInitialized();
     publicAssertUninitialized = () => this.assertUninitialized();
 
-    @assert_initialized()
+    @Initializable.assert_initialized()
     expectInitialized(): void { }
 
-    @assert_uninitialized()
+    @Initializable.assert_uninitialized()
     expectUninitialized(): void { }
 }
 

@@ -1,0 +1,44 @@
+{
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 96,
+    "statements": 96,
+    "functions": 96,
+    "branches": 96,
+    "include": [
+        "source/**/*.ts"
+    ],
+    "exclude": [
+        "source/core/buffer.ts",
+        "source/core/context.ts",
+        "source/core/defaultframebuffer.ts",
+        "source/core/framebuffer.ts",
+        "source/core/geometry.ts",
+        "source/core/gl2facade.ts",
+        "source/core/formatbytesizes.ts",
+        "source/core/program.ts",
+        "source/core/object.ts",
+        "source/core/renderbuffer.ts",
+        "source/core/shader.ts",
+        "source/core/texture2.ts",
+        "source/core/vertexarray.ts",
+        "source/assets/ndcfillingrectangle.ts",
+        "source/assets/ndcfillingtriangle.ts"
+    ],
+    "extension": [
+        ".ts"
+    ],
+    "require": [
+        "ts-node/register"
+    ],
+    "reporter": [
+        "text",
+        "cobertura",
+        "lcov"
+    ],
+    "report-dir": "dist/test-results",
+    "sourceMap": true,
+    "instrument": true,
+    "cache": true,
+    "all": false
+}

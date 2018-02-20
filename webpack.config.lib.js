@@ -7,7 +7,12 @@ module.exports.entry = {
 
 module.exports.module.rules[0].use = {
     loader: 'ts-loader',
-    options: { compilerOptions: { declaration: true } }
+    options: {
+        compilerOptions: {
+            declaration: true,
+            removeComments: true
+        }
+    }
 };
 
 module.exports.output.library = undefined;

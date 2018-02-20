@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './common';
+import { assert, log_if, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { AbstractObject } from './object';
@@ -37,7 +37,6 @@ export class Shader extends AbstractObject<WebGLShader> {
     }
 
     /**
-     * @override
      * Creates a shader, sets the shader source, and compiles the shader. If the shader source cannot be compiled, the
      * identifier and an info log are logged to console and the shader object is deleted. Note that a '#version 300 es'
      * is added in case the shader source is compiled in a WebGL2 context.
@@ -82,6 +81,7 @@ export class Shader extends AbstractObject<WebGLShader> {
      * Either VERTEX_SHADER or FRAGMENT_SHADER.
      */
     get type() {
+        this.assertInitialized();
         return this._type;
     }
 
