@@ -1,8 +1,7 @@
 
 import { assert, prettyPrintBytes } from './auxiliaries';
 
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { observable } from './observable';
 
 
 /**
@@ -40,27 +39,22 @@ export class AllocationRegister {
     /**
      * Map that provides access to the accumulated memory allocations for all registered identifiers.
      */
-    protected _bytesByIdentifier = new Map<string, number>();
+    protected _bytesByIdentifier = new Map<string, GLsizei>();
 
     /**
      * Cache for the overall number of allocated bytes (over all identifiers). This should always be the sum of the
      * bytes allocated over each identifier, which can be validated using validate().
+     *
+     * For this property, an observable subject and a getter will be generated (decorated) at run-time.
      */
-    protected _bytes: number;
-    protected _bytesSubject = new Subject<[number, string]>();
-
-    /**
-     * Enables observation of (de)allocations and returns the number of bytes as number as well as pretty printed
-     * string. This 'signal' can also be used to gather identifier specific items.
-     */
-    allocatedObservable: Observable<[number, string]> = this._bytesSubject.asObservable();
+    @observable<GLsizei>(true, true)
+    protected _bytes: GLsizei;
 
     /**
      * Constructor that resets the memory and configures the observable object.
      */
     constructor() {
         this._bytes = 0.0;
-        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -70,6 +64,7 @@ export class AllocationRegister {
     protected assertIdentifier(identifier: string): void {
         assert(this._bytesByIdentifier.has(identifier), `allocation identifier unknown`);
     }
+
 
     /**
      * Creates a unique identifier based on a given identifier: if the identifier is already unique it is returned as
@@ -117,7 +112,6 @@ export class AllocationRegister {
         this._bytesByIdentifier.set(identifier, bytes);
 
         this._bytes = this._bytes + allocate; // allocate total
-        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -139,7 +133,6 @@ export class AllocationRegister {
         this._bytesByIdentifier.set(identifier, bytes - deallocate);
 
         this._bytes = this._bytes - deallocate; // deallocate total
-        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**
@@ -155,7 +148,6 @@ export class AllocationRegister {
         this._bytesByIdentifier.set(identifier, reallocate);
 
         this._bytes = this._bytes + reallocate; // allocate total
-        this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
     /**

@@ -20,7 +20,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * @see {@link bytes}
      */
-    protected _bytes = 0;
+    protected _bytes: GLsizei = 0;
 
     /**
      * @see {@link target}
@@ -146,7 +146,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Returns the number of bytes this object approximately allocates on the GPU.
      */
-    get bytes(): GLsizei {
+    get bytes() {
         this.assertInitialized();
         return this._bytes;
     }

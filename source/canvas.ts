@@ -1,11 +1,12 @@
 
 import { vec2, vec4 } from 'gl-matrix';
-import { clamp2, clamp4, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
+import { clamp2, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
 
 import { log_if, LogLevel } from './core/auxiliaries';
-import { clampf2, GLclampf2, GLfloat2, GLsizei2, tuple2, tuple4 } from './core/tuples';
+import { GLclampf2, GLsizei2, tuple2, tuple4 } from './core/tuples';
 
-// import { Observable } from './core/observable';
+import { observable } from './core/observable';
+
 import { Color } from './core/color';
 import { Context } from './core/context';
 import { Resizable } from './core/resizable';
@@ -36,81 +37,80 @@ export class Canvas extends Resizable {
      */
     protected static readonly DEFAULT_CLEAR_COLOR: Color = new Color([0.203, 0.227, 0.250, 1.0]);
 
-    //     protected static readonly DEFAULT_ACCUMULATION_FORMAT: string = 'auto';
-
-    //     /**
-    //      * Default multi-frame number used if none is set via data attributes.
-    //      */
-    //     protected static readonly DEFAULT_MULTI_FRAME_NUMBER: number = 8;
-
-
-    protected _context: Context;
-
-    //     /**
-    //      * Single controller that is managing the rendering control flow of a bound pipeline.
-    //      */
-    //     protected _controller: Controller;
-
-    //     /**
-    //      * Pipeline that is exclusively used by this canvas. Note that no pipeline should be bound to multiple canvases
-    //      * simultaneously. The reference is non owning.
-    //      */
-    //     protected _pipeline: Pipeline;
-
-    //     protected _navigation: Navigation;
+    /**
+     * Default accumulation accuracy/format when multi-frame rendering is used.
+     */
+    protected static readonly DEFAULT_ACCUMULATION_FORMAT: string = 'auto';
 
     /**
-     * Clear color provided to the pipeline (on bind). Since this is a canvas specific setting it is stored here, not
-     * in pipeline or controller.
+     * Default multi-frame number used if none is set via data attributes.
+     */
+    protected static readonly DEFAULT_MULTI_FRAME_NUMBER: number = 0;
+
+    /**
+     * @see {@link context}
+     */
+    protected _context: Context;
+
+    // /**
+    //  * Single controller that is managing the rendering control flow of a bound renderer.
+    //  */
+    // protected _controller: Controller;
+
+    // /**
+    //  * Renderer that is exclusively used by this canvas. Note that no renderer should be bound to multiple canvases
+    //  * simultaneously. The reference is non owning.
+    //  */
+    // protected _renderer: Renderer;
+
+    // protected _navigation: Navigation;
+
+
+    /**
+     * @see {@link clearColor}
      */
     protected _clearColor: Color;
 
-    //     protected _accumulationFormat: string;
 
-    //     accumulationFormatObservable: Observable<string>;
+    /**
+     * @see {@link accumulationFormat}
+     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.accumulationFormatSubject.subscribe()`.
+     */
+    @observable<string>()
+    protected _accumulationFormat: string;
 
 
     /**
      * @see {@link size}
+     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.sizeSubject.subscribe()`.
      */
+    @observable<GLsizei2>()
     protected _size: GLsizei2 = [1, 1];
 
-    //     /**
-    //      * Size observable that enables observation of value changes of size.
-    //      * ```
-    //      * aCanvas.sizeObservable.observe(function (canvasSize) { ... });
-    //      * ```
-    //      */
-    //     sizeObservable: Observable<vec2>;
 
     /**
-     * Intermediate frame scale with respect to the canvas size. This is provided to the pipeline for rendering.
+     * @see {@link frameScale}
+     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.frameScaleSubject.subscribe()`.
      */
-    protected _frameScale: GLfloat2;
-    //     /**
-    //      * Frame scale observable that enables observation of value changes of frame scale.
-    //      * ```
-    //      * aCanvas.frameScaleObservable.observe(function (frameScale) { ... });
-    //      * ```
-    //      */
-    //     frameScaleObservable: Observable<vec2>;
+    @observable<GLclampf2>()
+    protected _frameScale: GLclampf2;
 
     /**
-     * Intermediate frame size which is provided to the pipeline for rendering.
+     * @see {@link frameSize}
+     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.frameSizeSubject.subscribe()`.
      */
+    @observable<GLsizei2>()
     protected _frameSize: GLsizei2;
-    //     /**
-    //      * Frame size observable that enables observation of value changes of frame size.
-    //      * ```
-    //      * aCanvas.frameSizeObservable.observe(function (frameSize) { ... });
-    //      * ```
-    //      */
-    //     frameSizeObservable: Observable<vec2>;
 
     /**
      * Flag used to determine whether frame size or frame scale is the dominant configuration.
      */
     protected _favorSizeOverScale: boolean;
+
 
     /**
      * Canvas element within the HTML5 document.
@@ -124,25 +124,25 @@ export class Canvas extends Resizable {
     //             return false;
     //         }]);
 
-    //     /**
-    //      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
-    //      * context as well as the canvas resolution. The context and resolution will be passed on to the set pipeline and
-    //      * its stages appropriately. The canvas does not provide lazy initialization and is strictly bound to a single
-    //      * canvas element (DOM) that cannot be changed.
-    //      *
-    //      * Note: the multi-frame number can be set using a data attribute in the canvas element called
-    //      * 'data-multi-frame-number'.
-    //      *
-    //      * The canvas supports the following data attributes:
-    //      * - data-multi-frame-number {number} - integer greater than 0
-    //      * - data-clear-color {vec4} - rgba color for clearing
-    //      * - data-frame-scale {vec2} - width and height frame scale in [0.0,1.0]
-    //      * - data-frame-size {vec2} - width and height frame size in pixel
-    //      *
-    //      * Note: data-frame-size takes precedence if both frame-scale and frame-size data attributes are provided.
-    //      *
-    //      * @param element - Canvas element.
-    //      */
+    /**
+     * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
+     * context as well as the canvas resolution. The context and resolution will be passed on to the set renderer and
+     * its stages appropriately. The canvas does not provide lazy initialization and is strictly bound to a single
+     * canvas element (DOM) that cannot be changed.
+     *
+     * Note: the multi-frame number can be set using a data attribute in the canvas element called
+     * 'data-multi-frame-number'.
+     *
+     * The canvas supports the following data attributes:
+     * - data-multi-frame-number {number} - integer greater than 0
+     * - data-clear-color {vec4} - rgba color for clearing
+     * - data-frame-scale {vec2} - width and height frame scale in [0.0,1.0]
+     * - data-frame-size {vec2} - width and height frame size in pixel
+     * - data-accumulation-format {string} - accumulation format, either 'float', 'half', 'byte', or 'auto'.
+     *
+     * Note: data-frame-size takes precedence if both frame-scale and frame-size data attributes are provided.
+     * @param element - Canvas element or element id {string} to be used for querying the canvas element.
+     */
     constructor(element: HTMLCanvasElement | string) {
         super(); // setup resize event handling
 
@@ -167,12 +167,9 @@ export class Canvas extends Resizable {
         }
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
-        // // retrieve accumulation format from data attributes or set default
-        // const dataAccumFormat = dataset.accumulationFormat;
-        // this._accumulationFormat = dataAccumFormat ? dataAccumFormat : Canvas.DEFAULT_ACCUMULATION_FORMAT;
-
-        // this.accumulationFormatObservable = new Observable<string>(() => this.accumulationFormat);
-
+        /* Retrieve accumulation format from data attributes or set default */
+        const dataAccumFormat = dataset.accumulationFormat;
+        this._accumulationFormat = dataAccumFormat ? dataAccumFormat : Canvas.DEFAULT_ACCUMULATION_FORMAT;
 
         // for (const eventListener of this._eventListenersByType) {
         //     this._element.addEventListener(eventListener[0], eventListener[1]);
@@ -188,7 +185,7 @@ export class Canvas extends Resizable {
         /* Create and setup a multi-frame controller. */
         // this._controller = new Controller();
         // this._controller.initialize([]);
-        // this._controller.block(); // Remain in block mode until pipeline is bound and configured.
+        // this._controller.block(); // Remain in block mode until renderer is bound and configured.
 
         // const mfNum: number = parseInt(dataset.multiFrameNumber, 10);
         // const dfNum: number = parseInt(dataset.debugFrameNumber, 10);
@@ -225,8 +222,6 @@ export class Canvas extends Resizable {
      * @param dataset - The attributes data-frame-size and data-frame-scale are supported.
      */
     protected configureSizeAndScale(dataset: DOMStringMap) {
-        /* Retrieve native canvas size. */
-        // this.sizeObservable = new Observable<vec2>(() => this.size);
 
         /* Setup frame scale with respect to the canvas size. */
         let dataFrameScale: vec2 | undefined;
@@ -236,7 +231,6 @@ export class Canvas extends Resizable {
                 `data-frame-scale could not be parsed, given '${dataset.frameScale}'`);
         }
         this._frameScale = dataFrameScale ? tuple2<GLfloat>(dataFrameScale) : [1.0, 1.0];
-        // this.frameScaleObservable = new Observable<vec2>(() => this.frameScale);
 
         /* Setup frame size. */
         let dataFrameSize: vec2 | undefined;
@@ -247,7 +241,6 @@ export class Canvas extends Resizable {
         }
         this._favorSizeOverScale = dataFrameSize !== undefined;
         this._frameSize = dataFrameSize ? tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
-        // this.frameSizeObservable = new Observable<vec2>(() => this.frameSize);
 
         this.onResize();
     }
@@ -276,9 +269,9 @@ export class Canvas extends Resizable {
         this._element.width = this._size[0];
         this._element.height = this._size[1];
 
-        // if (this._pipeline) {
+        // if (this._renderer) {
         //     this._controller.block();
-        //     this._pipeline.canvasSize = this._size;
+        //     this._renderer.canvasSize = this._size;
         // }
 
         if (this._favorSizeOverScale) {
@@ -287,11 +280,9 @@ export class Canvas extends Resizable {
             this.frameScale = this._frameScale;
         }
 
-        // if (this._pipeline) {
+        // if (this._renderer) {
         //     this._controller.unblock();
         // }
-
-        // this.sizeObservable.changed();
     }
 
 
@@ -308,9 +299,9 @@ export class Canvas extends Resizable {
         // this._controller.uninitialize();
         // this._navigation.uninitialize();
 
-        //  if (this._pipeline) {
-        //      // we do not destroy the pipeline (not owned)
-        //      this._pipeline.uninitialize();
+        //  if (this._renderer) {
+        //      // we do not destroy the renderer (not owned)
+        //      this._renderer.uninitialize();
         //  }
     }
 
@@ -336,90 +327,90 @@ export class Canvas extends Resizable {
     }
 
 
-    //     /**
-    //      * The pipeline (if not null) will be connected to the controller and navigation. The controller will immediately
-    //      * trigger a multi-frame, thereby causing the pipeline to render frames.
-    //      *
-    //      * @todo connect a navigation to the pipeline
-    //      *
-    //      * @param pipeline - Either null or an uninitialized pipeline.
-    //      */
-    //     bind(pipeline: Pipeline) {
-    //         this._controller.block();
+    // /**
+    //  * The renderer (if not null) will be connected to the controller and navigation. The controller will
+    //  * immediately trigger a multi-frame, thereby causing the renderer to render frames.
+    //  *
+    //  * @todo connect a navigation to the renderer
+    //  *
+    //  * @param renderer - Either null or an uninitialized renderer.
+    //  */
+    // bind(renderer: Renderer) {
+    //     this._controller.block();
 
-    //         this._pipeline = pipeline;
-    //         if (!this._pipeline) {
-    //             return;
-    //         }
-
-    //         /**
-    //          * Note: a pipeline that is to be bound to a canvas is expected to be not initialized. For it, initializable
-    //          * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
-    //          * method is assigned to the pipelines invalidation event.
-    //          */
-    //         this._pipeline.initialize(this.context, () => this._controller.update());
-
-    //         this._pipeline.canvasSize = this._size;
-    //         this._pipeline.frameSize = this._frameSize;
-    //         this._pipeline.clearColor = this._clearColor;
-    //         this._pipeline.accumulationFormat = this._accumulationFormat;
-
-    //         /**
-    //          * Note: again, no asserts required since controller and pipeline already take care of that.
-    //          *
-    //          * Assign the pipeline's update, frame, and swap method to the controller's frame and swap event callback. The
-    //          * assignments trigger immediate update and subsequently updates on invalidation.
-    //          */
-    //         this._controller.updateCallback = (multiFrameNumber: number) => this._pipeline.update(multiFrameNumber);
-    //         this._controller.frameCallback = (frameNumber: number) => this._pipeline.frame(frameNumber);
-    //         this._controller.swapCallback = () => this._pipeline.swap();
-
-    //         this._navigation.coordsAccess = (x: GLint, y: GLint, zInNDC?: number,
-    //             viewProjectionInverse?: mat4) => this._pipeline.coordsAt(x, y, zInNDC, viewProjectionInverse);
-    //         this._navigation.idAccess = (x: GLint, y: GLint) => this._pipeline.idAt(x, y);
-    //         this._navigation.camera = this._pipeline.camera;
-
-    //         this._controller.unblock();
+    //     this._renderer = renderer;
+    //     if (!this._renderer) {
+    //         return;
     //     }
 
     //     /**
-    //      * Unbinds the current pipeline from the canvas as well as the controller and navigation, and uninitializes the
-    //      * pipeline.
+    //      * Note: a renderer that is to be bound to a canvas is expected to be not initialized. For it, initializable
+    //      * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
+    //      * method is assigned to the pipelines invalidation event.
     //      */
-    //     unbind() {
-    //         if (!this._pipeline) {
-    //             return;
-    //         }
+    //     this._renderer.initialize(this.context, () => this._controller.update());
 
-    //         this._controller.block();
-    //         /**
-    //          * Since canvas is not the owner of the pipeline it should not destroy it. However, the canvas manages the
-    //          * initialization of bound pipelines.
-    //          */
-    //         this._controller.updateCallback = undefined;
-    //         this._controller.frameCallback = undefined;
-    //         this._controller.swapCallback = undefined;
-    //     }
+    //     this._renderer.canvasSize = this._size;
+    //     this._renderer.frameSize = this._frameSize;
+    //     this._renderer.clearColor = this._clearColor;
+    //     this._renderer.accumulationFormat = this._accumulationFormat;
 
     //     /**
-    //      * The currently bound pipeline. If no pipeline is bound null is returned. If a pipeline is bound, it should always
-    //      * be initialized (pipeline initialization handled by the canvas).
+    //      * Note: again, no asserts required since controller and renderer already take care of that.
     //      *
-    //      * @returns The currently bound pipeline.
+    //      * Assign the renderer's update, frame, and swap method to the controller's frame and swap event callback.
+    //      * The assignments trigger immediate update and subsequently updates on invalidation.
     //      */
-    //     get pipeline(): Pipeline {
-    //         return this._pipeline;
+    //     this._controller.updateCallback = (multiFrameNumber: number) => this._renderer.update(multiFrameNumber);
+    //     this._controller.frameCallback = (frameNumber: number) => this._renderer.frame(frameNumber);
+    //     this._controller.swapCallback = () => this._renderer.swap();
+
+    //     this._navigation.coordsAccess = (x: GLint, y: GLint, zInNDC?: number,
+    //         viewProjectionInverse?: mat4) => this._renderer.coordsAt(x, y, zInNDC, viewProjectionInverse);
+    //     this._navigation.idAccess = (x: GLint, y: GLint) => this._renderer.idAt(x, y);
+    //     this._navigation.camera = this._renderer.camera;
+
+    //     this._controller.unblock();
+    // }
+
+    // /**
+    //  * Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
+    //  * renderer.
+    //  */
+    // unbind() {
+    //     if (!this._renderer) {
+    //         return;
     //     }
 
+    //     this._controller.block();
     //     /**
-    //      * Binds a pipeline to the canvas. A previously bound pipeline will be unbound (see bind and unbind).
-    //      *
-    //      * @param {Pipeline} pipeline - a pipeline object or null
+    //      * Since canvas is not the owner of the renderer it should not destroy it. However, the canvas manages the
+    //      * initialization of bound pipelines.
     //      */
-    //     set pipeline(pipeline: Pipeline) {
-    //         this.unbind();
-    //         this.bind(pipeline);
-    //     }
+    //     this._controller.updateCallback = undefined;
+    //     this._controller.frameCallback = undefined;
+    //     this._controller.swapCallback = undefined;
+    // }
+
+    // /**
+    //  * The currently bound renderer. If no renderer is bound null is returned. If a renderer is bound, it should
+    //  * always be initialized (renderer initialization handled by the canvas).
+    //  *
+    //  * @returns The currently bound renderer.
+    //  */
+    // get renderer(): Renderer {
+    //     return this._renderer;
+    // }
+
+    // /**
+    //  * Binds a renderer to the canvas. A previously bound renderer will be unbound (see bind and unbind).
+    //  *
+    //  * @param {Renderer} renderer - a renderer object or null
+    //  */
+    // set renderer(renderer: Renderer) {
+    //     this.unbind();
+    //     this.bind(renderer);
+    // }
 
     /**
      * Scale of the multi-frame with respect to the canvas size.
@@ -461,12 +452,9 @@ export class Canvas extends Resizable {
         this._frameSize = tuple2<GLsizei>(size);
         this._favorSizeOverScale = false;
 
-        // if (this._pipeline) {
-        //     this._pipeline.frameSize = this._frameSize;
+        // if (this._renderer) {
+        //     this._renderer.frameSize = this._frameSize;
         // }
-
-        // this.frameScaleObservable.changed();
-        // this.frameSizeObservable.changed();
     }
 
 
@@ -507,16 +495,14 @@ export class Canvas extends Resizable {
         this._favorSizeOverScale = !vec2.exactEquals(this._frameSize, this._size);
 
 
-        // if (this._pipeline) {
-        //     this._pipeline.frameSize = this._frameSize;
+        // if (this._renderer) {
+        //     this._renderer.frameSize = this._frameSize;
         // }
-
-        // this.frameSizeObservable.changed();
-        // this.frameScaleObservable.changed();
     }
 
     /**
-     * Getter for the canvas's clear color.
+     * Getter for the canvas's clear color. The clear color is provided to the renderer (on bind). Since this is a
+     * canvas specific setting it is stored here, not in a renderer or controller.
      * @returns - Color object passed to any renderer bound to this canvas.
      */
     get clearColor(): Color {
@@ -524,41 +510,38 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * Sets the clear color that is then passed to the currently bound pipeline as well as to any pipelines bound in
+     * Sets the clear color that is then passed to the currently bound renderer as well as to any pipelines bound in
      * the future. The provided color will be clamped to [0.0;1.0] for every component.
      * @param clearColor - Color object that will be referenced.
      */
     set clearColor(clearColor: Color) {
         this._clearColor = clearColor;
-        // if (this._pipeline) {
-        //     this._pipeline.clearColor = this._clearColor;
+        // if (this._renderer) {
+        //     this._renderer.clearColor = this._clearColor;
         // }
     }
 
-    //     /**
-    //      * Getter for the accumulation format.
-    //      *
-    //      * @returns Accumulation format as string passed to any pipeline bound.
-    //      */
-    //     get accumulationFormat(): string {
-    //         return this._accumulationFormat;
-    //     }
+    /**
+     * Getter for the accumulation format.
+     * @returns - Accumulation format as string passed to any renderer bound.
+     */
+    get accumulationFormat(): string {
+        return this._accumulationFormat;
+    }
 
-    //     /**
-    //      * Sets the accumulation format that is then passed to the currently bound pipeline as well as to any pipelines
-    //      * bound in the future.
-    //      *
-    //      * @param format - Accumulation format as string, 'float', 'half', 'byte' or 'auto' are supported. Any unsupported
-    //      * format will result in 'auto'.
-    //      */
-    //     set accumulationFormat(format: string) {
-    //         this._accumulationFormat = format;
-    //         if (this._pipeline) {
-    //             this._pipeline.accumulationFormat = this._accumulationFormat;
-    //             this._accumulationFormat = this._pipeline.accumulationFormat; // might change due to missing support
-    //         }
-    //         this.accumulationFormatObservable.changed();
-    //     }
+    /**
+     * Sets the accumulation format that is then passed to the currently bound renderer as well as to any renderers
+     * bound in the future.
+     * @param format - Accumulation format as string, 'float', 'half', 'byte' or 'auto' are supported. Any unsupported
+     * format will result in 'auto'.
+     */
+    set accumulationFormat(format: string) {
+        this._accumulationFormat = format;
+        // if (this._renderer) {
+        //     this._renderer.accumulationFormat = this._accumulationFormat;
+        //     this._accumulationFormat = this._renderer.accumulationFormat; // might change due to missing support
+        // }
+    }
 
     /**
      * Provides access to the WebGL context (leaky abstraction).
@@ -603,4 +586,5 @@ export class Canvas extends Resizable {
     get height(): GLsizei {
         return this._size[1];
     }
+
 }

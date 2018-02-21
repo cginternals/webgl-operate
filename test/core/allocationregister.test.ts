@@ -154,13 +154,13 @@ describe('AllocationTracker', () => {
         expect(tracker.toString()).to.equal('foo: 123B, bar: 446.083KiB');
     });
 
-    it('should be validate print allocated bytes by identifier', () => {
+    it('should pretty print overall allocated bytes', () => {
         const tracker = new AllocationRegister();
         const foo = tracker.createUniqueIdentifier('foo');
         const bar = tracker.createUniqueIdentifier('bar');
         tracker.allocate(foo, 123);
         tracker.reallocate(bar, 456789);
-        expect(tracker.toString()).to.equal('foo: 123B, bar: 446.083KiB');
+        expect(tracker.bytesToString()).to.equal('446.203KiB');
     });
 
 });

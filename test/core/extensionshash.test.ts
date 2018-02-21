@@ -90,7 +90,7 @@ describe('ExtensionsHash', () => {
     it('should split version and backend when decoding', () => {
         expect(ExtensionsHash.decode('100000')[0]).to.equal('webgl1');
         expect(ExtensionsHash.decode('200000')[0]).to.equal('webgl2');
-        /* cannot test another versions yet :P ... */
+        /* cannot test other versions yet :P ... */
         // expect(ExtensionsHash.decode('90000000')[0]).to.equal(1);
     });
 

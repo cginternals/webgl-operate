@@ -1,10 +1,5 @@
 {
-    "check-coverage": true,
-    "per-file": true,
-    "lines": 96,
-    "statements": 96,
-    "functions": 96,
-    "branches": 96,
+    "check-coverage": false,
     "include": [
         "source/**/*.ts"
     ],

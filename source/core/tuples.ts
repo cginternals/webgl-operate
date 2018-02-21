@@ -103,7 +103,7 @@ namespace tuples {
      */
     export function clampf2(tuple: GLclampf2 | GLfloat2, semantic?: string): GLclampf2 | GLfloat2 {
         const tupleV2: vec2 = vec2.fromValues(tuple[0], tuple[1]);
-        if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 || tuple[2] < 0.0 || tuple[2] > 1.0) {
+        if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0) {
             clamp2(tupleV2, tupleV2, vec2.fromValues(0.0, 0.0), vec2.fromValues(1.0, 1.0));
             log_if(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV2}] | given [${tuple}]`);
         }

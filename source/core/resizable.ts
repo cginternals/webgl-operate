@@ -34,6 +34,7 @@ export abstract class Resizable {
         Resizable.instances.forEach((item) => item.onResize());
     }
 
+    /* istanbul ignore next */
     /**
      * Retrieves the native width and height of a given element in device pixel (size on screen in physical pixels). If
      * the element is not found, or either window or its device pixel ratio are not defined, a default vec2 is returned.
@@ -63,16 +64,19 @@ export abstract class Resizable {
     constructor() {
         if (Resizable.instances.length === 0) { // initialize once
             const event = `on${Resizable.EVENT_IDENTIFIER}`;
-            Resizable.eventSupported = event in document.documentElement || event in document.body;
+            /* istanbul ignore next */
+            Resizable.eventSupported = document && (event in document.documentElement || event in document.body);
+
             log_if(!Resizable.eventSupported, LogLevel.Dev, `resize event not supported`);
         }
+        /* istanbul ignore next */
         if (Resizable.instances.length === 0 && Resizable.eventSupported) {
             window.addEventListener(Resizable.EVENT_IDENTIFIER, this._resizeEventListener);
         }
         Resizable.instances.push(this);
     }
 
-
+    /* istanbul ignore next */
     protected _resizeEventListener = () => Resizable.resize();
 
     /**
@@ -85,6 +89,7 @@ export abstract class Resizable {
 
         Resizable.instances.splice(i, 1);
 
+        /* istanbul ignore next */
         if (Resizable.instances.length === 0 && Resizable.eventSupported) {
             window.removeEventListener(Resizable.EVENT_IDENTIFIER, this._resizeEventListener);
         }

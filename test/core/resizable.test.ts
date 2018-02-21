@@ -18,15 +18,14 @@ class Resizable extends AbstractResizable {
 
     static resize(): void {
         AbstractResizable.resize();
-
-        /** @todo fake resize event in document.body and in document.documentElement */
     }
+
+    protected onResize(): void { }
 
     dispose(): void {
         super.dispose();
     }
 
-    onResize(): void { }
 }
 
 
@@ -34,11 +33,14 @@ describe('Resizable', () => {
 
     /** @todo test multiple instances, probably ignore elementSize  */
 
+    global.document = undefined;
+
     it('instance should receive onResize', () => {
         const resizable = new Resizable();
         const onResizeStub = stub(resizable, 'onResize');
         Resizable.resize();
         expect(onResizeStub.calledOnce).to.be.true;
+        onResizeStub.restore();
     });
 
     it('instance should not receive onResize after destroyed', () => {
@@ -47,6 +49,7 @@ describe('Resizable', () => {
         resizable.dispose();
         Resizable.resize();
         expect(onResizeStub.notCalled).to.be.true;
+        onResizeStub.restore();
     });
 
 });
