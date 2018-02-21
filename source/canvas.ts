@@ -300,7 +300,7 @@ export class Canvas extends Resizable {
         // this._navigation.uninitialize();
 
         //  if (this._renderer) {
-        //      // we do not destroy the renderer (not owned)
+        //      // we do not dispose the renderer (not owned)
         //      this._renderer.uninitialize();
         //  }
     }
@@ -384,7 +384,7 @@ export class Canvas extends Resizable {
 
     //     this._controller.block();
     //     /**
-    //      * Since canvas is not the owner of the renderer it should not destroy it. However, the canvas manages the
+    //      * Since canvas is not the owner of the renderer it should not dispose it. However, the canvas manages the
     //      * initialization of bound pipelines.
     //      */
     //     this._controller.updateCallback = undefined;

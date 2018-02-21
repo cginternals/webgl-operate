@@ -4,6 +4,7 @@
         "source/**/*.ts"
     ],
     "exclude": [
+        "source/canvas.ts",
         "source/core/buffer.ts",
         "source/core/context.ts",
         "source/core/defaultframebuffer.ts",
