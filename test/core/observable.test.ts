@@ -55,22 +55,22 @@ describe('Observable', () => {
         expect(object.gamma).to.equal(3);
         expect(object.delta).to.throw;
 
-        object.alphaSubject.subscribe(value => alpha = value);
-        object.betaSubject.subscribe(value => beta = value);
-        object.betaSubject.subscribe(value => beta2 = value * 2);
+        object.alphaObservable.subscribe(value => alpha = value);
+        object.betaObservable.subscribe(value => beta = value);
+        object.betaObservable.subscribe(value => beta2 = value * 2);
 
-        object.gammaSubject.subscribe(value => {
+        object.gammaObservable.subscribe(value => {
             gamma = value[0];
             reference = value[1] as ObservableMembers;
         });
-        object.deltaSubject.subscribe(value => delta = value[0]);
+        object.deltaObservable.subscribe(value => delta = value[0]);
 
-        expect(alpha).to.equal(0);
-        expect(beta).to.equal(0);
-        expect(beta2).to.equal(0);
-        expect(gamma).to.equal(0);
-        expect(reference).to.be.undefined;
-        expect(delta).to.equal(0);
+        expect(alpha).to.equal(1);
+        expect(beta).to.equal(2);
+        expect(beta2).to.equal(4);
+        expect(gamma).to.equal(3);
+        expect(reference).to.not.be.undefined;
+        expect(delta).to.equal(4);
 
         object.test(5, 6, 7, 8);
         expect(alpha).to.equal(5);

@@ -1,7 +1,7 @@
 
 import { assert } from './auxiliaries';
 
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 
 /**
@@ -29,10 +29,10 @@ import { Subject } from 'rxjs/Subject';
  * object.member = 'some value'; // will log 'member value of some object changed: some value' to console
  * ```
  *
- * @param getter - Whether or not a public getter should be generated. Note that this is created at run-time.
+ * @param defineGetter - Whether or not a public getter should be generated. Note that this is created at run-time.
  * @param reference - Whether or a tuple of value and object instance is observed instead of the value only.
  */
-export function observable<T>(getter: boolean = false, reference: boolean = false) {
+export function observable<T>(defineGetter: boolean = false, reference: boolean = false) {
     return (target: any, key: string) => {
 
         /**
@@ -44,13 +44,13 @@ export function observable<T>(getter: boolean = false, reference: boolean = fals
          * Subject for observation of value changes of the decorated property. If reference is true, instead of the
          * plain value, a tuple of the value and the target is provided to the subject.
          */
-        let _subject: Subject<T> | Subject<[T, typeof target]>;
+        let _subject: ReplaySubject<T> | ReplaySubject<[T, typeof target]>;
 
         /**
          * Invokes the subject's next method, specialized for subject with and without a reference.
          */
-        const next = reference ? () => (_subject as Subject<[T, typeof target]>).next([_value, target]) :
-            () => (_subject as Subject<T>).next(_value);
+        const next = reference ? () => (_subject as ReplaySubject<[T, typeof target]>).next([_value, target]) :
+            () => (_subject as ReplaySubject<T>).next(_value);
 
         /**
          * This decorator is assumed to be applied to protected member variables exclusively. Since the decorator
@@ -77,7 +77,7 @@ export function observable<T>(getter: boolean = false, reference: boolean = fals
          */
         const observable = () => {
             if (_subject === undefined) {
-                _subject = reference ? new Subject<[T, typeof target]>() : new Subject<T>();
+                _subject = reference ? new ReplaySubject<[T, typeof target]>(1) : new ReplaySubject<T>(1);
                 next();
             }
             return _subject.asObservable();
@@ -90,7 +90,7 @@ export function observable<T>(getter: boolean = false, reference: boolean = fals
         Object.defineProperty(target, key, { get: getter, set: setter });
 
         /* Create an optional (public) getter to the member variable. */
-        if (getter) {
+        if (defineGetter) {
             Object.defineProperty(target, key.substr(1), { get: getter });
         }
 
