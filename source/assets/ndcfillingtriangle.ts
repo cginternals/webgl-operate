@@ -41,13 +41,14 @@ export class NdcFillingTriangle extends Geometry {
         [-1.0, -3.0, -1.0, 1.0, 3.0, 1.0]);
 
     /**
-     * Object constructor, requires a context and a valid identifier.
+     * Object constructor, requires a context and an identifier.
      * @param context - Valid context to create the object for.
      * @param identifier - Meaningful name for identification of this instance.
      */
     constructor(context: Context, identifier?: string) {
         super(context, identifier);
 
+        /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
         const vertexVBO = new Buffer(context, identifier + 'VBO');
@@ -82,6 +83,7 @@ export class NdcFillingTriangle extends Geometry {
 
         assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer
             , `expected valid WebGLBuffer`);
+
         this._buffers[0].data(NdcFillingTriangle.VERTICES, gl.STATIC_DRAW);
 
         return valid;
