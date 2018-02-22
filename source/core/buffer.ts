@@ -18,11 +18,6 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
 
 
     /**
-     * @see {@link bytes}
-     */
-    protected _bytes: GLsizei = 0;
-
-    /**
      * @see {@link target}
      */
     protected _target: GLenum | undefined = Buffer.DEFAULT_BUFFER;
@@ -96,8 +91,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         }
 
         this._valid = gl.isBuffer(this._object) && gl.getError() === gl.NO_ERROR;
-        this._bytes = this._valid ? data.byteLength : 0;
-        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
+        const bytes: GLsizei = this._valid ? data.byteLength : 0;
+        this.context.allocationRegister.reallocate(this._identifier, bytes);
     }
 
     /**
@@ -148,7 +143,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      */
     get bytes() {
         this.assertInitialized();
-        return this._bytes;
+        return this.context.allocationRegister.allocated(this._identifier);
     }
 
     /**

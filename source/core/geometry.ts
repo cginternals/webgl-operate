@@ -79,6 +79,7 @@ export abstract class Geometry extends Initializable implements Bindable {
     @Initializable.uninitialize()
     uninitialize(): void {
         this._vertexArray.uninitialize();
+        this._buffers.forEach((buffer) => buffer.uninitialize());
         for (const buffer of this._buffers) {
             buffer.uninitialize();
         }

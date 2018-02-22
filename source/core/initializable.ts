@@ -3,7 +3,7 @@ import { assert } from './auxiliaries';
 
 
 /**
- * Mixin that incorporates basic (un)initialization workflow. The inheritor should specialize initialize and
+ * Mixin that incorporates basic (un-)initialization workflow. The inheritor should specialize initialize and
  * uninitialize and decorate them with @initialize and @uninitialize respectively. When the object gets constructed it
  * is not initialized. It can be initialized only when it is not initialized and uninitialized vice versa. Failure
  * states result in invalid asserts.
