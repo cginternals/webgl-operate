@@ -25,7 +25,7 @@ import { Subject } from 'rxjs/Subject';
  * The example above will allow for the following:
  * ```
  * const object = new SomeObject();
- * object.memberSubject.subscribe(value => console.log('member value of some object changed:' + value));
+ * object.memberObservable.subscribe(value => console.log('member value of some object changed:' + value));
  * object.member = 'some value'; // will log 'member value of some object changed: some value' to console
  * ```
  *
@@ -57,14 +57,14 @@ export function observable<T>(getter: boolean = false, reference: boolean = fals
          * captures value changes by swapping the actual member variable with a setter, a getter is required for read.
          * This getter will also be used if a public getter is to be decorated (getter === true).
          */
-        const valueGetter = (): T => _value;
+        const getter = (): T => _value;
 
         /**
          * This decorator is assumed to be applied to protected member variables exclusively. This setter captures
          * value changes by swapping the actual member variable (that is deleted) with this setter.
          * @param value - New value to be set to the internal value store.
          */
-        const valueSetter = (value: T) => {
+        const setter = (value: T) => {
             _value = value;
             if (_subject) {
                 next();
@@ -72,30 +72,30 @@ export function observable<T>(getter: boolean = false, reference: boolean = fals
         };
 
         /**
-         * The target will be decorated by this subject getter. Note that not subject is created as long as this getter
-         * is called at least once in order to reduce memory footprint caused by rxjs subjects.
+         * The target will be decorated by this observable getter. Note that no subject/observable is created as long
+         * as this getter is called at least once in order to reduce memory footprint caused by rxjs subjects.
          */
-        const subjectGetter = () => {
+        const observable = () => {
             if (_subject === undefined) {
                 _subject = reference ? new Subject<[T, typeof target]>() : new Subject<T>();
                 next();
             }
-            return _subject;
+            return _subject.asObservable();
         };
 
         assert(key.startsWith('_'), `expected key to start with '_' | given ${key}`);
 
         /* Capture the actual member variable by replacing it with getters and setters of this decorator. */
         delete this[key];
-        Object.defineProperty(target, key, { get: valueGetter, set: valueSetter });
+        Object.defineProperty(target, key, { get: getter, set: setter });
 
         /* Create an optional (public) getter to the member variable. */
         if (getter) {
-            Object.defineProperty(target, key.substr(1), { get: valueGetter });
+            Object.defineProperty(target, key.substr(1), { get: getter });
         }
 
-        /* Create a subject getter/accessor for the protected member variable (assumed to be prefixed with '_'). */
-        Object.defineProperty(target, key.substr(1) + 'Subject', { get: subjectGetter });
+        /* Create a observable getter/accessor for the protected member variable (assumed to be prefixed with '_'). */
+        Object.defineProperty(target, key.substr(1) + 'Observable', { get: observable });
 
     };
 }

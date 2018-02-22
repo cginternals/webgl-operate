@@ -74,8 +74,8 @@ export class Canvas extends Resizable {
 
     /**
      * @see {@link accumulationFormat}
-     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.accumulationFormatSubject.subscribe()`.
+     * For this property, an observable and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.accumulationFormatObservable.subscribe()`.
      */
     @observable<string>()
     protected _accumulationFormat: string;
@@ -83,8 +83,8 @@ export class Canvas extends Resizable {
 
     /**
      * @see {@link size}
-     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.sizeSubject.subscribe()`.
+     * For this property, an observable and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.sizeObservable.subscribe()`.
      */
     @observable<GLsizei2>()
     protected _size: GLsizei2 = [1, 1];
@@ -92,16 +92,16 @@ export class Canvas extends Resizable {
 
     /**
      * @see {@link frameScale}
-     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.frameScaleSubject.subscribe()`.
+     * For this property, an observable and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.frameScaleObservable.subscribe()`.
      */
     @observable<GLclampf2>()
     protected _frameScale: GLclampf2;
 
     /**
      * @see {@link frameSize}
-     * For this property, an observable subject and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.frameSizeSubject.subscribe()`.
+     * For this property, an observable and a getter will be generated (decorated) at run-time:
+     * e.g., `aCanvas.frameSizeObservable.subscribe()`.
      */
     @observable<GLsizei2>()
     protected _frameSize: GLsizei2;

@@ -45,7 +45,8 @@ export class AllocationRegister {
      * Cache for the overall number of allocated bytes (over all identifiers). This should always be the sum of the
      * bytes allocated over each identifier, which can be validated using validate().
      *
-     * For this property, an observable subject and a getter will be generated (decorated) at run-time.
+     * For this property, an observable and a getter will be generated (decorated) at run-time:
+     * e.g., `allocationRegister.bytesObservable.subscribe()`.
      */
     @observable<GLsizei>(true, true)
     protected _bytes: GLsizei;
