@@ -26,6 +26,7 @@ export class DefaultFramebuffer extends Framebuffer {
         this._object = Framebuffer.DEFAULT_FRAMEBUFFER;
         this._valid = true;
 
+        /* Initialize with default clear values */
         this._clearColors = new Array<GLclampf4>(1);
         this._clearDepth = 1.0;
         this._clearStencil = 0;

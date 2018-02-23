@@ -22,11 +22,6 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     static readonly DEFAULT_TEXTURE = undefined;
 
     /**
-     * @see {@link bytes}
-     */
-    protected _bytes: GLsizei = 0;
-
-    /**
      * @see {@link width}
      */
     protected _width: GLsizei = 0;
@@ -147,21 +142,19 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
             this.unbind();
         }
 
+        let bytes: GLsizei = 0;
         // update allocated bytes
-        if (data === undefined) {
-            this._bytes = 0;
-        } else {
+        if (data !== undefined) {
 
-            this._bytes = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+            bytes = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
             // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
             if (this._type === this.context.gl2facade.HALF_FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
-                this._bytes *= 2;
-            } else if (this
-                ._type === this.context.gl.FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
-                this._bytes *= 4;
+                bytes *= 2;
+            } else if (this._type === this.context.gl.FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
+                bytes *= 4;
             }
         }
-        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
+        this.context.allocationRegister.reallocate(this._identifier, bytes);
     }
 
     /**
@@ -262,7 +255,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     get bytes(): GLsizei {
         this.assertInitialized();
-        return this._bytes;
+        return this.context.allocationRegister.allocated(this._identifier);
     }
 
     /**

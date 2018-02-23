@@ -109,6 +109,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
                     ++numFragShaders;
                     break;
                 default:
+                    assert(false, `Unknown shader type detected.`);
                     break;
             }
         }
@@ -178,7 +179,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
     attribute(attribute: string, location?: GLuint): GLint {
         if (this._context.isWebGL2 && location !== undefined) {
             this._context.gl.bindAttribLocation(this._object, location, attribute);
-            return location as GLuint;
+            return location as GLint;
         } else {
             return this._context.gl.getAttribLocation(this._object, attribute);
         }

@@ -6,7 +6,7 @@ import { observable } from './observable';
 
 /**
  * This register enables monitoring of memory (de)allocations and is intended for use in WebGL context for internal GPU
- * memory alocation tracking. For it, a unique identifier for registration has to be created:
+ * memory allocation tracking. For it, a unique identifier for registration has to be created:
  * ```
  * let gpuAllocReg = this.context.gpuAllocationRegister;
  * const identifier = gpuAllocReg.createAndTrackUniqueIdentifier('gpu-object');
@@ -76,11 +76,11 @@ export class AllocationRegister {
      */
     createUniqueIdentifier(identifier: string): string {
         let uniqueIdentifier: string = identifier;
-        let count = 2;
+        let unificationSuffix = 2;
 
         while (this._bytesByIdentifier.has(uniqueIdentifier)) {
-            uniqueIdentifier = `${identifier}-${count}`;
-            ++count;
+            uniqueIdentifier = `${identifier}-${unificationSuffix}`;
+            ++unificationSuffix;
         }
 
         this._bytesByIdentifier.set(uniqueIdentifier, 0);
@@ -103,13 +103,15 @@ export class AllocationRegister {
      */
     allocate(identifier: string, allocate: number): void {
         this.assertIdentifier(identifier);
+
         assert(allocate >= 0, `positive number of bytes expected for allocation, given ${allocate}`);
 
+        /* Nothing to do if no bytes are allocated */
         if (allocate === 0) {
             return;
         }
 
-        const bytes = this._bytesByIdentifier.get(identifier) as number + allocate;
+        const bytes = (this._bytesByIdentifier.get(identifier) as number) + allocate;
         this._bytesByIdentifier.set(identifier, bytes);
 
         this._bytes = this._bytes + allocate; // allocate total
@@ -127,6 +129,7 @@ export class AllocationRegister {
         assert(deallocate >= 0, `positive number of bytes expected for deallocation, given ${deallocate}`);
         assert(deallocate <= bytes, `deallocation cannot exceed previous allocations of ${bytes}, given ${deallocate}`);
 
+        /* Nothing to do if no bytes are deallocated */
         if (deallocate === 0) {
             return;
         }
@@ -145,7 +148,14 @@ export class AllocationRegister {
         this.assertIdentifier(identifier);
         assert(reallocate >= 0, `positive number of bytes expected for reallocation, given ${reallocate}`);
 
-        this._bytes = this._bytes - (this._bytesByIdentifier.get(identifier) as number); // deallocate total
+        const previousBytes = this._bytesByIdentifier.get(identifier) as number;
+
+        /* Nothing to do if same size should be reallocated */
+        if (previousBytes === reallocate) {
+            return;
+        }
+
+        this._bytes = this._bytes - previousBytes; // deallocate total
         this._bytesByIdentifier.set(identifier, reallocate);
 
         this._bytes = this._bytes + reallocate; // allocate total

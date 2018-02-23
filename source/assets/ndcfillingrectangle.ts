@@ -37,16 +37,18 @@ export class NdcFillingRectangle extends Geometry {
         [-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0]);
 
     /**
-     * Object constructor, requires a context and a valid identifier.
+     * Object constructor, requires a context and an identifier.
      * @param context - Valid context to create the object for.
      * @param identifier - Meaningful name for identification of this instance.
      */
     constructor(context: Context, identifier?: string) {
         super(context, identifier);
 
+        /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
         const vertexVBO = new Buffer(context, identifier + 'VBO');
+
         this._buffers.push(vertexVBO);
     }
 
@@ -55,7 +57,7 @@ export class NdcFillingRectangle extends Geometry {
      * Binds the vertex buffer object (VBO) to an attribute binding point of a given, pre-defined index.
      */
     protected bindBuffers(indices: Array<GLuint>): void {
-        /* Please note the implicit bind in attribEnable */
+        /* Please note the implicit bind in attribEnable. */
         this._buffers[0].attribEnable(indices[0], 2, this.context.gl.FLOAT, false, 0, 0, true, false);
     }
 
@@ -63,7 +65,7 @@ export class NdcFillingRectangle extends Geometry {
      * Unbinds the vertex buffer object (VBO) and disables the binding point.
      */
     protected unbindBuffers(indices: Array<GLuint>): void {
-        /* Please note the implicit unbind in attribEnable is skipped */
+        /* Please note the implicit unbind in attribEnable is skipped. */
         this._buffers[0].attribDisable(indices[0], true, true);
     }
 
@@ -78,6 +80,7 @@ export class NdcFillingRectangle extends Geometry {
 
         assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer
             , `expected valid WebGLBuffer`);
+
         this._buffers[0].data(NdcFillingRectangle.VERTICES, gl.STATIC_DRAW);
 
         return valid;

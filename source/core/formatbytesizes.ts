@@ -23,7 +23,7 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
 
     switch (format) {
         case undefined: // must be first, in case any other format is not defined
-        /* falls through */
+        /* fall-through */
         default:
             break;
 
@@ -49,7 +49,7 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
         case gl.UNSIGNED_INT_24_8:
         case gl.FLOAT_32_UNSIGNED_INT_24_8_REV:
             assert(false, `expected format instead of type ${format}`);
-            break;
+            return 0;
     }
 
 

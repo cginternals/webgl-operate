@@ -1,6 +1,8 @@
 
 import { assert, log_if, LogLevel } from './auxiliaries';
 
+import { clamp } from './gl-matrix-extensions';
+
 import { clampf, clampf3, clampf4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
 
 
@@ -21,7 +23,7 @@ export class Color {
      * Converts a hue value into an rgb value.
      */
     protected static hue2rgb(p: GLfloat, q: GLfloat, t: GLfloat) {
-
+        assert(t >= -1.0 && t <= 2.0, `t is expected to be between -1 and 2`);
         if (t < 0.0) {
             t += 1.0;
         } else if (t > 1.0) {
@@ -38,6 +40,15 @@ export class Color {
             return p + (q - p) * 6.0 * (2.0 / 3.0 - t);
         }
         return p;
+    }
+
+    /**
+     * Converts a float value to two-character HEX code.
+     * @param value - A float value in [0.0, 1.0].
+     * @returns - Two-character hexadecimal representation in [00, FF].
+     */
+    protected static to2CharHexCode(value: number): string {
+        return (value < 15.5 / 255.0 ? '0' : '') + Math.round(value * 255.0).toString(16);
     }
 
     /**
@@ -271,9 +282,9 @@ export class Color {
     static rgb2hex(rgb: GLclampf3): string {
         const rgbF = clampf3(rgb, 'RGB input');
 
-        const r = (rgbF[0] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[0] * 255).toString(16);
-        const g = (rgbF[1] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[1] * 255).toString(16);
-        const b = (rgbF[2] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbF[2] * 255).toString(16);
+        const r = Color.to2CharHexCode(rgbF[0]);
+        const g = Color.to2CharHexCode(rgbF[1]);
+        const b = Color.to2CharHexCode(rgbF[2]);
         return '#' + r + g + b;
     }
 
@@ -285,10 +296,10 @@ export class Color {
     static rgba2hex(rgba: GLclampf4): string {
         const rgbaF = clampf4(rgba, 'RGBA input');
 
-        const r = (rgbaF[0] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[0] * 255).toString(16);
-        const g = (rgbaF[1] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[1] * 255).toString(16);
-        const b = (rgbaF[2] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[2] * 255).toString(16);
-        const a = (rgbaF[3] < 15.5 / 255.0 ? '0' : '') + Math.round(rgbaF[3] * 255).toString(16);
+        const r = Color.to2CharHexCode(rgbaF[0]);
+        const g = Color.to2CharHexCode(rgbaF[1]);
+        const b = Color.to2CharHexCode(rgbaF[2]);
+        const a = Color.to2CharHexCode(rgbaF[3]);
         return '#' + r + g + b + a;
     }
 
@@ -301,14 +312,14 @@ export class Color {
         if (rgba === undefined) {
             return;
         }
-        this._rgba[0] = clampf(rgba[0], 'red value');
-        this._rgba[1] = clampf(rgba[1], 'green value');
-        this._rgba[2] = clampf(rgba[2], 'blue value');
+        this._rgba[0] = clampf(rgba[0], `red value`);
+        this._rgba[1] = clampf(rgba[1], `green value`);
+        this._rgba[2] = clampf(rgba[2], `blue value`);
 
         if (rgba.length === 3 && alpha !== undefined) {
-            this._rgba[3] = clampf(alpha, 'alpha value');
+            this._rgba[3] = clampf(alpha, `alpha value`);
         } else if (rgba.length === 4) {
-            this._rgba[3] = clampf(rgba[3], 'alpha value');
+            this._rgba[3] = clampf(rgba[3], `alpha value`);
             assert(alpha === undefined, `expected alpha to be undefined when given an 4-tuple in RGBA`);
         }
     }
@@ -323,10 +334,10 @@ export class Color {
      */
     fromUI8(red: GLubyte, green: GLubyte, blue: GLubyte
         , alpha: GLubyte = Math.floor(Color.DEFAULT_ALPHA * 255)): Color {
-        this._rgba[0] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(red)));
-        this._rgba[1] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(green)));
-        this._rgba[2] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(blue)));
-        this._rgba[3] = 1.0 / 255.0 * Math.max(0, Math.min(255, Math.round(alpha)));
+        this._rgba[0] = clamp(red, 0, 255) / 255.0;
+        this._rgba[1] = clamp(green, 0, 255) / 255.0;
+        this._rgba[2] = clamp(blue, 0, 255) / 255.0;
+        this._rgba[3] = clamp(alpha, 0, 255) / 255.0;
         return this;
     }
 
@@ -426,9 +437,9 @@ export class Color {
 
     get rgbUI8(): Uint8Array {
         const ui8Array = new Uint8Array(3);
-        ui8Array[0] = Math.round(this._rgba[0] * 255);
-        ui8Array[1] = Math.round(this._rgba[1] * 255);
-        ui8Array[2] = Math.round(this._rgba[2] * 255);
+        ui8Array[0] = Math.round(this._rgba[0] * 255.0);
+        ui8Array[1] = Math.round(this._rgba[1] * 255.0);
+        ui8Array[2] = Math.round(this._rgba[2] * 255.0);
         return ui8Array;
     }
 
@@ -446,20 +457,15 @@ export class Color {
 
     get rgbaUI8(): Uint8Array {
         const ui8Array = new Uint8Array(4);
-        ui8Array[0] = Math.round(this._rgba[0] * 255);
-        ui8Array[1] = Math.round(this._rgba[1] * 255);
-        ui8Array[2] = Math.round(this._rgba[2] * 255);
-        ui8Array[3] = Math.round(this._rgba[3] * 255);
+        ui8Array[0] = Math.round(this._rgba[0] * 255.0);
+        ui8Array[1] = Math.round(this._rgba[1] * 255.0);
+        ui8Array[2] = Math.round(this._rgba[2] * 255.0);
+        ui8Array[3] = Math.round(this._rgba[3] * 255.0);
         return ui8Array;
     }
 
     get rgbaF32(): Float32Array {
-        const f32Array = new Float32Array(4);
-        f32Array[0] = this._rgba[0];
-        f32Array[1] = this._rgba[1];
-        f32Array[2] = this._rgba[2];
-        f32Array[3] = this._rgba[3];
-        return f32Array;
+        return new Float32Array(this._rgba);
     }
 
     get r(): GLclampf {

@@ -22,11 +22,6 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     static readonly DEFAULT_RENDER_BUFFER = undefined;
 
     /**
-     * @see {@link bytes}
-     */
-    protected _bytes: GLsizei = 0;
-
-    /**
      * @see {@link width}
      */
     protected _width: GLsizei;
@@ -61,8 +56,8 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         this._valid = gl.isRenderbuffer(this._object);
         gl.bindRenderbuffer(gl.RENDERBUFFER, Renderbuffer.DEFAULT_RENDER_BUFFER);
 
-        this._bytes = width * height * byteSizeOfFormat(this.context, internalFormat as GLenum);
-        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
+        const bytes: GLsizei = width * height * byteSizeOfFormat(this.context, internalFormat as GLenum);
+        this.context.allocationRegister.reallocate(this._identifier, bytes);
 
         return this.context.gl.createRenderbuffer();
     }
@@ -125,8 +120,8 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         }
 
         // update allocated bytes
-        this._bytes = width * height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
-        this.context.allocationRegister.reallocate(this._identifier, this._bytes);
+        const bytes: GLsizei = width * height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+        this.context.allocationRegister.reallocate(this._identifier, bytes);
     }
 
     /**
@@ -134,7 +129,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
      */
     get bytes(): GLsizei {
         this.assertInitialized();
-        return this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+        return this.context.allocationRegister.allocated(this._identifier);
     }
 
     /**

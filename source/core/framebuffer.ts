@@ -132,7 +132,7 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
         const status: GLenum = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         this._valid = gl.isFramebuffer(this._object) && (status === gl.FRAMEBUFFER_COMPLETE);
 
-        gl.unbindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
 
         return this._object;
 
@@ -228,8 +228,9 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
             /**
              * Unfortunately, the following code doesn't work, on Intel HD, -> fallback to WebGL 1 interface for
              * clearing depth and stencil.
+             *
+             * gl.clearBufferfi(gl.DEPTH_STENCIL, 0, this._clearDepth, this._clearStencil);
              */
-            // gl.clearBufferfi(gl.DEPTH_STENCIL, 0, this._clearDepth, this._clearStencil);
             gl.clearStencil(this._clearStencil);
             gl.clearDepth(this._clearDepth);
             gl.clear(gl.STENCIL_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -241,8 +242,9 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
             /**
              * Unfortunately, the following code doesn't work, at least in Chrome, -> fallback to WebGL 1 interface
              * for clearing depth and stencil.
+             *
+             * gl.clearBufferiv(gl.STENCIL, 0, [this._clearStencil]);
              */
-            // gl.clearBufferiv(gl.STENCIL, 0, [this._clearStencil]);
             gl.clearStencil(this._clearStencil);
             gl.clear(gl.STENCIL_BUFFER_BIT);
         }
@@ -300,11 +302,8 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
         const alphaIssue: boolean = color[3] < 1.0 && !this.context.alpha;
         log_if(alphaIssue, LogLevel.Dev, `context has alpha disabled, clear color alpha is ignored`);
 
-        const color2: GLclampf4 = [color[0], color[1], color[2], color[3]];
+        const color2: GLclampf4 = [color[0], color[1], color[2], alphaIssue ? 1.0 : color[3]];
 
-        if (alphaIssue) {
-            color2[3] = 1.0;
-        }
         if (this.context.premultipliedAlpha && !alphaIssue) {
             // premultiply alpha
             color2[0] *= color2[3];
@@ -339,9 +338,6 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      */
     @Initializable.assert_initialized()
     texture(attachment: GLenum): Texture2 | undefined {
-        if (!this._texturesByAttachment.has(attachment)) {
-            return undefined;
-        }
         return this._texturesByAttachment.get(attachment);
     }
 
