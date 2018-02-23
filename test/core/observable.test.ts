@@ -15,7 +15,7 @@ class ObservableMembers {
     protected _alpha: number;
 
     @observable<number>(true, false)
-    protected _beta: number;
+    protected _beta: number = 11;
 
     @observable<number>(true, true)
     protected _gamma: number;
@@ -37,6 +37,8 @@ describe('Observable', () => {
 
     it('should make protected member observable', () => {
         const object = new ObservableMembers();
+        expect(object.beta).to.equal(11);
+
         object.test(1, 2, 3, 4);
 
         let alpha = 0;

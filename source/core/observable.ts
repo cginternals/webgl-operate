@@ -38,7 +38,7 @@ export function observable<T>(defineGetter: boolean = false, reference: boolean 
         /**
          * Used to redirect the decorated property to this internal value.
          */
-        let _value: T;
+        let _value: T = this[key];
 
         /**
          * Subject for observation of value changes of the decorated property. If reference is true, instead of the
