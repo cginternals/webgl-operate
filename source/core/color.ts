@@ -1,5 +1,5 @@
 
-import { assert, log, log_if, LogLevel } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 
 import { clamp } from './gl-matrix-extensions';
 
