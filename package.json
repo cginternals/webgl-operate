@@ -48,6 +48,7 @@
         "nyc": "11.4.1",
         "pug": "2.0.0-rc.4",
         "query-string": "5.1.0",
+        "rxjs": "^5.5.6",
         "sinon": "4.3.0",
         "source-map-support": "0.5.3",
         "ts-loader": "3.5.0",
