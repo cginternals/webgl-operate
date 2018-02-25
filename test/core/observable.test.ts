@@ -15,7 +15,7 @@ class ObservableMembers {
     protected _alpha: number;
 
     @observable<number>(true, false)
-    protected _beta: number = 11;
+    protected _beta: number;
 
     @observable<number>(true, true)
     protected _gamma: number;
@@ -25,11 +25,12 @@ class ObservableMembers {
 
 
     test(alpha: number, beta: number, gamma: number, delta: number) {
-        this._alpha = alpha;
-        this._beta = beta;
-        this._gamma = gamma;
-        this._delta = delta;
+        this.alpha = alpha;
+        this.beta = beta;
+        this.gamma = gamma;
+        this.delta = delta;
     }
+
 }
 
 
@@ -37,7 +38,7 @@ describe('Observable', () => {
 
     it('should make protected member observable', () => {
         const object = new ObservableMembers();
-        expect(object.beta).to.equal(11);
+        //expect(object.beta).to.equal(11);
 
         object.test(1, 2, 3, 4);
 
@@ -87,6 +88,30 @@ describe('Observable', () => {
         expect(reference.beta).to.equal(6);
         expect(reference.gamma).to.equal(7);
         expect(reference.delta).to.throw;
+    });
+
+    it('should observe per object instance', () => {
+        const object1 = new ObservableMembers();
+        const object2 = new ObservableMembers();
+
+        object1.test(1, 2, 3, 4);
+
+        let alpha1 = 0;
+        let alpha2 = 0;
+
+        object1.alphaObservable.subscribe(value => alpha1 = value);
+        object2.alphaObservable.subscribe(value => alpha2 = value);
+
+        expect(alpha1).to.equal(1);
+        expect(alpha2).to.equal(0);
+
+        object2.test(5, 6, 7, 8);
+        expect(alpha1).to.equal(1);
+        expect(alpha2).to.equal(5);
+
+        object2.test(9, 10, 11, 12);
+        expect(alpha1).to.equal(9);
+        expect(alpha2).to.equal(5);
     });
 
 });

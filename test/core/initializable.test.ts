@@ -110,4 +110,18 @@ describe('Initializable', () => {
         expect(() => initializable.expectInitialized()).not.to.throw();
     });
 
+    it('should decorate per-instance', () => {
+        const initializable1 = new Initializable();
+        const initializable2 = new Initializable();
+        expect(() => initializable1.expectUninitialized()).not.to.throw();
+        expect(() => initializable2.expectUninitialized()).not.to.throw();
+        expect(() => initializable1.expectInitialized()).to.throw();
+        expect(() => initializable2.expectInitialized()).to.throw();
+        initializable1.initialize();
+        expect(() => initializable1.expectUninitialized()).to.throw();
+        expect(() => initializable2.expectUninitialized()).not.to.throw();
+        expect(() => initializable1.expectInitialized()).not.to.throw();
+        expect(() => initializable2.expectInitialized()).to.throw();
+    });
+
 });
