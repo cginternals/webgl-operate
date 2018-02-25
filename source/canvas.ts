@@ -1,11 +1,12 @@
 
+// import { Observable } from 'rxjs/Observable';
+
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
 
 import { log_if, LogLevel } from './core/auxiliaries';
 import { GLclampf2, GLsizei2, tuple2, tuple4 } from './core/tuples';
 
-import { observable } from './core/observable';
 
 import { Color } from './core/color';
 import { Context } from './core/context';
@@ -74,36 +75,28 @@ export class Canvas extends Resizable {
 
     /**
      * @see {@link accumulationFormat}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.accumulationFormatObservable.subscribe()`.
+     * This property can be observed, e.g., `aCanvas.accumulationFormatObservable.subscribe()`.
      */
-    @observable<string>()
     protected _accumulationFormat: string;
 
 
     /**
      * @see {@link size}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.sizeObservable.subscribe()`.
+     * This property can be observed, e.g., `aCanvas.sizeObservable.subscribe()`.
      */
-    @observable<GLsizei2>()
     protected _size: GLsizei2 = [1, 1];
 
 
     /**
      * @see {@link frameScale}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.frameScaleObservable.subscribe()`.
+     * This property can be observed, `aCanvas.frameScaleObservable.subscribe()`.
      */
-    @observable<GLclampf2>()
     protected _frameScale: GLclampf2;
 
     /**
      * @see {@link frameSize}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.frameSizeObservable.subscribe()`.
+     * This property can be observed, `aCanvas.frameSizeObservable.subscribe()`.
      */
-    @observable<GLsizei2>()
     protected _frameSize: GLsizei2;
 
     /**

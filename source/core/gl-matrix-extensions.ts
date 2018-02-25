@@ -293,7 +293,7 @@ namespace gl_matrix_extensions {
      * @param v2str - String in the format '<number>, <number>', e.g., '1.0, 0.0'.
      * @returns - Vec2 if string was parsed successfully, undefined else.
      */
-    export function parseVec2(v2str: string): vec2 | undefined {
+    export function parseVec2(v2str: string | undefined): vec2 | undefined {
         if (v2str === undefined || v2str === '') {
             return undefined;
         }
@@ -312,7 +312,7 @@ namespace gl_matrix_extensions {
      * @param v3str - String in the format '<number>, <number>, <number>', e.g., '1.0, 0.0, 1.0'.
      * @returns - Vec3 if string was parsed successfully, undefined else.
      */
-    export function parseVec3(v3str: string): vec3 | undefined {
+    export function parseVec3(v3str: string | undefined): vec3 | undefined {
         if (v3str === undefined || v3str === '') {
             return undefined;
         }
@@ -331,7 +331,7 @@ namespace gl_matrix_extensions {
      * @param v4str - String in the format '<number>, <number>, <number>, <number>', e.g., '1.0, 0.0, 0.0, 0.0'.
      * @returns - Vec4 if string was parsed successfully, undefined else.
      */
-    export function parseVec4(v4str: string): vec4 | undefined {
+    export function parseVec4(v4str: string | undefined): vec4 | undefined {
         if (v4str === undefined || v4str === '') {
             return undefined;
         }

@@ -1,7 +1,7 @@
 
-import { assert, prettyPrintBytes } from './auxiliaries';
+// import { Observable } from 'rxjs/Observable'
 
-import { observable } from './observable';
+import { assert, prettyPrintBytes } from './auxiliaries';
 
 
 /**
@@ -45,10 +45,8 @@ export class AllocationRegister {
      * Cache for the overall number of allocated bytes (over all identifiers). This should always be the sum of the
      * bytes allocated over each identifier, which can be validated using validate().
      *
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `allocationRegister.bytesObservable.subscribe()`.
+     * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
      */
-    @observable<GLsizei>(true, true)
     protected _bytes: GLsizei;
 
     /**
