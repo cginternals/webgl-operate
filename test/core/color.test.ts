@@ -106,8 +106,8 @@ describe('Color', () => {
 
     it('should log and default on malformed hex color string to RGB(A) conversion', () => {
         const consoleLogStub = stub(console, 'log');
-        const malformed: Array<string> = ['#', '0x', '', '#0', '0x0', '0', '#00', '0x00', '00', '#00000', '0x00000'
-            , '00000', '#0000000', '0x0000000', '0000000', '#000000000', '0x000000000', '000000000', 'efg', 'xyz'];
+        const malformed: Array<string> = ['#', '0x', '', '#0', '0x0', '0', '#00', '0x00', '00', '#00000', '0x00000',
+            '00000', '#0000000', '0x0000000', '0000000', '#000000000', '0x000000000', '000000000', 'efg', 'xyz'];
 
         const color = new Color();
         malformed.forEach((value) => color.fromHex(value));

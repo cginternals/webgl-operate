@@ -54,8 +54,9 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
      */
-    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum
-        , format: GLenum, type: GLenum): WebGLTexture | undefined {
+    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum,
+        format: GLenum, type: GLenum): WebGLTexture | undefined {
+
         assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
         const gl = this._context.gl;
 
@@ -135,9 +136,10 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (bind) {
             this.bind();
         }
-        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type
+        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type,
             /* tslint:disable-next-line:no-null-keyword */
-            , data === undefined ? null : data);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+            data === undefined ? null : data);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+
         if (unbind) {
             this.unbind();
         }
@@ -210,8 +212,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    reformat(internalFormat: GLenum, format?: GLenum, type?: GLenum
-        , bind: boolean = true, unbind: boolean = true): void {
+    reformat(internalFormat: GLenum, format?: GLenum, type?: GLenum,
+        bind: boolean = true, unbind: boolean = true): void {
 
         if (internalFormat === this._internalFormat
             && (format === undefined || format === this._format)

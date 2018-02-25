@@ -332,8 +332,9 @@ export class Color {
      * @param alpha - Alpha color component in [0, 255]
      * @returns - The color instance (this).
      */
-    fromUI8(red: GLubyte, green: GLubyte, blue: GLubyte
-        , alpha: GLubyte = Math.floor(Color.DEFAULT_ALPHA * 255)): Color {
+    fromUI8(red: GLubyte, green: GLubyte, blue: GLubyte,
+        alpha: GLubyte = Math.floor(Color.DEFAULT_ALPHA * 255)): Color {
+
         this._rgba[0] = clamp(red, 0, 255) / 255.0;
         this._rgba[1] = clamp(green, 0, 255) / 255.0;
         this._rgba[2] = clamp(blue, 0, 255) / 255.0;
@@ -350,8 +351,9 @@ export class Color {
      * @param alpha - Alpha color component in [0.0, 1.0]
      * @returns - The color instance (this).
      */
-    fromHSL(hue: GLclampf, saturation: GLclampf, lightness: GLclampf
-        , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+    fromHSL(hue: GLclampf, saturation: GLclampf, lightness: GLclampf,
+        alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+
         const rgb = Color.hsl2rgb([hue, saturation, lightness]);
         const alphaf = clampf(alpha, 'ALPHA input');
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
@@ -366,8 +368,9 @@ export class Color {
      * @param alpha - Alpha color component in [0.0, 1.0]
      * @returns - The color instance (this).
      */
-    fromLAB(lightness: GLclampf, greenRed: GLclampf, blueYellow: GLclampf
-        , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+    fromLAB(lightness: GLclampf, greenRed: GLclampf, blueYellow: GLclampf,
+        alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+
         const rgb = Color.lab2rgb([lightness, greenRed, blueYellow]);
         const alphaf = clampf(alpha, 'ALPHA input');
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
@@ -383,8 +386,9 @@ export class Color {
      * @param alpha - Alpha color component in [0.0, 1.0]
      * @returns - The color instance (this).
      */
-    fromCMYK(cyan: GLclampf, magenta: GLclampf, yellow: GLclampf, key: GLclampf
-        , alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+    fromCMYK(cyan: GLclampf, magenta: GLclampf, yellow: GLclampf, key: GLclampf,
+        alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+
         const rgb = Color.cmyk2rgb([cyan, magenta, yellow, key]);
         const alphaf = clampf(alpha, 'ALPHA input');
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];

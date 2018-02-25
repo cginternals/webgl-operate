@@ -64,8 +64,8 @@ export class ExtensionsHash {
      * @param base64 - Bitfield of 6 bits (as number).
      */
     protected static encode64(bitfield: number): string {
-        assert(bitfield >= 0b000000 && bitfield <= 0b111111
-            , `expected bitfield in range [ 0b000000, 0b111111 ], given ${bitfield}`);
+        assert(bitfield >= 0b000000 && bitfield <= 0b111111,
+            `expected bitfield in range [ 0b000000, 0b111111 ], given ${bitfield}`);
         return ExtensionsHash.BASE64_ALPHABET[bitfield];
     }
 
@@ -122,8 +122,8 @@ export class ExtensionsHash {
         const version = hashHead >> 3;
 
         const backendIndex = (hashHead & 0b000111) - 1;
-        assert(backendIndex < ExtensionsHash.WEBGL_BACKENDS.length
-            , `expected valid backend index, given ${backendIndex}`);
+        assert(backendIndex < ExtensionsHash.WEBGL_BACKENDS.length,
+            `expected valid backend index, given ${backendIndex}`);
 
         const backend = ExtensionsHash.WEBGL_BACKENDS[backendIndex];
 
@@ -131,8 +131,8 @@ export class ExtensionsHash {
         const extensions = ExtensionsHash.EXTENSIONS_BY_VERSION.get(version) as Array<string>;
 
         const expectedHashLength = Math.ceil(extensions.length / 6) + 1;
-        assert(hash.length === expectedHashLength
-            , `expected hash of version ${version} to have a length of ${expectedHashLength}, given ${hash}`);
+        assert(hash.length === expectedHashLength,
+            `expected hash of version ${version} to have a length of ${expectedHashLength}, given ${hash}`);
 
         const supported = new Array<string>();
         for (let i = 1; i < hash.length; ++i) {

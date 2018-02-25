@@ -29,9 +29,9 @@ describe('ContextMasquerade', () => {
 
     it('should be initializable from browser preset', () => {
         const mask = ContextMasquerade.fromPreset('chrome-63');
-        const UNSUPPORTED_EXTS = ['OES_texture_half_float_linear', 'WEBGL_compressed_texture_astc'
-            , 'WEBGL_compressed_texture_atc', 'WEBGL_compressed_texture_etc', 'WEBGL_compressed_texture_etc1'
-            , 'WEBGL_compressed_texture_pvrtc'];
+        const UNSUPPORTED_EXTS = ['OES_texture_half_float_linear', 'WEBGL_compressed_texture_astc',
+            'WEBGL_compressed_texture_atc', 'WEBGL_compressed_texture_etc', 'WEBGL_compressed_texture_etc1',
+            'WEBGL_compressed_texture_pvrtc'];
 
         expect(mask.backend).to.equal('webgl2');
         expect(mask.extensionsStrive).to.include('EXT_color_buffer_float');

@@ -291,15 +291,13 @@ export class Context {
 
         switch (this._backend) {
             case BackendType.WebGL1:
-                assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1
-                    , `extension ${extension} not available to WebGL1`);
+                assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL1`);
                 break;
 
             case BackendType.WebGL2:
                 assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
                     `extension ${extension} supported by default in WebGL2`);
-                assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1
-                    , `extension ${extension} not available to WebGL2`);
+                assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL2`);
                 break;
 
             default:
