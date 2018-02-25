@@ -1,6 +1,6 @@
 
-import { Observable } from 'rxjs/Observable'
-import { ReplaySubject } from 'rxjs/ReplaySubject'
+import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { assert, prettyPrintBytes } from './auxiliaries';
 
@@ -55,12 +55,6 @@ export class AllocationRegister {
         this._bytesSubject.next([this._bytes, this.bytesToString()]);
     }
 
-
-    /**
-     * Constructor that resets the memory and configures the observable object.
-     */
-    constructor() {
-    }
 
     /**
      * Asserts existence of an identifier.
@@ -220,7 +214,7 @@ export class AllocationRegister {
     }
 
     /**
-     * Observable that can be used to observe bytes value changes. Yields a 2-tuple of overall allocated bytes as
+     * Observable that can be used to subscribe to bytes value changes. Yields a 2-tuple of overall allocated bytes as
      * number and pretty printed string.
      */
     get bytesObservable(): Observable<[GLsizei, string]> {

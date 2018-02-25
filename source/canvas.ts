@@ -1,6 +1,6 @@
 
-import { Observable } from 'rxjs/Observable'
-import { ReplaySubject } from 'rxjs/ReplaySubject'
+import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
@@ -42,12 +42,12 @@ export class Canvas extends Resizable {
     /**
      * Default accumulation accuracy/format when multi-frame rendering is used.
      */
-    protected static readonly DEFAULT_ACCUMULATION_FORMAT: string = 'auto';
+    protected static readonly DEFAULT_ACCUMULATION_FORMAT = 'auto';
 
     /**
      * Default multi-frame number used if none is set via data attributes.
      */
-    protected static readonly DEFAULT_MULTI_FRAME_NUMBER: number = 0;
+    protected static readonly DEFAULT_MULTI_FRAME_NUMBER = 0;
 
     /**
      * @see {@link context}
@@ -81,13 +81,6 @@ export class Canvas extends Resizable {
     protected _accumulationFormat: string;
     protected _accumulationFormatSubject = new ReplaySubject<string>(1);
 
-    /**
-     * Utility for communicating this._accumulationFormat changes to its associated subject.
-     */
-    protected accumulationFormatNext(): void {
-        this._accumulationFormatSubject.next(this._accumulationFormat);
-    }
-
 
     /**
      * @see {@link size}
@@ -97,14 +90,6 @@ export class Canvas extends Resizable {
     protected _sizeSubject = new ReplaySubject<GLsizei2>(1);
 
     /**
-     * Utility for communicating this._size changes to its associated subject.
-     */
-    protected sizeNext(): void {
-        this._sizeSubject.next(this._size);
-    }
-
-
-    /**
      * @see {@link renderScale}
      * This property can be observed, `aCanvas.renderScaleObservable.subscribe()`.
      */
@@ -112,27 +97,11 @@ export class Canvas extends Resizable {
     protected _renderScaleSubject = new ReplaySubject<GLclampf2>(1);
 
     /**
-     * Utility for communicating this._renderScale changes to its associated subject.
-     */
-    protected renderScaleNext(): void {
-        this._renderScaleSubject.next(this._renderScale);
-    }
-
-
-    /**
      * @see {@link renderSize}
      * This property can be observed, `aCanvas.renderSizeObservable.subscribe()`.
      */
     protected _renderSize: GLsizei2;
     protected _renderSizeSubject = new ReplaySubject<GLsizei2>(1);
-
-    /**
-     * Utility for communicating this._renderSize changes to its associated subject.
-     */
-    protected renderSizeNext(): void {
-        this._renderSizeSubject.next(this._renderSize);
-    }
-
 
     /**
      * Flag used to determine whether render size or render scale is the dominant configuration.
@@ -315,6 +284,34 @@ export class Canvas extends Resizable {
         // }
     }
 
+    /**
+     * Utility for communicating this._accumulationFormat changes to its associated subject.
+     */
+    protected accumulationFormatNext(): void {
+        this._accumulationFormatSubject.next(this._accumulationFormat);
+    }
+
+    /**
+     * Utility for communicating this._size changes to its associated subject.
+     */
+    protected sizeNext(): void {
+        this._sizeSubject.next(this._size);
+    }
+
+    /**
+     * Utility for communicating this._renderScale changes to its associated subject.
+     */
+    protected renderScaleNext(): void {
+        this._renderScaleSubject.next(this._renderScale);
+    }
+
+    /**
+     * Utility for communicating this._renderSize changes to its associated subject.
+     */
+    protected renderSizeNext(): void {
+        this._renderSizeSubject.next(this._renderSize);
+    }
+
 
     /**
      * Uninitializes and deletes the controller as well as all other properties.
@@ -451,13 +448,6 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * Observable that can be used to observe render scale changes.
-     */
-    get renderScaleObservable(): Observable<GLclampf2> {
-        return this._renderScaleSubject.asObservable();
-    }
-
-    /**
      * Set the scale of the multi-frame with respect to the canvas size. The scale will be clamped to [0.0,1.0]. A
      * scale of 0.0 results in 1px render resolution for the respective component.
      * The render scale allows to detach the rendering resolution from the native canvas resolution, e.g., in order to
@@ -497,6 +487,13 @@ export class Canvas extends Resizable {
         // }
     }
 
+    /**
+     * Observable that can be used to subscribe to render scale changes.
+     */
+    get renderScaleObservable(): Observable<GLclampf2> {
+        return this._renderScaleSubject.asObservable();
+    }
+
 
     /**
      * Resolution (width and height) of the multi-frame in pixel.
@@ -505,14 +502,6 @@ export class Canvas extends Resizable {
     get renderSize(): GLsizei2 {
         return this._renderSize;
     }
-
-    /**
-     * Observable that can be used to observe render size changes.
-     */
-    get renderSizeObservable(): Observable<GLsizei2> {
-        return this._renderSizeSubject.asObservable();
-    }
-
 
     /**
      * Set the size of the multi-frame in pixels. The size will be clamped to [1, canvas-size]. The render size allows
@@ -550,6 +539,13 @@ export class Canvas extends Resizable {
         // }
     }
 
+    /**
+     * Observable that can be used to subscribe to render size changes.
+     */
+    get renderSizeObservable(): Observable<GLsizei2> {
+        return this._renderSizeSubject.asObservable();
+    }
+
 
     /**
      * Getter for the canvas's clear color. The clear color is provided to the renderer (on bind). Since this is a
@@ -574,18 +570,12 @@ export class Canvas extends Resizable {
 
 
     /**
-     * Getter for the accumulation format. This property can be observed, e.g., `canvas.accumulationFormatObservable.subscribe()`.
+     * Getter for the accumulation format. This property can be observed, e.g.,
+     * `canvas.accumulationFormatObservable.subscribe()`.
      * @returns - Accumulation format as string passed to any renderer bound.
      */
     get accumulationFormat(): string {
         return this._accumulationFormat;
-    }
-
-    /**
-     * Observable that can be used to observe accumulation format changes.
-     */
-    get accumulationFormatObservable(): Observable<string> {
-        return this._accumulationFormatSubject.asObservable();
     }
 
     /**
@@ -601,6 +591,13 @@ export class Canvas extends Resizable {
         //     this._renderer.accumulationFormat = this._accumulationFormat;
         //     this._accumulationFormat = this._renderer.accumulationFormat; // might change due to missing support
         // }
+    }
+
+    /**
+     * Observable that can be used to subscribe to accumulation format changes.
+     */
+    get accumulationFormatObservable(): Observable<string> {
+        return this._accumulationFormatSubject.asObservable();
     }
 
 
@@ -625,7 +622,6 @@ export class Canvas extends Resizable {
      * Size of the canvas measured in physical/native screen pixels. This is the 'managed' canvas width and height. The
      * unmanaged canvas width and height are available via context.gl.canvas.width and context.gl.canvas.height (which
      * should always be the same).
-     * 
      * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
      * @returns - The canvas width and height in physical/native screen pixels as 2-tuple.
      */
@@ -634,7 +630,7 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * Observable that can be used to observe canvas size changes.
+     * Observable that can be used to subscribe to canvas size changes.
      */
     get sizeObservable(): Observable<GLsizei2> {
         return this._sizeSubject.asObservable();
