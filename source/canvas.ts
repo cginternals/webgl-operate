@@ -1,5 +1,6 @@
 
-// import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable'
+import { ReplaySubject } from 'rxjs/ReplaySubject'
 
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
@@ -78,6 +79,14 @@ export class Canvas extends Resizable {
      * This property can be observed, e.g., `aCanvas.accumulationFormatObservable.subscribe()`.
      */
     protected _accumulationFormat: string;
+    protected _accumulationFormatSubject = new ReplaySubject<string>(1);
+
+    /**
+     * Utility for communicating this._accumulationFormat changes to its associated subject.
+     */
+    protected accumulationFormatNext(): void {
+        this._accumulationFormatSubject.next(this._accumulationFormat);
+    }
 
 
     /**
@@ -85,22 +94,48 @@ export class Canvas extends Resizable {
      * This property can be observed, e.g., `aCanvas.sizeObservable.subscribe()`.
      */
     protected _size: GLsizei2 = [1, 1];
-
+    protected _sizeSubject = new ReplaySubject<GLsizei2>(1);
 
     /**
-     * @see {@link frameScale}
-     * This property can be observed, `aCanvas.frameScaleObservable.subscribe()`.
+     * Utility for communicating this._size changes to its associated subject.
      */
-    protected _frameScale: GLclampf2;
+    protected sizeNext(): void {
+        this._sizeSubject.next(this._size);
+    }
+
 
     /**
-     * @see {@link frameSize}
-     * This property can be observed, `aCanvas.frameSizeObservable.subscribe()`.
+     * @see {@link renderScale}
+     * This property can be observed, `aCanvas.renderScaleObservable.subscribe()`.
      */
-    protected _frameSize: GLsizei2;
+    protected _renderScale: GLclampf2;
+    protected _renderScaleSubject = new ReplaySubject<GLclampf2>(1);
 
     /**
-     * Flag used to determine whether frame size or frame scale is the dominant configuration.
+     * Utility for communicating this._renderScale changes to its associated subject.
+     */
+    protected renderScaleNext(): void {
+        this._renderScaleSubject.next(this._renderScale);
+    }
+
+
+    /**
+     * @see {@link renderSize}
+     * This property can be observed, `aCanvas.renderSizeObservable.subscribe()`.
+     */
+    protected _renderSize: GLsizei2;
+    protected _renderSizeSubject = new ReplaySubject<GLsizei2>(1);
+
+    /**
+     * Utility for communicating this._renderSize changes to its associated subject.
+     */
+    protected renderSizeNext(): void {
+        this._renderSizeSubject.next(this._renderSize);
+    }
+
+
+    /**
+     * Flag used to determine whether render size or render scale is the dominant configuration.
      */
     protected _favorSizeOverScale: boolean;
 
@@ -129,8 +164,8 @@ export class Canvas extends Resizable {
      * The canvas supports the following data attributes:
      * - data-multi-frame-number {number} - integer greater than 0
      * - data-clear-color {vec4} - rgba color for clearing
-     * - data-frame-scale {vec2} - width and height frame scale in [0.0,1.0]
-     * - data-frame-size {vec2} - width and height frame size in pixel
+     * - data-render-scale {vec2} - width and height render scale in [0.0,1.0]
+     * - data-render-size {vec2} - width and height render size in pixel
      * - data-accumulation-format {string} - accumulation format, either 'float', 'half', 'byte', or 'auto'.
      *
      * Note: data-frame-size takes precedence if both frame-scale and frame-size data attributes are provided.
@@ -163,6 +198,7 @@ export class Canvas extends Resizable {
         /* Retrieve accumulation format from data attributes or set default */
         const dataAccumFormat = dataset.accumulationFormat;
         this._accumulationFormat = dataAccumFormat ? dataAccumFormat : Canvas.DEFAULT_ACCUMULATION_FORMAT;
+        this.accumulationFormatNext();
 
         // for (const eventListener of this._eventListenersByType) {
         //     this._element.addEventListener(eventListener[0], eventListener[1]);
@@ -210,32 +246,32 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * Initializes the frame size and scale. By default, the scale is 1.0 for width and height and the size reflects
+     * Initializes the render size and scale. By default, the scale is 1.0 for width and height and the size reflects
      * the native canvas size.
      * @param dataset - The attributes data-frame-size and data-frame-scale are supported.
      */
     protected configureSizeAndScale(dataset: DOMStringMap) {
 
-        /* Setup frame scale with respect to the canvas size. */
-        let dataFrameScale: vec2 | undefined;
-        if (dataset.frameScale) {
-            dataFrameScale = parseVec2(dataset.frameScale);
-            log_if(dataset.frameScale !== undefined && dataFrameScale === undefined, LogLevel.Dev,
-                `data-frame-scale could not be parsed, given '${dataset.frameScale}'`);
+        /* Setup render scale with respect to the canvas size. */
+        let dataRenderScale: vec2 | undefined;
+        if (dataset.renderScale) {
+            dataRenderScale = parseVec2(dataset.renderScale);
+            log_if(dataset.renderScale !== undefined && dataRenderScale === undefined, LogLevel.Dev,
+                `data-frame-scale could not be parsed, given '${dataset.renderScale}'`);
         }
-        this._frameScale = dataFrameScale ? tuple2<GLfloat>(dataFrameScale) : [1.0, 1.0];
+        this._renderScale = dataRenderScale ? tuple2<GLfloat>(dataRenderScale) : [1.0, 1.0];
 
-        /* Setup frame size. */
-        let dataFrameSize: vec2 | undefined;
-        if (dataset.frameSize) {
-            dataFrameSize = parseVec2(dataset.frameSize);
-            log_if(dataset.frameSize !== undefined && dataFrameSize === undefined, LogLevel.Dev,
-                `data-frame-size could not be parsed, given '${dataset.frameSize}'`);
+        /* Setup render size. */
+        let dataRenderSize: vec2 | undefined;
+        if (dataset.renderSize) {
+            dataRenderSize = parseVec2(dataset.renderSize);
+            log_if(dataset.renderSize !== undefined && dataRenderSize === undefined, LogLevel.Dev,
+                `data-frame-size could not be parsed, given '${dataset.renderSize}'`);
         }
-        this._favorSizeOverScale = dataFrameSize !== undefined;
-        this._frameSize = dataFrameSize ? tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
+        this._favorSizeOverScale = dataRenderSize !== undefined;
+        this._renderSize = dataRenderSize ? tuple2<GLsizei>(dataRenderSize) : [this._size[0], this._size[1]];
 
-        this.onResize();
+        this.onResize(); // invokes renderScaleNext and renderSizeNext
     }
 
 
@@ -246,6 +282,7 @@ export class Canvas extends Resizable {
     protected retrieveSize(): void {
         const size = Resizable.elementSize(this._element);
         this._size = [size[0], size[1]];
+        this.sizeNext();
     }
 
     /**
@@ -268,9 +305,9 @@ export class Canvas extends Resizable {
         // }
 
         if (this._favorSizeOverScale) {
-            this.frameSize = this._frameSize;
+            this.renderSize = this._renderSize;
         } else {
-            this.frameScale = this._frameScale;
+            this.renderScale = this._renderScale;
         }
 
         // if (this._renderer) {
@@ -344,7 +381,7 @@ export class Canvas extends Resizable {
     //     this._renderer.initialize(this.context, () => this._controller.update());
 
     //     this._renderer.canvasSize = this._size;
-    //     this._renderer.frameSize = this._frameSize;
+    //     this._renderer.renderSize = this._renderSize;
     //     this._renderer.clearColor = this._clearColor;
     //     this._renderer.accumulationFormat = this._accumulationFormat;
 
@@ -407,91 +444,112 @@ export class Canvas extends Resizable {
 
     /**
      * Scale of the multi-frame with respect to the canvas size.
-     * @returns - The frame scale in [0.0, 1.0].
+     * @returns - The render scale in [0.0, 1.0].
      */
-    get frameScale(): GLclampf2 {
-        return this._frameScale;
+    get renderScale(): GLclampf2 {
+        return this._renderScale;
+    }
+
+    /**
+     * Observable that can be used to observe render scale changes.
+     */
+    get renderScaleObservable(): Observable<GLclampf2> {
+        return this._renderScaleSubject.asObservable();
     }
 
     /**
      * Set the scale of the multi-frame with respect to the canvas size. The scale will be clamped to [0.0,1.0]. A
-     * scale of 0.0 results in 1px frame resolution for the respective component.
-     * The frame scale allows to detach the rendering resolution from the native canvas resolution, e.g., in order to
-     * decrease rendering cost. The frame resolution can also be specified explicitly by width and height.
-     * @param frameScale - Scale of the multi-frame.
-     * @returns - The frame scale in [0.0,1.0].
+     * scale of 0.0 results in 1px render resolution for the respective component.
+     * The render scale allows to detach the rendering resolution from the native canvas resolution, e.g., in order to
+     * decrease rendering cost. The render resolution can also be specified explicitly by width and height.
+     * @param renderScale - Scale of the multi-frame.
+     * @returns - The render scale in [0.0,1.0].
      */
-    set frameScale(frameScale: GLclampf2) {
-        /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
-        log_if(frameScale[0] < 0.0 || frameScale[0] > 1.0, LogLevel.Dev,
-            `frame width scale clamped to [0.0,1.0], given ${frameScale[0]}`);
-        log_if(frameScale[1] < 0.0 || frameScale[1] > 1.0, LogLevel.Dev,
-            `frame height scale clamped to [0.0,1.0], given ${frameScale[0]}`);
+    set renderScale(renderScale: GLclampf2) {
+        /* Always apply render scale, e.g., when canvas is resized scale remains same, but render size will change. */
+        log_if(renderScale[0] < 0.0 || renderScale[0] > 1.0, LogLevel.Dev,
+            `render width scale clamped to [0.0,1.0], given ${renderScale[0]}`);
+        log_if(renderScale[1] < 0.0 || renderScale[1] > 1.0, LogLevel.Dev,
+            `render height scale clamped to [0.0,1.0], given ${renderScale[0]}`);
 
         const scale = vec2.create();
-        clamp2(scale, frameScale, [0.0, 0.0], [1.0, 1.0]);
+        clamp2(scale, renderScale, [0.0, 0.0], [1.0, 1.0]);
 
         const size = vec2.create();
         vec2.mul(size, this._size, scale);
         vec2.max(size, [1, 1], size);
         vec2.round(size, size);
 
-        /* Adjust scale based on rounded (integer) frame size. */
+        /* Adjust scale based on rounded (integer) render size. */
         vec2.div(scale, size, this._size);
-        log_if(!vec2.exactEquals(scale, frameScale), 2,
-            `frame scale was adjusted to ${scale.toString()}, given ${frameScale.toString()}`);
+        log_if(!vec2.exactEquals(scale, renderScale), 2,
+            `render scale was adjusted to ${scale.toString()}, given ${renderScale.toString()}`);
 
-        this._frameScale = tuple2<GLclampf>(scale);
-        this._frameSize = tuple2<GLsizei>(size);
+        this._renderScale = tuple2<GLclampf>(scale);
+        this._renderSize = tuple2<GLsizei>(size);
         this._favorSizeOverScale = false;
 
+        this.renderScaleNext();
+        this.renderSizeNext();
+
         // if (this._renderer) {
-        //     this._renderer.frameSize = this._frameSize;
+        //     this._renderer.renderSize = this._renderSize;
         // }
     }
 
 
     /**
      * Resolution (width and height) of the multi-frame in pixel.
-     * @returns - The frame size in pixel (must not be physical/native pixels).
+     * @returns - The render size in pixel (must not be physical/native pixels).
      */
-    get frameSize(): GLsizei2 {
-        return this._frameSize;
+    get renderSize(): GLsizei2 {
+        return this._renderSize;
     }
 
     /**
-     * Set the size of the multi-frame in pixels. The size will be clamped to [1, canvas-size]. The frame size allows to
-     * detach the rendering resolution from the native canvas resolution, e.g., in order to decrease rendering cost.
-     * The frame resolution can also be specified implicitly by width and height in scale (@see frameScale).
-     * @param frameSize - Size of the multi-frame in pixel (must not be physical/native pixels).
-     * @returns - The frame size in [1, canvas-size].
+     * Observable that can be used to observe render size changes.
      */
-    set frameSize(frameSize: GLsizei2) {
-        log_if(frameSize[0] < 1 || frameSize[0] > this._size[0], 1,
-            `frame width scale clamped to [1,${this._size[0]}], given ${frameSize[0]}`);
-        log_if(frameSize[1] < 1 || frameSize[1] > this._size[1], 1,
-            `frame height scale clamped to [1, ${this._size[1]}], given ${frameSize[1]}`);
+    get renderSizeObservable(): Observable<GLsizei2> {
+        return this._renderSizeSubject.asObservable();
+    }
+
+
+    /**
+     * Set the size of the multi-frame in pixels. The size will be clamped to [1, canvas-size]. The render size allows
+     * to detach the rendering resolution from the native canvas resolution, e.g., in order to decrease rendering cost.
+     * The render resolution can also be specified implicitly by width and height in scale (@see renderScale).
+     * @param renderSize - Size of the multi-frame in pixel (must not be physical/native pixels).
+     * @returns - The render size in [1, canvas-size].
+     */
+    set renderSize(renderSize: GLsizei2) {
+        log_if(renderSize[0] < 1 || renderSize[0] > this._size[0], 1,
+            `render width scale clamped to [1,${this._size[0]}], given ${renderSize[0]}`);
+        log_if(renderSize[1] < 1 || renderSize[1] > this._size[1], 1,
+            `render height scale clamped to [1, ${this._size[1]}], given ${renderSize[1]}`);
 
         const size = vec2.create();
-        clamp2(size, frameSize, [1.0, 1.0], this._size);
+        clamp2(size, renderSize, [1.0, 1.0], this._size);
         vec2.round(size, size);
 
-        log_if(!vec2.exactEquals(size, frameSize), 2,
-            `frame size was adjusted to ${size.toString()}, given ${frameSize.toString()}`);
+        log_if(!vec2.exactEquals(size, renderSize), 2,
+            `render size was adjusted to ${size.toString()}, given ${renderSize.toString()}`);
 
         const scale = vec2.create();
         vec2.div(scale, size, this._size);
 
-        this._frameScale = tuple2<GLclampf>(scale);
-        this._frameSize = tuple2<GLsizei>(size);
-        /* Switch back to default mode (scale based) when frame size matches canvas size. */
-        this._favorSizeOverScale = !vec2.exactEquals(this._frameSize, this._size);
+        this._renderScale = tuple2<GLclampf>(scale);
+        this._renderSize = tuple2<GLsizei>(size);
+        /* Switch back to default mode (scale based) when render size matches canvas size. */
+        this._favorSizeOverScale = !vec2.exactEquals(this._renderSize, this._size);
 
+        this.renderScaleNext();
+        this.renderSizeNext();
 
         // if (this._renderer) {
-        //     this._renderer.frameSize = this._frameSize;
+        //     this._renderer.renderSize = this._renderSize;
         // }
     }
+
 
     /**
      * Getter for the canvas's clear color. The clear color is provided to the renderer (on bind). Since this is a
@@ -514,12 +572,20 @@ export class Canvas extends Resizable {
         // }
     }
 
+
     /**
-     * Getter for the accumulation format.
+     * Getter for the accumulation format. This property can be observed, e.g., `canvas.accumulationFormatObservable.subscribe()`.
      * @returns - Accumulation format as string passed to any renderer bound.
      */
     get accumulationFormat(): string {
         return this._accumulationFormat;
+    }
+
+    /**
+     * Observable that can be used to observe accumulation format changes.
+     */
+    get accumulationFormatObservable(): Observable<string> {
+        return this._accumulationFormatSubject.asObservable();
     }
 
     /**
@@ -530,11 +596,13 @@ export class Canvas extends Resizable {
      */
     set accumulationFormat(format: string) {
         this._accumulationFormat = format;
+        this.accumulationFormatNext();
         // if (this._renderer) {
         //     this._renderer.accumulationFormat = this._accumulationFormat;
         //     this._accumulationFormat = this._renderer.accumulationFormat; // might change due to missing support
         // }
     }
+
 
     /**
      * Provides access to the WebGL context (leaky abstraction).
@@ -552,15 +620,26 @@ export class Canvas extends Resizable {
         return this._context.backendString as string;
     }
 
+
     /**
      * Size of the canvas measured in physical/native screen pixels. This is the 'managed' canvas width and height. The
      * unmanaged canvas width and height are available via context.gl.canvas.width and context.gl.canvas.height (which
      * should always be the same).
+     * 
+     * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
      * @returns - The canvas width and height in physical/native screen pixels as 2-tuple.
      */
     get size(): GLsizei2 {
         return this._size;
     }
+
+    /**
+     * Observable that can be used to observe canvas size changes.
+     */
+    get sizeObservable(): Observable<GLsizei2> {
+        return this._sizeSubject.asObservable();
+    }
+
 
     /**
      * Width of the canvas measured in physical/native screen pixels. This is the 'managed' canvas width. The

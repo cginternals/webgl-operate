@@ -49,7 +49,7 @@ export class AllocationRegister {
     protected _bytesSubject = new ReplaySubject<[GLsizei, string]>(1);
 
     /**
-     * Utility for communicating this._bytes changes its associated subject.
+     * Utility for communicating this._bytes changes to its associated subject.
      */
     protected bytesNext(): void {
         this._bytesSubject.next([this._bytes, this.bytesToString()]);
