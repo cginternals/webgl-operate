@@ -10,6 +10,7 @@ import { Shader } from './shader';
 /**
  * WebGL Program wrapper encapsulating program creation, shader attachment, linking, binding, as well as attribute and
  * uniform location retrieval. A program is intended to be used as follows:
+ *
  * ```
  * this.program.initialize(
  *  [('screenaligned.vert', require('../shaders/screenaligned.vert'))],
