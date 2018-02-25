@@ -1,5 +1,6 @@
 
-// import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs/Observable'
+import { ReplaySubject } from 'rxjs/ReplaySubject'
 
 import { assert, prettyPrintBytes } from './auxiliaries';
 
@@ -42,18 +43,23 @@ export class AllocationRegister {
     protected _bytesByIdentifier = new Map<string, GLsizei>();
 
     /**
-     * Cache for the overall number of allocated bytes (over all identifiers). This should always be the sum of the
-     * bytes allocated over each identifier, which can be validated using validate().
-     *
-     * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
+     * @see {@link bytes}
      */
-    protected _bytes: GLsizei;
+    protected _bytes: GLsizei = 0;
+    protected _bytesSubject = new ReplaySubject<[GLsizei, string]>(1);
+
+    /**
+     * Utility for communicating this._bytes changes its associated subject.
+     */
+    protected bytesNext(): void {
+        this._bytesSubject.next([this._bytes, this.bytesToString()]);
+    }
+
 
     /**
      * Constructor that resets the memory and configures the observable object.
      */
     constructor() {
-        this._bytes = 0.0;
     }
 
     /**
@@ -113,6 +119,7 @@ export class AllocationRegister {
         this._bytesByIdentifier.set(identifier, bytes);
 
         this._bytes = this._bytes + allocate; // allocate total
+        this.bytesNext();
     }
 
     /**
@@ -135,6 +142,7 @@ export class AllocationRegister {
         this._bytesByIdentifier.set(identifier, bytes - deallocate);
 
         this._bytes = this._bytes - deallocate; // deallocate total
+        this.bytesNext();
     }
 
     /**
@@ -157,6 +165,7 @@ export class AllocationRegister {
         this._bytesByIdentifier.set(identifier, reallocate);
 
         this._bytes = this._bytes + reallocate; // allocate total
+        this.bytesNext();
     }
 
     /**
@@ -199,4 +208,22 @@ export class AllocationRegister {
         return prettyPrintBytes(this.allocated(identifier));
     }
 
+
+    /**
+     * Cache for the overall number of allocated bytes (over all identifiers). This should always be the sum of the
+     * bytes allocated over each identifier, which can be validated using validate().
+     *
+     * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
+     */
+    get bytes(): GLsizei {
+        return this._bytes;
+    }
+
+    /**
+     * Observable that can be used to observe bytes value changes. Yields a 2-tuple of overall allocated bytes as
+     * number and pretty printed string.
+     */
+    get bytesObservable(): Observable<[GLsizei, string]> {
+        return this._bytesSubject.asObservable();
+    }
 }
