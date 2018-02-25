@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, log, log_if, LogLevel } from './auxiliaries';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
@@ -44,7 +44,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
 
         for (const shader of shaders) {
             if (!shader.initialized) {
-                log_if(true, LogLevel.Dev, `shader '${shader.identifier}' not initialized.`);
+                log(LogLevel.Dev, `shader '${shader.identifier}' not initialized.`);
                 continue;
             }
             gl.attachShader(this._object, shader.object);
@@ -66,7 +66,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
 
         if (!gl.getProgramParameter(this._object, gl.LINK_STATUS)) {
             const infoLog: string = gl.getProgramInfoLog(this._object);
-            log_if(true, 1, `linking of program '${this._identifier}' failed: '${infoLog}'`);
+            log(LogLevel.Dev, `linking of program '${this._identifier}' failed: '${infoLog}'`);
             return false;
         }
         return true;

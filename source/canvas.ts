@@ -511,16 +511,16 @@ export class Canvas extends Resizable {
      * @returns - The render size in [1, canvas-size].
      */
     set renderSize(renderSize: GLsizei2) {
-        log_if(renderSize[0] < 1 || renderSize[0] > this._size[0], 1,
+        log_if(renderSize[0] < 1 || renderSize[0] > this._size[0], LogLevel.Dev,
             `render width scale clamped to [1,${this._size[0]}], given ${renderSize[0]}`);
-        log_if(renderSize[1] < 1 || renderSize[1] > this._size[1], 1,
+        log_if(renderSize[1] < 1 || renderSize[1] > this._size[1], LogLevel.Dev,
             `render height scale clamped to [1, ${this._size[1]}], given ${renderSize[1]}`);
 
         const size = vec2.create();
         clamp2(size, renderSize, [1.0, 1.0], this._size);
         vec2.round(size, size);
 
-        log_if(!vec2.exactEquals(size, renderSize), 2,
+        log_if(!vec2.exactEquals(size, renderSize), LogLevel.ModuleDev,
             `render size was adjusted to ${size.toString()}, given ${renderSize.toString()}`);
 
         const scale = vec2.create();

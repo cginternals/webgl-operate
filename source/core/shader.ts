@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { AbstractObject } from './object';
@@ -57,7 +57,7 @@ export class Shader extends AbstractObject<WebGLShader> {
 
         if (!gl.getShaderParameter(this._object, gl.COMPILE_STATUS)) {
             const infoLog: string = gl.getShaderInfoLog(this._object);
-            log_if(true, LogLevel.Dev, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
+            log(LogLevel.Dev, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
 
             this.delete();
             return undefined;

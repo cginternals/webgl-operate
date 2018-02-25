@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { Initializable } from './initializable';
@@ -79,7 +79,7 @@ export abstract class AbstractObject<T> extends Initializable {
         const complete = this._object !== undefined && this._valid;
         if (!complete) {
             this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
-            log_if(true, LogLevel.Dev, `initialization of '${this._identifier}' failed`);
+            log(LogLevel.Dev, `initialization of '${this._identifier}' failed`);
         }
         return complete;
     }

@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, log, log_if, LogLevel } from './auxiliaries';
 
 import { clamp } from './gl-matrix-extensions';
 
@@ -253,7 +253,7 @@ export class Color {
         const rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
 
         if (!Color.HEX_FORMAT_REGEX.test(hex)) {
-            log_if(true, LogLevel.User, `hexadecimal RGBA color string must conform to either \
+            log(LogLevel.User, `hexadecimal RGBA color string must conform to either \
 '0x0000', '#0000', '0000', '0x00000000', '#00000000', or '00000000' | given '${hex}'`);
             return rgba;
         }

@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, log, log_if, LogLevel } from './auxiliaries';
 
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
@@ -129,7 +129,7 @@ export class Context {
             dataset.backend ? (dataset.backend as string).toLowerCase() : '';
 
         if (!Context.VALID_BACKENDS.test(request)) {
-            log_if(true, LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
+            log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
             request = 'auto';
         }
 
