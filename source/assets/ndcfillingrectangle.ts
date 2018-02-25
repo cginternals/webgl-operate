@@ -12,6 +12,7 @@ import { Initializable } from '../core/initializable';
  * a vertex array object (from geometry base class), and provides a specialized draw call for rendering. It is intended
  * for, e.g., viewport/screen-filling rendering in post-processing. The vertices can be used directly as normalized
  * device space (NDC) coordinates, e.g., by using the following vertex shader snippet:
+ *
  * ```
  * #if __VERSION__ == 100
  *     attribute vec2 a_vertex;

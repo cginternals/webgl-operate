@@ -8,6 +8,7 @@ import { AbstractObject } from './object';
 /**
  * WebGL shader wrapper encapsulating shader creation, compilation, and deletion. A shader can be attached to multiple
  * Programs for linking, and can be deleted if detached from all (linked) programs.
+ *
  * ```
  * var frag = new gloperate.Shader(context, context.gl.FRAGMENT_SHADER, 'EmptyFragmentShader');
  * var vert = new gloperate.Shader(context, context.gl.VERTEX_SHADER, 'EmptyVertexShader');
