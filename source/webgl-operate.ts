@@ -5,6 +5,9 @@ import { Context } from './core/context';
 import { ContextMasquerade } from './core/contextmasquerade';
 import { ExtensionsHash } from './core/extensionshash';
 
+import { Controller } from './core/controller';
+import { AbstractRenderer } from './core/renderer';
+
 import { Buffer } from './core/buffer';
 import { DefaultFramebuffer } from './core/defaultframebuffer';
 import { Framebuffer } from './core/framebuffer';
@@ -28,6 +31,9 @@ export {
     Canvas,
 
     // core facilities
+
+    Controller,
+    AbstractRenderer,
 
     Context,
     ContextMasquerade,
@@ -53,8 +59,7 @@ export {
 
     // viewer facilities
 
-    // development facilities (should be none when publishing)
 
-    byteSizeOfFormat,
+    // development facilities (should be none when publishing)
 
 };

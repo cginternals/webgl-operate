@@ -13,9 +13,35 @@ import * as gloperate from '../source/webgl-operate';
 describe('webgl-operate API', () => {
 
     it('should expose core facilities', () => {
-        expect(gloperate.Context).to.exist;
-        expect(gloperate.ContextMasquerade).to.exist;
-        expect(gloperate.ExtensionsHash).to.exist;
+
+        const facilities = [
+            'Canvas',
+
+            'Controller',
+            'AbstractRenderer',
+
+            'Context',
+            'ContextMasquerade',
+            'ExtensionsHash',
+
+            'Buffer',
+            'DefaultFramebuffer',
+            'Framebuffer',
+            'Geometry',
+            'Program',
+            'Renderbuffer',
+            'Shader',
+            'Texture2',
+            'VertexArray',
+
+            'NdcFillingRectangle',
+            'NdcFillingTriangle',
+
+            'Color',
+        ];
+        for (const facility of facilities) {
+            expect(gloperate[facility]).to.exist;
+        }
     });
 
     it('should expose debug facilities', () => {
