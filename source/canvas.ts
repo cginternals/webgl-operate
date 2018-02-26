@@ -5,18 +5,15 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
 
-import { log_if, LogLevel } from './core/auxiliaries';
+import { assert, log_if, LogLevel } from './core/auxiliaries';
 import { GLclampf2, GLsizei2, tuple2, tuple4 } from './core/tuples';
 
 
 import { Color } from './core/color';
 import { Context } from './core/context';
+import { Controller } from './core/controller';
+import { AbstractRenderer } from './core/renderer';
 import { Resizable } from './core/resizable';
-
-// import { Controller } from './core/controller';
-// import { Navigation } from './core/navigation';
-// import { Renderer } from './core/renderer';
-// import { SomeNavigation } from './core/somenavigation';
 
 
 export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
@@ -52,23 +49,21 @@ export class Canvas extends Resizable {
      */
     protected static readonly DEFAULT_MULTI_FRAME_NUMBER = 0;
 
+
     /**
      * @see {@link context}
      */
     protected _context: Context;
 
-    // /**
-    //  * Single controller that is managing the rendering control flow of a bound renderer.
-    //  */
-    // protected _controller: Controller;
+    /**
+     * @see {@link controller}
+     */
+    protected _controller: Controller;
 
-    // /**
-    //  * Renderer that is exclusively used by this canvas. Note that no renderer should be bound to multiple canvases
-    //  * simultaneously. The reference is non owning.
-    //  */
-    // protected _renderer: Renderer;
-
-    // protected _navigation: Navigation;
+    /**
+     * @see {@link renderer}
+     */
+    protected _renderer: AbstractRenderer | undefined;
 
 
     /**
@@ -117,12 +112,6 @@ export class Canvas extends Resizable {
      */
     protected _element: HTMLCanvasElement;
 
-    //     protected _eventListenersByType = new Array<[string, { (event: Event): void }]>(
-    //         ['contextmenu', (event) => { // disable context menu for canvas
-    //             event.preventDefault();
-    //             event.stopPropagation();
-    //             return false;
-    //         }]);
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -153,8 +142,7 @@ export class Canvas extends Resizable {
 
         /* Requesting a context asserts when no context could be created. */
         this._context = Context.request(this._element);
-        // this.configureController(dataset);
-        // this.configureNavigation();
+        this.configureController(dataset);
 
         this.configureSizeAndScale(dataset);
 
@@ -171,10 +159,6 @@ export class Canvas extends Resizable {
         const dataFramePrecision = dataset.accumulationFormat as FramePrecisionString;
         this._framePrecision = dataFramePrecision ? dataFramePrecision : Canvas.DEFAULT_FRAME_PRECISION;
         this.framePrecisionNext();
-
-        // for (const eventListener of this._eventListenersByType) {
-        //     this._element.addEventListener(eventListener[0], eventListener[1]);
-        // }
     }
 
     /**
@@ -184,38 +168,30 @@ export class Canvas extends Resizable {
      */
     protected configureController(dataset: DOMStringMap) {
         /* Create and setup a multi-frame controller. */
-        // this._controller = new Controller();
-        // this._controller.initialize([]);
-        // this._controller.block(); // Remain in block mode until renderer is bound and configured.
+        this._controller = new Controller();
+        this._controller.block(); // Remain in block mode until renderer is bound and configured.
 
-        // const mfNum: number = parseInt(dataset.multiFrameNumber, 10);
-        // const dfNum: number = parseInt(dataset.debugFrameNumber, 10);
+        const mfNum: number = parseInt(dataset.multiFrameNumber as string, 10);
+        const dfNum: number = parseInt(dataset.debugFrameNumber as string, 10);
 
-        // log_if(dataset.multiFrameNumber && isNaN(mfNum), 1, `data-multi-frame-number is not a number`);
-        // log_if(dataset.debugFrameNumber && isNaN(dfNum), 1, `data-debug-frame-number is not a number`);
+        log_if(isNaN(mfNum), LogLevel.Dev, `data-multi-frame-number is not a number`);
+        log_if(isNaN(dfNum), LogLevel.Dev, `data-debug-frame-number is not a number`);
 
-        // // parse date attributes for multi-frame number
-        // this._controller.multiFrameNumber = !isNaN(mfNum) ? mfNum : Canvas.DEFAULT_MULTI_FRAME_NUMBER;
-        // this._controller.debugFrameNumber = !isNaN(dfNum) ? dfNum : 0;
+        /* Parse date attributes for multi-frame number. */
+        this._controller.multiFrameNumber = !isNaN(mfNum) ? mfNum : Canvas.DEFAULT_MULTI_FRAME_NUMBER;
+        this._controller.debugFrameNumber = !isNaN(dfNum) ? dfNum : 0;
 
-        // const mfChanged: boolean = dataset.multiFrameNumber && (mfNum !== this._controller.multiFrameNumber ||
-        //     mfNum.toString() !== dataset.multiFrameNumber.trim());
-        // log_if(mfChanged, 1, `data-multi-frame-number changed to `
-        //     + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
+        const mfChanged: boolean = dataset.multiFrameNumber !== undefined &&
+            (mfNum !== this._controller.multiFrameNumber || mfNum.toString() !== dataset.multiFrameNumber.trim());
+        log_if(mfChanged, LogLevel.Dev, `data-multi-frame-number changed to `
+            + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
 
-        // const dfChanged: boolean = dataset.debugFrameNumber && (dfNum !== this._controller.debugFrameNumber ||
-        //     dfNum.toString() !== dataset.debugFrameNumber.trim());
-        // log_if(dfChanged, 1, `data-debug-frame-number changed to `
-        //     + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
+        const dfChanged: boolean = dataset.debugFrameNumber !== undefined &&
+            (dfNum !== this._controller.debugFrameNumber || dfNum.toString() !== dataset.debugFrameNumber.trim());
+        log_if(dfChanged, LogLevel.Dev, `data-debug-frame-number changed to `
+            + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
     }
 
-    /**
-     * Create and setup a navigation for camera control.
-     */
-    protected configureNavigation() {
-        // this._navigation = new SomeNavigation();
-        // this._navigation.initialize(this._element, () => this._controller.update());
-    }
 
     /**
      * Initializes the frame size and scale. By default, the scale is 1.0 for width and height and the size reflects
@@ -270,10 +246,9 @@ export class Canvas extends Resizable {
         this._element.width = this._size[0];
         this._element.height = this._size[1];
 
-        // if (this._renderer) {
-        //     this._controller.block();
-        //     this._renderer.canvasSize = this._size;
-        // }
+        if (this._renderer) {
+            this._controller.block();
+        }
 
         if (this._favorSizeOverScale) {
             this.frameSize = this._frameSize;
@@ -281,9 +256,9 @@ export class Canvas extends Resizable {
             this.frameScale = this._frameScale;
         }
 
-        // if (this._renderer) {
-        //     this._controller.unblock();
-        // }
+        if (this._renderer) {
+            this._controller.unblock();
+        }
     }
 
     /**
@@ -316,37 +291,75 @@ export class Canvas extends Resizable {
 
 
     /**
+     * The renderer (if not null) will be connected to the controller and navigation. The controller will
+     * immediately trigger a multi-frame, thereby causing the renderer to render frames.
+     *
+     * Note that no renderer should be bound to multiple canvases
+     * simultaneously. The reference is non owning.
+     *
+     * @param renderer - Either undefined or an uninitialized renderer.
+     */
+    protected bind(renderer: AbstractRenderer | undefined) {
+        if (this._renderer === renderer) {
+            return;
+        }
+        this.unbind(); // block controller
+        if (this._renderer === undefined) {
+            return;
+        }
+        assert(this._controller.blocked, `expected controller to be blocked`);
+
+        /**
+         * Note: a renderer that is to be bound to a canvas is expected to be not initialized. For it, initializable
+         * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
+         * method is assigned to the pipelines invalidation event.
+         */
+        this._renderer.initialize(this.context, () => this._controller.update());
+
+        this._renderer.frameSize = this._frameSize;
+        this._renderer.clearColor = this._clearColor.rgba;
+        this._renderer.framePrecision = this._framePrecision;
+        this._renderer.debugTexture = -1;
+
+        /**
+         * Note: again, no asserts required since controller and renderer already take care of that.
+         * Assign the renderer's update, frame, and swap method to the controller's frame and swap event callback.
+         * The assignments trigger immediate update and subsequently updates on invalidation.
+         */
+        this._controller.controllable = this._renderer;
+        this._controller.unblock();
+    }
+
+    /**
+     * Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
+     * renderer.
+     */
+    protected unbind() {
+        if (!this._renderer) {
+            return;
+        }
+
+        this._controller.block();
+        /**
+         * Since canvas is not the owner of the renderer it should not dispose it. However, the canvas manages the
+         * initialization of bound pipelines.
+         */
+        this._controller.controllable = undefined;
+        this._renderer = undefined;
+    }
+
+
+    /**
      * Uninitializes and deletes the controller as well as all other properties.
      */
     dispose() {
         super.dispose();
 
-        // for (const eventListener of this._eventListenersByType) {
-        //     this._element.removeEventListener(eventListener[0], eventListener[1]);
-        // }
-
-        // this._controller.uninitialize();
-        // this._navigation.uninitialize();
-
-        //  if (this._renderer) {
-        //      // we do not dispose the renderer (not owned)
-        //      this._renderer.uninitialize();
-        //  }
+        if (this._renderer) {
+            this._renderer.uninitialize();
+            this.unbind();
+        }
     }
-
-    //     /**
-    //      * The controller used by the canvas for multi-frame control.
-    //      *
-    //      * @returns The controller used by the canvas.
-    //      */
-    //     get controller(): Controller {
-    //         return this._controller;
-    //     }
-
-    //     get navigation(): Navigation {
-    //         return this._navigation;
-    //     }
-
 
     /**
      * Allows for explicit trigger of onResize, e.g., in case resize event-handling is managed explicitly ...
@@ -356,90 +369,30 @@ export class Canvas extends Resizable {
     }
 
 
-    // /**
-    //  * The renderer (if not null) will be connected to the controller and navigation. The controller will
-    //  * immediately trigger a multi-frame, thereby causing the renderer to render frames.
-    //  *
-    //  * @todo connect a navigation to the renderer
-    //  *
-    //  * @param renderer - Either null or an uninitialized renderer.
-    //  */
-    // bind(renderer: Renderer) {
-    //     this._controller.block();
+    /**
+     * Single controller that is managing the rendering control flow of a bound renderer.
+     * @returns - The controller used by the canvas.
+     */
+    get controller(): Controller {
+        return this._controller;
+    }
 
-    //     this._renderer = renderer;
-    //     if (!this._renderer) {
-    //         return;
-    //     }
+    /**
+     * The currently bound renderer. If no renderer is bound null is returned. If a renderer is bound, it should
+     * always be initialized (renderer initialization handled by the canvas).
+     * @returns - The currently bound renderer.
+     */
+    get renderer(): AbstractRenderer | undefined {
+        return this._renderer;
+    }
 
-    //     /**
-    //      * Note: a renderer that is to be bound to a canvas is expected to be not initialized. For it, initializable
-    //      * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
-    //      * method is assigned to the pipelines invalidation event.
-    //      */
-    //     this._renderer.initialize(this.context, () => this._controller.update());
-
-    //     this._renderer.canvasSize = this._size;
-    //     this._renderer.frameSize = this._frameSize;
-    //     this._renderer.clearColor = this._clearColor;
-    //     this._renderer.framePrecision = this._framePrecision;
-
-    //     /**
-    //      * Note: again, no asserts required since controller and renderer already take care of that.
-    //      *
-    //      * Assign the renderer's update, frame, and swap method to the controller's frame and swap event callback.
-    //      * The assignments trigger immediate update and subsequently updates on invalidation.
-    //      */
-    //     this._controller.updateCallback = (multiFrameNumber: number) => this._renderer.update(multiFrameNumber);
-    //     this._controller.frameCallback = (frameNumber: number) => this._renderer.frame(frameNumber);
-    //     this._controller.swapCallback = () => this._renderer.swap();
-
-    //     this._navigation.coordsAccess = (x: GLint, y: GLint, zInNDC?: number,
-    //         viewProjectionInverse?: mat4) => this._renderer.coordsAt(x, y, zInNDC, viewProjectionInverse);
-    //     this._navigation.idAccess = (x: GLint, y: GLint) => this._renderer.idAt(x, y);
-    //     this._navigation.camera = this._renderer.camera;
-
-    //     this._controller.unblock();
-    // }
-
-    // /**
-    //  * Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
-    //  * renderer.
-    //  */
-    // unbind() {
-    //     if (!this._renderer) {
-    //         return;
-    //     }
-
-    //     this._controller.block();
-    //     /**
-    //      * Since canvas is not the owner of the renderer it should not dispose it. However, the canvas manages the
-    //      * initialization of bound pipelines.
-    //      */
-    //     this._controller.updateCallback = undefined;
-    //     this._controller.frameCallback = undefined;
-    //     this._controller.swapCallback = undefined;
-    // }
-
-    // /**
-    //  * The currently bound renderer. If no renderer is bound null is returned. If a renderer is bound, it should
-    //  * always be initialized (renderer initialization handled by the canvas).
-    //  *
-    //  * @returns The currently bound renderer.
-    //  */
-    // get renderer(): Renderer {
-    //     return this._renderer;
-    // }
-
-    // /**
-    //  * Binds a renderer to the canvas. A previously bound renderer will be unbound (see bind and unbind).
-    //  *
-    //  * @param {Renderer} renderer - a renderer object or null
-    //  */
-    // set renderer(renderer: Renderer) {
-    //     this.unbind();
-    //     this.bind(renderer);
-    // }
+    /**
+     * Binds a renderer to the canvas. A previously bound renderer will be unbound (see bind and unbind).
+     * @param renderer - A renderer object or undefined.
+     */
+    set renderer(renderer: AbstractRenderer | undefined) {
+        this.bind(renderer);
+    }
 
     /**
      * Targeted scale for rendering with respect to the canvas size. This property can be observed, e.g.,
@@ -485,9 +438,9 @@ export class Canvas extends Resizable {
         this.frameScaleNext();
         this.frameSizeNext();
 
-        // if (this._renderer) {
-        //     this._renderer.frameSize = this._frameSize;
-        // }
+        if (this._renderer) {
+            this._renderer.frameSize = this._frameSize;
+        }
     }
 
     /**
@@ -539,9 +492,9 @@ export class Canvas extends Resizable {
         this.frameScaleNext();
         this.frameSizeNext();
 
-        // if (this._renderer) {
-        //     this._renderer.renderSize = this._renderSize;
-        // }
+        if (this._renderer) {
+            this._renderer.frameSize = this._frameSize;
+        }
     }
 
     /**
@@ -568,9 +521,9 @@ export class Canvas extends Resizable {
      */
     set clearColor(clearColor: Color) {
         this._clearColor = clearColor;
-        // if (this._renderer) {
-        //     this._renderer.clearColor = this._clearColor;
-        // }
+        if (this._renderer) {
+            this._renderer.clearColor = this._clearColor.rgba;
+        }
     }
 
 
@@ -590,11 +543,12 @@ export class Canvas extends Resizable {
      */
     set framePrecision(precision: FramePrecisionString) {
         this._framePrecision = precision;
+
+        if (this._renderer) {
+            this._renderer.framePrecision = this._framePrecision;
+            this._framePrecision = this._renderer.framePrecision; // might change due to missing support
+        }
         this.framePrecisionNext();
-        // if (this._renderer) {
-        //     this._renderer.framePrecision = this._framePrecision;
-        //     this._framePrecision = this._renderer.framePrecision; // might change due to missing support
-        // }
     }
 
     /**

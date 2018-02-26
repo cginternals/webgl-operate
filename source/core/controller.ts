@@ -435,7 +435,7 @@ export class Controller {
      * frame is usually done offscreen and explicit swap control can be useful.
      * @param controllable - Controllable renderer for update, frame, and swap invocation.
      */
-    set controllable(controllable: Controllable) {
+    set controllable(controllable: Controllable | undefined) {
         if (controllable === this._controllable) {
             return;
         }

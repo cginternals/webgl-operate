@@ -182,9 +182,7 @@ export abstract class AbstractRenderer extends Initializable {
      * overriding this function.
      */
     @Initializable.uninitialize()
-    uninitialize(): void {
-
-    }
+    uninitialize(): void { }
 
 
     /**
