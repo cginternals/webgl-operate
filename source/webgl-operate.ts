@@ -23,8 +23,6 @@ import { NdcFillingTriangle } from './assets/ndcfillingtriangle';
 
 import { Color } from './core/color';
 
-import { byteSizeOfFormat } from './core/formatbytesizes';
-
 
 export {
 
