@@ -21,10 +21,10 @@ class ExtensionsHashMock extends ExtensionsHash {
 
 describe('ExtensionsHash', () => {
 
-    const FIRST_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_float'
-        , 'EXT_color_buffer_half_float', 'EXT_disjoint_timer_query', 'EXT_disjoint_timer_query_webgl2'];
-    const SOME_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_half_float'
-        , 'EXT_disjoint_timer_query', 'EXT_frag_depth', 'EXT_sRGB'];
+    const FIRST_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_float',
+        'EXT_color_buffer_half_float', 'EXT_disjoint_timer_query', 'EXT_disjoint_timer_query_webgl2'];
+    const SOME_6_000_EXTENSIONS = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_half_float',
+        'EXT_disjoint_timer_query', 'EXT_frag_depth', 'EXT_sRGB'];
 
     it('should encode valid bitfields to base64', () => {
         expect(ExtensionsHashMock.encode64(0b000000)).to.equal('0');
@@ -100,8 +100,8 @@ describe('ExtensionsHash', () => {
     });
 
     it('should complement a set of extensions', () => {
-        const SOME_WEBGL2_EXTS = ['EXT_color_buffer_float', 'EXT_disjoint_timer_query_webgl2'
-            , 'EXT_texture_filter_anisotropic', 'OES_texture_float_linear', 'OES_texture_half_float_linear'];
+        const SOME_WEBGL2_EXTS = ['EXT_color_buffer_float', 'EXT_disjoint_timer_query_webgl2',
+            'EXT_texture_filter_anisotropic', 'OES_texture_float_linear', 'OES_texture_half_float_linear'];
         const complement = ExtensionsHash.complement('webgl2', SOME_WEBGL2_EXTS);
         expect(complement.length + SOME_WEBGL2_EXTS.length).to.equal(WEBGL2_EXTENSIONS.length);
 

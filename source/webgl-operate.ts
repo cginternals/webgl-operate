@@ -5,6 +5,9 @@ import { Context } from './core/context';
 import { ContextMasquerade } from './core/contextmasquerade';
 import { ExtensionsHash } from './core/extensionshash';
 
+import { Controller } from './core/controller';
+import { AbstractRenderer } from './core/renderer';
+
 import { Buffer } from './core/buffer';
 import { DefaultFramebuffer } from './core/defaultframebuffer';
 import { Framebuffer } from './core/framebuffer';
@@ -20,14 +23,17 @@ import { NdcFillingTriangle } from './assets/ndcfillingtriangle';
 
 import { Color } from './core/color';
 
-import { byteSizeOfFormat } from './core/formatbytesizes';
+import { TestRenderer } from './debug/testrenderer';
 
 
 export {
 
     Canvas,
 
-    // core facilities
+    /* CORE facilities. */
+
+    Controller,
+    AbstractRenderer,
 
     Context,
     ContextMasquerade,
@@ -48,13 +54,12 @@ export {
 
     Color,
 
-    // debug facilities
+    /* DEBUG facilities */
 
+    TestRenderer,
 
-    // viewer facilities
+    /* VIEWER facilities */
 
-    // development facilities (should be none when publishing)
-
-    byteSizeOfFormat,
+    /* DEVELOPMENT facilities (should be none when publishing) */
 
 };

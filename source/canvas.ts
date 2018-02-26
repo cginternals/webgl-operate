@@ -1,20 +1,22 @@
 
+import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './core/gl-matrix-extensions';
 
-import { log_if, LogLevel } from './core/auxiliaries';
+import { assert, log_if, LogLevel } from './core/auxiliaries';
 import { GLclampf2, GLsizei2, tuple2, tuple4 } from './core/tuples';
 
-import { observable } from './core/observable';
 
 import { Color } from './core/color';
 import { Context } from './core/context';
+import { Controller } from './core/controller';
+import { AbstractRenderer } from './core/renderer';
 import { Resizable } from './core/resizable';
 
-// import { Controller } from './core/controller';
-// import { Navigation } from './core/navigation';
-// import { Renderer } from './core/renderer';
-// import { SomeNavigation } from './core/somenavigation';
+
+export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
 
 
 /**
@@ -38,32 +40,30 @@ export class Canvas extends Resizable {
     protected static readonly DEFAULT_CLEAR_COLOR: Color = new Color([0.203, 0.227, 0.250, 1.0]);
 
     /**
-     * Default accumulation accuracy/format when multi-frame rendering is used.
+     * Default frame precision, e.g., accumulation format when multi-frame rendering is used.
      */
-    protected static readonly DEFAULT_ACCUMULATION_FORMAT: string = 'auto';
+    protected static readonly DEFAULT_FRAME_PRECISION = 'auto';
 
     /**
      * Default multi-frame number used if none is set via data attributes.
      */
-    protected static readonly DEFAULT_MULTI_FRAME_NUMBER: number = 0;
+    protected static readonly DEFAULT_MULTI_FRAME_NUMBER = 0;
+
 
     /**
      * @see {@link context}
      */
     protected _context: Context;
 
-    // /**
-    //  * Single controller that is managing the rendering control flow of a bound renderer.
-    //  */
-    // protected _controller: Controller;
+    /**
+     * @see {@link controller}
+     */
+    protected _controller: Controller;
 
-    // /**
-    //  * Renderer that is exclusively used by this canvas. Note that no renderer should be bound to multiple canvases
-    //  * simultaneously. The reference is non owning.
-    //  */
-    // protected _renderer: Renderer;
-
-    // protected _navigation: Navigation;
+    /**
+     * @see {@link renderer}
+     */
+    protected _renderer: AbstractRenderer | undefined;
 
 
     /**
@@ -73,38 +73,33 @@ export class Canvas extends Resizable {
 
 
     /**
-     * @see {@link accumulationFormat}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.accumulationFormatObservable.subscribe()`.
+     * @see {@link framePrecision}
+     * This property can be observed, e.g., `aCanvas.framePrecisionObservable.subscribe()`.
      */
-    @observable<string>()
-    protected _accumulationFormat: string;
+    protected _framePrecision: FramePrecisionString;
+    protected _framePrecisionSubject = new ReplaySubject<FramePrecisionString>(1);
 
 
     /**
      * @see {@link size}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.sizeObservable.subscribe()`.
+     * This property can be observed, e.g., `aCanvas.sizeObservable.subscribe()`.
      */
-    @observable<GLsizei2>()
     protected _size: GLsizei2 = [1, 1];
-
+    protected _sizeSubject = new ReplaySubject<GLsizei2>(1);
 
     /**
      * @see {@link frameScale}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.frameScaleObservable.subscribe()`.
+     * This property can be observed, `aCanvas.frameScaleObservable.subscribe()`.
      */
-    @observable<GLclampf2>()
     protected _frameScale: GLclampf2;
+    protected _frameScaleSubject = new ReplaySubject<GLclampf2>(1);
 
     /**
      * @see {@link frameSize}
-     * For this property, an observable and a getter will be generated (decorated) at run-time:
-     * e.g., `aCanvas.frameSizeObservable.subscribe()`.
+     * This property can be observed, `aCanvas.frameSizeObservable.subscribe()`.
      */
-    @observable<GLsizei2>()
     protected _frameSize: GLsizei2;
+    protected _frameSizeSubject = new ReplaySubject<GLsizei2>(1);
 
     /**
      * Flag used to determine whether frame size or frame scale is the dominant configuration.
@@ -117,12 +112,6 @@ export class Canvas extends Resizable {
      */
     protected _element: HTMLCanvasElement;
 
-    //     protected _eventListenersByType = new Array<[string, { (event: Event): void }]>(
-    //         ['contextmenu', (event) => { // disable context menu for canvas
-    //             event.preventDefault();
-    //             event.stopPropagation();
-    //             return false;
-    //         }]);
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -135,17 +124,17 @@ export class Canvas extends Resizable {
      *
      * The canvas supports the following data attributes:
      * - data-multi-frame-number {number} - integer greater than 0
-     * - data-clear-color {vec4} - rgba color for clearing
-     * - data-frame-scale {vec2} - width and height frame scale in [0.0,1.0]
-     * - data-frame-size {vec2} - width and height frame size in pixel
-     * - data-accumulation-format {string} - accumulation format, either 'float', 'half', 'byte', or 'auto'.
+     * - data-clear-color {Color} - rgba color for clearing
+     * - data-frame-scale {GLclampf2} - width and height frame scale in [0.0,1.0]
+     * - data-frame-size {GLizei2} - width and height frame size in pixel
+     * - data-frame-precision {RenderPrecision} - precision for, e.g., frame accumulation
+     * , either 'float', 'half', 'byte', or 'auto'.
      *
      * Note: data-frame-size takes precedence if both frame-scale and frame-size data attributes are provided.
      * @param element - Canvas element or element id {string} to be used for querying the canvas element.
      */
     constructor(element: HTMLCanvasElement | string) {
         super(); // setup resize event handling
-
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
 
@@ -153,8 +142,7 @@ export class Canvas extends Resizable {
 
         /* Requesting a context asserts when no context could be created. */
         this._context = Context.request(this._element);
-        // this.configureController(dataset);
-        // this.configureNavigation();
+        this.configureController(dataset);
 
         this.configureSizeAndScale(dataset);
 
@@ -167,13 +155,10 @@ export class Canvas extends Resizable {
         }
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
-        /* Retrieve accumulation format from data attributes or set default */
-        const dataAccumFormat = dataset.accumulationFormat;
-        this._accumulationFormat = dataAccumFormat ? dataAccumFormat : Canvas.DEFAULT_ACCUMULATION_FORMAT;
-
-        // for (const eventListener of this._eventListenersByType) {
-        //     this._element.addEventListener(eventListener[0], eventListener[1]);
-        // }
+        /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
+        const dataFramePrecision = dataset.accumulationFormat as FramePrecisionString;
+        this._framePrecision = dataFramePrecision ? dataFramePrecision : Canvas.DEFAULT_FRAME_PRECISION;
+        this.framePrecisionNext();
     }
 
     /**
@@ -183,38 +168,30 @@ export class Canvas extends Resizable {
      */
     protected configureController(dataset: DOMStringMap) {
         /* Create and setup a multi-frame controller. */
-        // this._controller = new Controller();
-        // this._controller.initialize([]);
-        // this._controller.block(); // Remain in block mode until renderer is bound and configured.
+        this._controller = new Controller();
+        this._controller.block(); // Remain in block mode until renderer is bound and configured.
 
-        // const mfNum: number = parseInt(dataset.multiFrameNumber, 10);
-        // const dfNum: number = parseInt(dataset.debugFrameNumber, 10);
+        const mfNum: number = parseInt(dataset.multiFrameNumber as string, 10);
+        const dfNum: number = parseInt(dataset.debugFrameNumber as string, 10);
 
-        // log_if(dataset.multiFrameNumber && isNaN(mfNum), 1, `data-multi-frame-number is not a number`);
-        // log_if(dataset.debugFrameNumber && isNaN(dfNum), 1, `data-debug-frame-number is not a number`);
+        log_if(isNaN(mfNum), LogLevel.Dev, `data-multi-frame-number is not a number`);
+        log_if(isNaN(dfNum), LogLevel.Dev, `data-debug-frame-number is not a number`);
 
-        // // parse date attributes for multi-frame number
-        // this._controller.multiFrameNumber = !isNaN(mfNum) ? mfNum : Canvas.DEFAULT_MULTI_FRAME_NUMBER;
-        // this._controller.debugFrameNumber = !isNaN(dfNum) ? dfNum : 0;
+        /* Parse date attributes for multi-frame number. */
+        this._controller.multiFrameNumber = !isNaN(mfNum) ? mfNum : Canvas.DEFAULT_MULTI_FRAME_NUMBER;
+        this._controller.debugFrameNumber = !isNaN(dfNum) ? dfNum : 0;
 
-        // const mfChanged: boolean = dataset.multiFrameNumber && (mfNum !== this._controller.multiFrameNumber ||
-        //     mfNum.toString() !== dataset.multiFrameNumber.trim());
-        // log_if(mfChanged, 1, `data-multi-frame-number changed to `
-        //     + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
+        const mfChanged: boolean = dataset.multiFrameNumber !== undefined &&
+            (mfNum !== this._controller.multiFrameNumber || mfNum.toString() !== dataset.multiFrameNumber.trim());
+        log_if(mfChanged, LogLevel.Dev, `data-multi-frame-number changed to `
+            + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
 
-        // const dfChanged: boolean = dataset.debugFrameNumber && (dfNum !== this._controller.debugFrameNumber ||
-        //     dfNum.toString() !== dataset.debugFrameNumber.trim());
-        // log_if(dfChanged, 1, `data-debug-frame-number changed to `
-        //     + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
+        const dfChanged: boolean = dataset.debugFrameNumber !== undefined &&
+            (dfNum !== this._controller.debugFrameNumber || dfNum.toString() !== dataset.debugFrameNumber.trim());
+        log_if(dfChanged, LogLevel.Dev, `data-debug-frame-number changed to `
+            + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
     }
 
-    /**
-     * Create and setup a navigation for camera control.
-     */
-    protected configureNavigation() {
-        // this._navigation = new SomeNavigation();
-        // this._navigation.initialize(this._element, () => this._controller.update());
-    }
 
     /**
      * Initializes the frame size and scale. By default, the scale is 1.0 for width and height and the size reflects
@@ -242,7 +219,7 @@ export class Canvas extends Resizable {
         this._favorSizeOverScale = dataFrameSize !== undefined;
         this._frameSize = dataFrameSize ? tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
 
-        this.onResize();
+        this.onResize(); // invokes frameScaleNext and frameSizeNext
     }
 
 
@@ -253,11 +230,11 @@ export class Canvas extends Resizable {
     protected retrieveSize(): void {
         const size = Resizable.elementSize(this._element);
         this._size = [size[0], size[1]];
+        this.sizeNext();
     }
 
     /**
-     * Resize is invoked by the resizable mixin. It retrieves the canvas size and promotes it to the multi-frame
-     * rendering.
+     * Resize is invoked by the resizable mixin. It retrieves the canvas size and promotes it to the renderer.
      */
     protected onResize() {
         this.retrieveSize();
@@ -269,10 +246,9 @@ export class Canvas extends Resizable {
         this._element.width = this._size[0];
         this._element.height = this._size[1];
 
-        // if (this._renderer) {
-        //     this._controller.block();
-        //     this._renderer.canvasSize = this._size;
-        // }
+        if (this._renderer) {
+            this._controller.block();
+        }
 
         if (this._favorSizeOverScale) {
             this.frameSize = this._frameSize;
@@ -280,9 +256,97 @@ export class Canvas extends Resizable {
             this.frameScale = this._frameScale;
         }
 
-        // if (this._renderer) {
-        //     this._controller.unblock();
-        // }
+        if (this._renderer) {
+            this._controller.unblock();
+        }
+    }
+
+    /**
+     * Utility for communicating this._framePrecision changes to its associated subject.
+     */
+    protected framePrecisionNext(): void {
+        this._framePrecisionSubject.next(this._framePrecision);
+    }
+
+    /**
+     * Utility for communicating this._size changes to its associated subject.
+     */
+    protected sizeNext(): void {
+        this._sizeSubject.next(this._size);
+    }
+
+    /**
+     * Utility for communicating this._frameScale changes to its associated subject.
+     */
+    protected frameScaleNext(): void {
+        this._frameScaleSubject.next(this._frameScale);
+    }
+
+    /**
+     * Utility for communicating this._frameSize changes to its associated subject.
+     */
+    protected frameSizeNext(): void {
+        this._frameSizeSubject.next(this._frameSize);
+    }
+
+
+    /**
+     * The renderer (if not null) will be connected to the controller and navigation. The controller will
+     * immediately trigger a multi-frame, thereby causing the renderer to render frames.
+     *
+     * Note that no renderer should be bound to multiple canvases
+     * simultaneously. The reference is non owning.
+     *
+     * @param renderer - Either undefined or an uninitialized renderer.
+     */
+    protected bind(renderer: AbstractRenderer | undefined) {
+        if (this._renderer === renderer) {
+            return;
+        }
+        this.unbind(); // block controller
+        if (renderer === undefined) {
+            return;
+        }
+        assert(this._controller.blocked, `expected controller to be blocked`);
+        this._renderer = renderer;
+
+        /**
+         * Note: a renderer that is to be bound to a canvas is expected to be not initialized. For it, initializable
+         * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
+         * method is assigned to the pipelines invalidation event.
+         */
+        this._renderer.initialize(this.context, () => this._controller.update());
+
+        this._renderer.frameSize = this._frameSize;
+        this._renderer.clearColor = this._clearColor.rgba;
+        this._renderer.framePrecision = this._framePrecision;
+        this._renderer.debugTexture = -1;
+
+        /**
+         * Note: again, no asserts required since controller and renderer already take care of that.
+         * Assign the renderer's update, frame, and swap method to the controller's frame and swap event callback.
+         * The assignments trigger immediate update and subsequently updates on invalidation.
+         */
+        this._controller.controllable = this._renderer;
+        this._controller.unblock();
+    }
+
+    /**
+     * Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
+     * renderer.
+     */
+    protected unbind() {
+        if (this._renderer === undefined) {
+            return;
+        }
+
+        this._controller.block();
+        /**
+         * Since canvas is not the owner of the renderer it should not dispose it. However, the canvas manages the
+         * initialization of bound pipelines.
+         */
+        this._controller.controllable = undefined;
+        this._renderer = undefined;
     }
 
 
@@ -292,32 +356,11 @@ export class Canvas extends Resizable {
     dispose() {
         super.dispose();
 
-        // for (const eventListener of this._eventListenersByType) {
-        //     this._element.removeEventListener(eventListener[0], eventListener[1]);
-        // }
-
-        // this._controller.uninitialize();
-        // this._navigation.uninitialize();
-
-        //  if (this._renderer) {
-        //      // we do not dispose the renderer (not owned)
-        //      this._renderer.uninitialize();
-        //  }
+        if (this._renderer) {
+            this._renderer.uninitialize();
+            this.unbind();
+        }
     }
-
-    //     /**
-    //      * The controller used by the canvas for multi-frame control.
-    //      *
-    //      * @returns The controller used by the canvas.
-    //      */
-    //     get controller(): Controller {
-    //         return this._controller;
-    //     }
-
-    //     get navigation(): Navigation {
-    //         return this._navigation;
-    //     }
-
 
     /**
      * Allows for explicit trigger of onResize, e.g., in case resize event-handling is managed explicitly ...
@@ -327,93 +370,34 @@ export class Canvas extends Resizable {
     }
 
 
-    // /**
-    //  * The renderer (if not null) will be connected to the controller and navigation. The controller will
-    //  * immediately trigger a multi-frame, thereby causing the renderer to render frames.
-    //  *
-    //  * @todo connect a navigation to the renderer
-    //  *
-    //  * @param renderer - Either null or an uninitialized renderer.
-    //  */
-    // bind(renderer: Renderer) {
-    //     this._controller.block();
-
-    //     this._renderer = renderer;
-    //     if (!this._renderer) {
-    //         return;
-    //     }
-
-    //     /**
-    //      * Note: a renderer that is to be bound to a canvas is expected to be not initialized. For it, initializable
-    //      * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
-    //      * method is assigned to the pipelines invalidation event.
-    //      */
-    //     this._renderer.initialize(this.context, () => this._controller.update());
-
-    //     this._renderer.canvasSize = this._size;
-    //     this._renderer.frameSize = this._frameSize;
-    //     this._renderer.clearColor = this._clearColor;
-    //     this._renderer.accumulationFormat = this._accumulationFormat;
-
-    //     /**
-    //      * Note: again, no asserts required since controller and renderer already take care of that.
-    //      *
-    //      * Assign the renderer's update, frame, and swap method to the controller's frame and swap event callback.
-    //      * The assignments trigger immediate update and subsequently updates on invalidation.
-    //      */
-    //     this._controller.updateCallback = (multiFrameNumber: number) => this._renderer.update(multiFrameNumber);
-    //     this._controller.frameCallback = (frameNumber: number) => this._renderer.frame(frameNumber);
-    //     this._controller.swapCallback = () => this._renderer.swap();
-
-    //     this._navigation.coordsAccess = (x: GLint, y: GLint, zInNDC?: number,
-    //         viewProjectionInverse?: mat4) => this._renderer.coordsAt(x, y, zInNDC, viewProjectionInverse);
-    //     this._navigation.idAccess = (x: GLint, y: GLint) => this._renderer.idAt(x, y);
-    //     this._navigation.camera = this._renderer.camera;
-
-    //     this._controller.unblock();
-    // }
-
-    // /**
-    //  * Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
-    //  * renderer.
-    //  */
-    // unbind() {
-    //     if (!this._renderer) {
-    //         return;
-    //     }
-
-    //     this._controller.block();
-    //     /**
-    //      * Since canvas is not the owner of the renderer it should not dispose it. However, the canvas manages the
-    //      * initialization of bound pipelines.
-    //      */
-    //     this._controller.updateCallback = undefined;
-    //     this._controller.frameCallback = undefined;
-    //     this._controller.swapCallback = undefined;
-    // }
-
-    // /**
-    //  * The currently bound renderer. If no renderer is bound null is returned. If a renderer is bound, it should
-    //  * always be initialized (renderer initialization handled by the canvas).
-    //  *
-    //  * @returns The currently bound renderer.
-    //  */
-    // get renderer(): Renderer {
-    //     return this._renderer;
-    // }
-
-    // /**
-    //  * Binds a renderer to the canvas. A previously bound renderer will be unbound (see bind and unbind).
-    //  *
-    //  * @param {Renderer} renderer - a renderer object or null
-    //  */
-    // set renderer(renderer: Renderer) {
-    //     this.unbind();
-    //     this.bind(renderer);
-    // }
+    /**
+     * Single controller that is managing the rendering control flow of a bound renderer.
+     * @returns - The controller used by the canvas.
+     */
+    get controller(): Controller {
+        return this._controller;
+    }
 
     /**
-     * Scale of the multi-frame with respect to the canvas size.
+     * The currently bound renderer. If no renderer is bound null is returned. If a renderer is bound, it should
+     * always be initialized (renderer initialization handled by the canvas).
+     * @returns - The currently bound renderer.
+     */
+    get renderer(): AbstractRenderer | undefined {
+        return this._renderer;
+    }
+
+    /**
+     * Binds a renderer to the canvas. A previously bound renderer will be unbound (see bind and unbind).
+     * @param renderer - A renderer object or undefined.
+     */
+    set renderer(renderer: AbstractRenderer | undefined) {
+        this.bind(renderer);
+    }
+
+    /**
+     * Targeted scale for rendering with respect to the canvas size. This property can be observed, e.g.,
+     * `canvas.frameScaleObservable.subscribe()`.
      * @returns - The frame scale in [0.0, 1.0].
      */
     get frameScale(): GLclampf2 {
@@ -421,11 +405,11 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * Set the scale of the multi-frame with respect to the canvas size. The scale will be clamped to [0.0,1.0]. A
+     * Set the targeted scale for rendering with respect to the canvas size. The scale will be clamped to [0.0,1.0]. A
      * scale of 0.0 results in 1px frame resolution for the respective component.
      * The frame scale allows to detach the rendering resolution from the native canvas resolution, e.g., in order to
      * decrease rendering cost. The frame resolution can also be specified explicitly by width and height.
-     * @param frameScale - Scale of the multi-frame.
+     * @param frameScale - Scale of rendering.
      * @returns - The frame scale in [0.0,1.0].
      */
     set frameScale(frameScale: GLclampf2) {
@@ -452,14 +436,25 @@ export class Canvas extends Resizable {
         this._frameSize = tuple2<GLsizei>(size);
         this._favorSizeOverScale = false;
 
-        // if (this._renderer) {
-        //     this._renderer.frameSize = this._frameSize;
-        // }
+        this.frameScaleNext();
+        this.frameSizeNext();
+
+        if (this._renderer) {
+            this._renderer.frameSize = this._frameSize;
+        }
+    }
+
+    /**
+     * Observable that can be used to subscribe to frame scale changes.
+     */
+    get frameScaleObservable(): Observable<GLclampf2> {
+        return this._frameScaleSubject.asObservable();
     }
 
 
     /**
-     * Resolution (width and height) of the multi-frame in pixel.
+     * Targeted resolution (width and height) for rendering in pixel. This property can be observed, e.g.,
+     * `canvas.frameSizeObservable.subscribe()`.
      * @returns - The frame size in pixel (must not be physical/native pixels).
      */
     get frameSize(): GLsizei2 {
@@ -467,23 +462,24 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * Set the size of the multi-frame in pixels. The size will be clamped to [1, canvas-size]. The frame size allows to
-     * detach the rendering resolution from the native canvas resolution, e.g., in order to decrease rendering cost.
-     * The frame resolution can also be specified implicitly by width and height in scale (@see frameScale).
-     * @param frameSize - Size of the multi-frame in pixel (must not be physical/native pixels).
+     * Set the targeted size for rendering in pixels. The size will be clamped to [1, canvas-size]. The frame size
+     * allows to detach the rendering resolution from the native canvas resolution, e.g., in order to decrease
+     * rendering cost.
+     * The render resolution can also be specified implicitly by width and height in scale (@see frameScale).
+     * @param frameSize - Size for rendering in pixel (must not be physical/native pixels).
      * @returns - The frame size in [1, canvas-size].
      */
     set frameSize(frameSize: GLsizei2) {
-        log_if(frameSize[0] < 1 || frameSize[0] > this._size[0], 1,
+        log_if(frameSize[0] < 1 || frameSize[0] > this._size[0], LogLevel.Dev,
             `frame width scale clamped to [1,${this._size[0]}], given ${frameSize[0]}`);
-        log_if(frameSize[1] < 1 || frameSize[1] > this._size[1], 1,
+        log_if(frameSize[1] < 1 || frameSize[1] > this._size[1], LogLevel.Dev,
             `frame height scale clamped to [1, ${this._size[1]}], given ${frameSize[1]}`);
 
         const size = vec2.create();
         clamp2(size, frameSize, [1.0, 1.0], this._size);
         vec2.round(size, size);
 
-        log_if(!vec2.exactEquals(size, frameSize), 2,
+        log_if(!vec2.exactEquals(size, frameSize), LogLevel.ModuleDev,
             `frame size was adjusted to ${size.toString()}, given ${frameSize.toString()}`);
 
         const scale = vec2.create();
@@ -494,11 +490,21 @@ export class Canvas extends Resizable {
         /* Switch back to default mode (scale based) when frame size matches canvas size. */
         this._favorSizeOverScale = !vec2.exactEquals(this._frameSize, this._size);
 
+        this.frameScaleNext();
+        this.frameSizeNext();
 
-        // if (this._renderer) {
-        //     this._renderer.frameSize = this._frameSize;
-        // }
+        if (this._renderer) {
+            this._renderer.frameSize = this._frameSize;
+        }
     }
+
+    /**
+     * Observable that can be used to subscribe to frame size changes.
+     */
+    get frameSizeObservable(): Observable<GLsizei2> {
+        return this._frameSizeSubject.asObservable();
+    }
+
 
     /**
      * Getter for the canvas's clear color. The clear color is provided to the renderer (on bind). Since this is a
@@ -516,32 +522,43 @@ export class Canvas extends Resizable {
      */
     set clearColor(clearColor: Color) {
         this._clearColor = clearColor;
-        // if (this._renderer) {
-        //     this._renderer.clearColor = this._clearColor;
-        // }
+        if (this._renderer) {
+            this._renderer.clearColor = this._clearColor.rgba;
+        }
     }
 
+
     /**
-     * Getter for the accumulation format.
+     * Getter for the targeted frame precision. This property can be observed, e.g.,
+     * `canvas.framePrecisionObservable.subscribe()`.
      * @returns - Accumulation format as string passed to any renderer bound.
      */
-    get accumulationFormat(): string {
-        return this._accumulationFormat;
+    get framePrecision(): FramePrecisionString {
+        return this._framePrecision;
     }
 
     /**
-     * Sets the accumulation format that is then passed to the currently bound renderer as well as to any renderers
-     * bound in the future.
-     * @param format - Accumulation format as string, 'float', 'half', 'byte' or 'auto' are supported. Any unsupported
-     * format will result in 'auto'.
+     * Sets the targeted frame precision that is then passed to the currently bound renderer as well as to any renderers
+     * bound in the future. This might be used for frame accumulation in multi-frame based rendering.
+     * @param precision - Frame precision, 'float', 'half', 'byte' or 'auto' are supported.
      */
-    set accumulationFormat(format: string) {
-        this._accumulationFormat = format;
-        // if (this._renderer) {
-        //     this._renderer.accumulationFormat = this._accumulationFormat;
-        //     this._accumulationFormat = this._renderer.accumulationFormat; // might change due to missing support
-        // }
+    set framePrecision(precision: FramePrecisionString) {
+        this._framePrecision = precision;
+
+        if (this._renderer) {
+            this._renderer.framePrecision = this._framePrecision;
+            this._framePrecision = this._renderer.framePrecision; // might change due to missing support
+        }
+        this.framePrecisionNext();
     }
+
+    /**
+     * Observable that can be used to subscribe to frame precision changes.
+     */
+    get framePrecisionObservable(): Observable<string> {
+        return this._framePrecisionSubject.asObservable();
+    }
+
 
     /**
      * Provides access to the WebGL context (leaky abstraction).
@@ -559,15 +576,25 @@ export class Canvas extends Resizable {
         return this._context.backendString as string;
     }
 
+
     /**
      * Size of the canvas measured in physical/native screen pixels. This is the 'managed' canvas width and height. The
      * unmanaged canvas width and height are available via context.gl.canvas.width and context.gl.canvas.height (which
      * should always be the same).
+     * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
      * @returns - The canvas width and height in physical/native screen pixels as 2-tuple.
      */
     get size(): GLsizei2 {
         return this._size;
     }
+
+    /**
+     * Observable that can be used to subscribe to canvas size changes.
+     */
+    get sizeObservable(): Observable<GLsizei2> {
+        return this._sizeSubject.asObservable();
+    }
+
 
     /**
      * Width of the canvas measured in physical/native screen pixels. This is the 'managed' canvas width. The

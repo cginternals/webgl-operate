@@ -80,8 +80,8 @@ export class ContextMasquerade {
             preset = p;
             break;
         }
-        assert(preset !== undefined
-            , `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
+        assert(preset !== undefined,
+            `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
 
         preset = preset as ContextMasquerade.Preset;
 

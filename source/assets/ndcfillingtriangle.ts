@@ -81,8 +81,8 @@ export class NdcFillingTriangle extends Geometry {
         const gl = this.context.gl;
         const valid = super.initialize([gl.ARRAY_BUFFER], [aVertex]);
 
-        assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer
-            , `expected valid WebGLBuffer`);
+        assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
+            `expected valid WebGLBuffer`);
 
         this._buffers[0].data(NdcFillingTriangle.VERTICES, gl.STATIC_DRAW);
 

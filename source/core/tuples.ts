@@ -89,8 +89,8 @@ namespace tuples {
      */
     export function clampf(value: GLclampf | GLfloat, semantic?: string): GLclampf | GLfloat {
         const valueV1 = clamp(value, 0.0, 1.0);
-        log_if(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.User
-            , `${semantic} clamped to [${valueV1}] | given [${value}]`);
+        log_if(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.User,
+            `${semantic} clamped to [${valueV1}] | given [${value}]`);
         return valueV1;
     }
 

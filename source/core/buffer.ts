@@ -33,8 +33,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         this._valid = this._object instanceof WebGLBuffer;
 
         if (this._valid) {
-            assert(target === gl.ARRAY_BUFFER || target === gl.ELEMENT_ARRAY_BUFFER
-                , `either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER expected as buffer target`);
+            assert(target === gl.ARRAY_BUFFER || target === gl.ELEMENT_ARRAY_BUFFER,
+                `either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER expected as buffer target`);
             this._target = target;
         }
         return this._object;
@@ -58,8 +58,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      */
     @Initializable.assert_initialized()
     bind(): void {
-        assert(this._target === this._context.gl.ARRAY_BUFFER || this._target === this._context.gl.ELEMENT_ARRAY_BUFFER
-            , `expected either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER as buffer target`);
+        assert(this._target === this._context.gl.ARRAY_BUFFER || this._target === this._context.gl.ELEMENT_ARRAY_BUFFER,
+            `expected either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER as buffer target`);
         this._context.gl.bindBuffer(this._target, this._object);
     }
 
@@ -107,8 +107,9 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false
-        , stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
+    attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false,
+        stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
+
         const gl = this.context.gl;
         if (bind) {
             this.bind();

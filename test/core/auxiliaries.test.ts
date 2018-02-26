@@ -42,7 +42,7 @@ describe('auxiliaries assert_range', () => {
 });
 
 
-describe('auxiliaries log_if', () => {
+describe('auxiliaries log and log_if', () => {
 
     it('should not log on false expression', () => {
         const consoleLogStub = stub(console, 'log');
@@ -63,15 +63,44 @@ describe('auxiliaries log_if', () => {
         let output = '';
         const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
 
-        aux.log_if(true, aux.LogLevel.User, 'log level 0');
+        aux.log(aux.LogLevel.User, 'log level 0');
         expect(output).to.string('[0]');
 
-        aux.log_if(true, aux.LogLevel.Dev, 'log level 1');
+        aux.log(aux.LogLevel.Dev, 'log level 1');
         expect(output).to.string('[1]');
 
-        aux.log_if(true, aux.LogLevel.ModuleDev, 'log level 2');
+        aux.log(aux.LogLevel.ModuleDev, 'log level 2');
         expect(output).to.string('[2]');
 
+        consoleLogStub.restore();
+    });
+
+    it('should respect verbosity level', () => {
+        let output = '';
+        const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
+
+        aux.log(aux.LogLevel.User, 'log level 0');
+        expect(output).to.string('[0]');
+
+        aux.log(aux.LogLevel.Dev, 'log level 1');
+        expect(output).to.string('[1]');
+
+        aux.log(aux.LogLevel.ModuleDev, 'log level 2');
+        expect(output).to.string('[2]');
+
+        aux.log(4, 'log level 4');
+        expect(output).to.string('[2]');
+
+        const thresholdRestore = aux.LOG_VERBOSITY_THRESHOLD;
+        aux.LOG_VERBOSITY_THRESHOLD = 4;
+        aux.log(4, 'log level 4');
+        expect(output).to.string('[4]');
+
+        aux.LOG_VERBOSITY_THRESHOLD = -1;
+        aux.log(0, 'log level 0');
+        expect(output).to.string('[4]');
+
+        aux.LOG_VERBOSITY_THRESHOLD = thresholdRestore;
         consoleLogStub.restore();
     });
 });

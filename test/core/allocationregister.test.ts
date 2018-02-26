@@ -5,6 +5,7 @@ const expect = chai.expect;
 
 
 import { AllocationRegister } from '../../source/core/allocationregister';
+import { Observable } from 'rxjs/Observable';
 
 
 describe('AllocationTracker', () => {
@@ -161,6 +162,26 @@ describe('AllocationTracker', () => {
         tracker.allocate(foo, 123);
         tracker.reallocate(bar, 456789);
         expect(tracker.bytesToString()).to.equal('446.203KiB');
+    });
+
+    it('should allow observation of overall allocated bytes', () => {
+        const tracker = new AllocationRegister();
+        const foo = tracker.createUniqueIdentifier('foo');
+
+        tracker.allocate(foo, 123);
+        expect(tracker.bytes).to.equal(123);
+
+        let observed: number;
+        let observedString: string;
+        tracker.bytesObservable.subscribe((value) => { observed = value[0]; observedString = value[1]; });
+
+        expect(observed).to.equal(123);
+        expect(observedString).to.equal('123B');
+
+        tracker.allocate(foo, 456789);
+
+        expect(observed).to.equal(456912);
+        expect(observedString).to.equal('446.203KiB');
     });
 
 });

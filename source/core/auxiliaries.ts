@@ -60,20 +60,33 @@ namespace auxiliaries {
     /**
      * Writes a warning to the console when the evaluated expression is false.
      * ```
-     * log_if(!vec2.equals(this._scale, scale),
-     *     `scale changed to ${scale}, given ${this._scale}`);
+     * log(,`scale changed to ${scale}, given ${this._scale}`);
+     * ```
+     * @param expression - Result of an expression expected to be true.
+     * @param verbosity - Verbosity of log level: user, developer, or module developer.
+     * @param message - Message to be passed to the error (if thrown).
+     */
+    export function log(verbosity: LogLevel, message: string): void {
+        if (verbosity > LOG_VERBOSITY_THRESHOLD) {
+            return;
+        }
+        console.log(`[${verbosity}] ${message}`);
+    }
+
+    /**
+     * Writes a lo message to the console when the evaluated expression is false.
+     * ```
+     * log_if(!vec2.equals(this._scale, scale), LogLevel.Dev, `scale changed to ${scale}, given ${this._scale}`);
      * ```
      * @param expression - Result of an expression expected to be true.
      * @param verbosity - Verbosity of log level: user, developer, or module developer.
      * @param message - Message to be passed to the error (if thrown).
      */
     export function log_if(expression: boolean, verbosity: LogLevel, message: string): void {
-
-        if (verbosity > LOG_VERBOSITY_THRESHOLD || !expression) {
+        if (!expression) {
             return;
         }
-
-        console.log(`[${verbosity}] ${message}`);
+        log(verbosity, message);
     }
 
     /**

@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, log, log_if, LogLevel } from './auxiliaries';
 
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
@@ -11,6 +11,13 @@ import { GL2Facade } from './gl2facade';
  * Supported OpenGL backend types.
  */
 export enum BackendType { Invalid, WebGL1, WebGL2 }
+
+/**
+ * The list of valid backend identifiers that can be matched to backend types.
+ * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
+ */
+export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
+    | 'webgl2' | 'experimental-webgl2';
 
 
 /**
@@ -43,13 +50,6 @@ export enum BackendType { Invalid, WebGL1, WebGL2 }
 export class Context {
 
     /* tslint:disable:member-ordering variable-name */
-
-    /**
-     * The list of valid backend identifiers that can be matched to backend types.
-     * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
-     */
-    protected static readonly VALID_BACKENDS =
-        /^(auto|webgl|experimental-webgl|webgl1|experimental-webgl1|webgl2|experimental-webgl2)$/;
 
     /**
      * Context creation attribute defaults.
@@ -128,8 +128,8 @@ export class Context {
         let request = mask ? (mask.backend as string) :
             dataset.backend ? (dataset.backend as string).toLowerCase() : '';
 
-        if (!Context.VALID_BACKENDS.test(request)) {
-            log_if(true, LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
+        if (!(request as BackendTypeString)) {
+            log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
             request = 'auto';
         }
 
@@ -291,15 +291,13 @@ export class Context {
 
         switch (this._backend) {
             case BackendType.WebGL1:
-                assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1
-                    , `extension ${extension} not available to WebGL1`);
+                assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL1`);
                 break;
 
             case BackendType.WebGL2:
                 assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
                     `extension ${extension} supported by default in WebGL2`);
-                assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1
-                    , `extension ${extension} not available to WebGL2`);
+                assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL2`);
                 break;
 
             default:

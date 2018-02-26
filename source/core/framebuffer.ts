@@ -201,8 +201,9 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      * parameter is given, the webgl2 implementation clears all color attachments.
      */
     @Initializable.assert_initialized()
-    protected es3Clear(mask: GLbitfield, bind: boolean = true, unbind: boolean = true
-        , colorClearQueue?: Array<GLint>): void {
+    protected es3Clear(mask: GLbitfield, bind: boolean = true, unbind: boolean = true,
+        colorClearQueue?: Array<GLint>): void {
+
         const gl = this.context.gl;
 
         const clearDepth = bitInBitfield(mask, gl.DEPTH_BUFFER_BIT);
@@ -296,8 +297,8 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      */
     @Initializable.assert_initialized()
     clearColor(color: GLclampf4, drawBuffer?: GLint): void {
-        assert(drawBuffer === undefined || drawBuffer === 0 || this.context.isWebGL2 || this.context.supportsDrawBuffers
-            , `WebGL2 context expected for clearing multiple color attachments.`);
+        assert(drawBuffer === undefined || drawBuffer === 0 || this.context.isWebGL2 ||
+            this.context.supportsDrawBuffers, `WebGL2 context expected for clearing multiple color attachments.`);
 
         const alphaIssue: boolean = color[3] < 1.0 && !this.context.alpha;
         log_if(alphaIssue, LogLevel.Dev, `context has alpha disabled, clear color alpha is ignored`);
@@ -412,8 +413,8 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
 
         for (const attachment of attachments) {
             assert(this.hasAttachment(attachment), `valid attachment expected for draw buffer, given ${attachment}`);
-            assert(attachment >= gl2facade.COLOR_ATTACHMENT_MIN && attachment <= gl2facade.COLOR_ATTACHMENT_MAX
-                , `color attachment expected for draw buffer, given ${attachment}`);
+            assert(attachment >= gl2facade.COLOR_ATTACHMENT_MIN && attachment <= gl2facade.COLOR_ATTACHMENT_MAX,
+                `color attachment expected for draw buffer, given ${attachment}`);
             this._drawBuffersChanged = this._drawBuffersChanged || this._drawBuffers.indexOf(attachment) === -1;
         }
         this._drawBuffersChanged = this._drawBuffersChanged || attachments.length !== this._drawBuffers.length;
