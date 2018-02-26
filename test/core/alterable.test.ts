@@ -9,9 +9,9 @@ import { AlterationLookup } from '../../source/core/alterable';
 
 /* tslint:disable:no-unused-expression */
 
-class AlterableTest extends AlterationLookup {
-    any = false;
-    data = {
+const alterable = {
+    any: false,
+    data: {
         any: false,
         alpha: false,
         beta: false,
@@ -22,16 +22,16 @@ class AlterableTest extends AlterationLookup {
             value: false,
         },
         delta: false,
-    };
-    golden = false;
-    modifier = false;
-}
+    },
+    golden: false,
+    modifier: false,
+};
 
 
 describe('Alterable', () => {
 
     it('should detect basic property changes', () => {
-        const altered = new AlterableTest() as any;
+        const altered = Object.assign(new AlterationLookup(), alterable);
 
         expect(altered.golden).to.be.false;
         altered.alter('golden');
@@ -45,7 +45,7 @@ describe('Alterable', () => {
     });
 
     it('should push leaf changes bottom-up (any)', () => {
-        const altered = new AlterableTest() as any;
+        const altered = Object.assign(new AlterationLookup(), alterable);
 
         expect(altered.any).to.be.false;
         altered.alter('golden');
@@ -62,7 +62,7 @@ describe('Alterable', () => {
     });
 
     it('should ignore subsequent alterations', () => {
-        const altered = new AlterableTest() as any;
+        const altered = Object.assign(new AlterationLookup(), alterable);
 
         expect(altered.data.gamma.min).to.be.false;
         altered.alter('data.gamma.min');

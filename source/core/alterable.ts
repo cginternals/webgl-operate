@@ -6,6 +6,16 @@ import { assert } from './auxiliaries';
  * Utility class to replicate the structure of all alterable properties of a class to. This was initially designed to
  * be used in combination with an `alterable` decorator (but instance-based property decoration does not work yet). For
  * now though, this is used for explicit alterable structure replication and management.
+ * ```
+ * const alterable = {
+ *     any: false,
+ *     data: { any: false, alpha: false, beta: false },
+ *     modifier: false };
+ *
+ * const altered = Object.assign(new AlterationLookup(), alterable);
+ * altered.alter('data.beta');
+ * if(altered.data.any) { ... }
+ * ```
  */
 export class AlterationLookup {
 
