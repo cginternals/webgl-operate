@@ -12,6 +12,13 @@ import { GL2Facade } from './gl2facade';
  */
 export enum BackendType { Invalid, WebGL1, WebGL2 }
 
+/**
+ * The list of valid backend identifiers that can be matched to backend types.
+ * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
+ */
+export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
+    | 'webgl2' | 'experimental-webgl2';
+
 
 /**
  * A controller for either a WebGLRenderingContext or WebGL2RenderingContext. It requests a context, tracks context
@@ -43,13 +50,6 @@ export enum BackendType { Invalid, WebGL1, WebGL2 }
 export class Context {
 
     /* tslint:disable:member-ordering variable-name */
-
-    /**
-     * The list of valid backend identifiers that can be matched to backend types.
-     * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
-     */
-    protected static readonly VALID_BACKENDS =
-        /^(auto|webgl|experimental-webgl|webgl1|experimental-webgl1|webgl2|experimental-webgl2)$/;
 
     /**
      * Context creation attribute defaults.
@@ -128,7 +128,7 @@ export class Context {
         let request = mask ? (mask.backend as string) :
             dataset.backend ? (dataset.backend as string).toLowerCase() : '';
 
-        if (!Context.VALID_BACKENDS.test(request)) {
+        if (!(request as BackendTypeString)) {
             log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
             request = 'auto';
         }
