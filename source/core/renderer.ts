@@ -2,7 +2,7 @@
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
-import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
+import { vec2, vec4 } from 'gl-matrix';
 
 import { assert, log_if, LogLevel } from './auxiliaries';
 import { clamp, v2 } from './gl-matrix-extensions';
@@ -72,7 +72,7 @@ export abstract class AbstractRenderer extends Initializable {
      * Targeted resolution for image synthesis. This might differ from the canvas resolution and should be used in
      * frame calls of inheritors.
      */
-    protected _frameSize: GLsizei2;
+    protected _frameSize: GLsizei2 = [0, 0];
 
     /**
      * Targeted frame precision, e.g., used for frame accumulation. Note that any renderer is currently
@@ -84,7 +84,7 @@ export abstract class AbstractRenderer extends Initializable {
     /**
      * The clear color, provided by the canvas the renderer is bound to. This is used in frame calls of inheritors.
      */
-    protected _clearColor: GLclampf4;
+    protected _clearColor: GLclampf4 = [0.0, 0.0, 0.0, 1.0];
 
 
     /**
@@ -231,24 +231,24 @@ export abstract class AbstractRenderer extends Initializable {
         return tuple2<GLfloat>(position);
     }
 
-    /**
-     * @interface CoordsAccess
-     * Look up a fragments coordinates by unprojecting the depth using the renderer's camera.
-     * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
-     * @param y - Vertical coordinate for the upper left corner of the viewport origin.
-     * @param zInNDC - optional depth parameter (e.g., from previous query).
-     * @returns - 3D coordinate reprojected from NDC/depth to world space.
-     */
-    abstract coordsAt(x: GLint, y: GLint, zInNDC?: number, viewProjectionInverse?: mat4): vec3 | undefined;
+    // /**
+    //  * @interface CoordsAccess
+    //  * Look up a fragments coordinates by unprojecting the depth using the renderer's camera.
+    //  * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
+    //  * @param y - Vertical coordinate for the upper left corner of the viewport origin.
+    //  * @param zInNDC - optional depth parameter (e.g., from previous query).
+    //  * @returns - 3D coordinate reprojected from NDC/depth to world space.
+    //  */
+    // abstract coordsAt(x: GLint, y: GLint, zInNDC?: number, viewProjectionInverse?: mat4): vec3 | undefined;
 
-    /**
-     * @interface IDAccess
-     * Look up an object id at a specific fragment.
-     * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
-     * @param y - Vertical coordinate for the upper left corner of the viewport origin.
-     * @returns - ID encoded of an object rendered/visible at given position.
-     */
-    abstract idAt(x: GLint, y: GLint): GLsizei | undefined;
+    // /**
+    //  * @interface IDAccess
+    //  * Look up an object id at a specific fragment.
+    //  * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
+    //  * @param y - Vertical coordinate for the upper left corner of the viewport origin.
+    //  * @returns - ID encoded of an object rendered/visible at given position.
+    //  */
+    // abstract idAt(x: GLint, y: GLint): GLsizei | undefined;
 
 
     /**
@@ -262,7 +262,7 @@ export abstract class AbstractRenderer extends Initializable {
      */
     set frameSize(size: GLsizei2) {
         this.assertInitialized();
-        if (this._frameSize[0] === size[0] && this._frameSize[1] === size[1]) {
+        if (vec2.equals(this._frameSize, size)) {
             return;
         }
         Object.assign(this._frameSize, size);

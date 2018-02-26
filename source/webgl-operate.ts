@@ -23,12 +23,14 @@ import { NdcFillingTriangle } from './assets/ndcfillingtriangle';
 
 import { Color } from './core/color';
 
+import { TestRenderer } from './debug/testrenderer';
+
 
 export {
 
     Canvas,
 
-    // core facilities
+    /* CORE facilities. */
 
     Controller,
     AbstractRenderer,
@@ -52,12 +54,12 @@ export {
 
     Color,
 
-    // debug facilities
+    /* DEBUG facilities */
 
+    TestRenderer,
 
-    // viewer facilities
+    /* VIEWER facilities */
 
-
-    // development facilities (should be none when publishing)
+    /* DEVELOPMENT facilities (should be none when publishing) */
 
 };

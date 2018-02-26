@@ -304,10 +304,11 @@ export class Canvas extends Resizable {
             return;
         }
         this.unbind(); // block controller
-        if (this._renderer === undefined) {
+        if (renderer === undefined) {
             return;
         }
         assert(this._controller.blocked, `expected controller to be blocked`);
+        this._renderer = renderer;
 
         /**
          * Note: a renderer that is to be bound to a canvas is expected to be not initialized. For it, initializable
@@ -335,7 +336,7 @@ export class Canvas extends Resizable {
      * renderer.
      */
     protected unbind() {
-        if (!this._renderer) {
+        if (this._renderer === undefined) {
             return;
         }
 
