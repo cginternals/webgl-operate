@@ -1,10 +1,9 @@
 
 
-import { assert } from '../core/auxiliaries';
 
 import { Program } from '../core/program';
 import { Shader } from '../core/shader';
-import { Texture2 } from '../core/texture2';
+// import { Texture2 } from '../core/texture2';
 
 import { NdcFillingTriangle } from '../assets/ndcfillingtriangle';
 
@@ -60,12 +59,10 @@ export class TestRenderer extends AbstractRenderer {
         this._program.bind();
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();
-
-        console.log('frame', size, this._frameSize);
     }
 
     protected onSwap(): void {
-        const gl = this.context.gl;
+        // const gl = this.context.gl;
 
 
     }
