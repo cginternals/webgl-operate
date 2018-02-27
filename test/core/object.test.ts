@@ -10,6 +10,7 @@ import { AllocationRegister } from '../../source/core/allocationregister';
 import { Context } from '../../source/core/context';
 import { AbstractObject } from '../../source/core/object';
 
+
 /* tslint:disable:max-classes-per-file no-unused-expression */
 
 class ContextMock {

@@ -152,7 +152,7 @@ export class Controller {
      * Triggers a frame invocation before the browser repaints. If no rendering callback is setup, the request
      * is ignored.
      */
-    protected request(update: boolean = false) {
+    protected request(update: boolean = false): void {
         /**
          * Prevent unnecessary canceling and requesting of animation frames when updating multiple times before an
          * actual first frame is triggered.
@@ -191,7 +191,7 @@ export class Controller {
     /**
      * Cancel a pending frame invocation (if existing).
      */
-    protected cancel() {
+    protected cancel(): void {
         if (this._pendingRequest === 0) {
             log_if(this._debug, LogLevel.ModuleDev, `c cancel  (ignored) |`);
             return;
@@ -205,7 +205,7 @@ export class Controller {
     /**
      * Actual invocation of the controllable's update method
      */
-    protected invokeUpdate() {
+    protected invokeUpdate(): void {
         log_if(this._debug, LogLevel.ModuleDev, `c invoke update     | pending: '${this._pendingRequest}'`);
 
         this.unblock();
@@ -237,7 +237,7 @@ export class Controller {
      * frame. The rendering is invoked by means of a callback to the canvas renderer. This function implements various
      * asserts to assure correct control logic and absolutely prevent unnecessary frame requests.
      */
-    protected invokeFrame() {
+    protected invokeFrame(): void {
         log_if(this._debug, LogLevel.ModuleDev, `c invoke frame      | pending: '${this._pendingRequest}'`);
 
         assert(!this._pause, `frames should not be invoked when paused`);
@@ -316,7 +316,7 @@ export class Controller {
     /**
      * Sets pause state to true which affects subsequent requests. Any pending requests are canceled.
      */
-    pause() {
+    pause(): void {
         const ignore = this._pause;
         log_if(this._debug, LogLevel.ModuleDev, `c pause   ${ignore ? '(ignored)' : ''}`);
 
@@ -332,7 +332,7 @@ export class Controller {
     /**
      * Sets pause state to false which affects subsequent requests. Furthermore, a request is invoked.
      */
-    unpause() {
+    unpause(): void {
         const ignore = !this._pause;
         log_if(this._debug, LogLevel.ModuleDev, `c unpause ${ignore ? '(ignored)' : ''}`);
 
@@ -357,7 +357,7 @@ export class Controller {
      * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
      * If updates where blocked using ```block```, block updates is disabled.
      */
-    update() {
+    update(): void {
         const block = this._block || (this._frameNumber === 0 && this._pendingRequest);
         log_if(this._debug, LogLevel.ModuleDev, `c update  ${block ? '(blocked) ' : '          '}| ` +
             `pending: '${this._pendingRequest}', intermediates: #${this._frameNumber}`);
