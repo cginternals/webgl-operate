@@ -27,9 +27,9 @@ export class TestRenderer extends AbstractRenderer {
 
         if (!this._program.initialized) {
 
-            const vert = new Shader(this.context, gl.VERTEX_SHADER);
+            const vert = new Shader(this.context, gl.VERTEX_SHADER, 'ndcvertices.vert');
             vert.initialize(require('../shaders/ndcvertices.vert'));
-            const frag = new Shader(this.context, gl.FRAGMENT_SHADER);
+            const frag = new Shader(this.context, gl.FRAGMENT_SHADER, 'makeblue.frag');
             frag.initialize(require('../shaders/makeblue.frag'));
 
             this._program.initialize([vert, frag]);
@@ -43,8 +43,6 @@ export class TestRenderer extends AbstractRenderer {
         if (!this._ndcTriangle.initialized) {
             this._ndcTriangle.initialize(this._aVertex);
         }
-
-        console.log('update');
     }
 
     protected onFrame(frameNumber: number): void {
