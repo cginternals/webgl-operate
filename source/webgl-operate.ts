@@ -23,6 +23,8 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 
 import { Color } from './color';
 
+import { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
+
 import { TestRenderer } from './debug/testrenderer';
 
 
@@ -50,6 +52,12 @@ export {
     NdcFillingTriangle,
 
     Color,
+
+    KernelF32,
+    KernelUI32,
+    KernelI32,
+    KernelUI8,
+    KernelI8,
 
     /* DEBUG facilities */
 

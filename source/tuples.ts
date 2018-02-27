@@ -12,6 +12,10 @@ namespace tuples {
      */
     export type GLsizei2 = [GLsizei, GLsizei];
 
+    /**
+     * Auxiliary 3-tuple of GLsizei values.
+     */
+    export type GLsizei3 = [GLsizei, GLsizei, GLsizei];
 
     /**
      * Auxiliary 2-tuple of GLfloat values.
