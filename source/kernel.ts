@@ -16,6 +16,12 @@ export interface KernelJSON {
 }
 
 
+/**
+ * Kernel class is based on the idea of glkernel {@link https://github.com/cginternals/glkernel} and is the basis for
+ * various auxiliary kernels that are mainly intended for but not limited to GPU use. A kernel stores samples in a
+ * three-dimensional structure. Each sample can have up to four components (vec4) and is strongly typed, e.g.,
+ * {@link KernelF32}. The samples can be accessed and modified in various ways and easily passed to the GPU.
+ */
 export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int32Array | Uint8Array | Int8Array> {
 
     protected _samples: T;
@@ -122,9 +128,17 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         }
     }
 
-
+    /**
+     * Inheritor is expected to implement this in order to copy and type-convert a flat array.
+     * @param samples - Array of all sample components in a flat sequence.
+     */
     abstract fromArray(samples: Array<number>): void;
 
+    /**
+     * Fully reconfigures, i.e., resizes and copies samples, the kernel.
+     * @param json - JSON object either from file, or set manually. These kernels can be generated using, e.g.,
+     * glkernel {@link https://github.com/cginternals/glkernel}.
+     */
     fromJSON(json: KernelJSON): void {
 
         assert(json.size && json.size.width !== undefined && json.size.height !== undefined &&

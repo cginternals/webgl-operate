@@ -69,6 +69,7 @@
         "framebuffer",
         "framebuffers",
         "get",
+        "glkernel",
         "gloperate",
         "glsl",
         "grayscale",
