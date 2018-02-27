@@ -6,9 +6,9 @@ const expect = chai.expect;
 const stub = sinon.stub;
 
 
-import { AllocationRegister } from '../../source/core/allocationregister';
-import { Context } from '../../source/core/context';
-import { AbstractObject } from '../../source/core/object';
+import { AllocationRegister } from '../source/allocationregister';
+import { Context } from '../source/context';
+import { AbstractObject } from '../source/object';
 
 
 /* tslint:disable:max-classes-per-file no-unused-expression */

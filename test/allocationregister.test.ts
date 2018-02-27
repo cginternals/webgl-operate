@@ -4,8 +4,9 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 
-import { AllocationRegister } from '../../source/core/allocationregister';
 import { Observable } from 'rxjs/Observable';
+
+import { AllocationRegister } from '../source/allocationregister';
 
 
 describe('AllocationTracker', () => {

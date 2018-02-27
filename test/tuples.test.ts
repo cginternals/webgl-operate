@@ -3,8 +3,8 @@ import * as chai from 'chai';
 
 const expect = chai.expect;
 
-import { GLfloat2, GLfloat3, GLfloat4 } from '../../source/core/tuples';
-import { clampf, clampf2, clampf3, clampf4 } from '../../source/core/tuples';
+import { GLfloat2, GLfloat3, GLfloat4 } from '../source/tuples';
+import { clampf, clampf2, clampf3, clampf4 } from '../source/tuples';
 
 
 describe('tuples clamp', () => {

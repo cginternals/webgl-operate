@@ -1,10 +1,10 @@
 
-import { Bindable } from '../core/bindable';
-import { Buffer } from '../core/buffer';
-import { Initializable } from '../core/initializable';
+import { Bindable } from './bindable';
+import { Buffer } from './buffer';
+import { Initializable } from './initializable';
 
-import { Context } from '../core/context';
-import { VertexArray } from '../core/vertexarray';
+import { Context } from './context';
+import { VertexArray } from './vertexarray';
 
 
 /**

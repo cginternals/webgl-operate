@@ -9,7 +9,7 @@ const expect = chai.expect;
 const spy = chai.spy;
 const stub = sinon.stub;
 
-import * as aux from '../../source/core/auxiliaries';
+import * as aux from '../source/auxiliaries';
 
 
 /* tslint:disable:no-unused-expression */

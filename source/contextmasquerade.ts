@@ -24,7 +24,7 @@ export class ContextMasquerade {
     /**
      * @see {@link presets}
      */
-    protected static readonly MASQUERADE_JSON: ContextMasquerade.Presets = require('../assets/masquerade.json');
+    protected static readonly MASQUERADE_JSON: ContextMasquerade.Presets = require('./masquerade.json');
 
     /**
      * @see {@link backend}

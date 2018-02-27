@@ -1,13 +1,12 @@
 
 
+import { Program } from '../program';
+import { Shader } from '../shader';
+// import { Texture2 } from '../texture2';
 
-import { Program } from '../core/program';
-import { Shader } from '../core/shader';
-// import { Texture2 } from '../core/texture2';
+import { NdcFillingTriangle } from '../ndcfillingtriangle';
 
-import { NdcFillingTriangle } from '../assets/ndcfillingtriangle';
-
-import { AbstractRenderer } from '../core/renderer';
+import { AbstractRenderer } from '../renderer';
 
 
 export class TestRenderer extends AbstractRenderer {
@@ -27,10 +26,10 @@ export class TestRenderer extends AbstractRenderer {
 
         if (!this._program.initialized) {
 
-            const vert = new Shader(this.context, gl.VERTEX_SHADER, 'ndcvertices.vert');
-            vert.initialize(require('../shaders/ndcvertices.vert'));
-            const frag = new Shader(this.context, gl.FRAGMENT_SHADER, 'makeblue.frag');
-            frag.initialize(require('../shaders/makeblue.frag'));
+            const vert = new Shader(this.context, gl.VERTEX_SHADER, 'testrenderer.vert');
+            vert.initialize(require('./testrenderer.vert'));
+            const frag = new Shader(this.context, gl.FRAGMENT_SHADER, 'testrenderer.frag');
+            frag.initialize(require('./testrenderer.frag'));
 
             this._program.initialize([vert, frag]);
             this._aVertex = this._program.attribute('aVertex', 0);

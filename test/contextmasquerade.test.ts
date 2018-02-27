@@ -3,8 +3,8 @@ import * as sinon from 'sinon';
 
 const expect = chai.expect;
 
-import * as aux from '../../source/core/auxiliaries';
-import { ContextMasquerade } from '../../source/core/contextmasquerade';
+import * as aux from '../source/auxiliaries';
+import { ContextMasquerade } from '../source/contextmasquerade';
 
 
 /* tslint:disable:no-unused-expression */

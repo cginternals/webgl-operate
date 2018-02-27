@@ -6,7 +6,7 @@ const expect = chai.expect;
 const stub = sinon.stub;
 
 
-import { Controllable, Controller } from '../../source/core/controller';
+import { Controllable, Controller } from '../source/controller';
 
 
 /* tslint:disable:max-classes-per-file no-unused-expression */

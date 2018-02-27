@@ -7,8 +7,8 @@ import { vec2, vec4 } from 'gl-matrix';
 import { assert, log_if, LogLevel } from './auxiliaries';
 import { clamp, v2 } from './gl-matrix-extensions';
 
-import { FramePrecisionString } from '../canvas';
 import { AlterationLookup } from './alterable';
+import { FramePrecisionString } from './canvas';
 import { Context } from './context';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';

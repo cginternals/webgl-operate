@@ -1,27 +1,27 @@
 
 import { Canvas } from './canvas';
 
-import { Context } from './core/context';
-import { ContextMasquerade } from './core/contextmasquerade';
-import { ExtensionsHash } from './core/extensionshash';
+import { Context } from './context';
+import { ContextMasquerade } from './contextmasquerade';
+import { ExtensionsHash } from './extensionshash';
 
-import { Controller } from './core/controller';
-import { AbstractRenderer } from './core/renderer';
+import { Controller } from './controller';
+import { AbstractRenderer } from './renderer';
 
-import { Buffer } from './core/buffer';
-import { DefaultFramebuffer } from './core/defaultframebuffer';
-import { Framebuffer } from './core/framebuffer';
-import { Geometry } from './core/geometry';
-import { Program } from './core/program';
-import { Renderbuffer } from './core/renderbuffer';
-import { Shader } from './core/shader';
-import { Texture2 } from './core/texture2';
-import { VertexArray } from './core/vertexarray';
+import { Buffer } from './buffer';
+import { DefaultFramebuffer } from './defaultframebuffer';
+import { Framebuffer } from './framebuffer';
+import { Geometry } from './geometry';
+import { Program } from './program';
+import { Renderbuffer } from './renderbuffer';
+import { Shader } from './shader';
+import { Texture2 } from './texture2';
+import { VertexArray } from './vertexarray';
 
-import { NdcFillingRectangle } from './assets/ndcfillingrectangle';
-import { NdcFillingTriangle } from './assets/ndcfillingtriangle';
+import { NdcFillingRectangle } from './ndcfillingrectangle';
+import { NdcFillingTriangle } from './ndcfillingtriangle';
 
-import { Color } from './core/color';
+import { Color } from './color';
 
 import { TestRenderer } from './debug/testrenderer';
 
@@ -30,11 +30,8 @@ export {
 
     Canvas,
 
-    /* CORE facilities. */
-
     Controller,
     AbstractRenderer,
-
     Context,
     ContextMasquerade,
     ExtensionsHash,

@@ -1,8 +1,8 @@
 
 import { assert } from './auxiliaries';
 
-import { Initializable } from '../core/initializable';
 import { Bindable } from './bindable';
+import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
 

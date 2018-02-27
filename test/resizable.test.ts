@@ -9,7 +9,7 @@ const expect = chai.expect;
 const spy = chai.spy;
 const stub = sinon.stub;
 
-import { Resizable as AbstractResizable } from '../../source/core/resizable';
+import { Resizable as AbstractResizable } from '../source/resizable';
 
 
 /* tslint:disable:no-unused-expression */

@@ -9,7 +9,7 @@ const expect = chai.expect;
 const spy = chai.spy;
 const stub = sinon.stub;
 
-import { Color } from '../../source/core/color';
+import { Color } from '../source/color';
 
 
 describe('Color', () => {

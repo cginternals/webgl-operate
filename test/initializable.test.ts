@@ -4,7 +4,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 
-import { Initializable as AbstractInitializable } from '../../source/core/initializable';
+import { Initializable as AbstractInitializable } from '../source/initializable';
 
 
 /* tslint:disable:no-unused-expression */

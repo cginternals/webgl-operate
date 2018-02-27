@@ -3,8 +3,8 @@ import * as chai from 'chai';
 
 const expect = chai.expect;
 
-import { WEBGL2_EXTENSIONS } from '../../source/core/extensions';
-import { ExtensionsHash } from '../../source/core/extensionshash';
+import { WEBGL2_EXTENSIONS } from '../source/extensions';
+import { ExtensionsHash } from '../source/extensionshash';
 
 
 class ExtensionsHashMock extends ExtensionsHash {
