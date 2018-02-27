@@ -29,8 +29,8 @@ export class Shader extends AbstractObject<WebGLShader> {
     /**
      * Object constructor, requires a context and a valid identifier.
      * @param context - Valid context to create the object for.
-     * @param identifier - Meaningful name for identification of this instance.
      * @param type - Either GL_VERTEX_SHADER or GL_FRAGMENT_SHADER.
+     * @param identifier - Meaningful name for identification of this instance.
      */
     constructor(context: Context, type: GLenum, identifier?: string) {
         super(context, identifier);

@@ -150,7 +150,7 @@ export class Canvas extends Resizable {
         let dataClearColor: vec4 | undefined;
         if (dataset.clearColor) {
             dataClearColor = parseVec4(dataset.clearColor as string);
-            log_if(dataset.clearColor !== undefined && dataClearColor === undefined, LogLevel.Dev,
+            log_if(dataClearColor === undefined, LogLevel.Dev,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
@@ -171,24 +171,31 @@ export class Canvas extends Resizable {
         this._controller = new Controller();
         this._controller.block(); // Remain in block mode until renderer is bound and configured.
 
-        const mfNum: number = parseInt(dataset.multiFrameNumber as string, 10);
-        const dfNum: number = parseInt(dataset.debugFrameNumber as string, 10);
+        /* Retrieve multi-frame number from data attributes or set default. */
+        let dataMFNum: number | undefined;
+        if (dataset.multiFrameNumber) {
+            dataMFNum = parseInt(dataset.multiFrameNumber as string, 10);
+            log_if(isNaN(dataMFNum), LogLevel.Dev,
+                `data-multi-frame-number could not be parsed, given '${dataset.multiFrameNumber}'`);
+        }
 
-        log_if(isNaN(mfNum), LogLevel.Dev, `data-multi-frame-number is not a number`);
-        log_if(isNaN(dfNum), LogLevel.Dev, `data-debug-frame-number is not a number`);
+        /* Retrieve debug-frame number from data attributes or set default. */
+        let dataDFNum: number | undefined;
+        if (dataset.debugFrameNumber) {
+            dataDFNum = parseInt(dataset.debugFrameNumber as string, 10);
+            log_if(isNaN(dataDFNum), LogLevel.Dev,
+                `data-debug-frame-number could not be parsed, given '${dataset.debugFrameNumber}'`);
+        }
 
-        /* Parse date attributes for multi-frame number. */
-        this._controller.multiFrameNumber = !isNaN(mfNum) ? mfNum : Canvas.DEFAULT_MULTI_FRAME_NUMBER;
-        this._controller.debugFrameNumber = !isNaN(dfNum) ? dfNum : 0;
+        this._controller.multiFrameNumber = dataMFNum ? dataMFNum : Canvas.DEFAULT_MULTI_FRAME_NUMBER;
+        this._controller.debugFrameNumber = dataDFNum ? dataDFNum : 0;
 
-        const mfChanged: boolean = dataset.multiFrameNumber !== undefined &&
-            (mfNum !== this._controller.multiFrameNumber || mfNum.toString() !== dataset.multiFrameNumber.trim());
-        log_if(mfChanged, LogLevel.Dev, `data-multi-frame-number changed to `
+        const mfNumChanged = dataMFNum ? dataMFNum !== this._controller.multiFrameNumber : false;
+        log_if(mfNumChanged, LogLevel.Dev, `data-multi-frame-number changed to `
             + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
 
-        const dfChanged: boolean = dataset.debugFrameNumber !== undefined &&
-            (dfNum !== this._controller.debugFrameNumber || dfNum.toString() !== dataset.debugFrameNumber.trim());
-        log_if(dfChanged, LogLevel.Dev, `data-debug-frame-number changed to `
+        const dfNumChanged = dataDFNum ? dataDFNum !== this._controller.debugFrameNumber : false;
+        log_if(dfNumChanged, LogLevel.Dev, `data-debug-frame-number changed to `
             + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
     }
 

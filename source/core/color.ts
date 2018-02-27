@@ -254,7 +254,7 @@ export class Color {
 
         if (!Color.HEX_FORMAT_REGEX.test(hex)) {
             log(LogLevel.User, `hexadecimal RGBA color string must conform to either \
-'0x0000', '#0000', '0000', '0x00000000', '#00000000', or '00000000' | given '${hex}'`);
+'0x0000', '#0000', '0000', '0x00000000', '#00000000', or '00000000', given '${hex}'`);
             return rgba;
         }
 
@@ -270,7 +270,7 @@ export class Color {
         }
 
         assert(!isNaN(rgba[0]) && !isNaN(rgba[1]) && !isNaN(rgba[2]) && !isNaN(rgba[3]),
-            `expected well formated hexadecimal RGBA string | given '${hex}'`);
+            `expected well formated hexadecimal RGBA string, given '${hex}'`);
         return rgba;
     }
 

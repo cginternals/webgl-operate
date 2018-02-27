@@ -34,7 +34,7 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 include: /source/,
-                exclude: /(example|node_modules)/,
+                exclude: /(source\/shaders|example|node_modules)/,
                 use: {
                     loader: 'ts-loader',
                     options: {
@@ -46,8 +46,7 @@ module.exports = {
                 }
             },
             {
-                test: /(\.glsl|\.vert|\.frag)$/,
-                include: /source\/shaders/,
+                test: /\.(glsl|vert|frag)$/,
                 use: { loader: 'webpack-glsl-loader' },
             }]
     },
