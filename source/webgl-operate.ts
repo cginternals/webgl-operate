@@ -31,6 +31,8 @@ import { Blit } from './blit';
 
 import { TestRenderer } from './debug/testrenderer';
 
+import { EventBlocker } from './viewer/eventblocker';
+
 
 export {
 
@@ -72,6 +74,8 @@ export {
     TestRenderer,
 
     /* VIEWER facilities */
+
+    EventBlocker,
 
     /* DEVELOPMENT facilities (should be none when publishing) */
 
