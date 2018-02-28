@@ -81,6 +81,7 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
         } else {
             this._bind = () => bindBOs();
             this._unbind = () => unbindBOs();
+            this._valid = true;
         }
 
         return this._object;
