@@ -4,6 +4,7 @@
         "source/**/*.ts"
     ],
     "exclude": [
+        "source/blit.ts",
         "source/buffer.ts",
         "source/canvas.ts",
         "source/context.ts",
