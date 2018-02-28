@@ -22,7 +22,7 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
         context.depthTexture.UNSIGNED_INT_24_8_WEBGL : undefined;
 
     switch (format) {
-        /* fall-through */
+        /* falls through */
         case undefined: // must be first, in case any other format is not defined
         default:
             break;
