@@ -44,6 +44,7 @@ describe('webgl-operate API', () => {
 
             'Color',
 
+            'AntiAliasingKernel',
             'KernelF32',
             'KernelUI32',
             'KernelI32',

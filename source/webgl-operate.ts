@@ -23,6 +23,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 
 import { Color } from './color';
 
+import { AntiAliasingKernel } from './antialiasingkernel';
 import { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
 import { RandomSquareKernel } from './randomsquarekernel';
 
@@ -54,6 +55,7 @@ export {
 
     Color,
 
+    AntiAliasingKernel,
     KernelF32,
     KernelUI32,
     KernelI32,
