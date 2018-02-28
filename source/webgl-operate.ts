@@ -27,6 +27,8 @@ import { AntiAliasingKernel } from './antialiasingkernel';
 import { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
 import { RandomSquareKernel } from './randomsquarekernel';
 
+import { Blit } from './blit';
+
 import { TestRenderer } from './debug/testrenderer';
 
 
@@ -62,6 +64,8 @@ export {
     KernelUI8,
     KernelI8,
     RandomSquareKernel,
+
+    Blit,
 
     /* DEBUG facilities */
 

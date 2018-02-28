@@ -46,6 +46,8 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         assert(width > 0 && height > 0, `renderbuffer object requires valid width and height greater than zero`);
         const gl = this.context.gl;
 
+        this._object = gl.createRenderbuffer();
+
         this._width = width;
         this._height = height;
         this._internalFormat = internalFormat;
@@ -59,7 +61,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         const bytes: GLsizei = width * height * byteSizeOfFormat(this.context, internalFormat as GLenum);
         this.context.allocationRegister.reallocate(this._identifier, bytes);
 
-        return this.context.gl.createRenderbuffer();
+        return this._object;
     }
 
     /**

@@ -51,10 +51,16 @@ describe('webgl-operate slim API', () => {
             'KernelUI8',
             'KernelI8',
             'RandomSquareKernel',
+
+            'Blit',
         ];
 
         for (const facility of Object.getOwnPropertyNames(gloperate)) {
-            expect(facilities.indexOf(facility)).to.be.gte(0, facility);
+            expect(facilities.indexOf(facility), `unexpected facility ${facility} found`).to.be.gte(0);
+        }
+
+        for (const facility of facilities) {
+            expect(gloperate.hasOwnProperty(facility), `expected facility ${facility} missing`).to.be.true;
         }
     });
 

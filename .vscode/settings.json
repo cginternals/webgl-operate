@@ -91,6 +91,7 @@
         "minmax",
         "msqrd",
         "multiframe",
+        "multisample",
         "ndcfillingrectangle",
         "ndcfillingtriangle",
         "orthonormal",

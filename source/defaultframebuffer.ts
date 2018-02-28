@@ -43,8 +43,6 @@ export class DefaultFramebuffer extends Framebuffer {
     protected delete(): void {
         this._object = undefined;
         this._valid = false;
-
-        this.clear = undefined;
     }
 
     /**

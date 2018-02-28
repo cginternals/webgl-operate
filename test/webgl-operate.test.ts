@@ -52,6 +52,8 @@ describe('webgl-operate API', () => {
             'KernelI8',
             'RandomSquareKernel',
 
+            'Blit',
+
             /* DEBUG */
 
             'TestRenderer',
@@ -61,6 +63,10 @@ describe('webgl-operate API', () => {
 
         for (const facility of Object.getOwnPropertyNames(gloperate)) {
             expect(facilities.indexOf(facility)).to.be.gte(0, facility);
+        }
+
+        for (const facility of facilities) {
+            expect(gloperate.hasOwnProperty(facility)).to.be.true;
         }
     });
 
