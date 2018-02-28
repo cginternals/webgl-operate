@@ -59,6 +59,8 @@ describe('webgl-operate API', () => {
             'TestRenderer',
 
             /* VIEWER */
+
+            'EventBlocker',
         ];
 
         for (const facility of Object.getOwnPropertyNames(gloperate)) {
