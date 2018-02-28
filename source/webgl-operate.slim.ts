@@ -1,16 +1,55 @@
 
-import { Context } from './core/context';
-import { ContextMasquerade } from './core/contextmasquerade';
-import { ExtensionsHash } from './core/extensionshash';
+import { Canvas } from './canvas';
+
+import { Context } from './context';
+import { ContextMasquerade } from './contextmasquerade';
+import { ExtensionsHash } from './extensionshash';
+
+import { Controller } from './controller';
+import { AbstractRenderer } from './renderer';
+
+import { Buffer } from './buffer';
+import { DefaultFramebuffer } from './defaultframebuffer';
+import { Framebuffer } from './framebuffer';
+import { Geometry } from './geometry';
+import { Program } from './program';
+import { Renderbuffer } from './renderbuffer';
+import { Shader } from './shader';
+import { Texture2 } from './texture2';
+import { VertexArray } from './vertexarray';
+
+import { NdcFillingRectangle } from './ndcfillingrectangle';
+import { NdcFillingTriangle } from './ndcfillingtriangle';
+
+import { Color } from './color';
+
 
 export {
 
-    // core facilities
+    Canvas,
 
+    Controller,
+    AbstractRenderer,
     Context,
     ContextMasquerade,
     ExtensionsHash,
 
-    // no! debug facilities
-    // no! viewer facilities
+    Buffer,
+    DefaultFramebuffer,
+    Framebuffer,
+    Geometry,
+    Program,
+    Renderbuffer,
+    Shader,
+    Texture2,
+    VertexArray,
+
+    NdcFillingRectangle,
+    NdcFillingTriangle,
+
+    Color,
+
+    /* NO DEBUG facilities */
+    /* NO VIEWER facilities */
+
 };

@@ -4,22 +4,21 @@
         "source/**/*.ts"
     ],
     "exclude": [
+        "source/buffer.ts",
         "source/canvas.ts",
-        "source/core/buffer.ts",
-        "source/core/context.ts",
-        "source/core/defaultframebuffer.ts",
-        "source/core/framebuffer.ts",
-        "source/core/geometry.ts",
-        "source/core/gl2facade.ts",
-        "source/core/formatbytesizes.ts",
-        "source/core/program.ts",
-        "source/core/object.ts",
-        "source/core/renderbuffer.ts",
-        "source/core/shader.ts",
-        "source/core/texture2.ts",
-        "source/core/vertexarray.ts",
-        "source/assets/ndcfillingrectangle.ts",
-        "source/assets/ndcfillingtriangle.ts"
+        "source/context.ts",
+        "source/defaultframebuffer.ts",
+        "source/framebuffer.ts",
+        "source/geometry.ts",
+        "source/gl2facade.ts",
+        "source/ndcfillingrectangle.ts",
+        "source/ndcfillingtriangle.ts",
+        "source/program.ts",
+        "source/renderbuffer.ts",
+        "source/shader.ts",
+        "source/texture2.ts",
+        "source/vertexarray.ts",
+        "source/debug/testrenderer.ts"
     ],
     "extension": [
         ".ts"

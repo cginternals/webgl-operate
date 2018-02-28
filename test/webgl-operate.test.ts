@@ -9,17 +9,22 @@ import * as gloperate from '../source/webgl-operate';
 
 /* tslint:disable:no-unused-expression */
 
+/** These tests are intended for detecting major changes within the API (long term goal ...). */
 
 describe('webgl-operate API', () => {
 
-    it('should expose core facilities', () => {
+    it('should expose a fixed set of facilities per minor/major', () => {
 
         const facilities = [
+
+            '__esModule',
+
+            /* CORE */
+
             'Canvas',
 
             'Controller',
             'AbstractRenderer',
-
             'Context',
             'ContextMasquerade',
             'ExtensionsHash',
@@ -38,18 +43,25 @@ describe('webgl-operate API', () => {
             'NdcFillingTriangle',
 
             'Color',
+
+            'AntiAliasingKernel',
+            'KernelF32',
+            'KernelUI32',
+            'KernelI32',
+            'KernelUI8',
+            'KernelI8',
+            'RandomSquareKernel',
+
+            /* DEBUG */
+
+            'TestRenderer',
+
+            /* VIEWER */
         ];
-        for (const facility of facilities) {
-            expect(gloperate[facility]).to.exist;
+
+        for (const facility of Object.getOwnPropertyNames(gloperate)) {
+            expect(facilities.indexOf(facility)).to.be.gte(0, facility);
         }
-    });
-
-    it('should expose debug facilities', () => {
-
-    });
-
-    it('should expose viewer facilities', () => {
-
     });
 
 });
