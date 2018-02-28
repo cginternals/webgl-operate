@@ -1,5 +1,7 @@
 
 
+import { assert } from '../auxiliaries';
+
 import { Program } from '../program';
 import { Shader } from '../shader';
 // import { Texture2 } from '../texture2';
@@ -11,6 +13,7 @@ import { AbstractRenderer } from '../renderer';
 
 export class TestRenderer extends AbstractRenderer {
 
+    protected _extensions = false;
     protected _program: Program;
 
     protected _ndcTriangle: NdcFillingTriangle;
@@ -19,6 +22,13 @@ export class TestRenderer extends AbstractRenderer {
 
     protected onUpdate(): void {
         const gl = this.context.gl;
+
+        if (this._extensions === false && this.context.isWebGL1) {
+            assert(this.context.supportsStandardDerivatives, `expected OES_standard_derivatives support`);
+            /* tslint:disable-next-line:no-unused-expression */
+            this.context.standardDerivatives;
+            this._extensions = true;
+        }
 
         if (this._program === undefined) {
             this._program = new Program(this.context);
@@ -60,7 +70,6 @@ export class TestRenderer extends AbstractRenderer {
 
     protected onSwap(): void {
         // const gl = this.context.gl;
-
 
     }
 

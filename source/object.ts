@@ -76,12 +76,11 @@ export abstract class AbstractObject<T> extends Initializable {
         this._identifier = this._context.allocationRegister.createUniqueIdentifier(this._identifier);
         this.create.apply(this, args);
 
-        const complete = this._object !== undefined && this._valid;
-        if (!complete) {
+        if (!this._valid) {
             this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
             log(LogLevel.Dev, `initialization of '${this._identifier}' failed`);
         }
-        return complete;
+        return this._valid;
     }
 
     /**
