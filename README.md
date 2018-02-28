@@ -109,19 +109,12 @@ All the above scripts, namely `build, build-watch, build-all, check, deploy-lite
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 
-#### launch
-
-Two launch configurations for debugging from within Visual Studio Code are configured in `.vscode/launch.json` and requires `msjsdiag.debugger-for-chrome` plugin:
-
-* The `Launch` configuration opens the `dist/index.html` in a Chrome tab.
-* The `Attach` configuration attaches to an existing Chrome tab having the `dist/index.html` opened and enables debugging from within Visual Studio Code.
-
 
 ## Related Work
 
 * [ES6 Specification](http://www.ecma-international.org/ecma-262/6.0/)
 * [ES6 Modules](http://www.2ality.com/2014/09/es6-modules-final.html)
 * [WebGL Stats](http://webglstats.com/)
-* [Webpack 2.2](https://webpack.js.org/configuration/)
+* [Webpack](https://webpack.js.org/configuration/)
 * [TypeScript](https://www.typescriptlang.org/docs/tutorial.html)
 * [TypeScript Coding Guidelines](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines)
