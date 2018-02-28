@@ -9,6 +9,7 @@
         "source/canvas.ts",
         "source/context.ts",
         "source/defaultframebuffer.ts",
+        "source/formatbytesizes.ts",
         "source/framebuffer.ts",
         "source/geometry.ts",
         "source/gl2facade.ts",
