@@ -36,7 +36,7 @@ describe('Controller', () => {
 
 
     it('should be constructable', () => {
-        expect(() => { new Controller(); }).to.not.throw;
+        expect(new Controller()).to.not.throw;
     });
 
     it('should not be paused nor blocked after initialization', () => {
