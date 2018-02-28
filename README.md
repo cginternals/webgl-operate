@@ -6,6 +6,7 @@
 [![Travis](https://img.shields.io/travis/cginternals/webgl-operate/master.svg?style=flat&logo=travis)](https://travis-ci.org/cginternals/webgl-operate)
 [![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat)](https://coveralls.io/github/cginternals/webgl-operate)
 [![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate)](https://github.com/Aaronepower/tokei)
+[![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate?category=comments)](https://github.com/Aaronepower/tokei)
 [![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate)
 [![bitHound](https://img.shields.io/bithound/dependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
 [![bitHound](https://img.shields.io/bithound/devDependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
@@ -56,12 +57,9 @@ ToDo
 
 | directory | description |
 |-----------|-------------|
-| `source`         | 'public' interface of webgl-operate |
-| `source/assets`  | rendering assets used such as sampling patterns, masquerade presets, or meshes | 
-| `source/core`    | provides all rendering, controlling, and webgl related, non specialized classes | 
-| `source/kernels` | contains pre-computed sampling patterns used for, e.g., multi-frame sampling | 
+| `source`         | most of webgl-operate's rendering and operational logic |
+| `source/data`    | contains, e.g., pre-built sampling patterns or other data | 
 | `source/shaders` | on build, shaders are packed into the dist as well (and includes are resolved) |
-| `source/stages`  | specialized rendering stages |
 | `source/debug`   | optional: various tools for run-time debugging |
 | `source/viewer`  | optional: generic viewer overlay and controller for webgl-operate based rendering |
 | `example`        | examples demonstrating webgl-operate features | 
@@ -83,6 +81,7 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 | `build`          | build and pack library with core, debug, and viewer facilities [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
 | `build-watch`    | `build` command in watch (for modifications) mode |
 | `build-all`      | build both minified and slim (no viewer and debug) libraries to `dist` |
+| `build-lib`      | transpile sources and declarations for distribution via npm |
 | `example`        | build example html pages to `dist` |
 | `example-watch`  | `example` command in watch (for modifications) mode |
 | `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
@@ -91,7 +90,7 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 | `deploy-lite`    | lite distribution deployment triggering only build and examples |
 | `deploy-watch`   | `deploy-lite` command in watch (for modifications) mode |
 | **`deploy`**     | full distribution deployment triggering `check`, `test`, `build-all`, `doc`, and `example` |
-| **`prepublish`** | transpile sources and declarations to `lib` and run `build-all` |
+| **`prepublishOnly`** | run `build-all` and `build-lib` |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
 Use `npm run-script build` to build the library and `npm run-script example` to build the examples (or `deploy-lite` to trigger `build` and `example` in a single step). The built examples are located in the `dist` directory.
