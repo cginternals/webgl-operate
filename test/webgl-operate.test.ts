@@ -13,8 +13,14 @@ import * as gloperate from '../source/webgl-operate';
 
 describe('webgl-operate API', () => {
 
-    it('should expose core facilities', () => {
+    it('should expose a fixed set of facilities per minor/major', () => {
+
         const facilities = [
+
+            '__esModule',
+
+            /* CORE */
+
             'Canvas',
 
             'Controller',
@@ -43,26 +49,17 @@ describe('webgl-operate API', () => {
             'KernelI32',
             'KernelUI8',
             'KernelI8',
-        ];
-        for (const facility of facilities) {
-            expect(gloperate[facility]).to.exist;
-        }
-    });
+            'RandomSquareKernel',
 
-    it('should expose debug facilities', () => {
-        const facilities = [
+            /* DEBUG */
+
             'TestRenderer',
-        ];
-        for (const facility of facilities) {
-            expect(gloperate[facility]).to.exist;
-        }
-    });
 
-    it('should expose viewer facilities', () => {
-        const facilities = [
+            /* VIEWER */
         ];
-        for (const facility of facilities) {
-            expect(gloperate[facility]).to.exist;
+
+        for (const facility of Object.getOwnPropertyNames(gloperate)) {
+            expect(facilities.indexOf(facility)).to.be.gte(0, facility);
         }
     });
 

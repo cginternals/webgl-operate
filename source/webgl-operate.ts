@@ -24,6 +24,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Color } from './color';
 
 import { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
+import { RandomSquareKernel } from './randomsquarekernel';
 
 import { TestRenderer } from './debug/testrenderer';
 
@@ -58,6 +59,7 @@ export {
     KernelI32,
     KernelUI8,
     KernelI8,
+    RandomSquareKernel,
 
     /* DEBUG facilities */
 

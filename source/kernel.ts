@@ -78,7 +78,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         } else {
             i = this.index(xPosOrIndex, yPos, zPos ? zPos : 0);
         }
-        log_if(i >= this.length, LogLevel.Dev, `index out of range (${this.length}, given ${i}`);
+        log_if(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
 
         switch (this._components) {
             case 1:

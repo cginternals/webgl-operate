@@ -13,20 +13,47 @@ import * as gloperate from '../source/webgl-operate.slim';
 
 describe('webgl-operate slim API', () => {
 
-    it('should not expose debug facilities', () => {
-        const facilities = [
-            'TestRenderer',
-        ];
-        for (const facility of facilities) {
-            expect(gloperate[facility]).to.not.exist;
-        }
-    });
+    it('should expose a fixed set of facilities per minor/major', () => {
 
-    it('should not expose viewer facilities', () => {
         const facilities = [
+
+            '__esModule',
+
+            /* CORE */
+
+            'Canvas',
+
+            'Controller',
+            'AbstractRenderer',
+            'Context',
+            'ContextMasquerade',
+            'ExtensionsHash',
+
+            'Buffer',
+            'DefaultFramebuffer',
+            'Framebuffer',
+            'Geometry',
+            'Program',
+            'Renderbuffer',
+            'Shader',
+            'Texture2',
+            'VertexArray',
+
+            'NdcFillingRectangle',
+            'NdcFillingTriangle',
+
+            'Color',
+
+            'KernelF32',
+            'KernelUI32',
+            'KernelI32',
+            'KernelUI8',
+            'KernelI8',
+            'RandomSquareKernel',
         ];
-        for (const facility of facilities) {
-            expect(gloperate[facility]).to.not.exist;
+
+        for (const facility of Object.getOwnPropertyNames(gloperate)) {
+            expect(facilities.indexOf(facility)).to.be.gte(0, facility);
         }
     });
 
