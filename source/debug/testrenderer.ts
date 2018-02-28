@@ -1,11 +1,11 @@
 
-
 import { assert } from '../auxiliaries';
 
 import { Program } from '../program';
 import { Shader } from '../shader';
 // import { Texture2 } from '../texture2';
 
+import { AntiAliasingKernel } from '../antialiasingkernel';
 import { NdcFillingTriangle } from '../ndcfillingtriangle';
 
 import { AbstractRenderer } from '../renderer';
@@ -16,6 +16,8 @@ export class TestRenderer extends AbstractRenderer {
     protected _extensions = false;
     protected _program: Program;
 
+    protected _ndcOffsetKernel: AntiAliasingKernel;
+    protected _uNdcOffset: WebGLUniformLocation;
     protected _ndcTriangle: NdcFillingTriangle;
     protected _aVertex: GLuint;
 
@@ -43,6 +45,10 @@ export class TestRenderer extends AbstractRenderer {
 
             this._program.initialize([vert, frag]);
             this._aVertex = this._program.attribute('aVertex', 0);
+
+            this._program.bind();
+            this._uNdcOffset = this._program.uniform('u_ndcOffset');
+            this._program.unbind();
         }
 
         if (this._ndcTriangle === undefined) {
@@ -52,6 +58,16 @@ export class TestRenderer extends AbstractRenderer {
         if (!this._ndcTriangle.initialized) {
             this._ndcTriangle.initialize(this._aVertex);
         }
+
+        if (this._ndcOffsetKernel === undefined) {
+            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+        }
+
+        if (this._altered.multiFrameNumber) {
+            this._ndcOffsetKernel.width = this._multiFrameNumber;
+        }
+
+        this._altered.reset();
     }
 
     protected onFrame(frameNumber: number): void {
@@ -64,6 +80,14 @@ export class TestRenderer extends AbstractRenderer {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         this._program.bind();
+
+        const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
+        ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
+        ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
+        gl.uniform2fv(this._uNdcOffset, ndcOffset);
+
+        console.log(ndcOffset);
+
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();
     }
@@ -71,6 +95,18 @@ export class TestRenderer extends AbstractRenderer {
     protected onSwap(): void {
         // const gl = this.context.gl;
 
+    }
+
+    protected onDispose(): void {
+
+        if (this._program && this._program.initialized) {
+            this._uNdcOffset = -1;
+            this._program.uninitialize();
+        }
+
+        if (this._ndcTriangle && this._ndcTriangle.initialized) {
+            this._ndcTriangle.uninitialize();
+        }
     }
 
 }

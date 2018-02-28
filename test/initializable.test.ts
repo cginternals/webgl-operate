@@ -27,6 +27,11 @@ class Initializable extends AbstractInitializable {
 
     @Initializable.assert_uninitialized()
     expectUninitialized(): void { }
+
+    @Initializable.assert_initialized()
+    returnsValue(value: number | string): number | string {
+        return value;
+    }
 }
 
 
@@ -122,6 +127,13 @@ describe('Initializable', () => {
         expect(() => initializable2.expectUninitialized()).not.to.throw();
         expect(() => initializable1.expectInitialized()).not.to.throw();
         expect(() => initializable2.expectInitialized()).to.throw();
+    });
+
+    it('should decorate per-instance', () => {
+        const initializable = new Initializable();
+        initializable.initialize();
+        expect(initializable.returnsValue('foo')).to.equal('foo');
+        expect(initializable.returnsValue(2.0)).to.equal(2.0);
     });
 
 });

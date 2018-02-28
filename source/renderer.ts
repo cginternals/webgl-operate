@@ -155,6 +155,11 @@ export abstract class AbstractRenderer extends Initializable {
      */
     protected abstract onSwap(): void;
 
+    /**
+     * Clean up all context related (GPU) objects.
+     */
+    protected abstract onDispose(): void;
+
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
@@ -182,7 +187,9 @@ export abstract class AbstractRenderer extends Initializable {
      * overriding this function.
      */
     @Initializable.uninitialize()
-    uninitialize(): void { }
+    uninitialize(): void {
+        this.onDispose();
+    }
 
 
     /**

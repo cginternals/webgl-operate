@@ -126,10 +126,10 @@ export abstract class Initializable {
 
             const initialize = descriptor.value;
             /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
-            descriptor.value = function () {
+            descriptor.value = function (): any {
                 this.assertInitialized();
                 /* call actual initialization and set initialization status */
-                initialize.apply(this, arguments);
+                return initialize.apply(this, arguments);
             };
             return descriptor;
         };
