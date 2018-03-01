@@ -108,7 +108,7 @@ export class Canvas extends Resizable {
 
 
     /**
-     * Canvas element within the HTML5 document.
+     * @see {@link element}
      */
     protected _element: HTMLCanvasElement;
 
@@ -619,6 +619,14 @@ export class Canvas extends Resizable {
      */
     get height(): GLsizei {
         return this._size[1];
+    }
+
+
+    /**
+     * Canvas element within the HTML5 document.
+     */
+    get element(): HTMLElement {
+        return this._element;
     }
 
 }

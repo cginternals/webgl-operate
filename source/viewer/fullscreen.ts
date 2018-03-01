@@ -11,10 +11,10 @@ namespace viewer {
      * ```
      * fullscreen_button.click(function () {
      *     ...
-     *     gloperate.viewer.Fullscreen.toggle(element.get(0), function () {
-     *         element.toggleClass('fullscreen');
-     *         fullscreen_icon.toggleClass('icon-resize-full');
-     *         fullscreen_icon.toggleClass('icon-resize-small');
+     *     gloperate.viewer.Fullscreen.toggle(canvas.element, () => {
+     *         canvas.element.classList.toggle('fullscreen');
+     *         fullscreen_icon.classList.toggle('icon-resize-full');
+     *         fullscreen_icon.classList.toggle('icon-resize-small');
      *     });
      *     return false;
      * });
@@ -32,6 +32,10 @@ namespace viewer {
          */
         protected static _callback: (() => void) | undefined;
 
+        /**
+         * Backup of the element's initial width and height.
+         */
+        protected static _size: [string, string] = ['0', '0'];
 
         /**
          * Cached exit call of the clients specific fullscreen API.
@@ -140,6 +144,7 @@ namespace viewer {
          * Returns whether or not a fullscreen element exists, indicating wif fullscreen is active or not.
          */
         static active(): boolean {
+            /* tslint:disable-next-line:no-null-keyword */
             return Fullscreen.element() !== undefined && Fullscreen.element() !== null;
         }
 
@@ -156,6 +161,15 @@ namespace viewer {
             }
             Fullscreen.queryAndCacheAPI();
 
+            const isFullscreen = Fullscreen.active();
+
+            if (!isFullscreen) {
+                /* Backup exact size of the element for restore when exiting fullscreen. */
+                const style = getComputedStyle(element);
+                Fullscreen._size[0] = style.width as string;
+                Fullscreen._size[1] = style.height as string;
+            }
+
             /**
              * The toggle callback is to be triggered first, always. Some browsers do not trigger a reflow when
              * requesting or exiting fullscreen and simultaneously toggling some HTML element classes.
@@ -164,26 +178,26 @@ namespace viewer {
                 callback();
             }
 
-            const isFullscreen = Fullscreen.active();
-
-            /**
-             * If the toggle for exiting fullscreen was made explicitly (not by the browser or indirectly) the removeEL
-             * listener is removed here since the callback was already called (above).
-             */
-            if (isFullscreen) {
-                Fullscreen._callback = undefined;
-                window.removeEventListener(Fullscreen._event, Fullscreen.removeEventListener);
-            }
-
-            /**
-             * Requesting fullscreen and adding the addEL event listener to the fullscreenchange always triggers the
-             * event listener on fullscreen request or exit. addEL then removes itself and adds the removeEL, which in
-             * turn triggers the given callback and also removes itself as listener. This is a solid way to assure
-             * single callback execution per toggle.
-             */
             if (!isFullscreen) {
+                /**
+                 * Requesting fullscreen and adding the addEL event listener to the fullscreenchange always triggers the
+                 * event listener on fullscreen request or exit. addEL then removes itself and adds the event listener,
+                 * which in turn triggers the given callback and also removes itself as listener. This is a solid way to
+                 * assure single callback execution per toggle.
+                 */
                 Fullscreen._callback = callback;
                 window.addEventListener(Fullscreen._event, Fullscreen.addEventListener);
+
+            } else {
+                /**
+                 * If the toggle for exiting fullscreen was made explicitly (not by the browser or indirectly) the
+                 * event listener is removed here since the callback was already called (above).
+                 */
+                Fullscreen._callback = undefined;
+                window.removeEventListener(Fullscreen._event, Fullscreen.removeEventListener);
+
+                element.style.width = Fullscreen._size[0];
+                element.style.height = Fullscreen._size[1];
             }
 
             isFullscreen ? Fullscreen.exit() : Fullscreen.request(element);

@@ -88,6 +88,16 @@ ul.features li:last-child:after {
 }
 
 
+.fullscreen {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
 /* Copyright (c) 2016 Tim Holman - http://tholman.com - https://github.com/tholman/github-corners */
 /* 
 .github-corner:hover .octo-arm{
