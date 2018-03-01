@@ -1,8 +1,8 @@
 
-import { mat4, vec2, vec3 } from 'gl-matrix';
-import { m4, v2, v3 } from './gl-matrix-extensions';
+import { mat4, vec3 } from 'gl-matrix';
+import { m4 } from './gl-matrix-extensions';
 
-import { assert, DEG2RAD, log, LogLevel } from './auxiliaries';
+import { DEG2RAD, log, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
 
@@ -48,17 +48,17 @@ export class Camera {
     /** @see {@link view} */
     protected _view: mat4 | undefined;
     /** @see {@link viewInverse} */
-    protected _viewInverse: mat4 | undefined;
+    protected _viewInverse: mat4 | undefined | null;
 
     /** @see {@link projection} */
     protected _projection: mat4 | undefined;
     /** @see {@link projectionInverse} */
-    protected _projectionInverse: mat4 | undefined;
+    protected _projectionInverse: mat4 | undefined | null;
 
     /** @see {@link viewProjection} */
     protected _viewProjection: mat4 | undefined;
     /** @see {@link viewProjectionInverse} */
-    protected _viewProjectionInverse: mat4 | undefined;
+    protected _viewProjectionInverse: mat4 | undefined | null;
 
     /** @see {@link altered} */
     protected _altered = false;
@@ -259,8 +259,8 @@ export class Camera {
     /**
      * Either returns the inverse cached view matrix or derives the current one after invalidation and caches it.
      */
-    get viewInverse(): mat4 {
-        if (this._viewInverse) { // return cached value
+    get viewInverse(): mat4 | null {
+        if (this._viewInverse !== undefined) { // return cached value
             return this._viewInverse;
         }
         this._viewInverse = mat4.invert(m4(), this.view);
@@ -281,8 +281,8 @@ export class Camera {
     /**
      * Either returns the cached inverse projection matrix or derives the current one after invalidation and caches it.
      */
-    get projectionInverse(): mat4 {
-        if (this._projectionInverse) { // return cached value
+    get projectionInverse(): mat4 | null {
+        if (this._projectionInverse !== undefined) { // return cached value
             return this._projectionInverse;
         }
         this._projectionInverse = mat4.invert(m4(), this.projection);
@@ -305,8 +305,8 @@ export class Camera {
      * Returns the inverse view projection matrix based on view and projection. This is also cached (since matrix
      * multiplication is involved).
      */
-    get viewProjectionInverse(): mat4 {
-        if (this._viewProjectionInverse) { // return cached value
+    get viewProjectionInverse(): mat4 | null {
+        if (this._viewProjectionInverse !== undefined) { // return cached value
             return this._viewProjectionInverse;
         }
         this._viewProjectionInverse = mat4.invert(m4(), this.viewProjection);

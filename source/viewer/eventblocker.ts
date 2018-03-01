@@ -13,7 +13,7 @@ export class EventBlocker {
     /**
      * Lookup table for blocked events and their listener.
      */
-    protected _blockListenerByEvent = new Map<string, HTMLEventListener>();
+    private _blockListenerByEvent = new Map<string, HTMLEventListener>();
 
     /**
      * Element associated to this blocker.
