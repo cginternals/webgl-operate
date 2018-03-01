@@ -88,7 +88,37 @@ ul.features li:last-child:after {
 }
 
 
-.fullscreen {
+#test-canvas:fullscreen  {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#test-canvas:-moz-full-screen {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#test-canvas:-ms-full-screen {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#test-canvas:-webkit-full-screen {
     width: 100%!important;
     height: 100%!important;
     position: absolute;

@@ -9,16 +9,12 @@ namespace viewer {
      * fullscreen for a HTML element while managing the execution of custom toggle code.
      *
      * ```
-     * fullscreen_button.click(function () {
-     *     ...
-     *     gloperate.viewer.Fullscreen.toggle(canvas.element, () => {
-     *         canvas.element.classList.toggle('fullscreen');
-     *         fullscreen_icon.classList.toggle('icon-resize-full');
-     *         fullscreen_icon.classList.toggle('icon-resize-small');
-     *     });
-     *     return false;
-     * });
+     * canvas.element.addEventListener('click', function() { gloperate.viewer.Fullscreen.toggle(canvas.element); });
      * ```
+     *
+     * Use `:fullscreen` (or `:-moz-full-screen`, `:-webkit-full-screen`, and `:-ms-full-screen`) selectors in order to
+     * configure fullscreen specific style. Alternatively, an additional class, e.g., `fullscreen`, could be toggled
+     * via callaback.
      */
     export class Fullscreen {
 
@@ -93,8 +89,9 @@ namespace viewer {
             const exits = [
                 document.exitFullScreen,
                 document.msExitFullscreen,
-                document.mozCancelFullScreen,
-                document.webkitExitFullscreen];
+                document.mozCancelFullScreen, // notice the capital S for Screen
+                document.webkitExitFullscreen,
+                undefined];
 
             let api = 0;
             for (; api < exits.length; ++api) {
@@ -104,6 +101,7 @@ namespace viewer {
                 break;
             }
 
+            console.log(api);
 
             switch (api) {
                 case 0: // native
