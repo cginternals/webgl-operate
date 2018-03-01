@@ -3,6 +3,7 @@ import { assert, bitInBitfield, log_if, LogLevel } from './auxiliaries';
 import { GLclampf4 } from './tuples';
 
 import { Bindable } from './bindable';
+import { Context } from './context';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 import { Renderbuffer } from './renderbuffer';
@@ -16,7 +17,7 @@ import { Texture2 } from './texture2';
  * @todo add usage example
  * ```
  */
-export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bindable {
+export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bindable {
 
     /**
      * Default framebuffer, e.g., used for unbind.
@@ -62,8 +63,43 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      * implementation ignores this parameter. If no parameter is given, the webgl2 implementation clears all color
      * attachments.
      */
-    clear: ((mask: GLbitfield, bind: boolean, unbind: boolean, colorClearQueue?: Array<GLint>) => void) | undefined;
+    clear: ((mask: GLbitfield, bind: boolean, unbind: boolean, colorClearQueue?: Array<GLint>) => void);
 
+    /**
+     * Returns a string describing the given status of a framebuffer object.
+     * @param context - Context for valid GLenums.
+     * @param status - A framebuffer's status.
+     */
+    protected static statusString(context: Context, status: GLenum): string {
+        const gl = context.gl;
+
+        switch (status) {
+            case gl.FRAMEBUFFER_COMPLETE:
+                return 'the framebuffer is ready to display (COMPLETE)';
+
+            case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                return 'the attachment types are mismatched or not all framebuffer attachment points are ' +
+                    'framebuffer attachment complete (INCOMPLETE_ATTACHMENT)';
+
+            case gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                return 'there is no attachment (INCOMPLETE_MISSING_ATTACHMENT)';
+
+            case gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+                return 'height and width of the attachment are not the same (INCOMPLETE_DIMENSIONS)';
+
+            case gl.FRAMEBUFFER_UNSUPPORTED:
+                return 'the format of the attachment is not supported or if depth and stencil attachments are not ' +
+                    'the same renderbuffer (UNSUPPORTED)';
+
+            case gl.FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                return 'the values of gl.RENDERBUFFER_SAMPLES are different among attached renderbuffers, or are ' +
+                    'non-zero if the attached images are a mix of renderbuffers and textures (INCOMPLETE_MULTISAMPLE)';
+
+            default:
+                assert(false, `expected known framebuffer status, given ${status}`);
+                return '';
+        }
+    }
 
     /**
      * Create a framebuffer object on the GPU and attaches all given renderable objects (either renderbuffer or
@@ -119,6 +155,7 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
 
         this._buffersByAttachment.forEach((buffer: Renderbuffer, attachment: GLenum) => {
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, attachment, gl.RENDERBUFFER, buffer.object);
+
         });
         this._texturesByAttachment.forEach((texture: Texture2, attachment: GLenum) => {
             gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.object, 0);
@@ -128,9 +165,11 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
             gl2facade.drawBuffers(this._drawBuffers);
         }
 
+
         // Check status and cache minimum renderable area.
         const status: GLenum = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         this._valid = gl.isFramebuffer(this._object) && (status === gl.FRAMEBUFFER_COMPLETE);
+        log_if(!this._valid, LogLevel.Dev, Framebuffer.statusString(this.context, status));
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
 
@@ -147,8 +186,6 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
 
         this._object = undefined;
         this._valid = false;
-
-        this.clear = undefined;
     }
 
 
@@ -409,6 +446,7 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      * @param attachments - Array of attachment identifier (e.g., gl.COLOR_ATTACHMENT0).
      */
     set drawBuffers(attachments: Array<GLenum>) {
+        this.assertInitialized();
         const gl2facade = this.context.gl2facade;
 
         for (const attachment of attachments) {
@@ -428,6 +466,7 @@ export abstract class Framebuffer extends AbstractObject<WebGLFramebuffer> imple
      * Used to remember which attachments are available as potential draw buffers.
      */
     get drawBuffers(): Array<GLenum> {
+        this.assertInitialized();
         return this._drawBuffers;
     }
 

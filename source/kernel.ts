@@ -80,6 +80,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         }
         log_if(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
 
+        /* tslint:disable-next-line:switch-default */
         switch (this._components) {
             case 1:
                 return [this._samples[i]];
@@ -112,6 +113,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         }
         log_if(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
 
+        /* tslint:disable-next-line:switch-default */
         switch (this._components) {
             /* falls through */
             case 4:
@@ -125,6 +127,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
             /* falls through */
             case 1:
                 this._samples[i + 0] = sample[0];
+                break;
         }
     }
 

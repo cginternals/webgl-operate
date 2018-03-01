@@ -96,6 +96,7 @@
         "interface-name": false,
         "no-namespace": false,
         "no-null-keyword": true,
-        "triple-equals": true
+        "triple-equals": true,
+        "switch-default": true
     }
 }

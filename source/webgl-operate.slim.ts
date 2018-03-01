@@ -1,55 +1,44 @@
 
-import { Canvas } from './canvas';
+export { Canvas } from './canvas';
 
-import { Context } from './context';
-import { ContextMasquerade } from './contextmasquerade';
-import { ExtensionsHash } from './extensionshash';
+export { Context } from './context';
+export { ContextMasquerade } from './contextmasquerade';
+export { ExtensionsHash } from './extensionshash';
 
-import { Controller } from './controller';
-import { AbstractRenderer } from './renderer';
+export { Controller } from './controller';
+export { AbstractRenderer } from './renderer';
 
-import { Buffer } from './buffer';
-import { DefaultFramebuffer } from './defaultframebuffer';
-import { Framebuffer } from './framebuffer';
-import { Geometry } from './geometry';
-import { Program } from './program';
-import { Renderbuffer } from './renderbuffer';
-import { Shader } from './shader';
-import { Texture2 } from './texture2';
-import { VertexArray } from './vertexarray';
+export { Buffer } from './buffer';
+export { DefaultFramebuffer } from './defaultframebuffer';
+export { Framebuffer } from './framebuffer';
+export { Geometry } from './geometry';
+export { Program } from './program';
+export { Renderbuffer } from './renderbuffer';
+export { Shader } from './shader';
+export { Texture2 } from './texture2';
+export { VertexArray } from './vertexarray';
 
-import { NdcFillingRectangle } from './ndcfillingrectangle';
-import { NdcFillingTriangle } from './ndcfillingtriangle';
+export { NdcFillingRectangle } from './ndcfillingrectangle';
+export { NdcFillingTriangle } from './ndcfillingtriangle';
 
-import { Color } from './color';
+export { Camera } from './camera';
+export { Color } from './color';
+
+export { AntiAliasingKernel } from './antialiasingkernel';
+export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
+export { RandomSquareKernel } from './randomsquarekernel';
+
+export { Blit } from './blit';
 
 
-export {
+import * as root_auxiliaries from './auxiliaries';
+export import auxiliaries = root_auxiliaries;
 
-    Canvas,
+import * as root_gl_matrix_extensions from './gl-matrix-extensions';
+export import gl_matrix_extensions = root_gl_matrix_extensions;
 
-    Controller,
-    AbstractRenderer,
-    Context,
-    ContextMasquerade,
-    ExtensionsHash,
+import * as root_raymath from './raymath';
+export import ray_math = root_raymath;
 
-    Buffer,
-    DefaultFramebuffer,
-    Framebuffer,
-    Geometry,
-    Program,
-    Renderbuffer,
-    Shader,
-    Texture2,
-    VertexArray,
-
-    NdcFillingRectangle,
-    NdcFillingTriangle,
-
-    Color,
-
-    /* NO DEBUG facilities */
-    /* NO VIEWER facilities */
-
-};
+import * as root_tuples from './tuples';
+export import tuples = root_tuples;

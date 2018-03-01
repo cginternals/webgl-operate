@@ -4,10 +4,12 @@
         "source/**/*.ts"
     ],
     "exclude": [
+        "source/blit.ts",
         "source/buffer.ts",
         "source/canvas.ts",
         "source/context.ts",
         "source/defaultframebuffer.ts",
+        "source/formatbytesizes.ts",
         "source/framebuffer.ts",
         "source/geometry.ts",
         "source/gl2facade.ts",
@@ -18,7 +20,9 @@
         "source/shader.ts",
         "source/texture2.ts",
         "source/vertexarray.ts",
-        "source/debug/testrenderer.ts"
+        "source/debug/testrenderer.ts",
+        "source/viewer/eventblocker.ts",
+        "source/viewer/fullscreen.ts"
     ],
     "extension": [
         ".ts"

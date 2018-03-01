@@ -1,5 +1,5 @@
 
-import { vec2, vec3, vec4 } from 'gl-matrix';
+import { mat2, mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 
 /** Namespace that comprises various gl-matrix extensions (also cleans up documentation). */
@@ -346,6 +346,7 @@ namespace gl_matrix_extensions {
             undefined : vec4.clone(numbers);
     }
 
+
     /**
      * Performs a mix as specified in GLSL.
      * @param value1 - The first value.
@@ -355,6 +356,27 @@ namespace gl_matrix_extensions {
      */
     export function mix(value1: number, value2: number, interpolation: number): number {
         return value1 * (1.0 - interpolation) + value2 * interpolation;
+    }
+
+
+    /**
+     * A mat2 placeholder to overcome the gl-matrix out interface.
+     */
+    export function m2(): mat2 {
+        return mat2.create();
+    }
+    /**
+     * A mat3 placeholder to overcome the gl-matrix out interface.
+     */
+    export function m3(): mat3 {
+        return mat3.create();
+    }
+
+    /**
+     * A mat4 placeholder to overcome the gl-matrix out interface.
+     */
+    export function m4(): mat4 {
+        return mat4.create();
     }
 
 }

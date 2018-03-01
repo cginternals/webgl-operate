@@ -23,7 +23,7 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
 
     switch (format) {
         case undefined: // must be first, in case any other format is not defined
-        /* fall-through */
+            break;
         default:
             break;
 

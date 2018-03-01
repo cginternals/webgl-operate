@@ -13,54 +13,37 @@ import * as gloperate from '../source/webgl-operate';
 
 describe('webgl-operate API', () => {
 
-    it('should expose a fixed set of facilities per minor/major', () => {
+    it('should expose a fixed set of debug facilities per minor/major', () => {
 
-        const facilities = [
-
-            '__esModule',
-
-            /* CORE */
-
-            'Canvas',
-
-            'Controller',
-            'AbstractRenderer',
-            'Context',
-            'ContextMasquerade',
-            'ExtensionsHash',
-
-            'Buffer',
-            'DefaultFramebuffer',
-            'Framebuffer',
-            'Geometry',
-            'Program',
-            'Renderbuffer',
-            'Shader',
-            'Texture2',
-            'VertexArray',
-
-            'NdcFillingRectangle',
-            'NdcFillingTriangle',
-
-            'Color',
-
-            'AntiAliasingKernel',
-            'KernelF32',
-            'KernelUI32',
-            'KernelI32',
-            'KernelUI8',
-            'KernelI8',
-            'RandomSquareKernel',
-
-            /* DEBUG */
-
+        const debugFacilities = [
             'TestRenderer',
-
-            /* VIEWER */
         ];
 
-        for (const facility of Object.getOwnPropertyNames(gloperate)) {
-            expect(facilities.indexOf(facility)).to.be.gte(0, facility);
+        for (const facility of Object.getOwnPropertyNames(gloperate.debug)) {
+            expect(debugFacilities.indexOf(facility), `unexpected facility debug.${facility} found`).to.be.gte(0);
+        }
+
+        for (const facility of debugFacilities) {
+            expect(gloperate.debug.hasOwnProperty(facility),
+                `expected facility debug.${facility} missing`).to.be.true;
+        }
+    });
+
+
+    it('should expose a fixed set of viewer facilities per minor/major', () => {
+
+        const viewerFacilities = [
+            'EventBlocker',
+            'Fullscreen',
+        ];
+
+        for (const facility of Object.getOwnPropertyNames(gloperate.viewer)) {
+            expect(viewerFacilities.indexOf(facility), `unexpected facility viewer.${facility} found`).to.be.gte(0);
+        }
+
+        for (const facility of viewerFacilities) {
+            expect(gloperate.viewer.hasOwnProperty(facility),
+                `expected facility viewer.${facility} missing`).to.be.true;
         }
     });
 

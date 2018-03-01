@@ -1,74 +1,24 @@
 
-import { Canvas } from './canvas';
+export * from './webgl-operate.slim';
 
-import { Context } from './context';
-import { ContextMasquerade } from './contextmasquerade';
-import { ExtensionsHash } from './extensionshash';
+/* DEBUG facilities */
 
-import { Controller } from './controller';
-import { AbstractRenderer } from './renderer';
+import * as debug_TestRenderer from './debug/testrenderer';
 
-import { Buffer } from './buffer';
-import { DefaultFramebuffer } from './defaultframebuffer';
-import { Framebuffer } from './framebuffer';
-import { Geometry } from './geometry';
-import { Program } from './program';
-import { Renderbuffer } from './renderbuffer';
-import { Shader } from './shader';
-import { Texture2 } from './texture2';
-import { VertexArray } from './vertexarray';
-
-import { NdcFillingRectangle } from './ndcfillingrectangle';
-import { NdcFillingTriangle } from './ndcfillingtriangle';
-
-import { Color } from './color';
-
-import { AntiAliasingKernel } from './antialiasingkernel';
-import { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
-import { RandomSquareKernel } from './randomsquarekernel';
-
-import { TestRenderer } from './debug/testrenderer';
+export namespace debug {
+    export import TestRenderer = debug_TestRenderer.TestRenderer;
+}
 
 
-export {
+/* VIEWER facilities */
 
-    Canvas,
+import * as viewer_EventBlocker from './viewer/eventblocker';
+import * as viewer_Fullscreen from './viewer/fullscreen';
 
-    Controller,
-    AbstractRenderer,
-    Context,
-    ContextMasquerade,
-    ExtensionsHash,
+export namespace viewer {
+    export import EventBlocker = viewer_EventBlocker.EventBlocker;
+    export import Fullscreen = viewer_Fullscreen.Fullscreen;
+}
 
-    Buffer,
-    DefaultFramebuffer,
-    Framebuffer,
-    Geometry,
-    Program,
-    Renderbuffer,
-    Shader,
-    Texture2,
-    VertexArray,
 
-    NdcFillingRectangle,
-    NdcFillingTriangle,
-
-    Color,
-
-    AntiAliasingKernel,
-    KernelF32,
-    KernelUI32,
-    KernelI32,
-    KernelUI8,
-    KernelI8,
-    RandomSquareKernel,
-
-    /* DEBUG facilities */
-
-    TestRenderer,
-
-    /* VIEWER facilities */
-
-    /* DEVELOPMENT facilities (should be none when publishing) */
-
-};
+/* DEVELOPMENT facilities (should be none when publishing) */

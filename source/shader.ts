@@ -33,6 +33,7 @@ export class Shader extends AbstractObject<WebGLShader> {
      * @param identifier - Meaningful name for identification of this instance.
      */
     constructor(context: Context, type: GLenum, identifier?: string) {
+        const gl = context.gl;
         if (identifier === undefined) {
             switch (type) {
                 case context.gl.FRAGMENT_SHADER:
@@ -41,6 +42,9 @@ export class Shader extends AbstractObject<WebGLShader> {
                 case context.gl.VERTEX_SHADER:
                     identifier = 'VertexShader';
                     break;
+                default:
+                    assert(false, `expected either a FRAGMENT_SHADER (${gl.FRAGMENT_SHADER}) ` +
+                        `or a VERTEX_SHADER (${gl.VERTEX_SHADER}), given ${type}`);
             }
         }
         super(context, identifier);

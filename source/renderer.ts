@@ -155,6 +155,11 @@ export abstract class AbstractRenderer extends Initializable {
      */
     protected abstract onSwap(): void;
 
+    /**
+     * Clean up all context related (GPU) objects.
+     */
+    protected abstract onDispose(): void;
+
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
@@ -182,7 +187,9 @@ export abstract class AbstractRenderer extends Initializable {
      * overriding this function.
      */
     @Initializable.uninitialize()
-    uninitialize(): void { }
+    uninitialize(): void {
+        this.onDispose();
+    }
 
 
     /**
@@ -304,6 +311,7 @@ export abstract class AbstractRenderer extends Initializable {
      * @returns - Array of render texture identifiers.
      */
     get debugTextures(): Array<string> {
+        this.assertInitialized();
         return this._debugTextures;
     }
 
@@ -312,6 +320,7 @@ export abstract class AbstractRenderer extends Initializable {
      * the renderers swap implementation.
      */
     get debugTexture(): GLint {
+        this.assertInitialized();
         return this._debugTexture;
     }
 
@@ -322,6 +331,7 @@ export abstract class AbstractRenderer extends Initializable {
      * @param index - Render texture index based on debuggableTextures array. This should be in [-1, length of array].
      */
     set debugTexture(index: GLint) {
+        this.assertInitialized();
         if (this._debugTexture === index) {
             return;
         }

@@ -54,7 +54,7 @@ ul.features li:after {
     content: "\2009\2014\2009"; 
 }
 ul.features li:first-child:after { 
-    content: "\2009\2223\2009"; 
+    content: "\2002\007C\2002"; 
 }
 ul.features li:last-child:after { 
     content: none; 
@@ -87,6 +87,46 @@ ul.features li:last-child:after {
     border-radius: .25rem;
 }
 
+
+#test-canvas:fullscreen  {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#test-canvas:-moz-full-screen {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#test-canvas:-ms-full-screen {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#test-canvas:-webkit-full-screen {
+    width: 100%!important;
+    height: 100%!important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
 
 /* Copyright (c) 2016 Tim Holman - http://tholman.com - https://github.com/tholman/github-corners */
 /* 

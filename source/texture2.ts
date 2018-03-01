@@ -73,6 +73,9 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type,
+            /* tslint:disable-next-line:no-null-keyword */
+            null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
         gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);

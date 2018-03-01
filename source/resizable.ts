@@ -12,7 +12,7 @@ export abstract class Resizable {
     /**
      * Event identifier for resize event (single point of definition).
      */
-    private static readonly EVENT_IDENTIFIER: string = 'resize';
+    private static readonly EVENT_IDENTIFIER = 'resize';
 
     /**
      * Array for referencing all instances of resizable.

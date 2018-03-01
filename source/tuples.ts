@@ -17,6 +17,7 @@ namespace tuples {
      */
     export type GLsizei3 = [GLsizei, GLsizei, GLsizei];
 
+
     /**
      * Auxiliary 2-tuple of GLfloat values.
      */
@@ -59,7 +60,7 @@ namespace tuples {
      * @returns - 2-tuple of specified type (GLsizei, GLfloat, or GLclampf).
      */
     export function tuple2<T extends GLsizei | GLclampf | GLfloat>(buffer: Float32Array): [T, T] {
-        assert(buffer.length === 2, `expected length of buffer to be 2, given ${buffer}`);
+        assert(buffer.length === 2, `expected length of buffer to be 2, given ${buffer.length}`);
         return [buffer[0] as T, buffer[1] as T];
     }
 
@@ -69,10 +70,9 @@ namespace tuples {
      * @returns - 3-tuple of specified type (GLsizei, GLfloat, or GLclampf).
      */
     export function tuple3<T extends GLsizei | GLclampf | GLfloat>(buffer: Float32Array): [T, T, T] {
-        assert(buffer.length === 3, `expected length of buffer to be 3, given ${buffer}`);
+        assert(buffer.length === 3, `expected length of buffer to be 3, given ${buffer.length}`);
         return [buffer[0] as T, buffer[1] as T, buffer[2] as T];
     }
-
 
     /**
      * Creates a tuple from a array buffer of the same size.
@@ -80,9 +80,10 @@ namespace tuples {
      * @returns - 4-tuple of specified type (GLsizei, GLfloat, or GLclampf).
      */
     export function tuple4<T extends GLsizei | GLclampf | GLfloat>(buffer: Float32Array): [T, T, T, T] {
-        assert(buffer.length === 4, `expected length of buffer to be 4, given ${buffer}`);
+        assert(buffer.length === 4, `expected length of buffer to be 4, given ${buffer.length}`);
         return [buffer[0] as T, buffer[1] as T, buffer[2] as T, buffer[3] as T];
     }
+
 
     /**
      * Clamps a single GLclampf/GLfloat value to the range [0.0, 1.0]. If clamping is necessary, a user-level message
