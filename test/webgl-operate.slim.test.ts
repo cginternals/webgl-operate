@@ -54,6 +54,9 @@ describe('webgl-operate slim API', () => {
             'RandomSquareKernel',
 
             'Blit',
+
+            'glmMath',
+            'rayMath',
         ];
 
         for (const facility of Object.getOwnPropertyNames(gloperate)) {

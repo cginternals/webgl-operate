@@ -29,6 +29,9 @@ import { RandomSquareKernel } from './randomsquarekernel';
 
 import { Blit } from './blit';
 
+import * as glmMath from './gl-matrix-extensions';
+import * as rayMath from './raymath';
+
 
 export {
 
@@ -64,6 +67,9 @@ export {
     RandomSquareKernel,
 
     Blit,
+
+    glmMath,
+    rayMath,
 
     /* NO DEBUG facilities */
 

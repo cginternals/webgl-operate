@@ -55,6 +55,9 @@ describe('webgl-operate API', () => {
 
             'Blit',
 
+            'glmMath',
+            'rayMath',
+
             /* DEBUG */
 
             'TestRenderer',
