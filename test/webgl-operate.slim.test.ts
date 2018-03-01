@@ -55,8 +55,10 @@ describe('webgl-operate slim API', () => {
 
             'Blit',
 
-            'glmMath',
-            'rayMath',
+            'auxiliaries',
+            'gl_matrix_extensions',
+            'ray_math',
+            'tuples',
         ];
 
         for (const facility of Object.getOwnPropertyNames(gloperate)) {
