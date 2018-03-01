@@ -20,7 +20,9 @@
         "source/shader.ts",
         "source/texture2.ts",
         "source/vertexarray.ts",
-        "source/debug/testrenderer.ts"
+        "source/debug/testrenderer.ts",
+        "source/viewer/eventblocker.ts",
+        "source/viewer/fullscreen.ts"
     ],
     "extension": [
         ".ts"

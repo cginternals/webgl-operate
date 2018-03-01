@@ -68,6 +68,7 @@
         "fovy",
         "framebuffer",
         "framebuffers",
+        "fullscreen",
         "get",
         "glkernel",
         "gloperate",

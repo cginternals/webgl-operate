@@ -36,6 +36,7 @@ import * as rayMath from './raymath';
 import { TestRenderer } from './debug/testrenderer';
 
 import { EventBlocker } from './viewer/eventblocker';
+import { Fullscreen } from './viewer/fullscreen';
 
 
 export {
@@ -84,6 +85,7 @@ export {
     /* VIEWER facilities */
 
     EventBlocker,
+    Fullscreen,
 
     /* DEVELOPMENT facilities (should be none when publishing) */
 

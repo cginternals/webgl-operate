@@ -65,6 +65,7 @@ describe('webgl-operate API', () => {
             /* VIEWER */
 
             'EventBlocker',
+            'Fullscreen',
         ];
 
         for (const facility of Object.getOwnPropertyNames(gloperate)) {
