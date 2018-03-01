@@ -56,7 +56,7 @@ namespace debug {
                 frag.initialize(require('./testrenderer.frag'));
 
                 this._program.initialize([vert, frag]);
-                this._aVertex = this._program.attribute('aVertex', 0);
+                this._aVertex = this._program.attribute('a_vertex', 0);
 
                 this._uNdcOffset = this._program.uniform('u_ndcOffset');
             }
@@ -88,7 +88,7 @@ namespace debug {
                     this.context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
 
                 this._depthRenderbuffer = new Renderbuffer(this.context, 'DepthRenderbuffer');
-                this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT24);
+                this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
 
                 this._intermediateFBO = new Framebuffer(this.context, 'IntermediateFBO');
                 this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
