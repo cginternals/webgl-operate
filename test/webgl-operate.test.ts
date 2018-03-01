@@ -42,6 +42,7 @@ describe('webgl-operate API', () => {
             'NdcFillingRectangle',
             'NdcFillingTriangle',
 
+            'Camera',
             'Color',
 
             'AntiAliasingKernel',

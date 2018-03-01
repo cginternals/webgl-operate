@@ -21,6 +21,7 @@ import { VertexArray } from './vertexarray';
 import { NdcFillingRectangle } from './ndcfillingrectangle';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 
+import { Camera } from './camera';
 import { Color } from './color';
 
 import { AntiAliasingKernel } from './antialiasingkernel';
@@ -57,6 +58,7 @@ export {
     NdcFillingRectangle,
     NdcFillingTriangle,
 
+    Camera,
     Color,
 
     AntiAliasingKernel,

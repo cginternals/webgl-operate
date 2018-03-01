@@ -42,6 +42,7 @@ describe('webgl-operate slim API', () => {
             'NdcFillingRectangle',
             'NdcFillingTriangle',
 
+            'Camera',
             'Color',
 
             'AntiAliasingKernel',
