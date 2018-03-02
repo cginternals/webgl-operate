@@ -12,11 +12,9 @@ import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
+import { FramePrecisionString } from './framebufferfactory';
 import { AbstractRenderer } from './renderer';
 import { Resizable } from './resizable';
-
-
-export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
 
 
 /**
@@ -42,7 +40,7 @@ export class Canvas extends Resizable {
     /**
      * Default frame precision, e.g., accumulation format when multi-frame rendering is used.
      */
-    protected static readonly DEFAULT_FRAME_PRECISION = 'auto';
+    protected static readonly DEFAULT_FRAME_PRECISION: FramePrecisionString = 'auto';
 
     /**
      * Default multi-frame number used if none is set via data attributes.
