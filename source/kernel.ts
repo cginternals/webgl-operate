@@ -50,6 +50,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
 
     /**
      * Should resize the samples array w.r.t. to the typed array buffer.
+     * The resulting array buffer may be empty.
      */
     protected abstract resize(): void;
 
