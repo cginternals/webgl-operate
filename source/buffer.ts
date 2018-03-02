@@ -17,9 +17,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     static readonly DEFAULT_BUFFER = undefined;
 
 
-    /**
-     * @see {@link target}
-     */
+    /** @see {@link target} */
     protected _target: GLenum | undefined = Buffer.DEFAULT_BUFFER;
 
     /**

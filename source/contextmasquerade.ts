@@ -21,29 +21,19 @@ import { ExtensionsHash } from './extensionshash';
  */
 export class ContextMasquerade {
 
-    /**
-     * @see {@link presets}
-     */
+    /** @see {@link presets} */
     protected static readonly MASQUERADE_JSON: ContextMasquerade.Presets = require('./data/masquerade.json');
 
-    /**
-     * @see {@link backend}
-     */
+    /** @see {@link backend} */
     protected _backend: string;
 
-    /**
-     * @see {@link extensionsStrive}
-     */
+    /** @see {@link extensionsStrive} */
     protected _extensionsStrive = new Array<string>();
 
-    /**
-     * @see {@link extensionsConceal}
-     */
+    /** @see {@link extensionsConceal} */
     protected _extensionsConceal = new Array<string>();
 
-    /**
-     * @see {@link functionsUndefine}
-     */
+    /** @see {@link functionsUndefine} */
     protected _functionsUndefine = new Array<string>();
 
     /**

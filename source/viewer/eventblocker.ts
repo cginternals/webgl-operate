@@ -1,8 +1,8 @@
 
-interface HTMLEventListener { (event: Event): boolean; }
-
 
 namespace viewer {
+
+    interface HTMLEventListener { (event: Event): boolean; }
 
     /**
      * Auxiliary class for blocking and unblocking events on a HTML element. Example for blocking the contextmenu:

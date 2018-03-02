@@ -26,24 +26,16 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
 
     protected _samples: T;
 
-    /**
-     * @see {@link width}
-     */
+    /** @see {@link width} */
     protected _width: GLsizei;
 
-    /**
-     * @see {@link height}
-     */
+    /** @see {@link height} */
     protected _height: GLsizei;
 
-    /**
-     * @see {@link depth}
-     */
+    /** @see {@link depth} */
     protected _depth: GLsizei;
 
-    /**
-     * @see {@link components}
-     */
+    /** @see {@link components} */
     protected _components: 1 | 2 | 3 | 4;
 
 

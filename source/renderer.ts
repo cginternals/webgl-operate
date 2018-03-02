@@ -8,13 +8,14 @@ import { assert, log_if, LogLevel } from './auxiliaries';
 import { clamp, v2 } from './gl-matrix-extensions';
 
 import { AlterationLookup } from './alterable';
-import { FramePrecisionString } from './canvas';
 import { Context } from './context';
+import { FramePrecisionString } from './framebufferfactory';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 
 
-export interface IdCallback { (id: number, x?: number, y?: number): void; }
+// export interface IdCallback { (id: number, x?: number, y?: number): void; }
+
 
 /**
  * The interface to a callback that is called if the renderer is invalidated.
@@ -47,9 +48,7 @@ export abstract class AbstractRenderer extends Initializable {
      */
     private _invalidate: Invalidate;
 
-    /**
-     * @see {@link context}
-     */
+    /** @see {@link context} */
     private _context: Context;
 
 
@@ -77,7 +76,7 @@ export abstract class AbstractRenderer extends Initializable {
     /**
      * Targeted frame precision, e.g., used for frame accumulation. Note that any renderer is currently
      * expected to take advantage of progressive rendering (e.g., multi-frame sampling) and accumulation as well as a
-     * blit process (since main intend is multi-frame based rendering).
+     * blit pass (since main intend is multi-frame based rendering).
      */
     protected _framePrecision: FramePrecisionString;
 

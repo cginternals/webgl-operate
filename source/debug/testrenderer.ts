@@ -2,7 +2,7 @@
 import { assert } from '../auxiliaries';
 
 import { AntiAliasingKernel } from '../antialiasingkernel';
-import { Blit } from '../blit';
+import { BlitPass } from '../blitpass';
 import { NdcFillingTriangle } from '../ndcfillingtriangle';
 import { Program } from '../program';
 import { Shader } from '../shader';
@@ -24,7 +24,7 @@ namespace debug {
         protected _ndcTriangle: NdcFillingTriangle;
         protected _aVertex: GLuint;
 
-        protected _blit: Blit;
+        protected _blit: BlitPass;
 
         protected _defaultFBO: DefaultFramebuffer;
         protected _colorRenderTexture: Texture2;
@@ -105,7 +105,7 @@ namespace debug {
 
 
             if (this._blit === undefined) {
-                this._blit = new Blit(this.context);
+                this._blit = new BlitPass(this.context);
             }
             if (!this._blit.initialized) {
                 this._blit.initialize(this._ndcTriangle);

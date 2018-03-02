@@ -21,9 +21,7 @@ import { AbstractObject } from './object';
  */
 export class Shader extends AbstractObject<WebGLShader> {
 
-    /**
-     * @see {@link type}
-     */
+    /** @see {@link type} */
     protected _type: GLenum;
 
     /**

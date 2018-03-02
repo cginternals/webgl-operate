@@ -13,24 +13,16 @@ import { Initializable } from './initializable';
  */
 export abstract class AbstractObject<T> extends Initializable {
 
-    /**
-     * @see {@link context}
-     */
+    /** @see {@link context} */
     protected _context: Context;
 
-    /**
-     * @see {@link identifier}
-     */
+    /** @see {@link identifier} */
     protected _identifier: string;
 
-    /**
-     * @see {@link object}
-     */
+    /** @see {@link object} */
     protected _object: T | undefined;
 
-    /**
-     * @see {@link valid}
-     */
+    /** @see {@link valid} */
     protected _valid = false;
 
     /**

@@ -28,7 +28,7 @@ export { AntiAliasingKernel } from './antialiasingkernel';
 export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
 export { RandomSquareKernel } from './randomsquarekernel';
 
-export { Blit } from './blit';
+export { BlitPass } from './blitpass';
 
 
 import * as root_auxiliaries from './auxiliaries';

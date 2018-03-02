@@ -12,11 +12,9 @@ import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
+import { FramePrecisionString } from './framebufferfactory';
 import { AbstractRenderer } from './renderer';
 import { Resizable } from './resizable';
-
-
-export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
 
 
 /**
@@ -42,7 +40,7 @@ export class Canvas extends Resizable {
     /**
      * Default frame precision, e.g., accumulation format when multi-frame rendering is used.
      */
-    protected static readonly DEFAULT_FRAME_PRECISION = 'auto';
+    protected static readonly DEFAULT_FRAME_PRECISION: FramePrecisionString = 'auto';
 
     /**
      * Default multi-frame number used if none is set via data attributes.
@@ -50,25 +48,17 @@ export class Canvas extends Resizable {
     protected static readonly DEFAULT_MULTI_FRAME_NUMBER = 0;
 
 
-    /**
-     * @see {@link context}
-     */
+    /** @see {@link context} */
     protected _context: Context;
 
-    /**
-     * @see {@link controller}
-     */
+    /** @see {@link controller} */
     protected _controller: Controller;
 
-    /**
-     * @see {@link renderer}
-     */
+    /** @see {@link renderer} */
     protected _renderer: AbstractRenderer | undefined;
 
 
-    /**
-     * @see {@link clearColor}
-     */
+    /** @see {@link clearColor} */
     protected _clearColor: Color;
 
 
@@ -107,9 +97,7 @@ export class Canvas extends Resizable {
     protected _favorSizeOverScale: boolean;
 
 
-    /**
-     * @see {@link element}
-     */
+    /** @see {@link element} */
     protected _element: HTMLCanvasElement;
 
 

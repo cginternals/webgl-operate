@@ -42,9 +42,7 @@ export class AllocationRegister {
      */
     protected _bytesByIdentifier = new Map<string, GLsizei>();
 
-    /**
-     * @see {@link bytes}
-     */
+    /** @see {@link bytes} */
     protected _bytes: GLsizei = 0;
     protected _bytesSubject = new ReplaySubject<[GLsizei, string]>(1);
 
