@@ -469,4 +469,3 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
     }
 
 }
-
