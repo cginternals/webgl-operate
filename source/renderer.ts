@@ -14,7 +14,8 @@ import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 
 
-export interface IdCallback { (id: number, x?: number, y?: number): void; }
+// export interface IdCallback { (id: number, x?: number, y?: number): void; }
+
 
 /**
  * The interface to a callback that is called if the renderer is invalidated.
@@ -47,9 +48,7 @@ export abstract class AbstractRenderer extends Initializable {
      */
     private _invalidate: Invalidate;
 
-    /**
-     * @see {@link context}
-     */
+    /** @see {@link context} */
     private _context: Context;
 
 

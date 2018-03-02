@@ -36,9 +36,7 @@ import { assert } from './auxiliaries';
  */
 export abstract class Initializable {
 
-    /**
-     * @see {@link initialized}
-     */
+    /** @see {@link initialized} */
     private _initialized = false;
 
 

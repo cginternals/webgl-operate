@@ -50,25 +50,17 @@ export class Canvas extends Resizable {
     protected static readonly DEFAULT_MULTI_FRAME_NUMBER = 0;
 
 
-    /**
-     * @see {@link context}
-     */
+    /** @see {@link context} */
     protected _context: Context;
 
-    /**
-     * @see {@link controller}
-     */
+    /** @see {@link controller} */
     protected _controller: Controller;
 
-    /**
-     * @see {@link renderer}
-     */
+    /** @see {@link renderer} */
     protected _renderer: AbstractRenderer | undefined;
 
 
-    /**
-     * @see {@link clearColor}
-     */
+    /** @see {@link clearColor} */
     protected _clearColor: Color;
 
 
@@ -107,9 +99,7 @@ export class Canvas extends Resizable {
     protected _favorSizeOverScale: boolean;
 
 
-    /**
-     * @see {@link element}
-     */
+    /** @see {@link element} */
     protected _element: HTMLCanvasElement;
 
 

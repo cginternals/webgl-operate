@@ -47,9 +47,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      */
     protected _colorClearQueue = new Array<GLint>();
 
-    /**
-     * @see {@link drawBuffers}
-     */
+    /** @see {@link drawBuffers} */
     protected _drawBuffers = new Array<GLenum>();
     protected _drawBuffersChanged = false;
 

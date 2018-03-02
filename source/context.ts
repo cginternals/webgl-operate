@@ -64,9 +64,7 @@ export class Context {
         stencil: false,
     };
 
-    /**
-     * @see {@link backend}
-     */
+    /** @see {@link backend} */
     protected _backend: BackendType | undefined;
 
     /**
@@ -75,14 +73,10 @@ export class Context {
      */
     protected _context: any; // WebGLRenderingContext | WebGL2RenderingContext;
 
-    /**
-     * @see {@link mask}
-     */
+    /** @see {@link mask} */
     protected _mask: ContextMasquerade | undefined;
 
-    /**
-     * @see {@link gl2facade}
-     */
+    /** @see {@link gl2facade} */
     protected _gl2: GL2Facade;
 
 
@@ -414,9 +408,7 @@ export class Context {
     }
 
 
-    /**
-     * @see {@link allocationRegister}
-     */
+    /** @see {@link allocationRegister} */
     protected _allocationRegister = new AllocationRegister();
 
     /**

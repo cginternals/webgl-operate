@@ -21,14 +21,10 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
      */
     static readonly DEFAULT_RENDER_BUFFER = undefined;
 
-    /**
-     * @see {@link width}
-     */
+    /** @see {@link width} */
     protected _width: GLsizei;
 
-    /**
-     * @see {@link height}
-     */
+    /** @see {@link height} */
     protected _height: GLsizei;
 
     /**

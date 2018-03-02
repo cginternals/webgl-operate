@@ -303,9 +303,7 @@ export class GL2Facade {
 
     // MAX UNIFORM COMPONENTS
 
-    /**
-     * @see {@link maxUniformVec3Components}
-     */
+    /** @see {@link maxUniformVec3Components} */
     protected _maxUniformVec3Components: GLint | undefined;
     /**
      * The maximum number of floats, integers, or booleans that can be in storage for a vertex shader.

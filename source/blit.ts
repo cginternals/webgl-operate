@@ -24,29 +24,19 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
  */
 export class Blit extends Initializable {
 
-    /**
-     * @see {@link context}
-     */
+    /** @see {@link context} */
     protected _context: Context;
 
-    /**
-     * @see {@link target}
-     */
+    /** @see {@link target} */
     protected _target: Framebuffer;
 
-    /**
-     * @see {@link framebuffer}
-     */
+    /** @see {@link framebuffer} */
     protected _framebuffer: Framebuffer;
 
-    /**
-     * @see {@link readBuffer}
-     */
+    /** @see {@link readBuffer} */
     protected _readBuffer: GLenum;
 
-    /**
-     * @see {@link drawBuffer}
-     */
+    /** @see {@link drawBuffer} */
     protected _drawBuffer: GLenum;
 
     /* Indirect blit and fallback implementation. */

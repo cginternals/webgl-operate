@@ -21,29 +21,19 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     static readonly DEFAULT_TEXTURE = undefined;
 
-    /**
-     * @see {@link width}
-     */
+    /** @see {@link width} */
     protected _width: GLsizei = 0;
 
-    /**
-     * @see {@link height}
-     */
+    /** @see {@link height} */
     protected _height: GLsizei = 0;
 
-    /**
-     * @see {@link internalFormat}
-     */
+    /** @see {@link internalFormat} */
     protected _internalFormat: GLenum | undefined = undefined;
 
-    /**
-     * @see {@link format}
-     */
+    /** @see {@link format} */
     protected _format: GLenum | undefined = undefined;
 
-    /**
-     * @see {@link type}
-     */
+    /** @see {@link type} */
     protected _type: GLenum | undefined = undefined;
 
     /**
