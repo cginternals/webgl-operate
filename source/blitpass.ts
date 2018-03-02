@@ -12,9 +12,9 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 
 
 /**
- * This component blits the color attachment of a given rgba-framebuffer into the target buffer provided on frame. For
- * rendering, a direct blit is used. However, if this is not supported, a textured, screen-aligned triangle is used for
- * blitting as fallback.
+ * This rendering pass blits the color attachment of a given rgba-framebuffer into the target buffer provided on frame.
+ * For rendering, a direct blit is used. However, if this is not supported, a textured, screen-aligned triangle is used
+ * for blitting as fallback.
  *
  * The blit component can be used as follows:
  * ```
@@ -22,7 +22,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
  * this.blit.frame(this.defaultFBO, null, null);
  * ```
  */
-export class Blit extends Initializable {
+export class BlitPass extends Initializable {
 
     /** @see {@link context} */
     protected _context: Context;

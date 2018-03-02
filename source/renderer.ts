@@ -76,7 +76,7 @@ export abstract class AbstractRenderer extends Initializable {
     /**
      * Targeted frame precision, e.g., used for frame accumulation. Note that any renderer is currently
      * expected to take advantage of progressive rendering (e.g., multi-frame sampling) and accumulation as well as a
-     * blit process (since main intend is multi-frame based rendering).
+     * blit pass (since main intend is multi-frame based rendering).
      */
     protected _framePrecision: FramePrecisionString;
 
