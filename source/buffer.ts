@@ -83,7 +83,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         if (bind) {
             this.bind();
         }
-        gl.bufferData(gl.ARRAY_BUFFER, data, usage);
+        gl.bufferData(this._target, data, usage);
         if (unbind) {
             this.unbind();
         }
