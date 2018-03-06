@@ -1,5 +1,5 @@
 /**
- * This custom script is used to build/copy example sources for distribution:
+ * This custom script is used to build/copy website sources for distribution:
  * - copy specific assets such as style sheets or scripts (either 3rd party or custom ones)
  * - compile specific pug templates and render to dist path
  */
@@ -11,7 +11,7 @@ const glob = require("glob");
 const path = require('path');
 const pug = require('pug');
 
-const baseDir = './example';
+const baseDir = './website';
 const distDir = './dist';
 
 const assets = ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'];
