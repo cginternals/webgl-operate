@@ -71,16 +71,16 @@ export class CubeTexture extends AbstractObject<WebGLTexture> implements Bindabl
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
             this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
             this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
             this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
@@ -139,7 +139,7 @@ export class CubeTexture extends AbstractObject<WebGLTexture> implements Bindabl
 
     /**
      * Pass image data to the texture object.
-     * @param data - Texel data that will be copied into the objects data store. +x +y +z -x -y -z
+     * @param data - Texel data that will be copied into the objects data store. +x -x +y -y +z -z
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
@@ -155,16 +155,16 @@ export class CubeTexture extends AbstractObject<WebGLTexture> implements Bindabl
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
             this._format, this._type, data === undefined ? null : data[0]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[1]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[2]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[3]);
+            this._format, this._type, data === undefined ? null : data[1]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[2]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[3]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
             this._format, this._type, data === undefined ? null : data[4]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
