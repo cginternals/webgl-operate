@@ -11,13 +11,13 @@ type AnyImageData = ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasE
     ImageBitmap | undefined;
 
 /**
- * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
- * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
+ * Wrapper for an WebGL cube texture providing size accessors and requiring for bind, unbind, resize, validity, and
+ * initialization implementations. The texture cube object is created on initialization and deleted on uninitialization.
  * ```
  * @todo add usage example
  * ```
  */
-export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
+export class TextureCube extends AbstractObject<WebGLTexture> implements Bindable {
 
     /**
      * Default texture, e.g., used for unbind.
@@ -61,15 +61,33 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         this._format = format;
         this._type = type;
 
-        gl.bindTexture(gl.TEXTURE_2D, this._object);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type,
+        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, this._object);
+
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+
+        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);
         this.context.allocationRegister.reallocate(this._identifier, 0);
@@ -104,7 +122,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.TEXTURE_2D, this._object);
+        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, this._object);
     }
 
     /**
@@ -116,25 +134,43 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
     }
 
     /**
-     * Pass image data to the texture object.
-     * @param data - Texel data that will be copied into the objects data store.
+     * Pass data of six images to the texture cube object.
+     * @param data - Texel data that will be copied into the objects data store
+     *               in the following sequence: +x, -x, +y, -y, +z, -z.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: AnyImageData, bind: boolean = true, unbind: boolean = true): void {
+    data(data: [AnyImageData, AnyImageData, AnyImageData, AnyImageData, AnyImageData, AnyImageData],
+        bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
             this.bind();
         }
-        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type,
+
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            data === undefined ? null : data);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+            this._format, this._type, data === undefined ? null : data[0]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[1]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[2]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[3]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[4]);
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
+            /* tslint:disable-next-line:no-null-keyword */
+            this._format, this._type, data === undefined ? null : data[5]);
 
         if (unbind) {
             this.unbind();
@@ -144,7 +180,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         // update allocated bytes
         if (data !== undefined) {
 
-            bytes = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+            bytes = 6 * this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
             // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
             if (this._type === this.context.gl2facade.HALF_FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
                 bytes *= 2;
@@ -169,8 +205,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (bind) {
             this.bind();
         }
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mag);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, min);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, mag);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, min);
         if (unbind) {
             this.unbind();
         }
@@ -191,8 +227,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (bind) {
             this.bind();
         }
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap_s);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap_t);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrap_s);
+        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrap_t);
         if (unbind) {
             this.unbind();
         }
@@ -226,11 +262,11 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
             this._type = type;
         }
 
-        this.data(undefined, bind, unbind);
+        this.data([undefined, undefined, undefined, undefined, undefined, undefined], bind, unbind);
     }
 
     /**
-     * This should be used to implement efficient resize the texture.
+     * This should be used to efficiently resize the texture.
      * @param width - Targeted/new width of the texture in px.
      * @param height - Targeted/new height of the texture in px.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
@@ -244,7 +280,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         this._width = width;
         this._height = height;
 
-        this.data(undefined, bind, unbind);
+        this.data([undefined, undefined, undefined, undefined, undefined, undefined], bind, unbind);
     }
 
     /**
