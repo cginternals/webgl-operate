@@ -7,7 +7,7 @@ import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
 
-type AnyImageData = ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
+export type AnyImageData = ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
     ImageBitmap | undefined;
 
 /**
