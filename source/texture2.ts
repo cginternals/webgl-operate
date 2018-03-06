@@ -123,7 +123,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: ArrayBufferView | undefined, bind: boolean = true, unbind: boolean = true): void {
+    data(data: ArrayBufferView | HTMLImageElement | undefined, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
