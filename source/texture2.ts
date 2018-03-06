@@ -202,7 +202,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * This can be used to reformat the texture image without creating a new texture object. Please note that this
      * resets the texture's image data to undefined. @see {@link data} for setting new image data.
      * @param internalFormat - Internal format of the texture object.
-     * @param format - Format of the texture dfata even though no data is passed.
+     * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
