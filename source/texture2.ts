@@ -7,6 +7,9 @@ import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
 
+type AnyImageData = ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
+    ImageBitmap | undefined;
+
 /**
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
@@ -123,8 +126,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap |
-        undefined, bind: boolean = true, unbind: boolean = true): void {
+    data(data: AnyImageData, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
