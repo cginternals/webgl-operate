@@ -65,19 +65,19 @@
             ]
         },
         {
-            "taskName": "examples",
+            "taskName": "website",
             "isBuildCommand": true,
             "args": [
                 "run-script",
-                "example"
+                "website"
             ]
         },
         {
-            "taskName": "examples (watch)",
+            "taskName": "website (watch)",
             "isBuildCommand": true,
             "args": [
                 "run-script",
-                "example-watch"
+                "website-watch"
             ]
         },
         {

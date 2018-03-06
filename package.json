@@ -75,11 +75,11 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-        "example": "node pugconfig.js",
-        "example-watch": "node pugconfig.js --watch",
-        "deploy": "npm run build-all && npm run check && npm run test && npm run example && npm run doc",
-        "deploy-lite": "npm run build && npm run example",
-        "deploy-watch": "npm run build-watch | npm run example-watch",
+        "website": "node pugconfig.js",
+        "website-watch": "node pugconfig.js --watch",
+        "deploy": "npm run build-all && npm run check && npm run test && npm run website && npm run doc",
+        "deploy-lite": "npm run build && npm run website",
+        "deploy-watch": "npm run build-watch | npm run website-watch",
         "prepack": "npm run build-all && npm run build-lib"
     },
     "keywords": [

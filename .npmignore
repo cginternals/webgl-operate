@@ -10,7 +10,7 @@ tsconfig.*
 webpack.*
 tslint.*
 
-example/
+website/
 source/
 test/
 
