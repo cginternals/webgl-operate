@@ -16,6 +16,7 @@ export { Program } from './program';
 export { Renderbuffer } from './renderbuffer';
 export { Shader } from './shader';
 export { Texture2 } from './texture2';
+export { TextureCube } from './texturecube';
 export { VertexArray } from './vertexarray';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
