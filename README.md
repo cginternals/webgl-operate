@@ -1,4 +1,4 @@
-<br><a href="https://webgl-operate.org/"><img src="https://raw.githubusercontent.com/cginternals/webgl-operate/master/example/img/webgl-operate-logo.svg?sanitize=true" width="50%"></a>
+<br><a href="https://webgl-operate.org/"><img src="https://raw.githubusercontent.com/cginternals/webgl-operate/master/website/img/webgl-operate-logo.svg?sanitize=true" width="50%"></a>
 
 *webgl-operate* (or *[gloperate](https://github.com/cginternals/gloperate) for WebGL*) is a TypeScript based WebGL rendering framework.
 
@@ -29,7 +29,7 @@ npm install --save-dev webgl-operate
 ```
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.1.5/dist/webgl-operate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.1.6/dist/webgl-operate.min.js"></script>
 ```
 
 
@@ -62,7 +62,7 @@ ToDo
 | `source/shaders` | on build, shaders are packed into the dist as well (and includes are resolved) |
 | `source/debug`   | optional: various tools for run-time debugging |
 | `source/viewer`  | optional: generic viewer overlay and controller for webgl-operate based rendering |
-| `example`        | examples demonstrating webgl-operate features | 
+| `website`        | website demonstrating webgl-operate features (referencing examples) | 
 | `test`           | tests of sources located in `source` |
 
 
@@ -70,7 +70,7 @@ ToDo
 
 This package setup distinguishes between *develop*, *deploy*, and *publish* related scripts: 
 
-* **deployment** is covered by the script `deploy` and is intended to build bundles, examples, documentation, test-results etc. It is intended for non-npm deployment and triggeres a sequence of development scripts.
+* **deployment** is covered by the script `deploy` and is intended to build bundles, website, documentation, test-results etc. It is intended for non-npm deployment and triggeres a sequence of development scripts.
 * **publishing** is covered by the script `prepublish`and is intended to be triggered automatically by `npm publish`. It is intended for npm deployment and triggers a sequence of custom as well as other develpment scripts.
 * **development** scripts (all except `deploy` and `prepublish`) are intended for actual development of webgl-operate.
 
@@ -82,18 +82,18 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 | `build-watch`    | `build` command in watch (for modifications) mode |
 | `build-all`      | build both minified and slim (no viewer and debug) libraries to `dist` |
 | `build-lib`      | transpile sources and declarations for distribution via npm |
-| `example`        | build example html pages to `dist` |
-| `example-watch`  | `example` command in watch (for modifications) mode |
+| `website`        | build website html pages to `dist` |
+| `website-watch`  | `website` command in watch (for modifications) mode |
 | `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
-| `deploy-lite`    | lite distribution deployment triggering only build and examples |
+| `deploy-lite`    | lite distribution deployment triggering only build and website |
 | `deploy-watch`   | `deploy-lite` command in watch (for modifications) mode |
-| **`deploy`**     | full distribution deployment triggering `check`, `test`, `build-all`, `doc`, and `example` |
+| **`deploy`**     | full distribution deployment triggering `check`, `test`, `build-all`, `doc`, and `website` |
 | **`prepublishOnly`** | run `build-all` and `build-lib` |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
-Use `npm run-script build` to build the library and `npm run-script example` to build the examples (or `deploy-lite` to trigger `build` and `example` in a single step). The built examples are located in the `dist` directory.
+Use `npm run-script build` to build the library and `npm run-script website` to build the website (or `deploy-lite` to trigger `build` and `website` in a single step). The built website are located in the `dist` directory.
 
 * For **deployment** `npm update` and subsequent `npm run-script deploy` should be run.
 * For **publishing** the package to npm login to npm via `npm login`, then update the package version using `npm version {major,minor,patch}`, and, finally, run `npm publish`.
@@ -105,7 +105,7 @@ Please not that the workspace configuration `.vscode/settings.json` has automati
 
 #### tasks
 
-All the above scripts, namely `build, build-watch, build-all, check, deploy-lite, deploy-watch, deploy, doc, example, example-watch` as well as `test` can be triggered from within Visual Studio Code.
+All the above scripts, namely `build, build-watch, build-all, check, deploy-lite, deploy-watch, deploy, doc, website, website-watch` as well as `test` can be triggered from within Visual Studio Code.
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 

@@ -7,6 +7,6 @@ install:
 script:
   - npm run-script build-all
   - npm run-script check
-  - npm run-script example
+  - npm run-script website
   - npm run-script test
 after_success: npm run-script coverage

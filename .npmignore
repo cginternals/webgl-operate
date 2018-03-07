@@ -10,7 +10,7 @@ tsconfig.*
 webpack.*
 tslint.*
 
-example/
+website/
 source/
 test/
 
@@ -21,6 +21,8 @@ dist/img/
 dist/js/
 dist/doc/
 dist/**/*.html
+dist/**/*.png
+dist/**/*.ico
 
 copy.js
 prepublish.assets.js

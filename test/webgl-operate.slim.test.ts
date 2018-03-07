@@ -37,6 +37,7 @@ describe('webgl-operate slim API', () => {
             'Renderbuffer',
             'Shader',
             'Texture2',
+            'TextureCube',
             'VertexArray',
 
             'NdcFillingRectangle',
