@@ -61,12 +61,12 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         this._format = format;
         this._type = type;
 
-        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, this._object);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, this._object);
 
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
@@ -87,7 +87,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
             /* tslint:disable-next-line:no-null-keyword */
             this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
 
-        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);
         this.context.allocationRegister.reallocate(this._identifier, 0);
@@ -122,7 +122,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, this._object);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, this._object);
     }
 
     /**
@@ -134,7 +134,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.GL_TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
     }
 
     /**
@@ -205,8 +205,8 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         if (bind) {
             this.bind();
         }
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, mag);
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, min);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, mag);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, min);
         if (unbind) {
             this.unbind();
         }
@@ -227,8 +227,8 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         if (bind) {
             this.bind();
         }
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrap_s);
-        gl.texParameter(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrap_t);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrap_s);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrap_t);
         if (unbind) {
             this.unbind();
         }
