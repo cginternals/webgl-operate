@@ -200,7 +200,7 @@ export class Camera {
      * Sets the distance to the far clipping plane. Invalidates the projection.
      */
     set far(far: GLfloat) {
-        if (this._near < this._far) {
+        if (this._near >= this._far) {
             log(LogLevel.Dev, `far expected to be greater than near (${this._near}), given ${far}`);
             return;
         }
