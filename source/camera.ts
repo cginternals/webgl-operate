@@ -14,8 +14,8 @@ import { GLsizei2 } from './tuples';
  */
 export class Camera {
 
-    private static readonly DEFAULT_EYE: vec3 = vec3.fromValues(0.0, 0.0, 0.0);
-    private static readonly DEFAULT_CENTER: vec3 = vec3.fromValues(0.0, 0.0, 1.0);
+    private static readonly DEFAULT_EYE: vec3 = vec3.fromValues(0.0, 0.0, 1.0);
+    private static readonly DEFAULT_CENTER: vec3 = vec3.fromValues(0.0, 0.0, 0.0);
     private static readonly DEFAULT_UP: vec3 = vec3.fromValues(0.0, 1.0, 0.0);
 
     private static readonly DEFAULT_FOVY = 45.0;
