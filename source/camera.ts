@@ -14,8 +14,8 @@ import { GLsizei2 } from './tuples';
  */
 export class Camera {
 
-    private static readonly DEFAULT_EYE: vec3 = vec3.fromValues(0.0, 0.0, 1.0);
-    private static readonly DEFAULT_CENTER: vec3 = vec3.fromValues(0.0, 0.0, 0.0);
+    private static readonly DEFAULT_EYE: vec3 = vec3.fromValues(0.0, 0.0, 0.0);
+    private static readonly DEFAULT_CENTER: vec3 = vec3.fromValues(0.0, 0.0, 1.0);
     private static readonly DEFAULT_UP: vec3 = vec3.fromValues(0.0, 1.0, 0.0);
 
     private static readonly DEFAULT_FOVY = 45.0;
@@ -200,7 +200,7 @@ export class Camera {
      * Sets the distance to the far clipping plane. Invalidates the projection.
      */
     set far(far: GLfloat) {
-        if (this._near < this._far) {
+        if (this._near >= this._far) {
             log(LogLevel.Dev, `far expected to be greater than near (${this._near}), given ${far}`);
             return;
         }
