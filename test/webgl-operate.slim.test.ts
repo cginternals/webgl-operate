@@ -54,6 +54,7 @@ describe('webgl-operate slim API', () => {
             'KernelI8',
             'RandomSquareKernel',
 
+            'AccumulatePass',
             'BlitPass',
 
             'auxiliaries',

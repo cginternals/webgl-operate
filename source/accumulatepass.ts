@@ -8,7 +8,7 @@ import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
-import { Renderbuffer } from './renderbuffer';
+// import { Renderbuffer } from './renderbuffer';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
 import { FramePrecisionString, Wizard } from './wizard';
@@ -26,6 +26,8 @@ import { FramePrecisionString, Wizard } from './wizard';
  * this.accumulate.update();
  * this.accumulate.frame(frameNumber);
  * ```
+ *
+ * @todo remove depth stencil attachment comments and commented code when tested on mobile devices.
  */
 export class AccumulatePass extends Initializable {
 
