@@ -170,8 +170,8 @@ export class AccumulatePass extends Initializable {
             return;
         }
 
-        const sizeAltered = this._altered.texture || this._accumulationTextures[0].width !== this.texture.width ||
-            this._accumulationTextures[0].height !== this.texture.height;
+        const sizeAltered = this._altered.texture || this._accumulationTextures[0].width !== this._texture.width ||
+            this._accumulationTextures[0].height !== this._texture.height;
         if (!this._altered.any && !sizeAltered) {
             assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
                 `valid accumulation framebuffers expected`);
@@ -204,14 +204,7 @@ export class AccumulatePass extends Initializable {
             }
         }
 
-        /* Actually (re)initialize the framebuffers. */
-
-        if (this._accumulationFBOs[0].initialized) {
-            this._accumulationFBOs[0].uninitialize();
-            this._accumulationFBOs[1].uninitialize();
-        }
-
-        if (this._altered.any) {
+        if (!this._accumulationFBOs[0].initialized) {
             this._accumulationFBOs[0].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[0]]]);
             this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]]);
         }
