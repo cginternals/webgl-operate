@@ -42,7 +42,15 @@ export class BlitPass extends Initializable {
 
     /* Indirect blit and fallback implementation. */
 
+    /**
+     * Geometry used to draw on. This is not provided by default to allow for geometry sharing. If no triangle is given,
+     * the ndc triangle will be created and managed internally.
+     */
     protected _ndcTriangle: NdcFillingTriangle;
+
+    /**
+     * Tracks ownership of the ndc-filling triangle.
+     */
     protected _ndcTriangleShared = false;
 
     protected _program: Program;
@@ -101,12 +109,12 @@ export class BlitPass extends Initializable {
 
         texture.unbind();
 
-        /* Every stage is expected to bind its own program when drawing, thus, unbinding is not necessary. */
+        /* Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
     }
 
     /**
-     * Specializes this stage's initialization. This stage either requires blitFramebuffer support or creates screen-
+     * Specializes this pass's initialization. This pass either requires blitFramebuffer support or creates screen-
      * aligned triangle geometry and a single program. All attribute and dynamic uniform locations are cached.
      * @param ndcTriangle - If specified, assumed to be used as shared geometry. If none is specified, a ndc-filling
      * triangle will be created internally.

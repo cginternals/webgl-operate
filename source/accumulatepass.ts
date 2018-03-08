@@ -14,11 +14,11 @@ import { FramePrecisionString, Wizard } from './wizard';
 
 
 /**
- * This stage accumulates the color attachment 0 of a framebuffer, e.g., the result of an intermediate frame, into an
+ * This pass accumulates the color attachment 0 of a framebuffer, e.g., the result of an intermediate frame, into an
  * accumulation buffer. For accumulation the frame number is used to derive the accumulation weight. For rendering to
  * texture, a textured ndc-filling triangle is used.
  *
- * The accumulation stage can be used as follows:
+ * The accumulation pass can be used as follows:
  * ```
  * this.accumulate.initialize();
  * this.accumulate.texture = this.intermediateFBO.texture(gl2facade.COLOR_ATTACHMENT0);
@@ -27,11 +27,6 @@ import { FramePrecisionString, Wizard } from './wizard';
  * ```
  */
 export class AccumulatePass extends Initializable {
-
-    /**
-     * Used to resize the accumulation framebuffers when passthrough is active.
-     */
-    protected static readonly MIN_SIZE: GLsizei2 = [1, 1];
 
     /**
      * Read-only access to the objects context, used to get context information and WebGL API access.
@@ -68,7 +63,15 @@ export class AccumulatePass extends Initializable {
      */
     protected _write: GLuint = 0;
 
+    /**
+     * Geometry used to draw on. This is not provided by default to allow for geometry sharing. If no triangle is given,
+     * the ndc triangle will be created and managed internally.
+     */
     protected _ndcTriangle: NdcFillingTriangle;
+
+    /**
+     * Tracks ownership of the ndc-filling triangle.
+     */
     protected _ndcTriangleShared = false;
 
     protected _program: Program;
@@ -82,7 +85,7 @@ export class AccumulatePass extends Initializable {
 
 
     /**
-     * Specializes this stage's initialization. This stage requires an ndc-filling triangle, a single accumulation
+     * Specializes this pass's initialization. This pass requires an ndc-filling triangle, a single accumulation
      * program, and two accumulation framebuffers for ping pong (simultaneous read and write is currently not allowed
      * by webgl). All attribute and dynamic uniform locations are cached.
      * @param ndcTriangle - If specified, assumed to be used as shared geometry. If none is specified, a ndc-filling
@@ -90,7 +93,6 @@ export class AccumulatePass extends Initializable {
      */
     @Initializable.initialize()
     initialize(ndcTriangle: NdcFillingTriangle | undefined): boolean {
-
         const gl = this._context.gl;
 
         this._accumulationFBOs = [
@@ -257,7 +259,7 @@ export class AccumulatePass extends Initializable {
         this._ndcTriangle.draw();
         this._accumulationFBOs[writeIndex].unbind(gl.DRAW_FRAMEBUFFER);
 
-        /** Every stage is expected to bind its own program when drawing, thus, unbinding is not necessary. */
+        /** Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
 
         accumTexture.unbind(gl.TEXTURE0);

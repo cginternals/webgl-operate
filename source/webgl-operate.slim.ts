@@ -31,6 +31,7 @@ export { RandomSquareKernel } from './randomsquarekernel';
 
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
+export { ReadbackPass } from './readbackpass';
 
 
 import * as root_auxiliaries from './auxiliaries';

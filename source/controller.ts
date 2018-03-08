@@ -107,7 +107,7 @@ export class Controller {
     protected _blockedUpdates = 0;
 
 
-    // DEBUG
+    /* Debug and  reporting facilities. */
 
     /**
      * Total number of rendered intermediate frames.
@@ -274,14 +274,14 @@ export class Controller {
         (this._controllable as Controllable).swap();
         this._multiTime[1] = performance.now();
 
-        // Note: critical call sequence; be careful when changing the following lines.
+        /* Note: critical call sequence; be careful when changing the following lines. */
 
         const frameDuration = this._multiTime[1] - t0;
         this._multiFrameTime += frameDuration;
 
-        // Keep track of minimum and maximum intermediate frame durations.
+        /* Keep track of minimum and maximum intermediate frame durations. */
         this._intermediateFrameTimes[0] = Math.min(this._intermediateFrameTimes[0], frameDuration);
-        // Note that the first frame is probably the slowest due to lazy initialization of stages.
+        /* Note that the first frame is probably the slowest due to lazy initialization of stages/passes. */
         this._intermediateFrameTimes[1] = Math.max(this._intermediateFrameTimes[1], frameDuration);
 
         this._pendingRequest = 0;
@@ -342,11 +342,11 @@ export class Controller {
         this._pause = false;
 
         if (this._pauseTime !== undefined && !isNaN(this._pauseTime)) {
-            // Subtract paused time from multi-frame time.
+            /* Subtract paused time from multi-frame time. */
             const pauseDelay = performance.now() - this._pauseTime;
             this._multiTime[0] += pauseDelay;
 
-            // Note: this is just in case the fps is gathered while a request is pending.
+            /* Note: this is just in case the fps is gathered while a request is pending. */
             this._multiTime[1] += pauseDelay;
         }
         this.request();
