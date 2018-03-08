@@ -8,7 +8,6 @@ import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
-// import { Renderbuffer } from './renderbuffer';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
 import { FramePrecisionString, Wizard } from './wizard';
@@ -26,8 +25,6 @@ import { FramePrecisionString, Wizard } from './wizard';
  * this.accumulate.update();
  * this.accumulate.frame(frameNumber);
  * ```
- *
- * @todo remove depth stencil attachment comments and commented code when tested on mobile devices.
  */
 export class AccumulatePass extends Initializable {
 
@@ -45,18 +42,12 @@ export class AccumulatePass extends Initializable {
      * Alterable auxiliary object for tracking changes on this object's input and lazy updates.
      */
     protected readonly _altered = Object.assign(new AlterationLookup(), {
-        any: false, texture: false, /*depthStencilAttachment: false,*/ precision: false, passThrough: false,
+        any: false, texture: false, precision: false, passThrough: false,
     });
 
 
     /** @see {@link texture} */
     protected _texture: Texture2;
-
-    // /**
-    //  * Accumulate allows specification of a depth and stencil attachment for accumulation. Please note that this render
-    //  * buffer has to be of the exact same size as the texture that is to be accumulated.
-    //  */
-    // protected _depthStencilAttachment: Texture2 | Renderbuffer | undefined;
 
     /** @see {@link precision} */
     protected _precision: FramePrecisionString = 'half';
@@ -166,8 +157,7 @@ export class AccumulatePass extends Initializable {
 
     /**
      * Initialize accumulation textures and FBOs (if not initialized yet). Then verifies if the texture's size has
-     * changed, and if so, resizes the accumulation buffers. Please note that the depth-stencil-attachment (if provided)
-     * must have the exact same size as the texture.
+     * changed, and if so, resizes the accumulation buffers.
      */
     @Initializable.assert_initialized()
     update() {
@@ -204,7 +194,6 @@ export class AccumulatePass extends Initializable {
 
         } else {
             if (this._altered.texture || sizeAltered) {
-                // Do not resize framebuffers, since depth stencil attachment is not owned.
                 this._accumulationTextures[0].resize(this._texture.width, this._texture.height);
                 this._accumulationTextures[1].resize(this._texture.width, this._texture.height);
             }
@@ -215,13 +204,6 @@ export class AccumulatePass extends Initializable {
             }
         }
 
-        // if (this._altered.depthStencilAttachment && this._depthStencilAttachment) {
-        //     const depthStencilSize = this._depthStencilAttachment.size;
-        //     log_if(textureSize[0] !== depthStencilSize[0] && textureSize[1] !== depthStencilSize[1], LogLevel.Dev,
-        //         `texture size ${textureSize} expected to match to given depth-stencil-attachment ${depthStencilSize}`);
-        // }
-
-
         /* Actually (re)initialize the framebuffers. */
 
         if (this._accumulationFBOs[0].initialized) {
@@ -229,13 +211,6 @@ export class AccumulatePass extends Initializable {
             this._accumulationFBOs[1].uninitialize();
         }
 
-        // if (this._depthStencilAttachment !== undefined) {
-        //     this._accumulationFBOs[0].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[0]]
-        //         , [gl.DEPTH_ATTACHMENT, this._depthStencilAttachment]]);
-        //     this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]
-        //         , [gl.DEPTH_ATTACHMENT, this._depthStencilAttachment]]);
-
-        // } else 
         if (this._altered.any) {
             this._accumulationFBOs[0].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[0]]]);
             this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]]);
@@ -299,7 +274,7 @@ export class AccumulatePass extends Initializable {
 
     /**
      * Sets the texture that is to be accumulated. The ping and pong render textures will be resized on next frame
-     * automatically if the texture size changed. Note that the depth-stencil-attachment must match the texture in size.
+     * automatically if the texture size changed.
      * @param texture - Framebuffer that is to be accumulated.
      */
     set texture(texture: Texture2) {
@@ -309,18 +284,6 @@ export class AccumulatePass extends Initializable {
             this._altered.alter('texture');
         }
     }
-
-    // /**
-    //  * Accumulate allows specification of a depth and stencil attachment for accumulation. Please note that this render
-    //  * buffer has to be of the exact same size as the texture that is to be accumulated.
-    //  */
-    // set depthStencilAttachment(depthStencilAttachment: Texture2 | Renderbuffer | undefined) {
-    //     this.assertInitialized();
-    //     if (this._depthStencilAttachment !== depthStencilAttachment) {
-    //         this._depthStencilAttachment = depthStencilAttachment;
-    //         this._altered.alter('depthStencilAttachment');
-    //     }
-    // }
 
     /**
      * Allows to specify the accumulation precision.

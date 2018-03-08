@@ -23,11 +23,12 @@ describe('webgl-operate slim API', () => {
 
             'Canvas',
 
-            'Controller',
             'AbstractRenderer',
             'Context',
             'ContextMasquerade',
+            'Controller',
             'ExtensionsHash',
+            'Wizard',
 
             'Buffer',
             'DefaultFramebuffer',
@@ -40,11 +41,11 @@ describe('webgl-operate slim API', () => {
             'TextureCube',
             'VertexArray',
 
-            'NdcFillingRectangle',
-            'NdcFillingTriangle',
-
             'Camera',
             'Color',
+
+            'NdcFillingRectangle',
+            'NdcFillingTriangle',
 
             'AntiAliasingKernel',
             'KernelF32',

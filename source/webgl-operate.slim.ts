@@ -1,12 +1,12 @@
 
 export { Canvas } from './canvas';
 
+export { AbstractRenderer } from './renderer';
 export { Context } from './context';
 export { ContextMasquerade } from './contextmasquerade';
-export { ExtensionsHash } from './extensionshash';
-
 export { Controller } from './controller';
-export { AbstractRenderer } from './renderer';
+export { ExtensionsHash } from './extensionshash';
+export { Wizard } from './wizard';
 
 export { Buffer } from './buffer';
 export { DefaultFramebuffer } from './defaultframebuffer';
@@ -19,11 +19,11 @@ export { Texture2 } from './texture2';
 export { TextureCube } from './texturecube';
 export { VertexArray } from './vertexarray';
 
-export { NdcFillingRectangle } from './ndcfillingrectangle';
-export { NdcFillingTriangle } from './ndcfillingtriangle';
-
 export { Camera } from './camera';
 export { Color } from './color';
+
+export { NdcFillingRectangle } from './ndcfillingrectangle';
+export { NdcFillingTriangle } from './ndcfillingtriangle';
 
 export { AntiAliasingKernel } from './antialiasingkernel';
 export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
