@@ -19,6 +19,11 @@ export class Color {
 
     protected _rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
 
+
+    /** @see {@link altered} */
+    protected _altered = false;
+
+
     /**
      * Converts a hue value into an rgb value.
      */
@@ -322,6 +327,8 @@ export class Color {
             this._rgba[3] = clampf(rgba[3], `alpha value`);
             assert(alpha === undefined, `expected alpha to be undefined when given an 4-tuple in RGBA`);
         }
+
+        this._altered = true;
     }
 
     /**
@@ -339,6 +346,8 @@ export class Color {
         this._rgba[1] = clamp(green, 0, 255) / 255.0;
         this._rgba[2] = clamp(blue, 0, 255) / 255.0;
         this._rgba[3] = clamp(alpha, 0, 255) / 255.0;
+        this._altered = true;
+
         return this;
     }
 
@@ -356,7 +365,10 @@ export class Color {
 
         const rgb = Color.hsl2rgb([hue, saturation, lightness]);
         const alphaf = clampf(alpha, 'ALPHA input');
+
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
+        this._altered = true;
+
         return this;
     }
 
@@ -373,7 +385,10 @@ export class Color {
 
         const rgb = Color.lab2rgb([lightness, greenRed, blueYellow]);
         const alphaf = clampf(alpha, 'ALPHA input');
+
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
+        this._altered = true;
+
         return this;
     }
 
@@ -391,7 +406,10 @@ export class Color {
 
         const rgb = Color.cmyk2rgb([cyan, magenta, yellow, key]);
         const alphaf = clampf(alpha, 'ALPHA input');
+
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
+        this._altered = true;
+
         return this;
     }
 
@@ -402,6 +420,8 @@ export class Color {
      */
     fromHex(hex: string): Color {
         this._rgba = Color.hex2rgba(hex);
+        this._altered = true;
+
         return this;
     }
 
@@ -525,6 +545,20 @@ export class Color {
     get cmyka(): GLclampf5 {
         const cmyk = Color.rgb2cmyk(this.rgb);
         return [cmyk[0], cmyk[1], cmyk[2], cmyk[3], this._rgba[3]];
+    }
+
+    /**
+     * Whether or not color value has changed.
+     */
+    get altered(): boolean {
+        return this._altered;
+    }
+
+    /**
+     * Intended for resetting alteration status.
+     */
+    set altered(status: boolean) {
+        this._altered = status;
     }
 
 }
