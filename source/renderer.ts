@@ -154,11 +154,6 @@ export abstract class AbstractRenderer extends Initializable {
      */
     protected abstract onSwap(): void;
 
-    /**
-     * Clean up all context related (GPU) objects.
-     */
-    protected abstract onDispose(): void;
-
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
@@ -182,13 +177,11 @@ export abstract class AbstractRenderer extends Initializable {
     }
 
     /**
-     * Release all assets and uninitialize all stages. `super.uninitialize()` should always be call first when
+     * Should release all assets and uninitialize all stages. `super.uninitialize()` should always be call first when
      * overriding this function.
      */
     @Initializable.uninitialize()
-    uninitialize(): void {
-        this.onDispose();
-    }
+    uninitialize(): void { }
 
 
     /**
