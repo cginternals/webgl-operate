@@ -4,11 +4,10 @@ import { assert, log_if, LogLevel } from './auxiliaries';
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
+import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
-
-import { NdcFillingTriangle } from './ndcfillingtriangle';
 
 
 /**
@@ -24,7 +23,9 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
  */
 export class BlitPass extends Initializable {
 
-    /** @see {@link context} */
+    /**
+     * Read-only access to the objects context, used to get context information and WebGL API access.
+     */
     protected _context: Context;
 
     /** @see {@link target} */
@@ -45,7 +46,6 @@ export class BlitPass extends Initializable {
     protected _ndcTriangleShared = false;
 
     protected _program: Program;
-    protected _aVertex: GLint;
 
 
     constructor(context: Context) {
@@ -57,7 +57,7 @@ export class BlitPass extends Initializable {
      * Uses direct blit via glBlitFramebuffer for blitting a single read buffer into the given target's draw buffer.
      */
     private functionBlit(): void {
-        const gl = this.context.gl;
+        const gl = this._context.gl;
 
         this._target.bind(gl.DRAW_FRAMEBUFFER);
         this._framebuffer.bind(gl.READ_FRAMEBUFFER);
@@ -85,16 +85,16 @@ export class BlitPass extends Initializable {
      */
     private programBlit(): void {
         assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
-        const gl = this.context.gl;
+        const gl = this._context.gl;
 
         gl.viewport(0, 0, this._target.width, this._target.height);
 
         this._program.bind();
 
-        const texture: Texture2 = this._framebuffer.texture(this._readBuffer) as Texture2;
+        const texture = this._framebuffer.texture(this._readBuffer) as Texture2;
         texture.bind(gl.TEXTURE0);
 
-        const target = this.context.isWebGL2 ? gl.DRAW_FRAMEBUFFER : gl.FRAMEBUFFER;
+        const target = this._context.isWebGL2 ? gl.DRAW_FRAMEBUFFER : gl.FRAMEBUFFER;
         this._target.bind(target);
         this._ndcTriangle.draw();
         this._target.unbind(target);
@@ -108,24 +108,22 @@ export class BlitPass extends Initializable {
     /**
      * Specializes this stage's initialization. This stage either requires blitFramebuffer support or creates screen-
      * aligned triangle geometry and a single program. All attribute and dynamic uniform locations are cached.
-     *
-     * @param context - Wrapped gl context for function resolution (passed to all stages).
+     * @param ndcTriangle - If specified, assumed to be used as shared geometry. If none is specified, a ndc-filling
+     * triangle will be created internally.
      */
     @Initializable.initialize()
     initialize(ndcTriangle?: NdcFillingTriangle): boolean {
-        const gl = this.context.gl;
+        const gl = this._context.gl;
 
         /* Configure program-based blit. */
 
-        this._program = new Program(this.context, 'BlitProgram');
-
-        const vert = new Shader(this.context, gl.VERTEX_SHADER, 'ndcvertices.vert');
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
         vert.initialize(require('./shaders/ndcvertices.vert'));
-        const frag = new Shader(this.context, gl.FRAGMENT_SHADER, 'blit.frag');
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag');
         frag.initialize(require('./shaders/blit.frag'));
 
+        this._program = new Program(this._context, 'BlitProgram');
         this._program.initialize([vert, frag]);
-        this._aVertex = this._program.attribute('aVertex', 0);
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_texture'), 0);
@@ -133,20 +131,24 @@ export class BlitPass extends Initializable {
 
 
         if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this.context);
+            this._ndcTriangle = new NdcFillingTriangle(this._context);
         } else {
             this._ndcTriangle = ndcTriangle;
             this._ndcTriangleShared = true;
         }
+
         if (!this._ndcTriangle.initialized) {
-            this._ndcTriangle.initialize(this._aVertex);
+            const aVertex = this._program.attribute('a_vertex', 0);
+            this._ndcTriangle.initialize(aVertex);
+        } else {
+            this._program.attribute('a_vertex', this._ndcTriangle.aVertex);
         }
 
         return true;
     }
 
     /**
-     * Specializes this stage's uninitialization. Program and geometry resources are released (if allocated). Cached
+     * Specializes this pass's uninitialization. Program and geometry resources are released (if allocated). Cached
      * uniform and attribute locations are invalidated.
      */
     @Initializable.uninitialize()
@@ -167,7 +169,7 @@ export class BlitPass extends Initializable {
         log_if(!this._framebuffer || !this._framebuffer.valid, LogLevel.Dev,
             `valid framebuffer for blitting from expected, given ${this._framebuffer}`);
 
-        const gl = this.context.gl;
+        const gl = this._context.gl;
 
         switch (this._readBuffer) {
             /* falls through */
@@ -180,17 +182,10 @@ export class BlitPass extends Initializable {
         }
 
         /* BlitFramebuffer is not an extension and, thus, it does not need to be enabled. */
-        if (this.context.supportsBlitFramebuffer) {
+        if (this._context.supportsBlitFramebuffer) {
             return this.functionBlit();
         }
         this.programBlit();
-    }
-
-    /**
-     * Read-only access to the objects context, used to get context information and WebGL API access.
-     */
-    get context(): Context {
-        return this._context;
     }
 
     /**

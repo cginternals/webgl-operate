@@ -9,9 +9,9 @@ import { clamp, v2 } from './gl-matrix-extensions';
 
 import { AlterationLookup } from './alterable';
 import { Context } from './context';
-import { FramePrecisionString } from './framebufferfactory';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
+import { FramePrecisionString } from './wizard';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
@@ -78,7 +78,7 @@ export abstract class AbstractRenderer extends Initializable {
      * expected to take advantage of progressive rendering (e.g., multi-frame sampling) and accumulation as well as a
      * blit pass (since main intend is multi-frame based rendering).
      */
-    protected _framePrecision: FramePrecisionString;
+    protected _framePrecision: FramePrecisionString = 'half';
 
     /**
      * The clear color, provided by the canvas the renderer is bound to. This is used in frame calls of inheritors.
@@ -154,11 +154,6 @@ export abstract class AbstractRenderer extends Initializable {
      */
     protected abstract onSwap(): void;
 
-    /**
-     * Clean up all context related (GPU) objects.
-     */
-    protected abstract onDispose(): void;
-
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
@@ -182,13 +177,11 @@ export abstract class AbstractRenderer extends Initializable {
     }
 
     /**
-     * Release all assets and uninitialize all stages. `super.uninitialize()` should always be call first when
+     * Should release all assets and uninitialize all stages. `super.uninitialize()` should always be call first when
      * overriding this function.
      */
     @Initializable.uninitialize()
-    uninitialize(): void {
-        this.onDispose();
-    }
+    uninitialize(): void { }
 
 
     /**
