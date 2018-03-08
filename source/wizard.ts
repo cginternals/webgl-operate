@@ -17,9 +17,14 @@ export class Wizard {
      * @param context - Wrapped gl context for function resolution (passed to all stages).
      * @param target - Target format, e.g., gl.RGBA, used to find the supported precision/accuracy for.
      * @param precision - Requested precision of the internal format: 'auto', 'float', 'half', 'byte'.
+     * @returns - 2-tuple containing the internal format and the type (required for some internal formats to work ...).
      */
-    static queryInternalFormat(context: Context, target: GLenum, precision: FramePrecisionString): GLenum {
+    static queryInternalTextureFormat(context: Context, target: GLenum,
+        precision: FramePrecisionString): [GLenum, GLenum] {
+
         const gl = context.gl;
+        const gl2facade = context.gl2facade;
+
         assert(target === gl.RGBA, `internal format querying is not yet supported for formats other than RGBA`);
 
         /**
@@ -39,18 +44,18 @@ export class Wizard {
         /* If required, enable extension. */
         if (query === 'half' && halfWriteSupport) {
             /* tslint:disable-next-line:no-unused-expression */
-            context.isWebGL2 ? context.colorBufferFloat : context.textureFloat;
-            return context.isWebGL2 ? gl.RGBA32F : gl.RGBA;
+            context.isWebGL2 ? context.colorBufferFloat : context.textureHalfFloat;
+            return [context.isWebGL2 ? gl.RGBA16F : gl.RGBA, gl2facade.HALF_FLOAT];
 
         } else if ((query === 'float' || query === 'half') && floatWriteSupport) {
             /* If not explicitly requested, fallback for half_float. */
             /* tslint:disable-next-line:no-unused-expression */
-            context.isWebGL2 ? context.colorBufferFloat : context.textureHalfFloat;
-            return context.isWebGL2 ? gl.RGBA16F : gl.RGBA;
+            context.isWebGL2 ? context.colorBufferFloat : context.textureFloat;
+            return [context.isWebGL2 ? gl.RGBA32F : gl.RGBA, gl.FLOAT];
 
         }
         /* If not explicitly requested, fallback for float. */
-        return context.isWebGL2 ? gl.RGBA8 : gl.RGBA;
+        return [context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.UNSIGNED_BYTE];
     }
 
 }

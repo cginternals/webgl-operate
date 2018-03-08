@@ -43,18 +43,18 @@ export class AccumulatePass extends Initializable {
      * Alterable auxiliary object for tracking changes on this object's input and lazy updates.
      */
     protected readonly _altered = Object.assign(new AlterationLookup(), {
-        any: false, texture: false, depthStencilAttachment: false, precision: false, passThrough: false,
+        any: false, texture: false, /*depthStencilAttachment: false,*/ precision: false, passThrough: false,
     });
 
 
     /** @see {@link texture} */
     protected _texture: Texture2;
 
-    /**
-     * Accumulate allows specification of a depth and stencil attachment for accumulation. Please note that this render
-     * buffer has to be of the exact same size as the texture that is to be accumulated.
-     */
-    protected _depthStencilAttachment: Texture2 | Renderbuffer | undefined;
+    // /**
+    //  * Accumulate allows specification of a depth and stencil attachment for accumulation. Please note that this render
+    //  * buffer has to be of the exact same size as the texture that is to be accumulated.
+    //  */
+    // protected _depthStencilAttachment: Texture2 | Renderbuffer | undefined;
 
     /** @see {@link precision} */
     protected _precision: FramePrecisionString = 'half';
@@ -101,12 +101,12 @@ export class AccumulatePass extends Initializable {
         const gl = this._context.gl;
 
         this._accumulationFBOs = [
-            new Framebuffer(this._context, 'AccumulatePingFBO'),
-            new Framebuffer(this._context, 'AccumulatePongFBO')];
+            new Framebuffer(this._context, 'AccumPingFBO'),
+            new Framebuffer(this._context, 'AccumPongFBO')];
 
         this._accumulationTextures = [
-            new Texture2(this._context, 'AccumulatePingTexture'),
-            new Texture2(this._context, 'AccumulatePongTexture')];
+            new Texture2(this._context, 'AccumPingTexture'),
+            new Texture2(this._context, 'AccumPongTexture')];
 
         /* Configure program-based accumulate. */
 
@@ -162,9 +162,6 @@ export class AccumulatePass extends Initializable {
         this._write = 0;
     }
 
-
-    // altered -> pass through, texture ,stencil, precision ...
-
     /**
      * Initialize accumulation textures and FBOs (if not initialized yet). Then verifies if the texture's size has
      * changed, and if so, resizes the accumulation buffers. Please note that the depth-stencil-attachment (if provided)
@@ -181,7 +178,9 @@ export class AccumulatePass extends Initializable {
             return;
         }
 
-        if (!this._altered.any) {
+        const sizeAltered = this._altered.texture || this._accumulationTextures[0].width !== this.texture.width ||
+            this._accumulationTextures[0].height !== this.texture.height;
+        if (!this._altered.any && !sizeAltered) {
             assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
                 `valid accumulation framebuffers expected`);
             return;
@@ -195,31 +194,30 @@ export class AccumulatePass extends Initializable {
         const textureSize = this._texture.size;
 
         if (!this._accumulationTextures[0].initialized) {
-            const internalFormat = Wizard.queryInternalFormat(this._context, gl.RGBA, this._precision);
-
+            const internalFormat = Wizard.queryInternalTextureFormat(this._context, gl.RGBA, this._precision);
             this._accumulationTextures[0].initialize(textureSize[0], textureSize[1],
-                internalFormat, gl.RGBA, gl.UNSIGNED_BYTE);
+                internalFormat[0], gl.RGBA, internalFormat[1]);
             this._accumulationTextures[1].initialize(textureSize[0], textureSize[1],
-                internalFormat, gl.RGBA, gl.UNSIGNED_BYTE);
+                internalFormat[0], gl.RGBA, internalFormat[1]);
 
         } else {
-            if (this._altered.texture) {
+            if (this._altered.texture || sizeAltered) {
                 // Do not resize framebuffers, since depth stencil attachment is not owned.
                 this._accumulationTextures[0].resize(this._texture.width, this._texture.height);
                 this._accumulationTextures[1].resize(this._texture.width, this._texture.height);
             }
             if (this._altered.precision) {
-                const internalFormat = Wizard.queryInternalFormat(this._context, gl.RGBA, this._precision);
-                this._accumulationTextures[0].reformat(internalFormat, gl.RGBA, gl.UNSIGNED_BYTE);
-                this._accumulationTextures[1].reformat(internalFormat, gl.RGBA, gl.UNSIGNED_BYTE);
+                const internalFormat = Wizard.queryInternalTextureFormat(this._context, gl.RGBA, this._precision);
+                this._accumulationTextures[0].reformat(internalFormat[0], gl.RGBA, internalFormat[1]);
+                this._accumulationTextures[1].reformat(internalFormat[0], gl.RGBA, internalFormat[1]);
             }
         }
 
-        if (this._altered.depthStencilAttachment && this._depthStencilAttachment) {
-            const depthStencilSize = this._depthStencilAttachment.size;
-            log_if(textureSize[0] === depthStencilSize[0] && textureSize[1] === depthStencilSize[1], LogLevel.Dev,
-                `texture size ${textureSize} expected to match to given depth-stencil-attachment ${depthStencilSize}`);
-        }
+        // if (this._altered.depthStencilAttachment && this._depthStencilAttachment) {
+        //     const depthStencilSize = this._depthStencilAttachment.size;
+        //     log_if(textureSize[0] !== depthStencilSize[0] && textureSize[1] !== depthStencilSize[1], LogLevel.Dev,
+        //         `texture size ${textureSize} expected to match to given depth-stencil-attachment ${depthStencilSize}`);
+        // }
 
 
         /* Actually (re)initialize the framebuffers. */
@@ -229,13 +227,14 @@ export class AccumulatePass extends Initializable {
             this._accumulationFBOs[1].uninitialize();
         }
 
-        if (this._depthStencilAttachment !== undefined) {
-            this._accumulationFBOs[0].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[0]]
-                , [gl.DEPTH_STENCIL_ATTACHMENT, this._depthStencilAttachment]]);
-            this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]
-                , [gl.DEPTH_STENCIL_ATTACHMENT, this._depthStencilAttachment]]);
+        // if (this._depthStencilAttachment !== undefined) {
+        //     this._accumulationFBOs[0].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[0]]
+        //         , [gl.DEPTH_ATTACHMENT, this._depthStencilAttachment]]);
+        //     this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]
+        //         , [gl.DEPTH_ATTACHMENT, this._depthStencilAttachment]]);
 
-        } else if (this._altered.any) {
+        // } else 
+        if (this._altered.any) {
             this._accumulationFBOs[0].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[0]]]);
             this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]]);
         }
@@ -309,17 +308,17 @@ export class AccumulatePass extends Initializable {
         }
     }
 
-    /**
-     * Accumulate allows specification of a depth and stencil attachment for accumulation. Please note that this render
-     * buffer has to be of the exact same size as the texture that is to be accumulated.
-     */
-    set depthStencilAttachment(depthStencilAttachment: Texture2 | Renderbuffer | undefined) {
-        this.assertInitialized();
-        if (this._depthStencilAttachment !== depthStencilAttachment) {
-            this._depthStencilAttachment = depthStencilAttachment;
-            this._altered.alter('depthStencilAttachment');
-        }
-    }
+    // /**
+    //  * Accumulate allows specification of a depth and stencil attachment for accumulation. Please note that this render
+    //  * buffer has to be of the exact same size as the texture that is to be accumulated.
+    //  */
+    // set depthStencilAttachment(depthStencilAttachment: Texture2 | Renderbuffer | undefined) {
+    //     this.assertInitialized();
+    //     if (this._depthStencilAttachment !== depthStencilAttachment) {
+    //         this._depthStencilAttachment = depthStencilAttachment;
+    //         this._altered.alter('depthStencilAttachment');
+    //     }
+    // }
 
     /**
      * Allows to specify the accumulation precision.

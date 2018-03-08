@@ -1,6 +1,7 @@
 
 import { assert } from '../auxiliaries';
 
+import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Context } from '../context';
@@ -25,6 +26,7 @@ namespace debug {
         protected _uFrameNumber: WebGLUniformLocation;
         protected _ndcTriangle: NdcFillingTriangle;
 
+        protected _accumulate: AccumulatePass;
         protected _blit: BlitPass;
 
         protected _defaultFBO: DefaultFramebuffer;
@@ -46,7 +48,6 @@ namespace debug {
             }
 
             if (!this._intermediateFBO.initialized) {
-
                 this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
                     this.context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
                 this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
@@ -60,6 +61,8 @@ namespace debug {
             if (this._altered.clearColor) {
                 this._intermediateFBO.clearColor(this._clearColor);
             }
+
+            this._accumulate.update();
 
             this._altered.reset();
         }
@@ -81,9 +84,13 @@ namespace debug {
             this._ndcTriangle.bind();
             this._ndcTriangle.draw();
             this._intermediateFBO.unbind();
+
+            this._accumulate.frame(frameNumber);
         }
 
         protected onSwap(): void {
+            this._blit.framebuffer = this._accumulate.framebuffer ?
+                this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
             this._blit.frame();
         }
 
@@ -133,11 +140,18 @@ namespace debug {
 
             this._intermediateFBO = new Framebuffer(this.context, 'IntermediateFBO');
 
+            /* Create and configure accumulation pass. */
+
+            this._accumulate = new AccumulatePass(this.context);
+            this._accumulate.initialize(this._ndcTriangle);
+            this._accumulate.precision = this._framePrecision;
+            this._accumulate.texture = this._colorRenderTexture;
+            // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
+
             /* Create and configure blit pass. */
 
             this._blit = new BlitPass(this.context);
             this._blit.initialize(this._ndcTriangle);
-            this._blit.framebuffer = this._intermediateFBO;
             this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
             this._blit.drawBuffer = gl.BACK;
             this._blit.target = this._defaultFBO;

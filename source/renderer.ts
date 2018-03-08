@@ -78,7 +78,7 @@ export abstract class AbstractRenderer extends Initializable {
      * expected to take advantage of progressive rendering (e.g., multi-frame sampling) and accumulation as well as a
      * blit pass (since main intend is multi-frame based rendering).
      */
-    protected _framePrecision: FramePrecisionString;
+    protected _framePrecision: FramePrecisionString = 'half';
 
     /**
      * The clear color, provided by the canvas the renderer is bound to. This is used in frame calls of inheritors.
