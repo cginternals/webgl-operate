@@ -27,3 +27,5 @@ dist/**/*.ico
 copy.js
 prepublish.assets.js
 pugconfig.js
+
+webgl-operate-*.tgz
