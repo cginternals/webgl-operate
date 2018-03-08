@@ -57,6 +57,7 @@ describe('webgl-operate slim API', () => {
 
             'AccumulatePass',
             'BlitPass',
+            'ReadbackPass',
 
             'auxiliaries',
             'gl_matrix_extensions',

@@ -29,7 +29,7 @@ import { Initializable } from './initializable';
 export class NdcFillingTriangle extends Geometry {
 
     /**
-     * 1───────┬ ----- 2
+     * 2───────┬ ----- 1
      * │       │    /
      * │       │ /
      * ├───────┘
@@ -38,7 +38,7 @@ export class NdcFillingTriangle extends Geometry {
      * 0
      */
     protected static readonly VERTICES = new Float32Array(
-        [-1.0, -3.0, -1.0, 1.0, 3.0, 1.0]);
+        [-1.0, -3.0, 3.0, 1.0, -1.0, 1.0]);
 
     /** @see {@link aVertex} */
     protected _aVertex: GLuint;

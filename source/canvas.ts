@@ -104,8 +104,8 @@ export class Canvas extends Resizable {
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
      * context as well as the canvas resolution. The context and resolution will be passed on to the set renderer and
-     * its stages appropriately. The canvas does not provide lazy initialization and is strictly bound to a single
-     * canvas element (DOM) that cannot be changed.
+     * its stages/passes appropriately. The canvas does not provide lazy initialization and is strictly bound to a
+     * single canvas element (DOM) that cannot be changed.
      *
      * Note: the multi-frame number can be set using a data attribute in the canvas element called
      * 'data-multi-frame-number'.

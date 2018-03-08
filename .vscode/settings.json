@@ -108,6 +108,7 @@
         "rasterization",
         "rasterized",
         "readback",
+        "readbacks",
         "reconfigures",
         "reinitializing",
         "renderable",
