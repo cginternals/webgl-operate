@@ -29,6 +29,7 @@ export { AntiAliasingKernel } from './antialiasingkernel';
 export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
 export { RandomSquareKernel } from './randomsquarekernel';
 
+export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 
 

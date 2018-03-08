@@ -1,6 +1,6 @@
 
 import { assert, bitInBitfield, log_if, LogLevel } from './auxiliaries';
-import { GLclampf4 } from './tuples';
+import { GLclampf4, GLsizei2 } from './tuples';
 
 import { Bindable } from './bindable';
 import { Context } from './context';
@@ -436,6 +436,15 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             }
         });
         return height;
+    }
+
+    /**
+     * Convenience getter for the 2-tuple containing the texture's width and height.
+     * @see {@link width}
+     * @see {@link heigth}
+     */
+    get size(): GLsizei2 {
+        return [this.width, this.height];
     }
 
 

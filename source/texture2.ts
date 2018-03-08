@@ -1,6 +1,7 @@
 
 import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
+import { GLsizei2 } from './tuples';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
@@ -296,6 +297,15 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     get height(): GLsizei {
         this.assertInitialized();
         return this._height;
+    }
+
+    /**
+     * Convenience getter for the 2-tuple containing width and height.
+     * @see {@link width}
+     * @see {@link heigth}
+     */
+    get size(): GLsizei2 {
+        return [this.width, this.height];
     }
 
 }

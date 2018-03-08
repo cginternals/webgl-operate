@@ -40,6 +40,10 @@ export class NdcFillingTriangle extends Geometry {
     protected static readonly VERTICES = new Float32Array(
         [-1.0, -3.0, -1.0, 1.0, 3.0, 1.0]);
 
+    /** @see {@link aVertex} */
+    protected _aVertex: GLuint;
+
+
     /**
      * Object constructor, requires a context and an identifier.
      * @param context - Valid context to create the object for.
@@ -62,6 +66,7 @@ export class NdcFillingTriangle extends Geometry {
     protected bindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit bind in attribEnable */
         this._buffers[0].attribEnable(indices[0], 2, this.context.gl.FLOAT, false, 0, 0, true, false);
+        this._aVertex = indices[0];
     }
 
     /**
@@ -96,6 +101,14 @@ export class NdcFillingTriangle extends Geometry {
     draw(): void {
         const gl = this.context.gl;
         gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+
+
+    /**
+     * Attribute location this geometries vertices are bound to.
+     */
+    get aVertex(): GLint {
+        return this._aVertex;
     }
 
 }
