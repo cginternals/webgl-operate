@@ -9,9 +9,9 @@ import { clamp, v2 } from './gl-matrix-extensions';
 
 import { AlterationLookup } from './alterable';
 import { Context } from './context';
-import { FramePrecisionString } from './framebufferfactory';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
+import { FramePrecisionString } from './wizard';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }

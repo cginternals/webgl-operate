@@ -21,6 +21,7 @@ namespace debug {
 
         protected _ndcOffsetKernel: AntiAliasingKernel;
         protected _uNdcOffset: WebGLUniformLocation;
+        protected _uFrameNumber: WebGLUniformLocation;
         protected _ndcTriangle: NdcFillingTriangle;
         protected _aVertex: GLuint;
 
@@ -30,6 +31,8 @@ namespace debug {
         protected _colorRenderTexture: Texture2;
         protected _depthRenderbuffer: Renderbuffer;
         protected _intermediateFBO: Framebuffer;
+
+        /** @todo create objects on initialization */
 
 
         protected onUpdate(): void {
@@ -59,6 +62,7 @@ namespace debug {
                 this._aVertex = this._program.attribute('a_vertex', 0);
 
                 this._uNdcOffset = this._program.uniform('u_ndcOffset');
+                this._uFrameNumber = this._program.uniform('u_frameNumber');
             }
 
 
@@ -129,6 +133,7 @@ namespace debug {
             ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
             ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
             gl.uniform2fv(this._uNdcOffset, ndcOffset);
+            gl.uniform1i(this._uFrameNumber, frameNumber);
 
             this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
             this._ndcTriangle.bind();
@@ -144,6 +149,7 @@ namespace debug {
 
             if (this._program && this._program.initialized) {
                 this._uNdcOffset = -1;
+                this._uFrameNumber = -1;
                 this._program.uninitialize();
             }
 

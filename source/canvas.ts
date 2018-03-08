@@ -12,9 +12,9 @@ import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
-import { FramePrecisionString } from './framebufferfactory';
 import { AbstractRenderer } from './renderer';
 import { Resizable } from './resizable';
+import { FramePrecisionString } from './wizard';
 
 
 /**

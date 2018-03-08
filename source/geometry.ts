@@ -56,8 +56,8 @@ export abstract class Geometry extends Initializable implements Bindable {
     /**
      * Initializes all buffer objects and the vertex array. Please note that implicit arguments are used in order to
      * enable custom initialization signatures for inheritors.
-     * @param {Array<GLenum>} targets - Targets to initialize the buffers for.
-     * @param {Array<GLuint>} indices - Binding points that are passed to the inheritors (un)bind buffer methods.
+     * @param targets - Targets to initialize the buffers for.
+     * @param indices - Binding points that are passed to the inheritors (un)bind buffer methods.
      */
     @Initializable.initialize()
     initialize(...args: any[]): boolean {
