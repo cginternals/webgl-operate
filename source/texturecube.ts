@@ -155,22 +155,22 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
 
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[0]);
+            this._format, this._type, data[0] === undefined ? null : data[0]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[1]);
+            this._format, this._type, data[1] === undefined ? null : data[1]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[2]);
+            this._format, this._type, data[2] === undefined ? null : data[2]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[3]);
+            this._format, this._type, data[3] === undefined ? null : data[3]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[4]);
+            this._format, this._type, data[4] === undefined ? null : data[4]);
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
             /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data === undefined ? null : data[5]);
+            this._format, this._type, data[5] === undefined ? null : data[5]);
 
         if (unbind) {
             this.unbind();
