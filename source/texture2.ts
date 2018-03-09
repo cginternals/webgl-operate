@@ -4,12 +4,10 @@ import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei2 } from './tuples';
 
 import { Bindable } from './bindable';
+import { TexImage2DData } from './gl2facade';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
-
-export type AnyImageData = ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
-    ImageBitmap | undefined;
 
 /**
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
@@ -32,13 +30,13 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     protected _height: GLsizei = 0;
 
     /** @see {@link internalFormat} */
-    protected _internalFormat: GLenum | undefined = undefined;
+    protected _internalFormat: GLenum = 0;
 
     /** @see {@link format} */
-    protected _format: GLenum | undefined = undefined;
+    protected _format: GLenum = 0;
 
     /** @see {@link type} */
-    protected _type: GLenum | undefined = undefined;
+    protected _type: GLenum = 0;
 
     /**
      * Create a texture object on the GPU.
@@ -53,6 +51,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
         assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
         const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
 
         this._object = gl.createTexture();
 
@@ -67,9 +66,10 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type,
-            /* tslint:disable-next-line:no-null-keyword */
-            null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+
+        gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
+
         gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);
@@ -88,9 +88,9 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         this._object = undefined;
         this._valid = false;
 
-        this._internalFormat = undefined;
-        this._format = undefined;
-        this._type = undefined;
+        this._internalFormat = 0;
+        this._format = 0;
+        this._type = 0;
 
         this._width = 0;
         this._height = 0;
@@ -127,15 +127,16 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: AnyImageData, bind: boolean = true, unbind: boolean = true): void {
+    data(data: TexImage2DData, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
+        const gl2facade = this._context.gl2facade;
 
         if (bind) {
             this.bind();
         }
-        gl.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat, this._width, this._height, 0, this._format, this._type,
-            /* tslint:disable-next-line:no-null-keyword */
-            data === undefined ? null : data);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+
+        gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data);
 
         if (unbind) {
             this.unbind();

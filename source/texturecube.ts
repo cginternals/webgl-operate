@@ -3,12 +3,10 @@ import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 
 import { Bindable } from './bindable';
+import { TexImage2DData } from './gl2facade';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
-
-export type AnyImageData = ArrayBufferView | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
-    ImageBitmap | undefined;
 
 /**
  * Wrapper for an WebGL cube texture providing size accessors and requiring for bind, unbind, resize, validity, and
@@ -31,13 +29,13 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
     protected _height: GLsizei = 0;
 
     /** @see {@link internalFormat} */
-    protected _internalFormat: GLenum | undefined = undefined;
+    protected _internalFormat: GLenum = 0;
 
     /** @see {@link format} */
-    protected _format: GLenum | undefined = undefined;
+    protected _format: GLenum = 0;
 
     /** @see {@link type} */
-    protected _type: GLenum | undefined = undefined;
+    protected _type: GLenum = 0;
 
     /**
      * Create a texture object on the GPU.
@@ -52,6 +50,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
 
         assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
         const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
 
         this._object = gl.createTexture();
 
@@ -68,24 +67,18 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, null);  // must be 'null', not '0' nor 'undefined' for ie and edge to work
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type);
 
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, TextureCube.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
@@ -105,9 +98,9 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         this._object = undefined;
         this._valid = false;
 
-        this._internalFormat = undefined;
-        this._format = undefined;
-        this._type = undefined;
+        this._internalFormat = 0;
+        this._format = 0;
+        this._type = 0;
 
         this._width = 0;
         this._height = 0;
@@ -145,32 +138,27 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: [AnyImageData, AnyImageData, AnyImageData, AnyImageData, AnyImageData, AnyImageData],
+    data(data: [TexImage2DData, TexImage2DData, TexImage2DData, TexImage2DData, TexImage2DData, TexImage2DData],
         bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
+        const gl2facade = this.context.gl2facade;
 
         if (bind) {
             this.bind();
         }
 
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data[0] === undefined ? null : data[0]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data[1] === undefined ? null : data[1]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data[2] === undefined ? null : data[2]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data[3] === undefined ? null : data[3]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data[4] === undefined ? null : data[4]);
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat, this._width, this._height, 0,
-            /* tslint:disable-next-line:no-null-keyword */
-            this._format, this._type, data[5] === undefined ? null : data[5]);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data[0]);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data[1]);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data[2]);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data[3]);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data[4]);
+        gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat,
+            this._width, this._height, 0, this._format, this._type, data[5]);
 
         if (unbind) {
             this.unbind();
