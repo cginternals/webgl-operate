@@ -353,14 +353,13 @@ export class GL2Facade {
             this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
                 border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData) => {
 
-                if (source instanceof ArrayBuffer) {
+                if (source === undefined || source instanceof ArrayBuffer) {
+                    /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
                     gl.texImage2D(target, level, internalformat, width, height, border,
                         /* tslint:disable-next-line:no-null-keyword */
                         format, type, source === undefined ? null : source);
                 } else {
-                    /* tslint:disable-next-line:no-null-keyword */
-                    gl.texImage2D(target, level, internalformat, format, type, source === undefined ? null : source);
-                    /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
+                    gl.texImage2D(target, level, internalformat, format, type, source);
                 }
             };
         }
