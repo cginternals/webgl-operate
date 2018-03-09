@@ -92,7 +92,7 @@ export class AccumulatePass extends Initializable {
      * triangle will be created internally.
      */
     @Initializable.initialize()
-    initialize(ndcTriangle: NdcFillingTriangle | undefined): boolean {
+    initialize(ndcTriangle?: NdcFillingTriangle): boolean {
         const gl = this._context.gl;
 
         this._accumulationFBOs = [

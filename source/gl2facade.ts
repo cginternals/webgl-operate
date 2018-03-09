@@ -332,35 +332,43 @@ export class GL2Facade {
 
     // TEX IMAGE INTERFACE
 
+
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
      */
     texImage2D: (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
-        border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData) => void;
+        border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => void;
 
     protected queryTexImageInterface(context: Context): void {
         const gl = context.gl;
 
         if (context.isWebGL2) {
             this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
-                border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData) => {
-                gl.texImage2D(target, level, internalformat, width, height, border
+                border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
+                /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
+                if (source instanceof ArrayBuffer) {
+                    return gl.texImage2D(target, level, internalformat, width, height, border
+                        /* tslint:disable-next-line:no-null-keyword */
+                        , format, type, source === undefined ? null : source, offset);
+                }
+                assert(offset === undefined, `offset expected to be undefined for non ArrayBuffer source`);
+                return gl.texImage2D(target, level, internalformat, width, height, border
                     /* tslint:disable-next-line:no-null-keyword */
                     , format, type, source === undefined ? null : source);
-                /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
-            }
+            };
+
         } else {
             this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
-                border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData) => {
+                border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
 
-                if (source === undefined || source instanceof ArrayBuffer) {
-                    /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
-                    gl.texImage2D(target, level, internalformat, width, height, border,
-                        /* tslint:disable-next-line:no-null-keyword */
-                        format, type, source === undefined ? null : source);
-                } else {
-                    gl.texImage2D(target, level, internalformat, format, type, source);
+                if (source === undefined) {
+                    /* tslint:disable-next-line:no-null-keyword */
+                    return gl.texImage2D(target, level, internalformat, width, height, border, format, type, null);
                 }
+                if (source instanceof ArrayBuffer) {
+                    return gl.texImage2D(target, level, internalformat, width, height, border, format, type, source);
+                }
+                return gl.texImage2D(target, level, internalformat, format, type, source);
             };
         }
     }
