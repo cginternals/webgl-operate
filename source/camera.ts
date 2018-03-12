@@ -45,6 +45,9 @@ export class Camera {
     /** @see {@link viewport} */
     protected _viewport: GLsizei2 = [1, 1];
 
+    /** @see {@link aspect} */
+    protected _aspect: GLfloat = 1.0;
+
     /** @see {@link view} */
     protected _view: mat4 | undefined;
     /** @see {@link viewInverse} */
@@ -239,10 +242,18 @@ export class Camera {
     }
 
     /**
-     * Computes the ratio of width over height (not cached :P).
+     * Sets the aspect ratio (width over height). However, this is not derived from viewport to allow for
+     * differentiation between viewport size and scale.
+     */
+    set aspect(aspect: GLfloat) {
+        this._aspect = aspect;
+    }
+
+    /**
+     * Computes the ratio of width over height (set explicitly for differentiation between viewport size and scale).
      */
     get aspect(): GLfloat {
-        return this.width / this.height;
+        return this._aspect;
     }
 
     /**
