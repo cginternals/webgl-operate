@@ -256,7 +256,9 @@ export class AccumulatePass extends Initializable {
         gl.uniform1f(this._uWeight, 1.0 / (frameNumber + 1));
 
         this._accumulationFBOs[writeIndex].bind(gl.DRAW_FRAMEBUFFER); // bind draw only does not work for IE and EDGE
+        this._ndcTriangle.bind();
         this._ndcTriangle.draw();
+        this._ndcTriangle.unbind();
         this._accumulationFBOs[writeIndex].unbind(gl.DRAW_FRAMEBUFFER);
 
         /** Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */

@@ -104,7 +104,9 @@ export class BlitPass extends Initializable {
 
         const target = this._context.isWebGL2 ? gl.DRAW_FRAMEBUFFER : gl.FRAMEBUFFER;
         this._target.bind(target);
+        this._ndcTriangle.bind();
         this._ndcTriangle.draw();
+        this._ndcTriangle.unbind();
         this._target.unbind(target);
 
         texture.unbind();
