@@ -56,7 +56,7 @@ export abstract class AbstractRenderer extends Initializable {
      * Alterable auxiliary object for tracking changes on renderer input and lazy updates.
      */
     protected readonly _altered = Object.assign(new AlterationLookup(), {
-        any: false, multiFrameNumber: false, frameSize: false, framePrecision: false,
+        any: false, multiFrameNumber: false, frameSize: false, canvasSize: false, framePrecision: false,
         clearColor: false, debugTexture: false,
     });
 
@@ -72,6 +72,13 @@ export abstract class AbstractRenderer extends Initializable {
      * frame calls of inheritors.
      */
     protected _frameSize: GLsizei2 = [0, 0];
+
+    /**
+     * Actual, native resolution for the canvas currently in charge of controlling the renderer. This might differ from
+     * the targeted frame resolution but is required, e.g., for specific non-proportional ratios between frame size and
+     * canvas size.
+     */
+    protected _canvasSize: GLsizei2 = [0, 0];
 
     /**
      * Targeted frame precision, e.g., used for frame accumulation. Note that any renderer is currently
@@ -128,7 +135,7 @@ export abstract class AbstractRenderer extends Initializable {
 
     protected get canvasSize(): GLsizei2 {
         this.assertInitialized();
-        return [this._context.gl.canvas.width, this._context.gl.canvas.height];
+        return this._canvasSize;
     }
 
     /**
@@ -191,6 +198,12 @@ export abstract class AbstractRenderer extends Initializable {
      */
     @Initializable.assert_initialized()
     update(multiFrameNumber: number): void {
+        if (this._canvasSize[0] !== this._context.gl.canvas.width ||
+            this._canvasSize[1] !== this._context.gl.canvas.height) {
+            this._canvasSize[0] = this._context.gl.canvas.width;
+            this._canvasSize[1] = this._context.gl.canvas.height;
+            this._altered.alter('canvasSize');
+        }
         if (this._multiFrameNumber !== multiFrameNumber) {
             this._multiFrameNumber = multiFrameNumber;
             this._altered.alter('multiFrameNumber');
