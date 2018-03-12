@@ -157,7 +157,7 @@ export class Controller {
          * Prevent unnecessary canceling and requesting of animation frames when updating multiple times before an
          * actual first frame is triggered.
          */
-        if (this._pendingRequest) {
+        if (this._pendingRequest !== 0) {
             log_if(this._debug, LogLevel.ModuleDev, `c request (ignored) | pending: '${this._pendingRequest}'`);
             return;
         }
