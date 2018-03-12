@@ -61,7 +61,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      * implementation ignores this parameter. If no parameter is given, the webgl2 implementation clears all color
      * attachments.
      */
-    clear: ((mask: GLbitfield, bind: boolean = true, unbind: boolean = true, colorClearQueue?: Array<GLint>) => void);
+    clear: ((mask: GLbitfield, bind?: boolean, unbind?: boolean, colorClearQueue?: Array<GLint>) => void);
 
     /**
      * Returns a string describing the given status of a framebuffer object.
