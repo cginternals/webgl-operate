@@ -193,11 +193,16 @@ export class ReadbackPass extends Initializable {
         texture.bind(gl.TEXTURE0);
 
         this._framebuffer.bind();
+
+        this._ndcTriangle.bind();
         this._ndcTriangle.draw();
+        this._ndcTriangle.unbind();
 
         texture.unbind();
+
         /** Every stage is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
+
 
         /* Bind the framebuffer and read back the requested pixel. */
 
