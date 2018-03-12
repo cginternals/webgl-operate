@@ -3,7 +3,7 @@ const fs = require('fs');
 const glob = require("glob");
 const path = require('path');
 
-function copy(base, dest, assets) {
+function copy(base, dest, assets, force) {
 
     assets.forEach(asset => {
 
@@ -14,7 +14,7 @@ function copy(base, dest, assets) {
                 if (!fs.existsSync(path.dirname(dst))) {
                     fs.mkdirSync(path.dirname(dst));
                 }
-                if(fs.existsSync(dst) && fs.statSync(dst).mtime >= fs.statSync(src).mtime) {
+                if (force === false && fs.existsSync(dst) && fs.statSync(dst).mtime >= fs.statSync(src).mtime) {
                     return;
                 }
                 fs.createReadStream(src).pipe(fs.createWriteStream(dst));

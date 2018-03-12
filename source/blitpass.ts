@@ -100,7 +100,7 @@ export class BlitPass extends Initializable {
         this._program.bind();
 
         const texture = this._framebuffer.texture(this._readBuffer) as Texture2;
-        texture.bind(gl.TEXTURE0);
+        texture.bind(0);
 
         const target = this._context.isWebGL2 ? gl.DRAW_FRAMEBUFFER : gl.FRAMEBUFFER;
         this._target.bind(target);

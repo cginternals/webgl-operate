@@ -11,21 +11,23 @@ const glob = require("glob");
 const path = require('path');
 const pug = require('pug');
 
-const baseDir = './website';
+const websiteDir = './website';
 const distDir = './dist';
 
-const assets = ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'];
 const entries = ['index.pug'];
+
+const assets = [
+    [websiteDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], false]];
 
 const copy = require('./copy.js');
 
 var build_pending = false;
 function build() {
 
-    copy(baseDir, distDir, assets);
+    assets.forEach((asset) => copy(asset[0], asset[1], asset[2], asset[3]));
 
     entries.forEach((entry) => {
-        const src = path.join(baseDir, entry);
+        const src = path.join(websiteDir, entry);
         const dst = path.join(distDir, path.basename(entry, path.extname(entry)) + '.html');
         if (!fs.existsSync(src)) {
             console.log('skipped:', entry);
@@ -43,7 +45,7 @@ function build() {
 build(); // trigger initial build
 
 if (watch) {
-    fs.watch(baseDir, { recursive: true }, function () {
+    fs.watch(websiteDir, { recursive: true }, function () {
         if (build_pending) {
             return;
         }
