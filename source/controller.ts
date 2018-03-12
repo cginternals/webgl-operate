@@ -247,6 +247,7 @@ export class Controller {
 
         assert(this._frameNumber < mfnum, `multi-frame number is already reached (superfluous frame request)`);
         assert(this._pendingRequest !== 0, `manual/explicit frame invocation not anticipated`);
+        this._pendingRequest = 0;
 
         const debug = dfnum > 0;
         assert(!debug || this._frameNumber < dfnum, `frame number about to exceed debug-frame number`);
@@ -284,7 +285,6 @@ export class Controller {
         /* Note that the first frame is probably the slowest due to lazy initialization of stages/passes. */
         this._intermediateFrameTimes[1] = Math.max(this._intermediateFrameTimes[1], frameDuration);
 
-        this._pendingRequest = 0;
         this.frameNumberNext();
 
         this.request();
