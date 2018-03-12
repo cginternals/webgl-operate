@@ -13,12 +13,26 @@ import { Controllable, Controller } from '../source/controller';
 
 class ControllerMock extends Controller {
 
+    static nextAnimationFrame: number = 1;
+
     request(update: boolean = false) {
         super.request(update);
     }
 
     cancel(): void {
         super.cancel();
+    }
+
+    get pendingRequest(): number {
+        return this._pendingRequest;
+    }
+
+    get blockedUpdates(): number {
+        return this._blockedUpdates;
+    }
+
+    invokeFrame(): void {
+        super.invokeFrame();
     }
 }
 
@@ -27,6 +41,19 @@ class RendererMock implements Controllable {
     update = (multiFrameNumber: number): void => undefined;
     frame = (frameNumber: number): void => undefined;
     swap = (): void => undefined;
+}
+
+class InvalidatingRendererMock implements Controllable {
+
+    public controller: Controller = undefined;
+
+    update = (multiFrameNumber: number): void => undefined;
+    frame = (frameNumber: number): void => undefined;
+    swap = (): void => {
+        if (this.controller !== undefined) {
+            this.controller.update();
+        }
+    };
 }
 
 
@@ -131,13 +158,16 @@ describe('Controller', () => {
         const controller = new ControllerMock();
 
         global.window = {
-            requestAnimationFrame: () => undefined,
+            requestAnimationFrame: () => {
+                return ControllerMock.nextAnimationFrame++;
+            },
             cancelAnimationFrame: () => undefined,
         };
 
         controller.block();
         controller.controllable = renderer;
         controller.unblock();
+        controller.cancel();
 
         const requestStub = stub(controller, 'request');
         expect(requestStub.called).to.be.false;
@@ -146,6 +176,69 @@ describe('Controller', () => {
         controller.multiFrameNumber = 2;
 
         expect(requestStub.calledOnce).to.be.true;
+    });
+
+    it('should request next animation frame only once a frame (simple renderer)', () => {
+        const controller = new ControllerMock();
+
+        global.window = {
+            requestAnimationFrame: () => {
+                return ControllerMock.nextAnimationFrame++;
+            },
+            cancelAnimationFrame: () => undefined,
+        };
+
+        const rafStub = stub(global.window, 'requestAnimationFrame');
+        expect(rafStub.called).to.be.false;
+
+        controller.block();
+        controller.controllable = renderer;
+        controller.unblock();
+
+        expect(rafStub.calledOnce).to.be.true;
+    });
+
+    it('should request next animation frame only once a frame (self-invalidating renderer)', () => {
+        const controller = new ControllerMock();
+        const renderer = new InvalidatingRendererMock();
+
+        global.window = {
+            requestAnimationFrame: () => {
+                return ControllerMock.nextAnimationFrame++;
+            },
+            cancelAnimationFrame: () => undefined
+        };
+        global.performance = {
+            now: (): number => {
+                return 0;
+            }
+        }
+
+        controller.block();
+        renderer.controller = controller;
+        controller.controllable = renderer;
+        controller.unblock();
+
+        const rafStub = stub(global.window, 'requestAnimationFrame');
+
+        expect(rafStub.called).to.be.false;
+        expect(controller.blockedUpdates).to.equal(0);
+
+        controller.cancel();
+
+        expect(controller.pendingRequest).to.equal(0);
+
+        controller.update();
+
+        expect(rafStub.calledOnce).to.be.true;
+        expect(controller.blockedUpdates).to.equal(0);
+        expect(controller.pendingRequest).to.not.equal(0);
+
+        rafStub.reset();
+
+        controller.invokeFrame();
+
+        expect(rafStub.calledOnce).to.be.true;
     });
 
 });
