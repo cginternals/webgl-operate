@@ -24,6 +24,7 @@ describe('webgl-operate slim API', () => {
             'Canvas',
 
             'AbstractRenderer',
+            'Invalidate',
             'Context',
             'ContextMasquerade',
             'Controller',

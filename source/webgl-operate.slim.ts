@@ -1,7 +1,7 @@
 
 export { Canvas } from './canvas';
 
-export { AbstractRenderer } from './renderer';
+export { AbstractRenderer, Invalidate } from './renderer';
 export { Context } from './context';
 export { ContextMasquerade } from './contextmasquerade';
 export { Controller } from './controller';
