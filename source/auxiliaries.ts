@@ -75,7 +75,7 @@ namespace auxiliaries {
         const allRequiredNames = required.every((name) => propertyNames.indexOf(name) >= 0);
 
         assert(onlyValidNames && allRequiredNames,
-            `expected object to strictly comply to properties [${specification}], given ${propertyNames}`);
+            `expected object to strictly comply to properties [${specification}], given [${propertyNames}]`);
     }
 
     /**
