@@ -83,10 +83,12 @@ namespace auxiliaries {
      * @param value - Object to assert property name compliance for.
      * @param specification - Supported values.
      */
-    export function assertValueCompliance<T>(value: T, specification: Array<T>): void {
+    export function assertValueCompliance<T>(value: T, type: string, specification: Array<T>): void {
+        assert(typeof value === type, `expected value to by of type '${type}', given '${typeof value}'`);
         assert(specification.indexOf(value) >= 0,
             `expected value to strictly comply to values [${specification}], given ${value}`);
     }
+
 
     /**
      * Writes a warning to the console when the evaluated expression is false.
