@@ -33,6 +33,8 @@ export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
+export { AlterationLookup } from './alterable';
+
 
 import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;
