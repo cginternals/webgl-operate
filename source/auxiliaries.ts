@@ -48,7 +48,7 @@ namespace auxiliaries {
      * @param expression - Result of an expression expected to be true.
      * @param message - Message to be passed to the error (if thrown).
      */
-    export function assert_range(expression: boolean, message: string): void {
+    export function assertRange(expression: boolean, message: string): void {
         if (DISABLE_ASSERTIONS || expression) {
             return;
         }
@@ -109,13 +109,13 @@ namespace auxiliaries {
     /**
      * Writes a lo message to the console when the evaluated expression is false.
      * ```
-     * log_if(!vec2.equals(this._scale, scale), LogLevel.Dev, `scale changed to ${scale}, given ${this._scale}`);
+     * logIf(!vec2.equals(this._scale, scale), LogLevel.Dev, `scale changed to ${scale}, given ${this._scale}`);
      * ```
      * @param expression - Result of an expression expected to be true.
      * @param verbosity - Verbosity of log level: user, developer, or module developer.
      * @param message - Message to be passed to the error (if thrown).
      */
-    export function log_if(expression: boolean, verbosity: LogLevel, message: string): void {
+    export function logIf(expression: boolean, verbosity: LogLevel, message: string): void {
         if (!expression) {
             return;
         }

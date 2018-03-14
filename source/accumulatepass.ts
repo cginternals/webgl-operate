@@ -1,5 +1,5 @@
 
-import { assert, log, log_if, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
 import { AlterationLookup } from './alterable';
@@ -234,7 +234,7 @@ export class AccumulatePass extends Initializable {
         if (this._passThrough || this._texture === undefined) {
             return;
         }
-        log_if(!this._texture || !this._texture.valid, LogLevel.Dev,
+        logIf(!this._texture || !this._texture.valid, LogLevel.Dev,
             `valid texture for accumulation frame expected, given ${this._texture}`);
 
         const gl = this._context.gl;

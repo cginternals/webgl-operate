@@ -1,5 +1,5 @@
 
-import { assert, log, log_if, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel } from './auxiliaries';
 
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
@@ -149,7 +149,7 @@ export class Context {
         }
         if (!context) {
             context = this.requestWebGL1(element);
-            log_if(context !== undefined && request === 'webgl2', LogLevel.Dev,
+            logIf(context !== undefined && request === 'webgl2', LogLevel.Dev,
                 `backend changed to 'webgl', given '${request}'`);
         }
 

@@ -10,7 +10,7 @@ import { assert, prettyPrintBytes } from './auxiliaries';
  * memory allocation tracking. For it, a unique identifier for registration has to be created:
  * ```
  * let gpuAllocReg = this.context.gpuAllocationRegister;
- * const identifier = gpuAllocReg.createAndTrackUniqueIdentifier('gpu-object');
+ * const identifier = gpuAllocReg.createUniqueIdentifier('gpu-object');
  * ```
  *
  * Then allocations, deallocations, and reallocations can be registered:

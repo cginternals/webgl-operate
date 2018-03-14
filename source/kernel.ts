@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { GLsizei3 } from './tuples';
 
@@ -71,7 +71,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         } else {
             i = this.index(xPosOrIndex, yPos, zPos ? zPos : 0);
         }
-        log_if(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
+        logIf(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
 
         /* tslint:disable-next-line:switch-default */
         switch (this._components) {
@@ -95,7 +95,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
      * @param zPos - Position along the z-axis to access the kernel element at (clamped to range [0, depth  - 1]).
      */
     set(sample: number[], xPosOrIndex: GLsizei, yPos?: GLsizei, zPos?: GLsizei): void {
-        log_if(sample.length !== this._components, LogLevel.Dev,
+        logIf(sample.length !== this._components, LogLevel.Dev,
             `number of components expected to be ${this._components}, given ${sample.length}`);
 
         let i: number;
@@ -104,7 +104,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         } else {
             i = this._components * this.index(xPosOrIndex, yPos, zPos ? zPos : 0);
         }
-        log_if(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
+        logIf(i >= this.length, LogLevel.Dev, `index out of range [0, ${this.length}], given ${i}`);
 
         /* tslint:disable-next-line:switch-default */
         switch (this._components) {

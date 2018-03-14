@@ -42,18 +42,18 @@ describe('auxiliaries assert_range', () => {
 });
 
 
-describe('auxiliaries log and log_if', () => {
+describe('auxiliaries log and logIf', () => {
 
     it('should not log on false expression', () => {
         const consoleLogStub = stub(console, 'log');
-        aux.log_if(false, aux.LogLevel.User, 'never log');
+        aux.logIf(false, aux.LogLevel.User, 'never log');
         expect(consoleLogStub.notCalled).to.be.true;
         consoleLogStub.restore();
     });
 
     it('should log on true expression', () => {
         const consoleLogStub = stub(console, 'log');
-        aux.log_if(true, aux.LogLevel.User, 'always log');
+        aux.logIf(true, aux.LogLevel.User, 'always log');
         expect(consoleLogStub.calledOnce).to.be.true;
 
         consoleLogStub.restore();

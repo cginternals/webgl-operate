@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
 
@@ -67,7 +67,7 @@ export abstract class Resizable {
             /* istanbul ignore next */
             Resizable.eventSupported = document && (event in document.documentElement || event in document.body);
 
-            log_if(!Resizable.eventSupported, LogLevel.Dev, `resize event not supported`);
+            logIf(!Resizable.eventSupported, LogLevel.Dev, `resize event not supported`);
         }
         /* istanbul ignore next */
         if (Resizable.instances.length === 0 && Resizable.eventSupported) {

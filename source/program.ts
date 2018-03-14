@@ -1,5 +1,5 @@
 
-import { assert, log, log_if, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel } from './auxiliaries';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
@@ -114,8 +114,8 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
                     break;
             }
         }
-        log_if(numVertShaders < 1, LogLevel.Dev, `at least one vertex shader is expected`);
-        log_if(numFragShaders < 1, LogLevel.Dev, `at least one fragment shader is expected`);
+        logIf(numVertShaders < 1, LogLevel.Dev, `at least one vertex shader is expected`);
+        logIf(numFragShaders < 1, LogLevel.Dev, `at least one fragment shader is expected`);
         if (numVertShaders < 1 || numFragShaders < 1) {
             return undefined;
         }

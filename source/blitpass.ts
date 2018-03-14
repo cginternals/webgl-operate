@@ -1,5 +1,5 @@
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
@@ -175,8 +175,8 @@ export class BlitPass extends Initializable {
      */
     @Initializable.assert_initialized()
     frame() {
-        log_if(!this._target || !this._target.valid, LogLevel.Dev, `valid target expected, given ${this._target}`);
-        log_if(!this._framebuffer || !this._framebuffer.valid, LogLevel.Dev,
+        logIf(!this._target || !this._target.valid, LogLevel.Dev, `valid target expected, given ${this._target}`);
+        logIf(!this._framebuffer || !this._framebuffer.valid, LogLevel.Dev,
             `valid framebuffer for blitting from expected, given ${this._framebuffer}`);
 
         const gl = this._context.gl;

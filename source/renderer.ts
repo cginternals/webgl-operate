@@ -4,7 +4,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { vec2, vec4 } from 'gl-matrix';
 
-import { assert, log_if, LogLevel } from './auxiliaries';
+import { assert, logIf, LogLevel } from './auxiliaries';
 import { clamp, v2 } from './gl-matrix-extensions';
 
 import { AlterationLookup } from './alterable';
@@ -340,7 +340,7 @@ export abstract class AbstractRenderer extends Initializable {
         if (this._debugTexture === index) {
             return;
         }
-        log_if(index >= this._debugTextures.length, LogLevel.Dev, `invalid texture index, ` +
+        logIf(index >= this._debugTextures.length, LogLevel.Dev, `invalid texture index, ` +
             `debug texture disabled (index set to -1) | ${index} not in [-1,+${this._debugTextures.length - 1}]`);
         this._debugTexture = index < this._debugTextures.length ?
             clamp(index, -1, this._debugTextures.length - 1) : -1;
