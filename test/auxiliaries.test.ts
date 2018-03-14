@@ -28,16 +28,16 @@ describe('auxiliaries assert', () => {
 });
 
 
-describe('auxiliaries assert_range', () => {
+describe('auxiliaries assertRange', () => {
 
     it('should not throw on true expression', () => {
         const message = 'never throw';
-        expect(() => aux.assert_range(true, message)).to.not.throw();
+        expect(() => aux.assertRange(true, message)).to.not.throw();
     });
 
     it('should throw on false expression', () => {
         const message = 'always throw';
-        expect(() => aux.assert_range(false, message)).to.throw();
+        expect(() => aux.assertRange(false, message)).to.throw();
     });
 });
 
