@@ -38,4 +38,5 @@ describe('tuples clamp', () => {
             , [[0, 0, -2, 0], [0, 0, 0, 0]], [[0, 0, 0, -2], [0, 0, 0, 0]]];
         tests.forEach((test) => expect(clampf4(test[0])).to.deep.equal(test[1]));
     });
+
 });

@@ -21,6 +21,7 @@ export { VertexArray } from './vertexarray';
 
 export { Camera } from './camera';
 export { Color } from './color';
+export { Navigation } from './navigation';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';
