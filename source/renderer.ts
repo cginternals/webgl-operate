@@ -12,8 +12,8 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
-import { FramePrecisionString } from './wizard';
 import { MouseEventProvider } from './webgl-operate';
+import { FramePrecisionString } from './wizard';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
