@@ -7,18 +7,28 @@ import { clamp } from './gl-matrix-extensions';
 
 
 export interface Controllable {
+
     /**
-     * Used to trigger am update of a multi-frame.
+     * Used to trigger an renderer update. Returns true iff rendering is invalidated and
+     * a new multi-frame should be rendered-
      */
-    update(multiFrameNumber: number): void;
+    update(multiFrameNumber: number): boolean;
+
+    /**
+     * Used to prepare rendering of a multi-frame.
+     */
+    prepare(): void;
+
     /**
      * Used to trigger rendering of a single, intermediate frame.
      */
     frame(frameNumber: number): void;
+
     /**
      * Used to swap/blit frame from back to front buffer.
      */
     swap(): void;
+
 }
 
 
@@ -32,7 +42,7 @@ export interface Controllable {
  *
  * Terminology: a multi-frame is the final result after accumulating a number of intermediate frames (frame). The
  * number of intermediate frames is defined by the multi-frame number. For a multi-frame, the controller invokes the
- * `update` on a controllable renderer first, followed by multiple `frame` and `swap` calls. Please note that the
+ * `update` on a controllable first, followed by multiple `frame` and `swap` calls. Please note that the
  * adaptive batch mode is yet experimental (can be enabled using `batchSize`).
  */
 
@@ -79,7 +89,7 @@ export class Controller {
 
 
     /**
-     * Controllable renderer.
+     * Controllable, e.g., an instance of a Renderer.
      */
     protected _controllable: Controllable | undefined;
 
@@ -152,7 +162,7 @@ export class Controller {
      * Triggers a frame invocation before the browser repaints. If no rendering callback is setup, the request
      * is ignored.
      */
-    protected request(update: boolean = false): void {
+    protected request(type?: Controller.RequestType): void {
         /**
          * Prevent unnecessary canceling and requesting of animation frames when updating multiple times before an
          * actual first frame is triggered.
@@ -179,13 +189,26 @@ export class Controller {
 
         const numRemainingIntermediates = Math.max((dfnum > 0 ? dfnum : mfnum) - this._frameNumber, 0);
 
-        if (update) {
-            this._pendingRequest = window.requestAnimationFrame(() => this.invokeUpdate());
-        } else if (numRemainingIntermediates > 0 && !update) {
-            this._pendingRequest = window.requestAnimationFrame(() => this.invokeFrame());
+        if (type !== undefined) {
+            this._pendingRequest = window.requestAnimationFrame(() => this.invoke(type));
+        } else if (numRemainingIntermediates > 0) {
+            this._pendingRequest = window.requestAnimationFrame(() => this.invoke(Controller.RequestType.Frame));
         } else if (dfnum === mfnum || dfnum === 0) {
             ++this._multiFrameCount;
         }
+    }
+
+    protected reset(): boolean {
+        const block = this._block || (this._frameNumber === 0 && this._pendingRequest);
+        logIf(this._debug, LogLevel.ModuleDev, `c update  ${block ? '(blocked) ' : '          '}| ` +
+            `pending: '${this._pendingRequest}', intermediates: #${this._frameNumber}`);
+
+        if (block) {
+            ++this._blockedUpdates;
+            return true;
+        }
+        this.cancel();
+        return false;
     }
 
     /**
@@ -202,27 +225,59 @@ export class Controller {
         this._pendingRequest = 0;
     }
 
-    /**
-     * Actual invocation of the controllable's update method
-     */
+    protected invoke(type: Controller.RequestType) {
+        assert(this._pendingRequest !== 0, `manual/explicit invocation not anticipated`);
+        assert(this._controllable !== undefined, `expected valid controllable for invocation`);
+
+        this._pendingRequest = 0;
+
+        /* tslint:disable-next-line:switch-default */
+        switch (type) {
+            case Controller.RequestType.Update:
+                this.invokeUpdate();
+                break;
+            case Controller.RequestType.Prepare:
+                this.invokePrepare();
+                break;
+            case Controller.RequestType.Frame:
+                this.invokeFrame();
+                break;
+        }
+    }
+
     protected invokeUpdate(): void {
-        logIf(this._debug, LogLevel.ModuleDev, `c invoke update     | pending: '${this._pendingRequest}'`);
+        logIf(this._debug, LogLevel.ModuleDev, `c invoke update     | ` +
+            `pending: '${this._pendingRequest}', mfnum: ${this._multiFrameNumber}`);
 
         this.unblock();
-
         assert(!this._pause, `updates should not be invoked when paused`);
 
-        assert(this._frameNumber === 0, `frame counter expected to be reset when invoking updates`);
-        assert(this._pendingRequest !== 0, `manual/explicit update invocation not anticipated`);
+        const redraw = (this._controllable as Controllable).update(this._multiFrameNumber);
+        if (redraw) {
+            this.invokePrepare();
+            return;
+        }
+        this.invokeFrame();
+    }
 
-        this._multiTime[0] = performance.now();
+    /**
+     * Actual invocation of the controllable's prepare method
+     */
+    protected invokePrepare(): void {
+        logIf(this._debug, LogLevel.ModuleDev, `c invoke prepare    |`);
+
+        this._frameNumber = 0;
+
+        this._pause = false;
+        this._pauseTime = undefined;
+
+        this._multiFrameTime = 0.0;
+        this._intermediateFrameTimes[0] = Number.MAX_VALUE;
+        this._intermediateFrameTimes[1] = Number.MIN_VALUE;
 
         /* Trigger preparation of a new multi-frame and measure execution time. */
-        assert(this._controllable !== undefined, `update invoked without controllable renderer set`);
-        logIf(this._debug, LogLevel.ModuleDev, `c -> update         | mfnum: ${this._multiFrameNumber}`);
-
-        (this._controllable as Controllable).update(this._multiFrameNumber);
-
+        this._multiTime[0] = performance.now();
+        (this._controllable as Controllable).prepare();
         this._multiTime[1] = performance.now();
 
         const updateDuration = this._multiTime[1] - this._multiTime[0];
@@ -238,21 +293,20 @@ export class Controller {
      * asserts to assure correct control logic and absolutely prevent unnecessary frame requests.
      */
     protected invokeFrame(): void {
-        logIf(this._debug, LogLevel.ModuleDev, `c invoke frame      | pending: '${this._pendingRequest}'`);
-
         assert(!this._pause, `frames should not be invoked when paused`);
+        logIf(this._debug, LogLevel.ModuleDev, `c invoke frame      | pending: '${this._pendingRequest}'`);
 
         const dfnum = this._debugFrameNumber;
         const mfnum = this._multiFrameNumber;
 
-        assert(this._frameNumber < mfnum, `multi-frame number is already reached (superfluous frame request)`);
-        assert(this._pendingRequest !== 0, `manual/explicit frame invocation not anticipated`);
-        this._pendingRequest = 0;
+        if (this._frameNumber === mfnum) {
+            return;
+        }
 
         const debug = dfnum > 0;
         assert(!debug || this._frameNumber < dfnum, `frame number about to exceed debug-frame number`);
 
-        assert(this._controllable !== undefined, `update invoked without controllable renderer set`);
+        assert(this._controllable !== undefined, `update invoked without controllable set`);
 
 
         /* Trigger an intermediate frame and measure and accumulate execution time for average frame time. This should
@@ -352,32 +406,22 @@ export class Controller {
         this.request();
     }
 
-    /** @callback MultiFrameUpdateCallback
-     *
+    /**
      * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
      * If updates where blocked using ```block```, block updates is disabled.
      */
     update(): void {
-        const block = this._block || (this._frameNumber === 0 && this._pendingRequest);
-        logIf(this._debug, LogLevel.ModuleDev, `c update  ${block ? '(blocked) ' : '          '}| ` +
-            `pending: '${this._pendingRequest}', intermediates: #${this._frameNumber}`);
-
-        if (block) {
-            ++this._blockedUpdates;
+        if (this.reset()) {
             return;
         }
-        this.cancel();
+        this.request(Controller.RequestType.Update);
+    }
 
-        this._frameNumber = 0;
-
-        this._pause = false;
-        this._pauseTime = undefined;
-
-        this._multiFrameTime = 0.0;
-        this._intermediateFrameTimes[0] = Number.MAX_VALUE;
-        this._intermediateFrameTimes[1] = Number.MIN_VALUE;
-
-        this.request(true);
+    prepare(): void {
+        if (this.reset()) {
+            return;
+        }
+        this.request(Controller.RequestType.Prepare);
     }
 
 
@@ -430,10 +474,10 @@ export class Controller {
 
 
     /**
-     * Sets the controllable renderer, for which updates, frames, and swaps are invoked whenever rendering is
+     * Sets the controllable, for which updates, frames, and swaps are invoked whenever rendering is
      * invalidated and an updated multi-frame is required. Swap is detached from frame since rendering an intermediate
      * frame is usually done offscreen and explicit swap control can be useful.
-     * @param controllable - Controllable renderer for update, frame, and swap invocation.
+     * @param controllable - Controllable for update, frame, and swap invocation.
      */
     set controllable(controllable: Controllable | undefined) {
         if (controllable === this._controllable) {
@@ -524,7 +568,7 @@ export class Controller {
         }
 
         if (this.debugFrameNumber < this._frameNumber) {
-            this.update();
+            this.prepare();
         } else if (!this._pendingRequest) {
             this.unpause();
             this.request();
@@ -627,5 +671,12 @@ export class Controller {
     get framesPerSecond(): number {
         return this._frameNumber === 0 ? 0.0 : 1000.0 / (this.multiFrameTime / this._frameNumber);
     }
+
+}
+
+
+export namespace Controller {
+
+    export enum RequestType { Update, Prepare, Frame }
 
 }

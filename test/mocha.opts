@@ -4,6 +4,8 @@
 --recursive
 --full-trace 
 --bail
+--colors
+--no-timeouts
 --reporter mocha-multi-reporters
 --reporter-options configFile=test/mocha-reporter-options.json
 test/**/*.test.ts

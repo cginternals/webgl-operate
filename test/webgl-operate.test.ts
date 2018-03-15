@@ -17,6 +17,7 @@ describe('webgl-operate API', () => {
 
         const debugFacilities = [
             'TestRenderer',
+            'TestNavigation',
         ];
 
         for (const facility of Object.getOwnPropertyNames(gloperate.debug)) {

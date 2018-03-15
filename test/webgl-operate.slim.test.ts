@@ -23,13 +23,15 @@ describe('webgl-operate slim API', () => {
 
             'Canvas',
 
-            'AbstractRenderer',
+            'Renderer',
             'Invalidate',
             'Context',
             'ContextMasquerade',
             'Controller',
             'ExtensionsHash',
             'Wizard',
+            'MouseEventProvider',
+            'EventHandler',
 
             'Buffer',
             'DefaultFramebuffer',
@@ -44,6 +46,8 @@ describe('webgl-operate slim API', () => {
 
             'Camera',
             'Color',
+            'Navigation',
+            'TrackBallNavigation',
 
             'NdcFillingRectangle',
             'NdcFillingTriangle',

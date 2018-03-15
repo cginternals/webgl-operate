@@ -111,6 +111,5 @@ describe('ExtensionsHash', () => {
         expect(WEBGL2_EXTENSIONS).to.contains.members(SOME_WEBGL2_EXTS);
     });
 
-
 });
 
