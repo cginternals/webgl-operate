@@ -12,6 +12,7 @@ import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
+import { MouseEventProvider } from './mouseeventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
 import { FramePrecisionString } from './wizard';
@@ -100,6 +101,9 @@ export class Canvas extends Resizable {
     /** @see {@link element} */
     protected _element: HTMLCanvasElement;
 
+    /** @see {@link mouseEventProvider} */
+    protected _mouseEventProvider: MouseEventProvider;
+
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -125,6 +129,7 @@ export class Canvas extends Resizable {
         super(); // setup resize event handling
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
+        this._mouseEventProvider = new MouseEventProvider(this._element, 200);
 
         const dataset = this._element.dataset;
 
@@ -310,7 +315,8 @@ export class Canvas extends Resizable {
          * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
          * method is assigned to the pipelines invalidation event.
          */
-        this._renderer.initialize(this.context, () => this._controller.update());
+        this._renderer.initialize(this.context, () => this._controller.update(),
+            this._mouseEventProvider /*, this._keyEventProvider, this._touchEventProvider */);
 
         this._renderer.frameSize = this._frameSize;
         this._renderer.clearColor = this._clearColor.rgba;
@@ -615,6 +621,14 @@ export class Canvas extends Resizable {
      */
     get element(): HTMLElement {
         return this._element;
+    }
+
+
+    /**
+     * Canvas mouse event provider referring to the canvas element.
+     */
+    get mouseEventProvider(): MouseEventProvider {
+        return this._mouseEventProvider;
     }
 
 }

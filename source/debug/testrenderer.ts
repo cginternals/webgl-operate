@@ -5,13 +5,15 @@ import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Context } from '../context';
+import { MouseEventProvider } from '../mouseeventprovider';
 import { NdcFillingTriangle } from '../ndcfillingtriangle';
 import { Program } from '../program';
+import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
 import { Texture2 } from '../texture2';
 import { DefaultFramebuffer, Framebuffer, Renderbuffer } from '../webgl-operate';
 
-import { Renderer, Invalidate } from '../renderer';
+import { TestNavigation } from './testnavigation';
 
 
 namespace debug {
@@ -34,8 +36,19 @@ namespace debug {
         protected _depthRenderbuffer: Renderbuffer;
         protected _intermediateFBO: Framebuffer;
 
+        protected _testNavigation: TestNavigation;
 
-        protected onUpdate(): void {
+
+        protected onUpdate(): boolean {
+            this._testNavigation.update();
+
+            const redraw = this._testNavigation.altered;
+            this._testNavigation.reset();
+
+            return redraw;
+        }
+
+        protected onPrepare(): void {
             if (!this._altered.any) {
                 return;
             }
@@ -95,8 +108,9 @@ namespace debug {
         }
 
 
-        initialize(context: Context, callback: Invalidate): boolean {
-            if (!super.initialize(context, callback)) {
+        initialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider,
+            /*keyEventProvider: KeyEventProvider, touchEventProvider: TouchEventProvider*/): boolean {
+            if (!super.initialize(context, callback, mouseEventProvider)) {
                 return false;
             }
             const gl = this.context.gl;
@@ -155,6 +169,10 @@ namespace debug {
             this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
             this._blit.drawBuffer = gl.BACK;
             this._blit.target = this._defaultFBO;
+
+            /* Create and configure test navigation. */
+
+            this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
 
             return true;
         }

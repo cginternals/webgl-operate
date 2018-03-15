@@ -9,9 +9,11 @@ import { clamp, v2 } from './gl-matrix-extensions';
 
 import { AlterationLookup } from './alterable';
 import { Context } from './context';
+import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { FramePrecisionString } from './wizard';
+import { MouseEventProvider } from './webgl-operate';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
@@ -40,7 +42,7 @@ export interface Invalidate { (): void; }
  * Note that a renderer is currently intended to always render to the canvas it is bound to. Hence, there is no
  * interface for setting a frame target.
  */
-export abstract class Renderer extends Initializable {
+export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * The renderer's invalidation callback. This should usually be setup by the canvas and refer to a function in the
@@ -151,6 +153,11 @@ export abstract class Renderer extends Initializable {
     protected abstract onUpdate(): void;
 
     /**
+     * Actual prepare call specified by inheritor.
+     */
+    protected abstract onPrepare(): void;
+
+    /**
      * Actual frame call specified by inheritor.
      */
     protected abstract onFrame(frameNumber: number): void;
@@ -172,9 +179,11 @@ export abstract class Renderer extends Initializable {
      *
      * @param context - Wrapped gl context for function resolution (passed to all stages).
      * @param callback - Functions that is invoked when the renderer (or any stage) is invalidated.
+     * @param mouseEventProvider - Provider for mouse events referring to the canvas element.
      */
     @Initializable.initialize()
-    initialize(context: Context, callback: Invalidate): boolean {
+    initialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider,
+        /*keyEventProvider: KeyEventProvider, touchEventProvider: TouchEventProvider*/): boolean {
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
@@ -191,12 +200,10 @@ export abstract class Renderer extends Initializable {
 
 
     /**
-     * The update should prepare the rendering of the next frame (or subsequent frames when multi-frame rendering).
-     * This is part of the controllable interface. The renderer should reconfigure as lazy as possible.
-     * @param multiFrameNumber - The multi-frame number as requested by controller.
+     *
      */
     @Initializable.assert_initialized()
-    update(multiFrameNumber: number): void {
+    update(multiFrameNumber: number): boolean {
         if (this._canvasSize[0] !== this._context.gl.canvas.width ||
             this._canvasSize[1] !== this._context.gl.canvas.height) {
             this._canvasSize[0] = this._context.gl.canvas.width;
@@ -207,7 +214,17 @@ export abstract class Renderer extends Initializable {
             this._multiFrameNumber = multiFrameNumber;
             this._altered.alter('multiFrameNumber');
         }
-        this.onUpdate();
+        return this.onUpdate() || this._altered.any;
+    }
+
+    /**
+     * Prepares the rendering of the next frame (or subsequent frames when multi-frame rendering).
+     * This is part of the controllable interface. The renderer should reconfigure as lazy as possible.
+     * @param multiFrameNumber - The multi-frame number as requested by controller.
+     */
+    @Initializable.assert_initialized()
+    prepare(): void {
+        this.onPrepare();
     }
 
     /**
