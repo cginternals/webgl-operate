@@ -11,12 +11,12 @@ import { Shader } from '../shader';
 import { Texture2 } from '../texture2';
 import { DefaultFramebuffer, Framebuffer, Renderbuffer } from '../webgl-operate';
 
-import { AbstractRenderer, Invalidate } from '../renderer';
+import { Renderer, Invalidate } from '../renderer';
 
 
 namespace debug {
 
-    export class TestRenderer extends AbstractRenderer {
+    export class TestRenderer extends Renderer {
 
         protected _extensions = false;
         protected _program: Program;

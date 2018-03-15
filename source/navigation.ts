@@ -1,19 +1,18 @@
 
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-
 import { Camera } from './camera';
-import { Initializable } from './initializable';
 
 
+export abstract class Navigation {
 
-export abstract class Navigation extends Initializable {
-
-    protected _element: HTMLElement;
 
     /** @see {@link camera} */
     protected _camera: Camera;
 
+    /**
+     * Update should invoke navigation specific event processing. When using, e.g., an event handler, the event handlers
+     * update method should be called in order to have navigation specific event processing invoked.
+     */
+    abstract update(): void;
 
     /**
      * The camera that is to be modified in response to various events.

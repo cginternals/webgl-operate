@@ -40,10 +40,10 @@ export interface Invalidate { (): void; }
  * Note that a renderer is currently intended to always render to the canvas it is bound to. Hence, there is no
  * interface for setting a frame target.
  */
-export abstract class AbstractRenderer extends Initializable {
+export abstract class Renderer extends Initializable {
 
     /**
-     * The renderers invalidation callback. This should usually be setup by the canvas and refer to a function in the
+     * The renderer's invalidation callback. This should usually be setup by the canvas and refer to a function in the
      * canvas's controller, e.g., it should trigger an update within the controller.
      */
     private _invalidate: Invalidate;
@@ -108,9 +108,8 @@ export abstract class AbstractRenderer extends Initializable {
 
 
     /** @callback Invalidate
-     * A callback intended to be invoked whenever the specialized renderer itself or one of its stages is invalid. This
-     * callback should be passed during initialization to all stages. When invoked, preparation and the invalidation
-     * callback provided by the canvas are triggered.
+     * A callback intended to be invoked whenever the specialized renderer itself or one of its objects is invalid. This
+     * callback should be passed during initialization to all objects that might handle invalidation internally as well.
      */
     @Initializable.assert_initialized()
     protected invalidate(): void {
