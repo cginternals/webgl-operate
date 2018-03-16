@@ -45,39 +45,40 @@
         "mocha": "~5.0.4",
         "mocha-junit-reporter": "~1.17.0",
         "mocha-multi-reporters": "~1.1.7",
-        "nyc": "~11.4.1",
-        "pug": "~2.0.0",
-        "query-string": "~5.1.0",
-        "sinon": "~4.4.2",
-        "source-map-support": "~0.5.3",
+        "nyc": "~11.6.0",
+        "pug": "~2.0.1",
+        "query-string": "^5.1.0",
+        "sinon": "~4.4.6",
+        "source-map-support": "~0.5.4",
         "ts-loader": "~3.5.0",
         "ts-node": "~5.0.1",
         "tslint": "~5.9.1",
-        "typedoc": "~0.11.0",
+        "typedoc": "~0.11.1",
         "typescript": "~2.7.2",
         "webpack": "~3.11.0",
         "webpack-glsl-loader": "~1.0.1",
         "webpack-sources": "~1.1.0"
     },
     "dependencies": {
-        "rxjs": "^5.5.6"
+        "rxjs": "^5.5.7",
+        "source-map-explorer": "^1.5.0"
     },
     "peerDependencies": {
-        "rxjs": "^5.5.6"
+        "rxjs": "^5.5.7"
     },
     "scripts": {
         "build": "webpack",
         "build-watch": "webpack --watch",
         "build-all": "webpack --config webpack.config.dist.js",
         "build-lib": "webpack --config webpack.config.lib.js",
-        "check": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
+        "lint": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
         "test": "nyc mocha",
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
         "website": "node pugconfig.js",
         "website-watch": "node pugconfig.js --watch",
-        "deploy": "npm run build-all && npm run check && npm run test && npm run website && npm run doc",
+        "deploy": "npm run build-all && npm run lint && npm run test && npm run website && npm run doc",
         "deploy-lite": "npm run build && npm run website",
         "deploy-watch": "npm run build-watch | npm run website-watch",
         "prepack": "npm run build-all && npm run build-lib"

@@ -41,11 +41,11 @@
             ]
         },
         {
-            "taskName": "check",
+            "taskName": "lint",
             "isTestCommand": true,
             "args": [
                 "run-script",
-                "check"
+                "lint"
             ]
         },
         {

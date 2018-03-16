@@ -84,12 +84,12 @@ This package setup distinguishes between *develop*, *deploy*, and *publish* rela
 | `build-lib`      | transpile sources and declarations for distribution via npm |
 | `website`        | build website html pages to `dist` |
 | `website-watch`  | `website` command in watch (for modifications) mode |
-| `check`          | code quality check [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
+| `lint`           | code quality lint [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
 | `deploy-lite`    | lite distribution deployment triggering only build and website |
 | `deploy-watch`   | `deploy-lite` command in watch (for modifications) mode |
-| **`deploy`**     | full distribution deployment triggering `check`, `test`, `build-all`, `doc`, and `website` |
+| **`deploy`**     | full distribution deployment triggering `lint`, `test`, `build-all`, `doc`, and `website` |
 | **`prepublishOnly`** | run `build-all` and `build-lib` |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
