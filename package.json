@@ -71,7 +71,7 @@
         "build-watch": "webpack --watch",
         "build-all": "webpack --config webpack.config.dist.js",
         "build-lib": "webpack --config webpack.config.lib.js",
-        "cleanup": "rimraf ./dist",
+        "cleanup": "rimraf ./dist ./lib",
         "lint": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
         "test": "nyc mocha",
         "test-watch": "mocha --watch",
