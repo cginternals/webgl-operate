@@ -48,10 +48,10 @@ export abstract class Renderer extends Initializable implements Controllable {
      * The renderer's invalidation callback. This should usually be setup by the canvas and refer to a function in the
      * canvas's controller, e.g., it should trigger an update within the controller.
      */
-    private _invalidate: Invalidate;
+    protected _invalidate: Invalidate;
 
     /** @see {@link context} */
-    private _context: Context;
+    protected _context: Context;
 
 
     /**
@@ -147,10 +147,25 @@ export abstract class Renderer extends Initializable implements Controllable {
         return this._altered.any;
     }
 
+
+    /**
+     * Actual initialize call specified by inheritor.
+     */
+    protected abstract onInitialize(context: Context, callback: Invalidate,
+        mouseEventProvider: MouseEventProvider,
+        /* keyEventProvider: KeyEventProvider, */
+        /* touchEventProvider: TouchEventProvider */): boolean;
+
+    /**
+     * Actual uninitialize call specified by inheritor.
+     */
+    protected abstract onUninitialize(): void;
+
+
     /**
      * Actual update call specified by inheritor.
      */
-    protected abstract onUpdate(): void;
+    protected abstract onUpdate(): boolean;
 
     /**
      * Actual prepare call specified by inheritor.
@@ -182,13 +197,17 @@ export abstract class Renderer extends Initializable implements Controllable {
      * @param mouseEventProvider - Provider for mouse events referring to the canvas element.
      */
     @Initializable.initialize()
-    initialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider,
-        /*keyEventProvider: KeyEventProvider, touchEventProvider: TouchEventProvider*/): boolean {
+    initialize(context: Context, callback: Invalidate,
+        mouseEventProvider: MouseEventProvider,
+        /* keyEventProvider: KeyEventProvider, */
+        /* touchEventProvider: TouchEventProvider */): boolean {
+
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
-        return true;
+
+        return this.onInitialize(context, callback, mouseEventProvider);
     }
 
     /**
@@ -196,7 +215,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      * overriding this function.
      */
     @Initializable.uninitialize()
-    uninitialize(): void { }
+    uninitialize(): void {
+        this.onUninitialize();
+    }
 
 
     /**

@@ -39,30 +39,117 @@ namespace debug {
         protected _testNavigation: TestNavigation;
 
 
+        protected onInitialize(context: Context, callback: Invalidate,
+            mouseEventProvider: MouseEventProvider,
+            /* keyEventProvider: KeyEventProvider, */
+            /* touchEventProvider: TouchEventProvider */): boolean {
+
+            const gl = this._context.gl;
+            const gl2facade = this._context.gl2facade;
+
+            /* Enable required extensions. */
+
+            if (this._extensions === false && this._context.isWebGL1) {
+                assert(this._context.supportsStandardDerivatives, `expected OES_standard_derivatives support`);
+                /* tslint:disable-next-line:no-unused-expression */
+                this._context.standardDerivatives;
+                this._extensions = true;
+            }
+
+            /* Create and configure program and geometry. */
+
+            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'testrenderer.vert');
+            vert.initialize(require('./testrenderer.vert'));
+            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'testrenderer.frag');
+            frag.initialize(require('./testrenderer.frag'));
+
+            this._program = new Program(this._context);
+            this._program.initialize([vert, frag]);
+
+            this._uNdcOffset = this._program.uniform('u_ndcOffset');
+            this._uFrameNumber = this._program.uniform('u_frameNumber');
+
+            this._ndcTriangle = new NdcFillingTriangle(this._context);
+            const aVertex = this._program.attribute('a_vertex', 0);
+            this._ndcTriangle.initialize(aVertex);
+
+            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+
+            /* Create framebuffers, textures, and render buffers. */
+
+            this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
+            this._defaultFBO.initialize();
+
+            this._colorRenderTexture = new Texture2(this._context, 'ColorRenderTexture');
+            this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
+
+            this._intermediateFBO = new Framebuffer(this._context, 'IntermediateFBO');
+
+            /* Create and configure accumulation pass. */
+
+            this._accumulate = new AccumulatePass(this._context);
+            this._accumulate.initialize(this._ndcTriangle);
+            this._accumulate.precision = this._framePrecision;
+            this._accumulate.texture = this._colorRenderTexture;
+            // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
+
+            /* Create and configure blit pass. */
+
+            this._blit = new BlitPass(this._context);
+            this._blit.initialize(this._ndcTriangle);
+            this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
+            this._blit.drawBuffer = gl.BACK;
+            this._blit.target = this._defaultFBO;
+
+            /* Create and configure test navigation. */
+
+            this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
+
+            return true;
+        }
+
+        protected onUninitialize(): void {
+            super.uninitialize();
+
+            this._uNdcOffset = -1;
+            this._uFrameNumber = -1;
+            this._program.uninitialize();
+
+            this._ndcTriangle.uninitialize();
+
+            this._intermediateFBO.uninitialize();
+            this._defaultFBO.uninitialize();
+            this._colorRenderTexture.uninitialize();
+            this._depthRenderbuffer.uninitialize();
+
+            this._blit.uninitialize();
+        }
+
+
         protected onUpdate(): boolean {
             this._testNavigation.update();
 
             const redraw = this._testNavigation.altered;
             this._testNavigation.reset();
 
-            return redraw;
-        }
-
-        protected onPrepare(): void {
-            if (!this._altered.any) {
-                return;
+            if (!redraw && !this._altered.any) {
+                return false;
             }
-
-            const gl = this.context.gl;
-            const gl2facade = this.context.gl2facade;
 
             if (this._altered.multiFrameNumber) {
                 this._ndcOffsetKernel.width = this._multiFrameNumber;
             }
 
+            return redraw;
+        }
+
+        protected onPrepare(): void {
+            const gl = this._context.gl;
+            const gl2facade = this._context.gl2facade;
+
             if (!this._intermediateFBO.initialized) {
                 this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
-                    this.context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
+                    this._context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
                 this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
                 this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
                     , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
@@ -81,7 +168,7 @@ namespace debug {
         }
 
         protected onFrame(frameNumber: number): void {
-            const gl = this.context.gl;
+            const gl = this._context.gl;
 
             gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
@@ -107,92 +194,6 @@ namespace debug {
             this._blit.frame();
         }
 
-
-        initialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider,
-            /*keyEventProvider: KeyEventProvider, touchEventProvider: TouchEventProvider*/): boolean {
-            if (!super.initialize(context, callback, mouseEventProvider)) {
-                return false;
-            }
-            const gl = this.context.gl;
-            const gl2facade = this.context.gl2facade;
-
-            /* Enable required extensions. */
-
-            if (this._extensions === false && this.context.isWebGL1) {
-                assert(this.context.supportsStandardDerivatives, `expected OES_standard_derivatives support`);
-                /* tslint:disable-next-line:no-unused-expression */
-                this.context.standardDerivatives;
-                this._extensions = true;
-            }
-
-            /* Create and configure program and geometry. */
-
-            const vert = new Shader(this.context, gl.VERTEX_SHADER, 'testrenderer.vert');
-            vert.initialize(require('./testrenderer.vert'));
-            const frag = new Shader(this.context, gl.FRAGMENT_SHADER, 'testrenderer.frag');
-            frag.initialize(require('./testrenderer.frag'));
-
-            this._program = new Program(this.context);
-            this._program.initialize([vert, frag]);
-
-            this._uNdcOffset = this._program.uniform('u_ndcOffset');
-            this._uFrameNumber = this._program.uniform('u_frameNumber');
-
-            this._ndcTriangle = new NdcFillingTriangle(this.context);
-            const aVertex = this._program.attribute('a_vertex', 0);
-            this._ndcTriangle.initialize(aVertex);
-
-            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
-
-            /* Create framebuffers, textures, and render buffers. */
-
-            this._defaultFBO = new DefaultFramebuffer(this.context, 'DefaultFBO');
-            this._defaultFBO.initialize();
-
-            this._colorRenderTexture = new Texture2(this.context, 'ColorRenderTexture');
-            this._depthRenderbuffer = new Renderbuffer(this.context, 'DepthRenderbuffer');
-
-            this._intermediateFBO = new Framebuffer(this.context, 'IntermediateFBO');
-
-            /* Create and configure accumulation pass. */
-
-            this._accumulate = new AccumulatePass(this.context);
-            this._accumulate.initialize(this._ndcTriangle);
-            this._accumulate.precision = this._framePrecision;
-            this._accumulate.texture = this._colorRenderTexture;
-            // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
-
-            /* Create and configure blit pass. */
-
-            this._blit = new BlitPass(this.context);
-            this._blit.initialize(this._ndcTriangle);
-            this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
-            this._blit.drawBuffer = gl.BACK;
-            this._blit.target = this._defaultFBO;
-
-            /* Create and configure test navigation. */
-
-            this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
-
-            return true;
-        }
-
-        uninitialize(): void {
-            super.uninitialize();
-
-            this._uNdcOffset = -1;
-            this._uFrameNumber = -1;
-            this._program.uninitialize();
-
-            this._ndcTriangle.uninitialize();
-
-            this._intermediateFBO.uninitialize();
-            this._defaultFBO.uninitialize();
-            this._colorRenderTexture.uninitialize();
-            this._depthRenderbuffer.uninitialize();
-
-            this._blit.uninitialize();
-        }
 
     }
 

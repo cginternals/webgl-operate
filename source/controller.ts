@@ -42,7 +42,7 @@ export interface Controllable {
  *
  * Terminology: a multi-frame is the final result after accumulating a number of intermediate frames (frame). The
  * number of intermediate frames is defined by the multi-frame number. For a multi-frame, the controller invokes the
- * `update` on a controllable first, followed by multiple `frame` and `swap` calls. Please note that the
+ * `prepare` on a controllable first, followed by multiple `frame` and `swap` calls. Please note that the
  * adaptive batch mode is yet experimental (can be enabled using `batchSize`).
  */
 
