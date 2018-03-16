@@ -49,6 +49,7 @@
         "pug": "~2.0.1",
         "query-string": "~5.1.0",
         "rimraf": "~2.6.2",
+        "sinon": "~4.4.6",
         "source-map-support": "~0.5.4",
         "ts-loader": "~3.5.0",
         "ts-node": "~5.0.1",
