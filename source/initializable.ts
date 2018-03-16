@@ -57,11 +57,6 @@ export abstract class Initializable {
     static initialize() {
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
-            assert(target.__proto__.constructor.name === 'Initializable',
-                `expected ${target} to extend Initializable`);
-            assert(propertyKey === 'initialize',
-                `expected an 'initialize(...args: any[]): boolean' method to be decorated by @initialize`);
-
             const initialize = descriptor.value;
             /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
             descriptor.value = function (): boolean {
@@ -92,11 +87,6 @@ export abstract class Initializable {
      */
     static uninitialize() {
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-
-            assert(target.__proto__.constructor.name === 'Initializable',
-                `expected ${target} to extend Initializable`);
-            assert(propertyKey === 'uninitialize',
-                `expected an 'uninitialize(): void' method to be decorated by @uninitialize`);
 
             const uninitialize = descriptor.value;
             /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
