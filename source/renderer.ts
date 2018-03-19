@@ -152,9 +152,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Actual initialize call specified by inheritor.
      */
     protected abstract onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean;
+        mouseEventProvider: MouseEventProvider | undefined,
+        /* keyEventProvider: KeyEventProvider | undefined, */
+        /* touchEventProvider: TouchEventProvider | undefined */): boolean;
 
     /**
      * Actual uninitialize call specified by inheritor.
@@ -198,9 +198,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     @Initializable.initialize()
     initialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        mouseEventProvider: MouseEventProvider | undefined,
+        /* keyEventProvider: KeyEventProvider | undefined, */
+        /* touchEventProvider: TouchEventProvider | undefined */): boolean {
 
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
