@@ -124,6 +124,9 @@ export class Camera {
      * Sets the eye. Invalidates the view.
      */
     set eye(eye: vec3) {
+        if (vec3.equals(this._eye, eye)) {
+            return;
+        }
         this._eye = vec3.clone(eye);
         this.invalidate(true, false);
     }
@@ -139,6 +142,9 @@ export class Camera {
      * Sets the center. Invalidates the view.
      */
     set center(center: vec3) {
+        if (vec3.equals(this._center, center)) {
+            return;
+        }
         this._center = vec3.clone(center);
         this.invalidate(true, false);
     }
@@ -154,6 +160,9 @@ export class Camera {
      * Sets the up vector. Invalidates the view.
      */
     set up(up: vec3) {
+        if (vec3.equals(this._up, up)) {
+            return;
+        }
         this._up = vec3.clone(up);
         this.invalidate(true, false);
     }
@@ -169,6 +178,9 @@ export class Camera {
      * Sets the vertical field-of-view. Invalidates the projection.
      */
     set fovy(fovy: GLfloat) {
+        if (this._fovy === fovy) {
+            return;
+        }
         this._fovy = fovy;
         this.invalidate(false, true);
     }
@@ -184,6 +196,9 @@ export class Camera {
      * Sets the distance to the near clipping plane. Invalidates the projection.
      */
     set near(near: GLfloat) {
+        if (this._near === near) {
+            return;
+        }
         if (this._near >= this._far) {
             log(LogLevel.Dev, `near expected to be smaller than far (${this._far}), given ${near}`);
             return;
@@ -203,6 +218,9 @@ export class Camera {
      * Sets the distance to the far clipping plane. Invalidates the projection.
      */
     set far(far: GLfloat) {
+        if (this._far === far) {
+            return;
+        }
         if (this._near >= this._far) {
             log(LogLevel.Dev, `far expected to be greater than near (${this._near}), given ${far}`);
             return;
@@ -215,6 +233,9 @@ export class Camera {
      * Sets the viewport size. Invalidates the projection.
      */
     set viewport(size: GLsizei2) {
+        if (this._viewport[0] === size[0] && this._viewport[1] === size[1]) {
+            return;
+        }
         this._viewport = size;
         this.invalidate(false, true);
     }
@@ -246,6 +267,9 @@ export class Camera {
      * differentiation between viewport size and scale.
      */
     set aspect(aspect: GLfloat) {
+        if (this._aspect === aspect) {
+            return;
+        }
         this._aspect = aspect;
     }
 
