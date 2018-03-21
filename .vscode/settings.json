@@ -1,11 +1,16 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     "editor.formatOnSave": true,
-    "editor.detectIndentation": false,
+    "editor.detectIndentation": true,
     "[json]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4,
         "editor.autoIndent": false
+    },
+    "[pug]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": true
     },
     "files.associations": {
         "*.bithoundrc": "json",

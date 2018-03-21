@@ -1,0 +1,7 @@
+mixin code(id, source, description)
+  p.mb-1.text-secondary= description
+  div.btn-clipboard-parent
+    div.btn-clipboard-parent 
+      button(type = 'button' data-clipboard-target = '#' + id).btn.btn-sm.btn-clipboard.text-muted Copy to Clipboard
+      pre.alert.alert-secondary
+        code(id = id)= source

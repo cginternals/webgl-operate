@@ -1,43 +1,40 @@
-doctype html
-html(lang = 'en')
-  include partial/head.pug
-  body.bg-light
+extends partials/site.pug
+
+block vars
+  - var navLinks = []
+  - navLinks.push({ href: 'https://github.com/cginternals/webgl-operate', text: 'GitHub' })
+  - navLinks.push({ href: 'https://webgl-operate.org/doc', text: 'Documentation' })
 
 
-    include partial/navbar.pug
+block head
+
+  // link(rel = 'stylesheet' href = 'css/template.css')
+  // script(src = 'js/tempalte.js')
 
 
-    section.container
-      header.jumbatron
-        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-50.d-none.d-md-block
-        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.d-block.d-md-none
-        p.lead webgl-operate (or gloperate for WebGL) is a TypeScript based WebGL rendering framework.
+block header
+
+  section.container
+   header.jumbatron
+    img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-50.d-none.d-md-block
+    img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.d-block.d-md-none
+    p.lead webgl-operate (or gloperate for WebGL) is a TypeScript based WebGL rendering framework.
 
 
-    section.container
-      div.row
-        div.col
-          - var id = 'test-canvas'
-          include partial/canvas.pug
+block content
+
+  section.container
+    div.row
+      div.col
+        canvas(id = 'test-canvas', data-backend = 'auto').img-fluid.w-100
 
 
-    section.container
-      div.row
-        div.col
-          p webgl-operate enables hardware-accelerated 2D and 3D rendering on html canvases. It is use-case agnostic, i.e., it does not assume a specific type of rendering but facilitates arbitrary rendering approaches instead (e.g., procedural rendering, multi-frame sampling, raytracing, progressive pathtracing).
+  section.container
+    p webgl-operate enables hardware-accelerated 2D and 3D rendering on html canvases. It is use-case agnostic, i.e., it does not assume a specific type of rendering but facilitates arbitrary rendering approaches instead (e.g., procedural rendering, multi-frame sampling, raytracing, progressive pathtracing).
 
-          mixin code(id, source, description)
-            p.mb-1.text-secondary= description
-            div.btn-clipboard-parent
-              div.btn-clipboard-parent 
-                button(type = 'button' data-clipboard-target = '#' + id).btn.btn-sm.btn-clipboard.text-muted Copy to Clipboard
-                pre.alert.alert-secondary
-                  code(id = id)= source
+    include partials/code.pug
+      +code('jsdelivr', '<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.2.0/dist/webgl-operate.min.js"></script>'
+        , 'You can integrate webgl-operate as bundled JavaScript in your HTML:')
+      +code('npm', 'npm install --save-dev webgl-operate'
+        , 'Or you can use webgl-operate as JavaScript or TypeScript library (types included) via npm:')
 
-          +code('jsdelivr', '<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.2.0/dist/webgl-operate.min.js"></script>'
-            , 'You can integrate webgl-operate as bundled JavaScript in your HTML:')
-          +code('npm', 'npm install --save-dev webgl-operate'
-            , 'Or you can use webgl-operate as JavaScript or TypeScript library (types included) via npm:')
-
-
-    include partial/foot.pug
