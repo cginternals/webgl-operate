@@ -68,35 +68,28 @@ ToDo
 
 ## NPM Configuration and Project Setup
 
-This package setup distinguishes between *develop*, *deploy*, and *publish* related scripts: 
-
-* **deployment** is covered by the script `deploy` and is intended to build bundles, website, documentation, test-results etc. It is intended for non-npm deployment and triggeres a sequence of development scripts.
-* **publishing** is covered by the script `prepublish`and is intended to be triggered automatically by `npm publish`. It is intended for npm deployment and triggers a sequence of custom as well as other develpment scripts.
-* **development** scripts (all except `deploy` and `prepublish`) are intended for actual development of webgl-operate.
-
 `package.json` specifies the following scripts that can be run by `npm run-script <command>`. 
 
 | command          | description |
 |------------------|-------------|
-| `build`          | build and pack library with core, debug, and viewer facilities [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
-| `build-watch`    | `build` command in watch (for modifications) mode |
-| `build-all`      | build both minified and slim (no viewer and debug) libraries to `dist` |
-| `build-lib`      | transpile sources and declarations for distribution via npm |
-| `website`        | build website html pages to `dist` |
-| `website-watch`  | `website` command in watch (for modifications) mode |
+| `build`          | build for local development to `./build`, creates a bundle with core, debug, and viewer facilities and a test website [webpack and TypeScript](https://webpack.js.org/guides/webpack-and-typescript/) |
+| `server`         | starts a local server on port 4000 on the `./build` directory |
+| `server-watch`   | runs `build` tasks concurrently in watch mode and starts `server` |
+| `build-dist`     | transpile sources and declarations to `./dist` for distribution via, e.g., CDN |
+| `build-lib`      | transpile sources and declarations to `./lib/` for distribution via npm |
+| `cleanup`        | removes all build directories, i.e., `./build`, `./dist`, and `./lib` |
 | `lint`           | code quality lint [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
 | `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
-| `deploy-lite`    | lite distribution deployment triggering only build and website |
-| `deploy-watch`   | `deploy-lite` command in watch (for modifications) mode |
-| **`deploy`**     | full distribution deployment triggering `lint`, `test`, `build-all`, `doc`, and `website` |
-| **`prepublishOnly`** | run `build-all` and `build-lib` |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
-Use `npm run-script build` to build the library and `npm run-script website` to build the website (or `deploy-lite` to trigger `build` and `website` in a single step). The built website are located in the `dist` directory.
+For development use `npm run-script build` and, e.g., `npm run-script server` to access the test website locally.
 
-* For **deployment** `npm update` and subsequent `npm run-script deploy` should be run.
+* For **deployment** `npm update` and subsequent `npm run-script prepack` should be run.
 * For **publishing** the package to npm login to npm via `npm login`, then update the package version using `npm version {major,minor,patch}`, and, finally, run `npm publish`.
+
+Please note that deployment of documentation and examples is managed by CG Internals manually for now.
+
 
 ## Visual Studio Code configuration
 

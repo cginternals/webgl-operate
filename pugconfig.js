@@ -12,7 +12,7 @@ const path = require('path');
 const pug = require('pug');
 
 const websiteDir = './website';
-const distDir = './dist';
+const distDir = './build';
 
 const entries = ['index.pug'];
 
@@ -23,6 +23,12 @@ const copy = require('./copy.js');
 
 var build_pending = false;
 function build() {
+
+    try {
+        fs.mkdirSync(distDir)
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err
+    }
 
     assets.forEach((asset) => copy(asset[0], asset[1], asset[2], asset[3]));
 

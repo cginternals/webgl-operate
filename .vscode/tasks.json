@@ -17,17 +17,24 @@
             ]
         },
         {
-            "taskName": "build (watch)",
+            "taskName": "server",
             "args": [
                 "run-script",
-                "build-watch"
+                "server"
             ]
         },
         {
-            "taskName": "build all",
+            "taskName": "server-watch",
             "args": [
                 "run-script",
-                "build-all"
+                "server-watch"
+            ]
+        },
+        {
+            "taskName": "build dist",
+            "args": [
+                "run-script",
+                "build-dist"
             ]
         },
         {
@@ -58,41 +65,6 @@
             "args": [
                 "run-script",
                 "doc"
-            ]
-        },
-        {
-            "taskName": "website",
-            "args": [
-                "run-script",
-                "website"
-            ]
-        },
-        {
-            "taskName": "website (watch)",
-            "args": [
-                "run-script",
-                "website-watch"
-            ]
-        },
-        {
-            "taskName": "deploy",
-            "args": [
-                "run-script",
-                "deploy"
-            ]
-        },
-        {
-            "taskName": "deploy lite",
-            "args": [
-                "run-script",
-                "deploy-lite"
-            ]
-        },
-        {
-            "taskName": "deploy lite (watch)",
-            "args": [
-                "run-script",
-                "deploy-watch"
             ]
         },
         {

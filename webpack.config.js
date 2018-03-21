@@ -19,7 +19,7 @@ module.exports = {
         'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts']
     },
     output: {
-        path: __dirname + '/dist',
+        path: __dirname + '/build',
         filename: '[name].js',
         library: 'gloperate',
         libraryTarget: 'umd'

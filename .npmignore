@@ -13,19 +13,11 @@ tslint.*
 website/
 source/
 test/
-
+build/
 dist/test-results/
-dist/css/
-dist/fonts/
-dist/img/
-dist/js/
 dist/doc/
-dist/**/*.html
-dist/**/*.png
-dist/**/*.ico
 
 copy.js
-prepublish.assets.js
 pugconfig.js
 
 webgl-operate-*.tgz
