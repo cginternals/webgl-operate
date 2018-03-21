@@ -71,7 +71,7 @@
     "scripts": {
         "build": "webpack && node pugconfig.js",
         "server": "http-server ./build -a localhost -p 4000",
-        "server-watch": "concurrently \"webpack --watch\" \"node pugconfig.js --watch\" \"http-server ./build -a localhost -p 4000\"",
+        "server-watch": "concurrently \"webpack --watch\" \"node pugconfig.js --watch\" \"npm run-script server\"",
         "build-dist": "webpack --config webpack.config.dist.js",
         "build-lib": "webpack --config webpack.config.lib.js",
         "cleanup": "rimraf ./dist ./lib ./build",
