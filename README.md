@@ -98,7 +98,7 @@ Please not that the workspace configuration `.vscode/settings.json` has automati
 
 #### tasks
 
-All the above scripts, namely `build, build-watch, build-all, check, deploy-lite, deploy-watch, deploy, doc, website, website-watch` as well as `test` can be triggered from within Visual Studio Code.
+All the above scripts, namely `build, build-lib, build-dist, lint, cleanup, server, server-watch, doc`, as well as `test` can be triggered from within Visual Studio Code.
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 
