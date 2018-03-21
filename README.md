@@ -32,6 +32,20 @@ npm install --save-dev webgl-operate
 <script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.2.0/dist/webgl-operate.min.js"></script>
 ```
 
+## Features
+
+#### 0.1.0 Features
+Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Professional Customer Support, Professional Integration Service, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade
+ 
+#### 0.2.0 Features
+Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Navigation, Multiple Canvases
+
+#### 0.3.0 planned Features
+3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, ...
+
+#### 0.4.0 planned Features
+Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
+
 
 ## Getting Started
 
