@@ -35,7 +35,7 @@ npm install --save-dev webgl-operate
 ## Features
 
 #### 0.1.0 Features
-Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Professional Customer Support, Professional Integration Service, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade
+Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Professional Customer Support, Professional Integration Service
  
 #### 0.2.0 Features
 Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Navigation, Multiple Canvases
