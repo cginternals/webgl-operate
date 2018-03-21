@@ -365,7 +365,16 @@ export class GL2Facade {
                     /* tslint:disable-next-line:no-null-keyword */
                     return gl.texImage2D(target, level, internalformat, width, height, border, format, type, null);
                 }
-                if (source instanceof ArrayBuffer) {
+                if (source instanceof Int8Array
+                    || source instanceof Uint8Array
+                    || source instanceof Uint8ClampedArray
+                    || source instanceof Int16Array
+                    || source instanceof Uint16Array
+                    || source instanceof Int32Array
+                    || source instanceof Uint32Array
+                    || source instanceof Float32Array
+                    || source instanceof Float64Array
+                    || source instanceof DataView) {
                     return gl.texImage2D(target, level, internalformat, width, height, border, format, type, source);
                 }
                 return gl.texImage2D(target, level, internalformat, format, type, source);
