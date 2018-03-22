@@ -38,6 +38,7 @@ export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
 export { AlterationLookup } from './alterable';
+export { JsonSchema } from './jsonschema';
 
 
 import * as root_auxiliaries from './auxiliaries';

@@ -65,6 +65,7 @@ describe('webgl-operate slim API', () => {
             'ReadbackPass',
 
             'AlterationLookup',
+            'JsonSchema',
 
             'auxiliaries',
             'gl_matrix_extensions',
