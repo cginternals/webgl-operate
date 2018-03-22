@@ -61,12 +61,12 @@ export namespace JsonSchema {
 
                     if (isDefined && hasProperties) {
                         /* Invoke recursive defaulting for already defined object with properties. */
-                        this.default(instance[key], propertySchema);
+                        JsonSchema.complement(instance[key], propertySchema);
 
                     } else if (hasProperties) {
                         /* Invoke recursive defaulting for not yet defined object with properties. */
                         Object.defineProperty(instance, key, { value: {} });
-                        this.default(instance[key], propertySchema);
+                        JsonSchema.complement(instance[key], propertySchema);
 
                     } else if (!isDefined && hasDefault) {
                         /* Default value for not yet defined property. */
@@ -85,7 +85,7 @@ export namespace JsonSchema {
                     if (name === 'length') {
                         continue;
                     }
-                    this.default(instance[name], itemsSchema);
+                    JsonSchema.complement(instance[name], itemsSchema);
                 }
                 break;
         }
