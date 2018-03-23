@@ -66,9 +66,6 @@
     "dependencies": {
         "rxjs": "^5.5.7"
     },
-    "peerDependencies": {
-        "rxjs": "^5.5.7"
-    },
     "scripts": {
         "build": "webpack && node pugconfig.js",
         "server": "http-server ./build -a localhost -p 4000",
@@ -81,7 +78,8 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-        "prepack": "concurrently \"npm run build-dist\" \"npm run build-lib\""
+        "ci": "npm run-script build && npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
+        "prepack": "npm install && concurrently \"npm run build-dist\" \"npm run build-lib\""
     },
     "keywords": [
         "webgl",
