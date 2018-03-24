@@ -65,9 +65,6 @@
     "dependencies": {
         "rxjs": "^5.5.7"
     },
-    "peerDependencies": {
-        "rxjs": "^5.5.7"
-    },
     "scripts": {
         "build": "webpack && node pugconfig.js",
         "server": "http-server ./build -a localhost -p 4000",
