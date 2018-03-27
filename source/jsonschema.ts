@@ -31,6 +31,17 @@ export namespace JsonSchema {
 
     /**
      * Complements default values for all (nested) properties and array's of objects of a given object (POJO/JSON).
+     * ```
+     * const schema: any = { type: 'object', properties: {
+     *          foo: { type: 'object', properties: {
+     *              bar: { type: 'string', default: 'moep' },
+     *              baz: { type: 'string' } } } } };
+     *
+     * const object: any = { };
+     * JsonSchema.complement(object, schema);
+     * console.log(object.foo.bar); // should exist and output 'moep'
+     * ```
+     *
      * @param instance - Object to complement default values for.
      * @param schema - Schema used for validation.
      */
