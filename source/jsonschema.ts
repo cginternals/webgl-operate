@@ -1,5 +1,5 @@
 
-import { Schema, Validator } from 'jsonschema';
+import { Validator } from 'jsonschema';
 
 import { AlterationLookup } from './alterable';
 import { assert, logIf, LogLevel } from './auxiliaries';
@@ -14,10 +14,12 @@ export namespace JsonSchema {
      * @param references - Schema references for types etc.
      * @returns - True iff the provided instance in valid according to the schema.
      */
-    export function validate(instance: any, schema: Schema, references: Array<[Schema, string]>): boolean {
+    export function validate(instance: any, schema: object, references?: Array<[object, string]>): boolean {
         const validator = new Validator();
-        for (const reference of references) {
-            validator.addSchema(reference[0], reference[1]);
+        if (references !== undefined) {
+            for (const reference of references) {
+                validator.addSchema(reference[0], reference[1]);
+            }
         }
         /* Validate of (sub) schema of given POJO/JSON. */
         const result = validator.validate(instance, schema);
@@ -26,12 +28,13 @@ export namespace JsonSchema {
         return result.valid;
     }
 
+
     /**
      * Complements default values for all (nested) properties and array's of objects of a given object (POJO/JSON).
      * @param instance - Object to complement default values for.
      * @param schema - Schema used for validation.
      */
-    export function complement(instance: any | undefined, schema: object): void {
+    export function complement(instance: any | undefined, schema: any): void {
         if (instance === undefined) {
             return;
         }
@@ -101,14 +104,23 @@ export namespace JsonSchema {
      * @returns - False iff both objects are equal w.r.t. structure and values. True otherwise.
      */
     export function compare(objectL: object | undefined, objectR: object | undefined,
-        tracker: AlterationLookup, path?: string): boolean {
+        tracker: AlterationLookup, path: string): boolean {
         assert((tracker as object).hasOwnProperty('any'),
             `expected allocation lookup object to have 'any' key`);
 
         if ((objectL === undefined && objectR !== undefined) || (objectL !== undefined && objectR === undefined)) {
-            tracker.alter(path ? `${path}` : `*`);
+            tracker.alter(path);
             return true;
         }
+
+        // const properties = Object.getOwnPropertyNames(objectL);
+
+        // let equals = true;
+        // for (const key of properties) {
+        //     const values = [(objectL as any)[key], (objectR as any)[key]];
+        //     const typeL = (objectL as any)[key]
+        // }
+
 
         /** @todo implement deep compare for alteration tracking */
         // let objectsDiffer = true;
