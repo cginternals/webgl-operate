@@ -22,6 +22,8 @@ It can be used for, e.g., complex charting, volume rendering, point-cloud render
 
 ## How to Install
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/cginternals/webgl-operate.svg)](https://greenkeeper.io/)
+
 *webgl-operate* can be used both as npm module (TypeScript or JavaScript) and linked JavaScript bundle:
 
 ```sh
