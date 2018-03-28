@@ -37,15 +37,15 @@ export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
-export { AlterationLookup } from './alterable';
-export { JsonSchema } from './jsonschema';
-
 
 import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;
 
 import * as root_gl_matrix_extensions from './gl-matrix-extensions';
 export import gl_matrix_extensions = root_gl_matrix_extensions;
+
+import * as root_properties from './properties';
+export import properties = root_properties;
 
 import * as root_raymath from './raymath';
 export import ray_math = root_raymath;

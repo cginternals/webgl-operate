@@ -64,11 +64,9 @@ describe('webgl-operate slim API', () => {
             'BlitPass',
             'ReadbackPass',
 
-            'AlterationLookup',
-            'JsonSchema',
-
             'auxiliaries',
             'gl_matrix_extensions',
+            'properties',
             'ray_math',
             'tuples',
         ];

@@ -10,7 +10,7 @@ module.exports.module.rules[0].use = {
     options: {
         compilerOptions: {
             declaration: true,
-            removeComments: true
+            removeComments: false
         }
     }
 };

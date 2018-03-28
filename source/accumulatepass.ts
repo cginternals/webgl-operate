@@ -2,12 +2,12 @@
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
-import { AlterationLookup } from './alterable';
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
+import { ChangeLookup } from './properties';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
 import { FramePrecisionString, Wizard } from './wizard';
@@ -36,7 +36,7 @@ export class AccumulatePass extends Initializable {
     /**
      * Alterable auxiliary object for tracking changes on this object's input and lazy updates.
      */
-    protected readonly _altered = Object.assign(new AlterationLookup(), {
+    protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, texture: false, precision: false, passThrough: false,
     });
 
