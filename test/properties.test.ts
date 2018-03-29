@@ -9,6 +9,7 @@ const stub = sinon.stub;
 import { SchemaError } from 'jsonschema';
 
 import { compare, complement, validate } from '../source/properties';
+import { ChangeLookup } from '../source/changelookup';
 
 
 /* tslint:disable:no-unused-expression */
