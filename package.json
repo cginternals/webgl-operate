@@ -41,7 +41,6 @@
         "chai-spies": "~1.0.0",
         "concurrently": "~3.5.1",
         "coveralls": "~3.0.0",
-        "gl-matrix": "~2.4.0",
         "glob": "~7.1.2",
         "http-server": "~0.11.1",
         "mocha": "~5.0.4",
@@ -58,19 +57,21 @@
         "tslint": "~5.9.1",
         "typedoc": "~0.11.1",
         "typescript": "~2.8.1",
-        "webpack": "~4.3.0",
-        "webpack-glsl-loader": "~1.0.1",
-        "webpack-sources": "~1.1.0"
+        "webpack": "^4.3.0",
+        "webpack-bundle-analyzer": "^2.11.1",
+        "webpack-cli": "^2.0.13",
+        "webpack-glsl-loader": "~1.0.1"
     },
     "dependencies": {
+        "gl-matrix": "^2.4.0",
         "rxjs": "^5.5.7"
     },
     "scripts": {
-        "build": "webpack && node pugconfig.js",
+        "build": "webpack-cli --mode development && node pugconfig.js",
         "server": "http-server ./build -a localhost -p 4000",
-        "server-watch": "concurrently \"webpack --watch\" \"node pugconfig.js --watch\" \"npm run-script server\"",
-        "build-dist": "webpack --config webpack.config.dist.js",
-        "build-lib": "webpack --config webpack.config.lib.js",
+        "server-watch": "concurrently \"webpack-cli --mode development --watch\" \"node pugconfig.js --watch\" \"npm run-script server\"",
+        "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
+        "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
         "cleanup": "rimraf ./dist ./lib ./build",
         "lint": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
         "test": "nyc mocha",

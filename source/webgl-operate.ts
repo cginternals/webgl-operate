@@ -1,6 +1,12 @@
 
 export * from './webgl-operate.slim';
 
+export { Invalidate } from './renderer';
+export { ExtensionsHash } from './extensionshash';
+
+export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
+
+
 /* DEBUG facilities */
 
 import * as debug_TestNavigation from './debug/testnavigation';

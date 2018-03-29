@@ -7,14 +7,7 @@ module.exports = {
 
     cache: true,
     devtool: 'source-map',
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            minimize: true,
-            sourceMap: true,
-            include: /\.min\.js$/,
-        })
-    ],
-
+    plugins: [],
     entry: {
         'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts']
     },
@@ -24,6 +17,9 @@ module.exports = {
         library: 'gloperate',
         libraryTarget: 'umd'
 
+    },
+    externals: {
+        'gl-matrix': ''
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
@@ -40,7 +36,7 @@ module.exports = {
                     options: {
                         compilerOptions: {
                             noUnusedLocals: false,
-                            removeComments: true
+                            removeComments: false
                         }
                     }
                 }
