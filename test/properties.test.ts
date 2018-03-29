@@ -13,7 +13,6 @@ import { ChangeLookup, compare, complement, validate } from '../source/propertie
 
 /* tslint:disable:no-unused-expression */
 
-
 describe('Change Lookup', () => {
 
     const alterable = {

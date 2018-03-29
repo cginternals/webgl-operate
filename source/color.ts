@@ -3,7 +3,7 @@ import { assert, log, LogLevel } from './auxiliaries';
 
 import { clamp } from './gl-matrix-extensions';
 
-import { clampf, clampf3, clampf4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
+import { clampf, clampf3, clampf4, duplicate4, equals4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
 
 
 /**
@@ -317,18 +317,45 @@ export class Color {
         if (rgba === undefined) {
             return;
         }
-        this._rgba[0] = clampf(rgba[0], `red value`);
-        this._rgba[1] = clampf(rgba[1], `green value`);
-        this._rgba[2] = clampf(rgba[2], `blue value`);
-
         if (rgba.length === 3 && alpha !== undefined) {
-            this._rgba[3] = clampf(alpha, `alpha value`);
+            this.fromF32(rgba[0], rgba[1], rgba[2], alpha);
         } else if (rgba.length === 4) {
-            this._rgba[3] = clampf(rgba[3], `alpha value`);
+            this.fromF32(rgba[0], rgba[1], rgba[2], rgba[3]);
             assert(alpha === undefined, `expected alpha to be undefined when given an 4-tuple in RGBA`);
+        } else {
+            this.fromF32(rgba[0], rgba[1], rgba[2]);
         }
+    }
 
-        this._altered = true;
+
+    /**
+     * Checks whether or not this color matches a second color (based on internal rgba floating representation).
+     * @param other - Color to compare color values to.
+     * @returns - True iff both colors have the exact same rgba floating point values.
+     */
+    equals(other: Color): boolean {
+        return equals4<GLclampf>(this._rgba, other._rgba);
+    }
+
+
+    /**
+     * Specifies the internal rgba store using a color in float (32bit) RGBA colors.
+     * @param red - Red color component in [0.0, 1.0]
+     * @param green - Green color component in [0.0, 1.0]
+     * @param blue - Blue color component in [0.0, 1.0]
+     * @param alpha - Alpha color component in [0.0, 1.0]
+     * @returns - The color instance (this).
+     */
+    fromF32(red: GLfloat, green: GLfloat, blue: GLfloat, alpha: GLfloat = Color.DEFAULT_ALPHA): Color {
+        const previous = duplicate4<GLclampf>(this._rgba);
+
+        this._rgba[0] = clampf(red, `red value`);
+        this._rgba[1] = clampf(green, `green value`);
+        this._rgba[2] = clampf(blue, `blue value`);
+        this._rgba[3] = clampf(alpha, `alpha value`);
+
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
+        return this;
     }
 
     /**
@@ -341,16 +368,16 @@ export class Color {
      */
     fromUI8(red: GLubyte, green: GLubyte, blue: GLubyte,
         alpha: GLubyte = Math.floor(Color.DEFAULT_ALPHA * 255)): Color {
+        const previous = duplicate4<GLclampf>(this._rgba);
 
         this._rgba[0] = clamp(red, 0, 255) / 255.0;
         this._rgba[1] = clamp(green, 0, 255) / 255.0;
         this._rgba[2] = clamp(blue, 0, 255) / 255.0;
         this._rgba[3] = clamp(alpha, 0, 255) / 255.0;
-        this._altered = true;
 
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
     }
-
 
     /**
      * Specifies the internal rgba store using a color in HSL color space.
@@ -362,13 +389,14 @@ export class Color {
      */
     fromHSL(hue: GLclampf, saturation: GLclampf, lightness: GLclampf,
         alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+        const previous = duplicate4<GLclampf>(this._rgba);
 
         const rgb = Color.hsl2rgb([hue, saturation, lightness]);
         const alphaf = clampf(alpha, 'ALPHA input');
 
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
-        this._altered = true;
 
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
     }
 
@@ -382,13 +410,14 @@ export class Color {
      */
     fromLAB(lightness: GLclampf, greenRed: GLclampf, blueYellow: GLclampf,
         alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+        const previous = duplicate4<GLclampf>(this._rgba);
 
         const rgb = Color.lab2rgb([lightness, greenRed, blueYellow]);
         const alphaf = clampf(alpha, 'ALPHA input');
 
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
-        this._altered = true;
 
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
     }
 
@@ -403,13 +432,14 @@ export class Color {
      */
     fromCMYK(cyan: GLclampf, magenta: GLclampf, yellow: GLclampf, key: GLclampf,
         alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+        const previous = duplicate4<GLclampf>(this._rgba);
 
         const rgb = Color.cmyk2rgb([cyan, magenta, yellow, key]);
         const alphaf = clampf(alpha, 'ALPHA input');
 
         this._rgba = [rgb[0], rgb[1], rgb[2], alphaf];
-        this._altered = true;
 
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
     }
 
@@ -419,9 +449,11 @@ export class Color {
      * @returns - The color instance (this).
      */
     fromHex(hex: string): Color {
-        this._rgba = Color.hex2rgba(hex);
-        this._altered = true;
+        const previous = duplicate4<GLclampf>(this._rgba);
 
+        this._rgba = Color.hex2rgba(hex);
+
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
     }
 
