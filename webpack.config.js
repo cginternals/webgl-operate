@@ -3,8 +3,8 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    context: __dirname + '/source',
 
+    context: __dirname + '/source',
     cache: true,
     devtool: 'source-map',
     plugins: [],
@@ -19,7 +19,7 @@ module.exports = {
 
     },
     externals: {
-        'gl-matrix': ''
+        'rxjs': 'Rx'
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],

@@ -1,10 +1,11 @@
 
 export * from './webgl-operate.slim';
 
-export { Invalidate } from './renderer';
-export { ExtensionsHash } from './extensionshash';
 
-export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
+/* ADVANCED facilities */
+
+import * as root_properties from './properties';
+export import properties = root_properties;
 
 
 /* DEBUG facilities */

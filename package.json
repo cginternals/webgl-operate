@@ -41,6 +41,8 @@
         "chai-spies": "~1.0.0",
         "concurrently": "~3.5.1",
         "coveralls": "~3.0.0",
+        "cross-env": "~5.1.4",
+        "gl-matrix": "~2.4.0",
         "glob": "~7.1.2",
         "http-server": "~0.11.1",
         "jsonschema": "~1.2.2",
@@ -64,9 +66,11 @@
         "webpack-glsl-loader": "~1.0.1"
     },
     "dependencies": {
-        "gl-matrix": "^2.4.0",
         "rxjs": "^5.5.7"
     },
+    "sideEffects": [
+        "./source/polyfill.ts"
+    ],
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
         "server": "http-server ./build -a localhost -p 4000",
@@ -80,6 +84,7 @@
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
         "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
+        "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.dist.js",
         "prepack": "npm install && concurrently \"npm run build-dist\" \"npm run build-lib\""
     },
     "keywords": [

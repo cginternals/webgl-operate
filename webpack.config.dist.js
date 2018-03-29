@@ -15,5 +15,7 @@ module.exports.module.rules[0].use = {
     }
 };
 
-const analyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-module.exports.plugins.push(new analyzer());
+if (process.env.ANALYZE) {
+    const analyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+    module.exports.plugins.push(new analyzer());
+}
