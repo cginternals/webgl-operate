@@ -3,11 +3,6 @@ node_js:
   - '7'
 install:
   - npm install
-  - npm install rxjs
 script:
-  - npm run-script build
-  - npm run-script build-dist
-  - npm run-script build-lib
-  - npm run-script lint 
-  - npm run-script test
+  - npm run-script ci
 after_success: npm run-script coverage

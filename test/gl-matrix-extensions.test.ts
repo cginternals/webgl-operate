@@ -2,7 +2,7 @@ import * as chai from 'chai';
 
 const expect = chai.expect;
 
-import { vec2, vec3, vec4 } from 'gl-matrix';
+import { mat2, mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 import {
     abs2, abs3, abs4,
@@ -10,6 +10,7 @@ import {
     decode_float24x1_from_uint8x3, decode_uint24_from_rgb8, decode_uint32_from_rgba8,
     encode_float24x1_to_uint8x3, encode_uint24_to_rgb8, encode_uint32_to_rgba8,
     fract, fromVec3, fromVec4,
+    m2, m3, m4,
     mix,
     parseVec2, parseVec3, parseVec4,
     sign,
@@ -204,6 +205,17 @@ describe('gl-matrix extensions', () => {
         expect(vec4.equals(parseVec4('0.0, 0.0, 0.0, 0.0'), v4())).to.be.true;
         expect(vec4.equals(parseVec4('1.0, 2.0, 4.0, 8.0'), vec4.fromValues(1.0, 2.0, 4.0, 8.0))).to.be.true;
     });
+
+    it('should provide default initialized vec and mat abbreviations', () => {
+        expect(vec2.equals(vec2.create(), v2())).to.be.true;
+        expect(vec3.equals(vec3.create(), v3())).to.be.true;
+        expect(vec4.equals(vec4.create(), v4())).to.be.true;
+
+        expect(mat2.equals(mat2.create(), m2())).to.be.true;
+        expect(mat3.equals(mat3.create(), m3())).to.be.true;
+        expect(mat4.equals(mat4.create(), m4())).to.be.true;
+    });
+
 });
 
 

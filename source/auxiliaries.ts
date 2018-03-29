@@ -40,55 +40,6 @@ namespace auxiliaries {
         throw new EvalError(message);
     }
 
-    /**
-     * Evaluates the provided expression and throws a range error if false.
-     * ```
-     * assert_range(foo >= 0, `value of foo expected to be positive`);
-     * ```
-     * @param expression - Result of an expression expected to be true.
-     * @param message - Message to be passed to the error (if thrown).
-     */
-    export function assertRange(expression: boolean, message: string): void {
-        if (DISABLE_ASSERTIONS || expression) {
-            return;
-        }
-
-        // Note: the parameters are intentionally not forwarded to console.assert since it does not interrupt execution.
-        throw new RangeError(message);
-    }
-
-    /**
-     * Asserts whether or not an object strictly complies to the provided set of mandatory and optional properties.
-     * This means, all property names of the object must be found within the property specification, and all non
-     * optional properties must be found within the object. Throws an error of not compliant.
-     * @param object - Object to assert property name compliance for.
-     * @param specification - Name specification, e.g., ['foo', 'bar?'], making foo mandatory, and bar optional.
-     */
-    export function assertPropertyCompliance(object: object, specification: Array<string>): void {
-        const optional = specification.filter((name) => name.endsWith('?'));
-        optional.forEach((name, index, array) => array[index] = name.slice(0, -1));
-        const required = specification.filter((name) => !name.endsWith('?'));
-
-        const propertyNames = Object.getOwnPropertyNames(object);
-        const onlyValidNames = propertyNames.every(
-            (name) => optional.indexOf(name) >= 0 || required.indexOf(name) >= 0);
-        const allRequiredNames = required.every((name) => propertyNames.indexOf(name) >= 0);
-
-        assert(onlyValidNames && allRequiredNames,
-            `expected object to strictly comply to properties [${specification}], given [${propertyNames}]`);
-    }
-
-    /**
-     * Asserts whether or not a value matches one of multiple allowed values. Throws an error of not compliant.
-     * @param value - Object to assert property name compliance for.
-     * @param specification - Supported values.
-     */
-    export function assertValueCompliance<T>(value: T, type: string, specification: Array<T>): void {
-        assert(typeof value === type, `expected value to by of type '${type}', given '${typeof value}'`);
-        assert(specification.indexOf(value) >= 0,
-            `expected value to strictly comply to values [${specification}], given ${value}`);
-    }
-
 
     /**
      * Writes a warning to the console when the evaluated expression is false.

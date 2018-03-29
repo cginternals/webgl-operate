@@ -12,6 +12,8 @@ const stub = sinon.stub;
 import { Color } from '../source/color';
 
 
+/* tslint:disable:no-unused-expression */
+
 describe('Color', () => {
 
     it('should default to [0.0, 0.0, 0.0, 1.0]', () => {
@@ -329,6 +331,41 @@ describe('Color', () => {
         expect(color.gray(Color.GrayscaleAlgorithm.MinimumDecomposition)).to.be.closeTo(0.1882, 1e-4);
 
         expect(color.gray()).to.be.closeTo(0.3636, 1e-4);
+    });
+
+
+    it('should track alterations', () => {
+        const color = new Color();
+        expect(color.altered).to.be.false;
+
+        color.fromUI8(48, 96, 192);
+        expect(color.altered).to.be.true;
+
+        color.altered = false;
+        expect(color.altered).to.be.false;
+
+        color.fromHex('#250285');
+        expect(color.altered).to.be.true;
+        color.altered = false;
+        color.fromHex('#250285');
+        expect(color.altered).to.be.false;
+    });
+
+
+    it('should support check for equality ', () => {
+        const color0 = new Color();
+        color0.fromUI8(48, 96, 192);
+
+        const color1 = new Color();
+        color1.fromUI8(48, 96, 192);
+
+        expect(color0.equals(color1)).to.be.true;
+        expect(color1.equals(color0)).to.be.true;
+
+        color1.fromUI8(191, 69, 84);
+        expect(color0.equals(color1)).to.be.false;
+        color1.fromUI8(48, 96, 192, 1);
+        expect(color0.equals(color1)).to.be.false;
     });
 
 });
