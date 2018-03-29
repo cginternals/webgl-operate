@@ -63,7 +63,7 @@ export class MouseEventProvider {
         if (this._enterSubject === undefined) {
             this._enterSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._enterListener = (event: MouseEvent) => this._enterSubject.next(event);
-            this._element.addEventListener('mouseenter', this._enterListener);
+            this._element.onmouseenter = this._enterListener;
         }
         return this._enterSubject.asObservable();
     }
@@ -72,7 +72,7 @@ export class MouseEventProvider {
         if (this._leaveSubject === undefined) {
             this._leaveSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._leaveListener = (event: MouseEvent) => this._leaveSubject.next(event);
-            this._element.addEventListener('mouseleave', this._leaveListener);
+            this._element.onmouseleave = this._leaveListener;
         }
         return this._leaveSubject.asObservable();
     }
@@ -81,7 +81,7 @@ export class MouseEventProvider {
         if (this._downSubject === undefined) {
             this._downSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._downListener = (event: MouseEvent) => this._downSubject.next(event);
-            this._element.addEventListener('mousedown', this._downListener);
+            this._element.onmousedown = this._downListener;
         }
         return this._downSubject.asObservable();
     }
@@ -90,7 +90,7 @@ export class MouseEventProvider {
         if (this._upSubject === undefined) {
             this._upSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._upListener = (event: MouseEvent) => this._upSubject.next(event);
-            this._element.addEventListener('mouseup', this._upListener);
+            this._element.onmouseup = this._upListener;
         }
         return this._upSubject.asObservable();
     }
@@ -99,7 +99,7 @@ export class MouseEventProvider {
         if (this._moveSubject === undefined) {
             this._moveSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._moveListener = (event: MouseEvent) => this._moveSubject.next(event);
-            this._element.addEventListener('mousemove', this._moveListener);
+            this._element.onmousemove = this._moveListener;
         }
         return this._moveSubject.asObservable();
     }
@@ -108,7 +108,7 @@ export class MouseEventProvider {
         if (this._wheelSubject === undefined) {
             this._wheelSubject = new ReplaySubject<WheelEvent>(undefined, this._timeframe);
             this._wheelListener = (event: WheelEvent) => this._wheelSubject.next(event);
-            this._element.addEventListener('wheel', this._wheelListener);
+            this._element.onwheel = this._wheelListener;
         }
         return this._wheelSubject.asObservable();
     }
