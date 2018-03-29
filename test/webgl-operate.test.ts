@@ -13,6 +13,18 @@ import * as gloperate from '../source/webgl-operate';
 
 describe('webgl-operate API', () => {
 
+    it('should expose a fixed set of facilities per minor/major', () => {
+
+        const facilities = [
+            'properties',
+        ];
+
+        for (const facility of facilities) {
+            expect(gloperate.hasOwnProperty(facility), `expected facility ${facility} missing`).to.be.true;
+        }
+    });
+
+
     it('should expose a fixed set of debug facilities per minor/major', () => {
 
         const debugFacilities = [

@@ -3,18 +3,11 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    context: __dirname + '/source',
 
+    context: __dirname + '/source',
     cache: true,
     devtool: 'source-map',
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            minimize: true,
-            sourceMap: true,
-            include: /\.min\.js$/,
-        })
-    ],
-
+    plugins: [],
     entry: {
         'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts']
     },
@@ -24,6 +17,9 @@ module.exports = {
         library: 'gloperate',
         libraryTarget: 'umd'
 
+    },
+    externals: {
+        'rxjs': 'Rx'
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
@@ -40,7 +36,7 @@ module.exports = {
                     options: {
                         compilerOptions: {
                             noUnusedLocals: false,
-                            removeComments: true
+                            removeComments: false
                         }
                     }
                 }

@@ -74,5 +74,12 @@
                 "cleanup"
             ]
         },
+        {
+            "taskName": "analyze",
+            "args": [
+                "run-script",
+                "analyze"
+            ]
+        },
     ]
 }

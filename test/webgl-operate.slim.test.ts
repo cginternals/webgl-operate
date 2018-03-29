@@ -22,14 +22,12 @@ describe('webgl-operate slim API', () => {
             /* CORE */
 
             'Canvas',
-
-            'Renderer',
-            'Invalidate',
             'Context',
-            'ContextMasquerade',
             'Controller',
+
+            'ContextMasquerade',
             'ExtensionsHash',
-            'Wizard',
+            'ChangeLookup',
             'MouseEventProvider',
             'EventHandler',
 
@@ -39,10 +37,13 @@ describe('webgl-operate slim API', () => {
             'Geometry',
             'Program',
             'Renderbuffer',
+            'Renderer',
+            'Invalidate',
             'Shader',
             'Texture2',
             'TextureCube',
             'VertexArray',
+            'Wizard',
 
             'Camera',
             'Color',
@@ -66,7 +67,6 @@ describe('webgl-operate slim API', () => {
 
             'auxiliaries',
             'gl_matrix_extensions',
-            'properties',
             'ray_math',
             'tuples',
         ];

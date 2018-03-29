@@ -1,16 +1,15 @@
 
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable, ReplaySubject } from 'rxjs';
 
 import { vec2, vec4 } from 'gl-matrix';
 
 import { assert, logIf, LogLevel } from './auxiliaries';
 import { clamp, v2 } from './gl-matrix-extensions';
 
+import { ChangeLookup } from './changelookup';
 import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
-import { ChangeLookup } from './properties';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { MouseEventProvider } from './webgl-operate';
 import { FramePrecisionString } from './wizard';
