@@ -8,8 +8,8 @@ const stub = sinon.stub;
 
 import { SchemaError } from 'jsonschema';
 
-import { compare, complement, validate } from '../source/properties';
 import { ChangeLookup } from '../source/changelookup';
+import { compare, complement, validate } from '../source/properties';
 
 
 /* tslint:disable:no-unused-expression */
