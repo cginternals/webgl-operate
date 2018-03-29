@@ -78,7 +78,7 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-        "ci": "npm run-script build && npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
+        "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
         "prepack": "npm install && concurrently \"npm run build-dist\" \"npm run build-lib\""
     },
     "keywords": [
