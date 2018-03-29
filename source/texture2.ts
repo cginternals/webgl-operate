@@ -1,5 +1,5 @@
 
-import { assert } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei2 } from './tuples';
 
@@ -118,6 +118,28 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
             gl.activeTexture(unit);
         }
         gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+    }
+
+    /**
+     * Asynchronous load of an image.
+     * @param uri - URI linking the image that should be loaded.
+     */
+    @Initializable.assert_initialized()
+    load(uri: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => {
+                this.resize(image.width, image.height);
+                this.data(image);
+
+                resolve();
+            };
+            image.onerror = () => {
+                log(LogLevel.Dev, `Loading image '${uri}' failed.`);
+                reject();
+            };
+            image.src = uri;
+        });
     }
 
     /**
