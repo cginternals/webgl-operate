@@ -7,10 +7,10 @@ import { vec2, vec4 } from 'gl-matrix';
 import { assert, logIf, LogLevel } from './auxiliaries';
 import { clamp, v2 } from './gl-matrix-extensions';
 
-import { AlterationLookup } from './alterable';
 import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
+import { ChangeLookup } from './properties';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { MouseEventProvider } from './webgl-operate';
 import { FramePrecisionString } from './wizard';
@@ -57,7 +57,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Alterable auxiliary object for tracking changes on renderer input and lazy updates.
      */
-    protected readonly _altered = Object.assign(new AlterationLookup(), {
+    protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, multiFrameNumber: false, frameSize: false, canvasSize: false, framePrecision: false,
         clearColor: false, debugTexture: false,
     });

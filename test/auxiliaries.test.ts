@@ -28,20 +28,6 @@ describe('auxiliaries assert', () => {
 });
 
 
-describe('auxiliaries assertRange', () => {
-
-    it('should not throw on true expression', () => {
-        const message = 'never throw';
-        expect(() => aux.assertRange(true, message)).to.not.throw();
-    });
-
-    it('should throw on false expression', () => {
-        const message = 'always throw';
-        expect(() => aux.assertRange(false, message)).to.throw();
-    });
-});
-
-
 describe('auxiliaries log and logIf', () => {
 
     it('should not log on false expression', () => {

@@ -148,6 +148,61 @@ namespace tuples {
         return tuple4<typeof tuple[0]>(tupleV4);
     }
 
+
+    /**
+     * Creates a duplicate of a 2-tuple into another tuple.
+     * @param tuple - Source tuple to create duplicate of.
+     */
+    export function duplicate2<T extends GLclampf | GLfloat | GLsizei>(tuple: [T, T]): [T, T] {
+        return [tuple[0], tuple[1]];
+    }
+
+    /**
+     * Creates a duplicate of a 3-tuple into another tuple.
+     * @param tuple - Source tuple to create duplicate of.
+     */
+    export function duplicate3<T extends GLclampf | GLfloat | GLsizei>(tuple: [T, T, T]): [T, T, T] {
+        return [tuple[0], tuple[1], tuple[2]];
+    }
+
+    /**
+     * Creates a duplicate of a 4-tuple into another tuple.
+     * @param tuple - Source tuple to create duplicate of.
+     */
+    export function duplicate4<T extends GLclampf | GLfloat | GLsizei>(tuple: [T, T, T, T]): [T, T, T, T] {
+        return [tuple[0], tuple[1], tuple[2], tuple[3]];
+    }
+
+
+    /**
+     * Checks whether or not two 2-tuples have identical values.
+     * @param tuple0 - First 2-tuple/operand for comparison.
+     * @param tuple1 - Second 2-tuple/operand for comparison.
+     * @returns - True iff tuples are equal in all two values (in their sequence).
+     */
+    export function equals2<T extends GLclampf | GLfloat | GLsizei>(t0: [T, T], t1: [T, T]): boolean {
+        return t0[0] === t1[0] && t0[1] === t1[1];
+    }
+
+    /**
+     * Checks whether or not two 3-tuples have identical values.
+     * @param tuple0 - First 3-tuple/operand for comparison.
+     * @param tuple1 - Second 3-tuple/operand for comparison.
+     * @returns - True iff tuples are equal in all three values (in their sequence).
+     */
+    export function equals3<T extends GLclampf | GLfloat | GLsizei>(t0: [T, T, T], t1: [T, T, T]): boolean {
+        return t0[0] === t1[0] && t0[1] === t1[1] && t0[2] === t1[2];
+    }
+
+    /**
+     * Checks whether or not two 4-tuples have identical values.
+     * @param tuple0 - First 4-tuple/operand for comparison.
+     * @param tuple1 - Second 4-tuple/operand for comparison.
+     * @returns - True iff tuples are equal in all four values (in their sequence).
+     */
+    export function equals4<T extends GLclampf | GLfloat | GLsizei>(t0: [T, T, T, T], t1: [T, T, T, T]): boolean {
+        return t0[0] === t1[0] && t0[1] === t1[1] && t0[2] === t1[2] && t0[3] === t1[3];
+    }
 }
 
 export = tuples;
