@@ -13,7 +13,7 @@ import { Controllable, Controller } from '../source/controller';
 
 class ControllerMock extends Controller {
 
-    static nextAnimationFrame: number = 1;
+    static nextAnimationFrame = 1;
 
     request(update: boolean = false) {
         super.request(update);
@@ -53,7 +53,7 @@ class InvalidatingRendererMock implements Controllable {
         if (this.controller !== undefined) {
             this.controller.update();
         }
-    };
+    }
 }
 
 
@@ -206,13 +206,13 @@ describe('Controller', () => {
             requestAnimationFrame: () => {
                 return ControllerMock.nextAnimationFrame++;
             },
-            cancelAnimationFrame: () => undefined
+            cancelAnimationFrame: () => undefined,
         };
         global.performance = {
             now: (): number => {
                 return 0;
-            }
-        }
+            },
+        };
 
         controller.block();
         renderer.controller = controller;

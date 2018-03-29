@@ -121,7 +121,7 @@ describe('Property validation', () => {
 
     it('should trigger JSON-schema based validation', () => {
 
-        /* This is only as simple test for test coverage. Since the validation itself is using the validator of the 
+        /* This is only as simple test for test coverage. Since the validation itself is using the validator of the
         jsonschema package and is expected to be tested. */
 
         const schema: any = {
