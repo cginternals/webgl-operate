@@ -194,10 +194,58 @@ namespace properties {
          */
         [index: string]: boolean | any;
 
+
         /**
-         * Map of keys that have been altered and their 'parent' objects. This cache is used for more efficient reset.
+         * One step of the recursive traversal of a given properties path in order to invalidate the alteration states.
+         * Please note, that this is design is not intended for very large structures since no caching is applied.
+         * @param path - Relative path w.r.t. to the given property.
+         * @param property - Property to continue traversal of the given relative path on.
          */
-        protected _cache = new Map<string, object>();
+        protected static alter(path: string, property: any): void {
+
+            assert(property.hasOwnProperty('any'), `expected alterable object to provide 'any' key`);
+            property.any = true;
+
+            const names = path.split('.');
+            const name = names.shift() as string;
+
+            assert(name === '' || property.hasOwnProperty(name),
+                `expected object to have key '${name}' in order to capture alterations`);
+
+            if (name !== '' && typeof property[name] !== 'object') {
+                property[name] = true;
+                return;
+            }
+
+            if (name !== '' && names.length > 0) {
+                ChangeLookup.alter(names.join('.'), property[name]);
+                return;
+            }
+
+            const parent = name !== '' ? property[name] : property;
+            for (const child of Object.getOwnPropertyNames(parent)) {
+                if (child === 'any') {
+                    continue;
+                }
+                ChangeLookup.alter(child, parent);
+            }
+        }
+
+        /**
+         * Resets all nested alteration states of a given parent property recursively. Children of object type are
+         * recursively reset. Every other child is directly set to false (including any).
+         * @param property - Property to reset alteration states of.
+         */
+        protected static reset(property: any): void {
+            for (const name of Object.getOwnPropertyNames(property)) {
+                if (typeof property[name] === 'object') {
+                    ChangeLookup.reset(property[name]);
+                    continue;
+                }
+                property[name] = false;
+            }
+        }
+
 
         /**
          * Alters the given key as well as the `any` element of all parent objects. For example, the key 'foo.bar' would
@@ -207,59 +255,14 @@ namespace properties {
          * referring to an object, the alteration is propagated top-down to all children.
          */
         alter(path: string): void {
-            assert(path.length > 0, `expected non-empty key`);
-
-            if (this._cache.has(path)) {
-                return;
-            }
-            const subKeys = path.split('.');
-
-            let cacheKey = '*';
-            let object = this;
-
-            /* Capture on root 'any' property. */
-            if (!this._cache.has(cacheKey)) {
-                this['any'] = true;
-                this._cache.set(cacheKey, this);
-            }
-
-            /* Capture change of a nested/child property in altered lookup. */
-            for (let i = 0; i < subKeys.length - 1; ++i) {
-                const key = subKeys[i] as string;
-                assert(object.hasOwnProperty(key),
-                    `expected object to have key '${key}' in order to capture alterations`);
-
-                /* Remember this alteration for more efficient reset. */
-                cacheKey = cacheKey + '.' + key;
-                if (this._cache.has(cacheKey)) {
-                    object = object[key] as any;
-                    continue;
-                }
-                object = object[key] as any;
-                object['any'] = true;
-
-                this._cache.set(cacheKey, object);
-            }
-
-            /* Capture actual associated leaf property. */
-            const key = subKeys.pop() as string;
-
-            assert(object.hasOwnProperty(key), `expected object to have key '${key}' in order to capture alterations`);
-            object[key] = true;
-
-            /* Cache key for efficient reset. */
-            this._cache.set(path, object);
+            return ChangeLookup.alter(path, this);
         }
 
         /**
-         * Reset all alteration states to false. Note that only alteration states are reset that were actually modified
-         * using this class's `alter` method (since caching is used).
+         * Reset all alteration states to false.
          */
         reset(): void {
-            this._cache.forEach((o: any, key: string) => {
-                key.startsWith('*') ? o['any'] = false : o[key.split('.').pop() as string] = false;
-            });
-            this._cache.clear();
+            return ChangeLookup.reset(this);
         }
 
     }

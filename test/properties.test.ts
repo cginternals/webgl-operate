@@ -84,32 +84,35 @@ describe('Change Lookup', () => {
     it('should propagate alteration of object to sub-objects', () => {
         const altered = Object.assign(new ChangeLookup(), alterable);
 
-        // altered.alter('data.gamma');
-        // expect(altered.data.any).to.be.true;
+        altered.alter('data.gamma');
 
-        // expect(altered.data.alpha).to.be.false;
-        // expect(altered.data.beta).to.be.false;
-        // expect(altered.data.delta).to.be.false;
+        expect(altered.any).to.be.true;
+        expect(altered.data.any).to.be.true;
 
-        // expect(altered.data.gamma.any).to.be.true;
-        // expect(altered.data.gamma.min).to.be.true;
-        // expect(altered.data.gamma.max).to.be.true;
-        // expect(altered.data.gamma.value).to.be.true;
+        expect(altered.data.alpha).to.be.false;
+        expect(altered.data.beta).to.be.false;
+        expect(altered.data.delta).to.be.false;
 
-        // altered.reset();
+        expect(altered.data.gamma.any).to.be.true;
+        expect(altered.data.gamma.min).to.be.true;
+        expect(altered.data.gamma.max).to.be.true;
+        expect(altered.data.gamma.value).to.be.true;
 
+        altered.alter('data');
 
-        // altered.alter('data');
-        // expect(altered.data.any).to.be.true;
+        expect(altered.golden).to.be.false;
+        expect(altered.modifier).to.be.false;
 
-        // expect(altered.data.alpha).to.be.true;
-        // expect(altered.data.beta).to.be.true;
-        // expect(altered.data.delta).to.be.true;
+        expect(altered.data.any).to.be.true;
+        expect(altered.data.alpha).to.be.true;
+        expect(altered.data.beta).to.be.true;
+        expect(altered.data.delta).to.be.true;
 
-        // expect(altered.data.gamma.any).to.be.true;
-        // expect(altered.data.gamma.min).to.be.true;
-        // expect(altered.data.gamma.max).to.be.true;
-        // expect(altered.data.gamma.value).to.be.true;
+        altered.alter('');
+
+        expect(altered.golden).to.be.true;
+        expect(altered.modifier).to.be.true;
+
     });
 
 });
@@ -390,13 +393,26 @@ describe('Property comparison', () => {
         altered.reset();
 
 
-        // expect(JsonSchema.compare(
-        //     { foo: undefined },
-        //     { foo: { bar: 1.0 }, other: undefined }, altered)).to.be.true;
-        // expect(altered.any).to.be.true;
-        // expect(altered.foo.any).to.be.true;
-        // expect(altered.other).to.be.false;
-        // altered.reset();
+        expect(compare(
+            { foo: undefined },
+            { foo: { bar: 1.0 }, other: undefined }, altered)).to.be.true;
+        expect(altered.any).to.be.true;
+        expect(altered.foo.any).to.be.true;
+        expect(altered.other).to.be.false;
+        altered.reset();
+
+
+        expect(compare(undefined, { foo: { bar: 1.0 } }, altered)).to.be.true;
+        expect(altered.any).to.be.true;
+        expect(altered.foo.any).to.be.true;
+        expect(altered.other).to.be.true;
+        altered.reset();
+
+        expect(compare(1.0, { foo: { bar: 1.0 } }, altered)).to.be.true;
+        expect(altered.any).to.be.true;
+        expect(altered.foo.any).to.be.true;
+        expect(altered.other).to.be.true;
+        altered.reset();
 
     });
 
