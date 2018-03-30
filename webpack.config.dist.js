@@ -15,6 +15,11 @@ module.exports.module.rules[0].use = {
     }
 };
 
+module.exports.plugins[0].definitions = {
+    DISABLE_ASSERTIONS: JSON.stringify(false),
+    LOG_VERBOSITY_THRESHOLD: JSON.stringify(1),
+};
+
 if (process.env.ANALYZE) {
     const analyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
     module.exports.plugins.push(new analyzer());

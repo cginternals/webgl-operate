@@ -1,19 +1,19 @@
 
 import { parse } from 'query-string';
 
+/**
+ * If true, assertions immediately return on invocation (variable can be set via webpack define plugin).
+ */
+declare const DISABLE_ASSERTIONS: boolean;
+
+/**
+ * If defined, logs of equal or higher verbosity level are skipped (variable can be set via webpack define plugin).
+ */
+declare const LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
+
 
 /** Namespace that comprises various utils (also cleans up documentation). */
 namespace auxiliaries {
-
-    /**
-     * If defined, assertions immediately return on invocation
-     */
-    export const DISABLE_ASSERTIONS = false;
-
-    /**
-     * If defined, logs of equal or higher verbosity level are skipped.
-     */
-    export const LOG_VERBOSITY_THRESHOLD = 2; // -1 disables all logs
 
     /**
      * Log verbosity levels:

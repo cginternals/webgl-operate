@@ -3,7 +3,7 @@ var canvas;
 var context;
 var renderer;
 
-$(document).ready(function () {
+window.onload = function () {
     new Clipboard('.btn-clipboard');
 
     // initialize test canvas
@@ -13,4 +13,4 @@ $(document).ready(function () {
     canvas.frameScale = [0.2, 0.2];
     renderer = new gloperate.debug.TestRenderer();
     canvas.renderer = renderer;
-});
+};

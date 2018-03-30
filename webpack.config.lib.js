@@ -17,3 +17,8 @@ module.exports.module.rules[0].use = {
 
 module.exports.output.library = undefined;
 module.exports.output.libraryTarget = 'commonjs2';
+
+module.exports.plugins[0].definitions = {
+    DISABLE_ASSERTIONS: JSON.stringify(false),
+    LOG_VERBOSITY_THRESHOLD: JSON.stringify(1),
+};

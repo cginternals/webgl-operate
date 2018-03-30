@@ -7,9 +7,14 @@ module.exports = {
     context: __dirname + '/source',
     cache: true,
     devtool: 'source-map',
-    plugins: [],
+    plugins: [
+        new webpack.DefinePlugin({
+            DISABLE_ASSERTIONS: JSON.stringify(false),
+            LOG_VERBOSITY_THRESHOLD: JSON.stringify(2),
+        })
+    ],
     entry: {
-        'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts']
+        'webgl-operate': ['externals.ts', 'require.ts', 'polyfill.ts', 'webgl-operate.ts']
     },
     output: {
         path: __dirname + '/build',
@@ -19,7 +24,7 @@ module.exports = {
 
     },
     externals: {
-        'rxjs': 'Rx'
+        rxjs: 'Rx'
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
