@@ -314,7 +314,7 @@ export class Canvas extends Resizable {
          * throws on re-initialization. Similarly to the frame callback for the controller, the controller's update
          * method is assigned to the pipelines invalidation event.
          */
-        this._renderer.initialize(this.context, () => this._controller.update(),
+        this._renderer.initialize(this.context, (force) => this._controller.update(force),
             this._mouseEventProvider /*, this._keyEventProvider, this._touchEventProvider */);
 
         this._renderer.frameSize = this._frameSize;

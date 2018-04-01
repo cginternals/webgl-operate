@@ -233,7 +233,10 @@ export class Controller {
         /* tslint:disable-next-line:switch-default */
         switch (type) {
             case Controller.RequestType.Update:
-                this.invokeUpdate();
+                this.invokeUpdate(false);
+                break;
+            case Controller.RequestType.NonOptionalUpdate:
+                this.invokeUpdate(true);
                 break;
             case Controller.RequestType.Prepare:
                 this.invokePrepare();
@@ -244,15 +247,15 @@ export class Controller {
         }
     }
 
-    protected invokeUpdate(): void {
+    protected invokeUpdate(force: boolean = false): void {
         logIf(this._debug, LogLevel.ModuleDev, `c invoke update     | ` +
             `pending: '${this._pendingRequest}', mfnum: ${this._multiFrameNumber}`);
 
         this.unblock();
         assert(!this._pause, `updates should not be invoked when paused`);
 
-        const redraw = (this._controllable as Controllable).update(this._multiFrameNumber);
-        if (redraw) {
+        const redraw: boolean = (this._controllable as Controllable).update(this._multiFrameNumber);
+        if (force || redraw) {
             this.invokePrepare();
             return;
         }
@@ -409,11 +412,11 @@ export class Controller {
      * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
      * If updates where blocked using ```block```, block updates is disabled.
      */
-    update(): void {
+    update(force: boolean = false): void {
         if (this.reset()) {
             return;
         }
-        this.request(Controller.RequestType.Update);
+        this.request(force ? Controller.RequestType.NonOptionalUpdate : Controller.RequestType.Update);
     }
 
     prepare(): void {
@@ -676,6 +679,6 @@ export class Controller {
 
 export namespace Controller {
 
-    export enum RequestType { Update, Prepare, Frame }
+    export enum RequestType { Update, NonOptionalUpdate, Prepare, Frame }
 
 }

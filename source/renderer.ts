@@ -21,7 +21,7 @@ import { FramePrecisionString } from './wizard';
 /**
  * The interface to a callback that is called if the renderer is invalidated.
  */
-export interface Invalidate { (): void; }
+export interface Invalidate { (force: boolean): void; }
 
 
 /**
@@ -113,8 +113,8 @@ export abstract class Renderer extends Initializable implements Controllable {
      * callback should be passed during initialization to all objects that might handle invalidation internally as well.
      */
     @Initializable.assert_initialized()
-    protected invalidate(): void {
-        this._invalidate();
+    protected invalidate(force: boolean = false): void {
+        this._invalidate(force);
     }
 
 

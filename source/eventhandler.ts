@@ -42,11 +42,12 @@ export class EventHandler {
 
 
     /** @callback Invalidate
-     * A callback intended to be invoked whenever the specialized event handler itself is invalid.
+     * A callback intended to be invoked whenever the specialized event handler itself is invalid. By default only
+     * optional updates (renderer decides whether or not to continue redraw) are triggered.
      */
-    protected invalidate() {
+    protected invalidate(force: boolean = false) {
         if (this._invalidate) {
-            this._invalidate();
+            this._invalidate(force);
         }
     }
 
