@@ -77,16 +77,16 @@ describe('auxiliaries log and logIf', () => {
         aux.log(4, 'log level 4');
         expect(output).to.string('[2]');
 
-        const thresholdRestore = aux.LOG_VERBOSITY_THRESHOLD;
-        aux.LOG_VERBOSITY_THRESHOLD = 4;
+        const thresholdRestore = aux.logVerbosityThreshold;
+        aux.logVerbosityThreshold = 4;
         aux.log(4, 'log level 4');
         expect(output).to.string('[4]');
 
-        aux.LOG_VERBOSITY_THRESHOLD = -1;
+        aux.logVerbosityThreshold = -1;
         aux.log(0, 'log level 0');
         expect(output).to.string('[4]');
 
-        aux.LOG_VERBOSITY_THRESHOLD = thresholdRestore;
+        aux.logVerbosityThreshold = thresholdRestore;
         consoleLogStub.restore();
     });
 });

@@ -1,7 +1,9 @@
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 const expect = chai.expect;
+const stub = sinon.stub;
 
 import {
     clampf, clampf2, clampf3, clampf4,
@@ -17,14 +19,18 @@ describe('tuples clamp', () => {
 
     it('should clamp a float value to [0.0, 1.0] range', () => {
         const tests = [[+3, +1], [+1, +1], [-1, 0], [0, 0], [0.5, 0.5]];
+        const consoleLogStub = stub(console, 'log');
         tests.forEach((test) => expect(clampf(test[0])).to.equal(test[1]));
+        consoleLogStub.restore();
     });
 
     it('should clamp each component of a float 2-tuple to [0.0, 1.0] range', () => {
         const tests: Array<[GLfloat2, GLfloat2]> = [[[2, 2], [1, 1]], [[-1, -1], [0, 0]]
             , [[0, 0], [0, 0]], [[0.5, 0.5], [0.5, 0.5]]
             , [[2, 0], [1, 0]], [[0, 2], [0, 1]], [[-2, 0], [0, 0]], [[0, -2], [0, 0]]];
+        const consoleLogStub = stub(console, 'log');
         tests.forEach((test) => expect(clampf2(test[0])).to.deep.equal(test[1]));
+        consoleLogStub.restore();
     });
 
     it('should clamp each component of a float 3-tuple to [0.0, 1.0] range', () => {
@@ -32,7 +38,9 @@ describe('tuples clamp', () => {
             , [[0, 0, 0], [0, 0, 0]], [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
             , [[+2, 0, 0], [1, 0, 0]], [[0, +2, 0], [0, 1, 0]], [[0, 0, +2], [0, 0, 1]]
             , [[-2, 0, 0], [0, 0, 0]], [[0, -2, 0], [0, 0, 0]], [[0, 0, -2], [0, 0, 0]]];
+        const consoleLogStub = stub(console, 'log');
         tests.forEach((test) => expect(clampf3(test[0])).to.deep.equal(test[1]));
+        consoleLogStub.restore();
     });
 
     it('should clamp each component of a float 4-tuple to [0.0, 1.0] range', () => {
@@ -42,7 +50,9 @@ describe('tuples clamp', () => {
             , [[0, 0, +2, 0], [0, 0, 1, 0]], [[0, 0, 0, +2], [0, 0, 0, 1]]
             , [[-2, 0, 0, 0], [0, 0, 0, 0]], [[0, -2, 0, 0], [0, 0, 0, 0]]
             , [[0, 0, -2, 0], [0, 0, 0, 0]], [[0, 0, 0, -2], [0, 0, 0, 0]]];
+        const consoleLogStub = stub(console, 'log');
         tests.forEach((test) => expect(clampf4(test[0])).to.deep.equal(test[1]));
+        consoleLogStub.restore();
     });
 
 });

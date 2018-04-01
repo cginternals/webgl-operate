@@ -4,16 +4,31 @@ import { parse } from 'query-string';
 /**
  * If true, assertions immediately return on invocation (variable can be set via webpack define plugin).
  */
-declare const DISABLE_ASSERTIONS: boolean;
+declare var DISABLE_ASSERTIONS: boolean;
 
 /**
  * If defined, logs of equal or higher verbosity level are skipped (variable can be set via webpack define plugin).
  */
-declare const LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
+declare var LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 
 
 /** Namespace that comprises various utils (also cleans up documentation). */
 namespace auxiliaries {
+
+    export let disableAssertions: boolean;
+    try {
+        disableAssertions = DISABLE_ASSERTIONS;
+    } catch (error) {
+        disableAssertions = false;
+    }
+
+    export let logVerbosityThreshold: number;
+    try {
+        logVerbosityThreshold = LOG_VERBOSITY_THRESHOLD;
+    } catch (error) {
+        logVerbosityThreshold = 2;
+    }
+
 
     /**
      * Log verbosity levels:
@@ -32,7 +47,7 @@ namespace auxiliaries {
      * @param message - Message to be passed to the error (if thrown).
      */
     export function assert(expression: boolean, message: string): void {
-        if (DISABLE_ASSERTIONS || expression) {
+        if (disableAssertions || expression) {
             return;
         }
 
@@ -51,7 +66,7 @@ namespace auxiliaries {
      * @param message - Message to be passed to the error (if thrown).
      */
     export function log(verbosity: LogLevel, message: string): void {
-        if (verbosity > LOG_VERBOSITY_THRESHOLD) {
+        if (verbosity > logVerbosityThreshold) {
             return;
         }
         console.log(`[${verbosity}] ${message}`);
