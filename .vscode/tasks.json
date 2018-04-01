@@ -17,17 +17,17 @@
             ]
         },
         {
-            "taskName": "server",
+            "taskName": "start",
             "args": [
                 "run-script",
-                "server"
+                "start"
             ]
         },
         {
-            "taskName": "server-watch",
+            "taskName": "start-watch",
             "args": [
                 "run-script",
-                "server-watch"
+                "start-watch"
             ]
         },
         {

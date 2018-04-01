@@ -73,8 +73,8 @@
     ],
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
-        "server": "http-server ./build -a localhost -p 4000",
-        "server-watch": "concurrently \"webpack-cli --mode development --watch\" \"node pugconfig.js --watch\" \"npm run-script server\"",
+        "start": "http-server ./build -a localhost -p 4000",
+        "start-watch": "concurrently \"webpack-cli --mode development --watch\" \"node pugconfig.js --watch\" \"npm run-script start\"",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
         "cleanup": "rimraf ./dist ./lib ./build",

@@ -87,8 +87,8 @@ ToDo
 | command          | description |
 |------------------|-------------|
 | `build`          | build for local development to `./build`, creates a bundle with all facilities and a test website |
-| `server`         | starts a local server on port 4000 on the `./build` directory |
-| `server-watch`   | runs `build` tasks concurrently in watch mode and starts `server` |
+| `start`          | starts a local start on port 4000 on the `./build` directory |
+| `start-watch`    | runs `build` tasks concurrently in watch mode and starts `start` |
 | `build-dist`     | transpile sources and declarations to `./dist` for distribution via, e.g., CDN |
 | `build-lib`      | transpile sources and declarations to `./lib/` for distribution via npm |
 | `cleanup`        | removes all build directories, i.e., `./build`, `./dist`, and `./lib` |
