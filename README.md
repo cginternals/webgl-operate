@@ -97,7 +97,7 @@ ToDo
 | `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
-For development use `npm run-script build` and, e.g., `npm run-script server` to access the test website locally.
+For development use `npm run-script build` and, e.g., `npm run-script start` to access the test website locally.
 
 * For **deployment** `npm update` and subsequent `npm run-script prepack` should be run.
 * For **publishing** the package to npm login to npm via `npm login`, then update the package version using `npm version {major,minor,patch}`, and, finally, run `npm publish`.
@@ -112,7 +112,7 @@ Please not that the workspace configuration `.vscode/settings.json` has automati
 
 #### tasks
 
-All the above scripts, namely `build, build-lib, build-dist, lint, cleanup, server, server-watch, doc`, as well as `test` can be triggered from within Visual Studio Code.
+All the above scripts, namely `build, build-lib, build-dist, lint, cleanup, start, start-watch, doc`, as well as `test` can be triggered from within Visual Studio Code.
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 
