@@ -6,6 +6,13 @@ nav.navbar.navbar-expand-md.navbar-dark.bg-dark
       span.d-block.d-md-none
         img(src = 'img/navicon.svg' alt = 'cginternals icon').img-fluid.mt-0
 
-    ul#nav.navbar-nav.ml-auto
+    button(type = 'button' data-toggle = 'dropdown' id = 'navbarDropdown' aria-expanded = 'false' aria-haspopup = 'true').navbar-toggler.ml-auto &#9776;
+
+    div(aria-labelledby = 'navbarDropdown').dropdown-menu.dropdown-menu-right.dropdown-dark.bg-dark
       each link, index in navLinks
-         li.nav-item #[a(href = link.href).nav-link #{link.text.toUpperCase()}]
+        a(href = link.href).dropdown-item #{link.text.toUpperCase()}
+
+    div.collapse.navbar-collapse
+      ul#nav.navbar-nav.ml-auto
+        each link, index in navLinks
+          li.nav-item #[a(href = link.href).nav-link #{link.text.toUpperCase()}]

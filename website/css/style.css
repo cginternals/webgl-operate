@@ -28,7 +28,6 @@ section {
 }
 
 
-
 nav.navbar img {
     height: 1.5rem;
     width: auto;
@@ -40,6 +39,31 @@ nav ul#nav.navbar-nav li.nav-item a.nav-link {
     padding-left: 1rem;
     padding-right: 0;
 }
+
+nav .navbar-toggler {
+    border: none;
+    cursor: pointer;
+}
+
+nav .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+nav .dropdown-item {
+    color: rgba(255, 255, 255, 0.50);
+}
+
+nav .dropdown-item:hover {
+    color: rgba(255, 255, 255, 0.75);
+    background: none;
+}  
+
+nav .dropdown-item:active {
+    color: rgba(255, 255, 255, 1.00);
+    background: none;
+}
+
 
 ul.features {
     padding-left: 0;
