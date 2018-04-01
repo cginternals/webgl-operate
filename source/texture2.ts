@@ -1,5 +1,5 @@
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei2 } from './tuples';
 
@@ -12,8 +12,11 @@ import { AbstractObject } from './object';
 /**
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
+ * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
  * ```
- * @todo add usage example
+ * const texture = new Texture2(context, 'Texture');
+ * texture.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
+ * texture.load('/img/webgl-operate-logo.png', true)
  * ```
  */
 export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
@@ -37,6 +40,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
     /** @see {@link type} */
     protected _type: GLenum = 0;
+
 
     /**
      * Create a texture object on the GPU.
@@ -124,21 +128,20 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Asynchronous load of an image via URI or data URI.
      * @param uri - URI linking the image that should be loaded. Data URI is also supported.
      * @param crossOrigin - Enable cross origin data loading.
-     * @returns - Promise indication image load status.
+     * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
     load(uri: string, crossOrigin: boolean = false): Promise<void> {
         return new Promise((resolve, reject) => {
             const image = new Image();
+            image.onerror = () => reject();
+
             image.onload = () => {
                 this.resize(image.width, image.height);
                 this.data(image);
                 resolve();
             };
-            image.onerror = () => {
-                log(LogLevel.Dev, `Loading image '${uri}' failed.`);
-                reject();
-            };
+
 
             if (crossOrigin) {
                 image.crossOrigin = 'anonymous';
