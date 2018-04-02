@@ -1,11 +1,10 @@
 
 import { EventHandler } from '../eventhandler';
 import { MouseEventProvider } from '../mouseeventprovider';
-import { Navigation } from '../navigation';
 import { Invalidate } from '../renderer';
 
 
-export class TestNavigation extends Navigation {
+export class TestNavigation {
 
     protected _eventHandler: EventHandler;
 
@@ -13,8 +12,6 @@ export class TestNavigation extends Navigation {
 
 
     constructor(invalidate: Invalidate, mouseEventProvider: MouseEventProvider) {
-        super();
-
         this._eventHandler = new EventHandler(invalidate, mouseEventProvider);
         this._eventHandler.pushMouseEnterHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
             this.onMouseEnter(latests, previous));

@@ -10,6 +10,7 @@ export { MouseEventProvider } from './mouseeventprovider';
 export { EventHandler } from './eventhandler';
 
 export { Buffer } from './buffer';
+export { Color } from './color';
 export { DefaultFramebuffer } from './defaultframebuffer';
 export { Framebuffer } from './framebuffer';
 export { Geometry } from './geometry';
@@ -23,9 +24,13 @@ export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
 
 export { Camera } from './camera';
-export { Color } from './color';
+export { CameraModifier } from './cameramodifier';
 export { Navigation } from './navigation';
-export { TrackBallNavigation } from './trackballnavigation';
+export { FirstPersonModifier } from './firstpersonmodifier';
+export { OrbitModifier } from './orbitmodifier';
+export { PanModifier } from './panmodifier';
+export { TrackballModifier } from './trackballmodifier';
+export { ZoomModifier } from './zoommodifier';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';
