@@ -10,7 +10,7 @@ import { CameraModifier } from './cameramodifier';
  */
 export class TrackballModifier extends CameraModifier {
 
-    protected static readonly DEFAULT_SENSITIVITY = 0.004;
+    protected static readonly DEFAULT_SENSITIVITY = 0.002;
 
 
     /**
@@ -67,9 +67,7 @@ export class TrackballModifier extends CameraModifier {
     }
 
     /**
-     * Actually applies the trackball rotation to the given camera. Please note that this does not invalidate the
-     * rendering. Invalidation of rendering is done by the event handler (triggering a rendering update which in turn
-     * checks if the camera was altered, and if so, redraws).
+     * Actually applies the trackball rotation to the given camera.
      */
     update(): void {
         if (this._camera === undefined) {

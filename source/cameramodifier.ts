@@ -25,6 +25,11 @@ export abstract class CameraModifier {
     protected _currentPoint: vec2;
 
 
+    /**
+     * Should apply all previously calculated transformations to the camera set. Note that this does not invalidate the
+     * rendering. Invalidation of rendering is done by the event handler (triggering a rendering update which in turn
+     * checks if the camera was altered, and if so, redraws).
+     */
     abstract update(): void;
 
 
@@ -41,10 +46,6 @@ export abstract class CameraModifier {
         }
         Object.assign(this._reference, camera);
         this.update();
-    }
-
-    get camera(): Camera | undefined {
-        return this._camera;
     }
 
 }

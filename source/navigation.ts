@@ -143,6 +143,7 @@ export class Navigation {
      */
     set camera(camera: Camera) {
         this._camera = camera;
+        this._trackball.camera = camera;
     }
 
 }
