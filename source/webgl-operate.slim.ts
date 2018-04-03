@@ -27,9 +27,9 @@ export { Camera } from './camera';
 export { CameraModifier } from './cameramodifier';
 export { Navigation } from './navigation';
 export { FirstPersonModifier } from './firstpersonmodifier';
-export { OrbitModifier } from './orbitmodifier';
 export { PanModifier } from './panmodifier';
 export { TrackballModifier } from './trackballmodifier';
+export { TurntableModifier } from './turntablemodifier';
 export { ZoomModifier } from './zoommodifier';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';

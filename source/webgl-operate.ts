@@ -13,7 +13,10 @@ export import properties = root_properties;
 import * as debug_TestNavigation from './debug/testnavigation';
 import * as debug_TestRenderer from './debug/testrenderer';
 
+import * as debug_CornellRenderer from './debug/cornellrenderer';
+
 export namespace debug {
+    export import CornellRenderer = debug_CornellRenderer.CornellRenderer;
     export import TestRenderer = debug_TestRenderer.TestRenderer;
     export import TestNavigation = debug_TestNavigation.TestNavigation;
 }

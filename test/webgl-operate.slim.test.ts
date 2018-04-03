@@ -50,9 +50,9 @@ describe('webgl-operate slim API', () => {
             'CameraModifier',
             'Navigation',
             'FirstPersonModifier',
-            'OrbitModifier',
             'PanModifier',
             'TrackballModifier',
+            'TurntableModifier',
             'ZoomModifier',
 
             'NdcFillingRectangle',
