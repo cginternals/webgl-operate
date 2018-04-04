@@ -1,4 +1,6 @@
 
+import { vec2 } from 'gl-matrix';
+
 import { Camera } from './camera';
 import { EventHandler } from './eventhandler';
 import { MouseEventProvider } from './mouseeventprovider';
