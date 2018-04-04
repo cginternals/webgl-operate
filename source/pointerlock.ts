@@ -84,8 +84,8 @@ export class PointerLock {
         if (this._element === undefined) {
             return false;
         }
-        /* tslint:disable-next-line:no-null-keyword */
         return (element !== undefined && PointerLock._element() === element) || (element === undefined &&
+            /* tslint:disable-next-line:no-null-keyword */
             PointerLock._element() !== undefined && PointerLock._element() !== null);
     }
 
