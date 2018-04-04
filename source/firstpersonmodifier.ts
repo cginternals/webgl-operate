@@ -1,7 +1,7 @@
 
-import { vec2, vec3, quat, mat4 } from 'gl-matrix';
+import { mat4, vec2, vec3 } from 'gl-matrix';
 
-import { v2, v3, m4 } from './gl-matrix-extensions';
+import { m4, v3 } from './gl-matrix-extensions';
 
 import { CameraModifier } from './cameramodifier';
 

@@ -8,7 +8,6 @@ import { Invalidate } from './renderer';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 import { FirstPersonModifier } from './webgl-operate';
-import { vec2 } from 'gl-matrix';
 
 
 export class Navigation {
@@ -195,7 +194,7 @@ export class Navigation {
     }
 
     protected onClick(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
-        const event: MouseEvent = latests[latests.length - 1];
+        // const event: MouseEvent = latests[latests.length - 1];
     }
 
 
