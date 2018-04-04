@@ -65,11 +65,15 @@ export class Navigation {
             this.onMouseUp(latests, previous));
         this._eventHandler.pushMouseMoveHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
             this.onMouseMove(latests, previous));
+
+        this._eventHandler.pushClickHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
+            this.onClick(latests, previous));
+
         // this._eventHandler.pushMouseWheelHandler((latests: Array<WheelEvent>, previous: Array<WheelEvent>) =>
         //     this.onWheel(latests, previous));
 
         /* Explicitly use the setter here to create the appropriate modifier. */
-        this.metaphor = Navigation.Metaphor.Turntable;
+        this.metaphor = Navigation.Metaphor.FirstPerson;
     }
 
 
@@ -127,51 +131,59 @@ export class Navigation {
 
 
     protected onMouseDown(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
-        for (const event of latests) {
-            this._mode = this.mode(event);
+        const event: MouseEvent = latests[latests.length - 1];
+        // for (const event of latests) {
 
-            switch (this._mode) {
-                case Navigation.Modes.Zoom:
-                    // this.startZoom(event);
-                    break;
+        this._mode = this.mode(event);
+        switch (this._mode) {
+            case Navigation.Modes.Zoom:
+                // this.startZoom(event);
+                break;
 
-                case Navigation.Modes.Rotate:
-                    this.rotate(event, true);
-                    break;
+            case Navigation.Modes.Rotate:
+                this.rotate(event, true);
+                break;
 
-                default:
-                    break;
-            }
+            default:
+                break;
+            // }
         }
     }
 
     protected onMouseUp(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
-        for (const event of latests) {
-            if (undefined === this._mode) {
-                return;
-            }
-            event.preventDefault();
+        const event: MouseEvent = latests[latests.length - 1];
+
+        // for (const event of latests) {
+        if (undefined === this._mode) {
+            return;
         }
+        event.preventDefault();
+        // }
     }
 
     protected onMouseMove(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
-        for (const event of latests) {
-            const modeWasUndefined = (this._mode === undefined);
-            this._mode = this.mode(event);
+        const event: MouseEvent = latests[latests.length - 1];
+        // for (const event of latests) {
 
-            switch (this._mode) {
-                // case Navigation.Modes.Zoom:
-                //     // modeWasUndefined ? this.startZoom(event) : this.updateZoom(event);
-                //     break;
+        const modeWasUndefined = (this._mode === undefined);
+        this._mode = this.mode(event);
+        switch (this._mode) {
+            // case Navigation.Modes.Zoom:
+            //     // modeWasUndefined ? this.startZoom(event) : this.updateZoom(event);
+            //     break;
 
-                case Navigation.Modes.Rotate:
-                    this.rotate(event, modeWasUndefined);
-                    break;
+            case Navigation.Modes.Rotate:
+                this.rotate(event, modeWasUndefined);
+                break;
 
-                default:
-                    break;
-            }
+            default:
+                break;
+            // }
         }
+    }
+
+    protected onClick(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+        const event: MouseEvent = latests[latests.length - 1];
     }
 
 
@@ -204,19 +216,15 @@ export class Navigation {
             return;
         }
 
-        if (this._metaphor === Navigation.Metaphor.FirstPerson) {
-            this._eventHandler.requestPointerLock();
-        } else {
-            this._eventHandler.exitPointerLock();
-        }
-
         this._firstPerson = undefined;
         this._trackball = undefined;
         this._turntable = undefined;
 
+        this._eventHandler.exitPointerLock(); /* Might be requested (and active) from FirstPerson or Flight. */
         this._metaphor = metaphor;
         switch (this._metaphor) {
             case Navigation.Metaphor.FirstPerson:
+                this._eventHandler.requestPointerLock();
                 this._firstPerson = new FirstPersonModifier();
                 this._firstPerson.camera = this._camera;
                 break;

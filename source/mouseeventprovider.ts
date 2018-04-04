@@ -19,6 +19,8 @@ export class MouseEventProvider {
      */
     protected _timeframe: number | undefined;
 
+    protected _clickListener: { (event: MouseEvent): void };
+    protected _clickSubject: ReplaySubject<MouseEvent>;
 
     protected _enterListener: { (event: MouseEvent): void };
     protected _enterSubject: ReplaySubject<MouseEvent>;
@@ -37,16 +39,35 @@ export class MouseEventProvider {
     protected _wheelListener: { (event: WheelEvent): void };
     protected _wheelSubject: ReplaySubject<WheelEvent>;
 
+    /** @see {@link pointerLock} */
+    protected _pointerLockRequestPending = false;
 
     constructor(element: HTMLCanvasElement, timeframe?: number) {
         assert(element !== undefined, `expected valid canvas element on initialization, given ${element}`);
         this._element = element;
         this._timeframe = timeframe;
+
+        this._element.addEventListener('click', () => this.processPointerLockRequests());
+    }
+
+    /**
+     * The pointer lock API requires a little workaround in order to avoid something like '... not called from inside a
+     * short running user-generated event handler'. A click event listener is registered and whenever a pointer lock is
+     * requested, e.g., from an event handler (which in turn exposes this interface to, e.g., a navigation), the next
+     * click will result in a probably more successful pointer lock.
+     */
+    protected processPointerLockRequests(): void {
+        if (!this._pointerLockRequestPending) {
+            return;
+        }
+        PointerLock.request(this._element);
     }
 
     observable(type: MouseEventProvider.Type): Observable<MouseEvent> | Observable<WheelEvent> {
         /* tslint:disable-next-line:switch-default */
         switch (type) {
+            case MouseEventProvider.Type.Click:
+                return this.clickObservable;
             case MouseEventProvider.Type.Enter:
                 return this.enterObservable;
             case MouseEventProvider.Type.Leave:
@@ -62,12 +83,29 @@ export class MouseEventProvider {
         }
     }
 
+    /**
+     * Enable/disable pointer lock on click. If true, the next click on this event provider's canvas will invoke a
+     * pointer lock request on the canvas element.
+     */
     set pointerLock(lock: boolean) {
-        PointerLock.toggle(this._element);
+        this._pointerLockRequestPending = lock;
+        if (lock === false) {
+            this._pointerLockRequestPending = false;
+            PointerLock.exit();
+        }
     }
 
     get pointerLock(): boolean {
         return PointerLock.active(this._element);
+    }
+
+    get clickObservable(): Observable<MouseEvent> {
+        if (this._clickSubject === undefined) {
+            this._clickSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
+            this._clickListener = (event: MouseEvent) => this._clickSubject.next(event);
+            this._element.onclick = this._clickListener;
+        }
+        return this._clickSubject.asObservable();
     }
 
     get enterObservable(): Observable<MouseEvent> {
@@ -129,6 +167,6 @@ export class MouseEventProvider {
 
 export namespace MouseEventProvider {
 
-    export enum Type { Enter, Leave, Down, Up, Move, Wheel }
+    export enum Type { Click, Enter, Leave, Down, Up, Move, Wheel }
 
 }

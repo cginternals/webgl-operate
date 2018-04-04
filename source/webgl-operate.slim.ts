@@ -28,6 +28,7 @@ export { CameraModifier } from './cameramodifier';
 export { Navigation } from './navigation';
 export { FirstPersonModifier } from './firstpersonmodifier';
 export { PanModifier } from './panmodifier';
+export { PointerLock } from './pointerlock';
 export { TrackballModifier } from './trackballmodifier';
 export { TurntableModifier } from './turntablemodifier';
 export { ZoomModifier } from './zoommodifier';

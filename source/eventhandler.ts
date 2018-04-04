@@ -137,6 +137,7 @@ export class EventHandler {
      * Triggers (by means of a helper function) invocation of all registered handler of all event types.
      */
     update() {
+        this.invokeMouseEventHandler(MouseEventProvider.Type.Click);
         this.invokeMouseEventHandler(MouseEventProvider.Type.Enter);
         this.invokeMouseEventHandler(MouseEventProvider.Type.Leave);
         this.invokeMouseEventHandler(MouseEventProvider.Type.Down);
@@ -185,6 +186,15 @@ export class EventHandler {
         return offsets;
     }
 
+
+    /**
+     * Register a click event handler that is to be called on update iff at least a single click event has
+     * occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushClickHandler(handler: MouseEventHandler) {
+        this.pushMouseEventHandler(MouseEventProvider.Type.Click, handler);
+    }
 
     /**
      * Register an mouse enter event handler that is to be called on update iff at least a single mouse enter event has

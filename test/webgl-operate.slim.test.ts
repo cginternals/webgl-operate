@@ -51,6 +51,7 @@ describe('webgl-operate slim API', () => {
             'Navigation',
             'FirstPersonModifier',
             'PanModifier',
+            'PointerLock',
             'TrackballModifier',
             'TurntableModifier',
             'ZoomModifier',
