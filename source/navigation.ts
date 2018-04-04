@@ -2,11 +2,13 @@
 import { Camera } from './camera';
 import { EventHandler } from './eventhandler';
 import { MouseEventProvider } from './mouseeventprovider';
+import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 import { FirstPersonModifier } from './webgl-operate';
+import { vec2 } from 'gl-matrix';
 
 
 export class Navigation {
@@ -30,6 +32,11 @@ export class Navigation {
      * Identifies the active camera modifier.
      */
     protected _mode: Navigation.Modes | undefined;
+
+    /**
+     * Specifies, whether or not rotation mode should be invoked on any move event, regardless of buttons.
+     */
+    protected _alwaysRotateOnMove = false;
 
     /**
      * First person camera modifier.
@@ -73,7 +80,7 @@ export class Navigation {
         //     this.onWheel(latests, previous));
 
         /* Explicitly use the setter here to create the appropriate modifier. */
-        this.metaphor = Navigation.Metaphor.FirstPerson;
+        this.metaphor = Navigation.Metaphor.Turntable;
     }
 
 
@@ -83,24 +90,25 @@ export class Navigation {
      */
     protected mode(event: MouseEvent | TouchEvent | KeyboardEvent): Navigation.Modes | undefined {
 
-        if ((event.type === 'mousedown' || event.type === 'mousemove') && ((event as MouseEvent).buttons & 1)) {
-            // Mouse button 1: rotate
+        const isPrimaryButtonDown = (event as MouseEvent).buttons & 1;
+        const isMouseDown = event.type === 'mousedown';
+        const isMouseMove = event.type === 'mousemove';
+
+        const isPointerLockedRotate = PointerLock.active() && this._alwaysRotateOnMove;
+
+        if (isPointerLockedRotate || ((isMouseDown || isMouseMove) && isPrimaryButtonDown)) {
             return Navigation.Modes.Rotate;
 
-        } else if ((event.type === 'mousedown' || event.type === 'mousemove')
-            // Mouse button 2: zoom
-            && ((event as MouseEvent).buttons & 2)) {
-            return Navigation.Modes.Zoom;
+            // } else if ((event.type === 'mousedown' || event.type === 'mousemove')
+            //     && ((event as MouseEvent).buttons & 2)) {
+            //     return Navigation.Modes.Zoom;
 
-        } else if (event.type === 'wheel') {
-            // Mouse wheel: zoom
-            return Navigation.Modes.ZoomStep;
+            // } else if (event.type === 'wheel') {
+            //     return Navigation.Modes.ZoomStep;
+            // }
         }
-
-        // Unknown interaction
         return undefined;
     }
-
 
     protected rotate(event: MouseEvent | TouchEvent, start: boolean): void {
         const point = this._eventHandler.offsets(event)[0];
@@ -108,7 +116,11 @@ export class Navigation {
         switch (this._metaphor) {
             case Navigation.Metaphor.FirstPerson:
                 const firstPerson = this._firstPerson as FirstPersonModifier;
-                start ? firstPerson.initiate(point) : firstPerson.process(point);
+                let movement: vec2 | undefined;
+                if (PointerLock.active() && event instanceof MouseEvent) {
+                    movement = vec2.fromValues((event as MouseEvent).movementX, (event as MouseEvent).movementY);
+                }
+                start ? firstPerson.initiate(point) : firstPerson.process(point, movement);
                 event.preventDefault();
                 break;
 
@@ -200,6 +212,9 @@ export class Navigation {
      */
     set camera(camera: Camera) {
         this._camera = camera;
+        if (this._firstPerson) {
+            this._firstPerson.camera = camera;
+        }
         if (this._trackball) {
             this._trackball.camera = camera;
         }
@@ -221,10 +236,15 @@ export class Navigation {
         this._turntable = undefined;
 
         this._eventHandler.exitPointerLock(); /* Might be requested (and active) from FirstPerson or Flight. */
+        this._alwaysRotateOnMove = false;
+
         this._metaphor = metaphor;
         switch (this._metaphor) {
             case Navigation.Metaphor.FirstPerson:
+
                 this._eventHandler.requestPointerLock();
+                this._alwaysRotateOnMove = true;
+
                 this._firstPerson = new FirstPersonModifier();
                 this._firstPerson.camera = this._camera;
                 break;

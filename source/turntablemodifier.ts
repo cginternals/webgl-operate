@@ -42,7 +42,9 @@ export class TurntableModifier extends CameraModifier {
         /* Retrieve initial event position. */
         this._initialPoint = point;
 
-        const centerToEye = vec3.normalize(v3(), vec3.sub(v3(), this._reference.eye, this._reference.center));
+        const centerToEye = vec3.sub(v3(), this._reference.eye, this._reference.center);
+        vec3.normalize(centerToEye, centerToEye);
+
         this._xAxisScreenSpace = vec3.cross(v3(), [0.0, 1.0, 0.0], centerToEye);
         this._azimuth = Math.acos(vec3.dot(centerToEye, [0.0, 1.0, 0.0]));
         this._azimuth = Math.PI * 0.5 - this._azimuth;
