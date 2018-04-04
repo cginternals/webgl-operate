@@ -36,7 +36,7 @@ export class TurntableModifier extends CameraModifier {
      * Initiate a new turntable rotation at a specific event position.
      * @param point - Position of the current event to derive the magnitude for rotation from.
      */
-    startRotate(point: vec2): void {
+    initiate(point: vec2): void {
         Object.assign(this._reference, this._camera);
 
         /* Retrieve initial event position. */
@@ -52,7 +52,7 @@ export class TurntableModifier extends CameraModifier {
      * Update the turntable rotation w.r.t. a specific event position.
      * @param point - Position of the current event to derive the magnitude for rotation from.
      */
-    updateRotate(point: vec2): void {
+    process(point: vec2): void {
         /* Retrieve current event positions. */
         this._currentPoint = point;
 

@@ -3,6 +3,8 @@ import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert } from './auxiliaries';
 
+import { PointerLock } from './pointerlock';
+
 
 export class MouseEventProvider {
 
@@ -57,6 +59,14 @@ export class MouseEventProvider {
             case MouseEventProvider.Type.Wheel:
                 return this.wheelObservable;
         }
+    }
+
+    set pointerLock(lock: boolean) {
+        PointerLock.toggle(this._element);
+    }
+
+    get pointerLock(): boolean {
+        return PointerLock.active(this._element);
     }
 
     get enterObservable(): Observable<MouseEvent> {

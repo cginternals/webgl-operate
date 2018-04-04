@@ -238,4 +238,15 @@ export class EventHandler {
         this.pushMouseEventHandler(MouseEventProvider.Type.Wheel, handler);
     }
 
+    requestPointerLock() {
+        if (this._mouseEventProvider) {
+            this._mouseEventProvider.pointerLock = true;
+        }
+    }
+
+    exitPointerLock() {
+        if (this._mouseEventProvider) {
+            this._mouseEventProvider.pointerLock = false;
+        }
+    }
 }

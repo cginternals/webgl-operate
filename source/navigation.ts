@@ -6,6 +6,7 @@ import { Invalidate } from './renderer';
 
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
+import { FirstPersonModifier } from './webgl-operate';
 
 
 export class Navigation {
@@ -31,6 +32,11 @@ export class Navigation {
     protected _mode: Navigation.Modes | undefined;
 
     /**
+     * First person camera modifier.
+     */
+    protected _firstPerson: FirstPersonModifier | undefined;
+
+    /**
      * Trackball camera modifier.
      */
     protected _trackball: TrackballModifier | undefined;
@@ -44,7 +50,6 @@ export class Navigation {
      * Even handler used to forward/map events to specific camera modifiers.
      */
     protected _eventHandler: EventHandler;
-
 
 
     constructor(invalidate: Invalidate, mouseEventProvider: MouseEventProvider) {
@@ -97,15 +102,21 @@ export class Navigation {
         const point = this._eventHandler.offsets(event)[0];
 
         switch (this._metaphor) {
+            case Navigation.Metaphor.FirstPerson:
+                const firstPerson = this._firstPerson as FirstPersonModifier;
+                start ? firstPerson.initiate(point) : firstPerson.process(point);
+                event.preventDefault();
+                break;
+
             case Navigation.Metaphor.Trackball:
                 const trackball = this._trackball as TrackballModifier;
-                start ? trackball.startRotate(point) : trackball.updateRotate(point);
+                start ? trackball.initiate(point) : trackball.process(point);
                 event.preventDefault();
                 break;
 
             case Navigation.Metaphor.Turntable:
                 const turntable = this._turntable as TurntableModifier;
-                start ? turntable.startRotate(point) : turntable.updateRotate(point);
+                start ? turntable.initiate(point) : turntable.process(point);
                 event.preventDefault();
                 break;
 
@@ -193,19 +204,33 @@ export class Navigation {
             return;
         }
 
+        if (this._metaphor === Navigation.Metaphor.FirstPerson) {
+            this._eventHandler.requestPointerLock();
+        } else {
+            this._eventHandler.exitPointerLock();
+        }
+
+        this._firstPerson = undefined;
         this._trackball = undefined;
         this._turntable = undefined;
 
         this._metaphor = metaphor;
         switch (this._metaphor) {
+            case Navigation.Metaphor.FirstPerson:
+                this._firstPerson = new FirstPersonModifier();
+                this._firstPerson.camera = this._camera;
+                break;
+
             case Navigation.Metaphor.Trackball:
                 this._trackball = new TrackballModifier();
                 this._trackball.camera = this._camera;
                 break;
+
             case Navigation.Metaphor.Turntable:
                 this._turntable = new TurntableModifier();
                 this._turntable.camera = this._camera;
                 break;
+
             default:
                 break;
         }
@@ -215,6 +240,7 @@ export class Navigation {
     get metaphor(): Navigation.Metaphor {
         return this._metaphor;
     }
+
 }
 
 

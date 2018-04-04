@@ -28,7 +28,7 @@ export class TrackballModifier extends CameraModifier {
      * Initiate a new trackball rotation at a specific event position.
      * @param point - Position of the current event to start the trackball rotation at.
      */
-    startRotate(point: vec2): void {
+    initiate(point: vec2): void {
         /* Retrieve initial event position. */
         this._initialPoint = point;
     }
@@ -37,7 +37,7 @@ export class TrackballModifier extends CameraModifier {
      * Update the trackball rotation w.r.t. a specific event position.
      * @param point - Position of the current event to continue/update the trackball rotation at.
      */
-    updateRotate(point: vec2): void {
+    process(point: vec2): void {
         /* Retrieve current event positions. */
         this._currentPoint = point;
 

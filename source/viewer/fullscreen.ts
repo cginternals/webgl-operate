@@ -101,8 +101,6 @@ namespace viewer {
                 break;
             }
 
-            console.log(api);
-
             switch (api) {
                 case 0: // native
                     Fullscreen.exit = () => document.exitFullScreen();
@@ -139,7 +137,7 @@ namespace viewer {
 
 
         /**
-         * Returns whether or not a fullscreen element exists, indicating wif fullscreen is active or not.
+         * Returns whether or not a fullscreen element exists, indicating if fullscreen is active or not.
          */
         static active(): boolean {
             /* tslint:disable-next-line:no-null-keyword */
