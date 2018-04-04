@@ -5,7 +5,7 @@
     "description": "A TypeScript based WebGL rendering framework.",
     "author": "CG Internals",
     "homepage": "https://webgl-operate.org",
-    "jsdelivr": "./dist/webgl-operate.min.js",
+    "jsdelivr": "./dist/webgl-operate.js",
     "main": "./lib/webgl-operate.js",
     "types": "./lib/webgl-operate.d.ts",
     "bugs": {
@@ -85,7 +85,7 @@
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
         "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.dist.js",
-        "prepack": "npm install && concurrently \"npm run build-dist\" \"npm run build-lib\""
+        "prepack": "npm install && concurrently \"npm run-script build-dist\" \"npm run-script build-lib\""
     },
     "keywords": [
         "webgl",

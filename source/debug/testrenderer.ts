@@ -5,14 +5,15 @@ import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Context } from '../context';
+import { DefaultFramebuffer } from '../defaultframebuffer';
+import { Framebuffer } from '../framebuffer';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { NdcFillingTriangle } from '../ndcfillingtriangle';
 import { Program } from '../program';
+import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
 import { Texture2 } from '../texture2';
-import { DefaultFramebuffer, Framebuffer, Renderbuffer } from '../webgl-operate';
-
 import { TestNavigation } from './testnavigation';
 
 

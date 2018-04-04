@@ -1,6 +1,5 @@
 
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable, ReplaySubject } from 'rxjs/Rx';
 
 import { assert, prettyPrintBytes } from './auxiliaries';
 

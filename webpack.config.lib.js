@@ -1,8 +1,9 @@
 
 module.exports = require('./webpack.config');
 
+module.exports.cache = false;
 module.exports.entry = {
-    '../lib/webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts']
+    '../lib/webgl-operate': ['externals.ts', 'require.ts', 'polyfill.ts', 'webgl-operate.ts']
 };
 
 module.exports.module.rules[0].use = {

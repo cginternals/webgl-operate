@@ -11,7 +11,8 @@ module.exports = {
         new webpack.DefinePlugin({
             DISABLE_ASSERTIONS: JSON.stringify(false),
             LOG_VERBOSITY_THRESHOLD: JSON.stringify(2),
-        })
+        }),
+        new webpack.IgnorePlugin(/^rx$/)
     ],
     entry: {
         'webgl-operate': ['externals.ts', 'require.ts', 'polyfill.ts', 'webgl-operate.ts']
@@ -21,10 +22,9 @@ module.exports = {
         filename: '[name].js',
         library: 'gloperate',
         libraryTarget: 'umd'
-
     },
     externals: {
-        rxjs: 'Rx'
+        'rxjs/Rx': 'Rx'
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],

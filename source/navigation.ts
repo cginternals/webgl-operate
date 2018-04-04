@@ -7,9 +7,9 @@ import { MouseEventProvider } from './mouseeventprovider';
 import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
+import { FirstPersonModifier } from './firstpersonmodifier';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
-import { FirstPersonModifier } from './webgl-operate';
 
 
 export class Navigation {

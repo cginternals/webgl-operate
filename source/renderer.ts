@@ -1,6 +1,5 @@
 
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable, ReplaySubject } from 'rxjs/Rx';
 
 import { vec2, vec4 } from 'gl-matrix';
 
@@ -12,8 +11,8 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
-import { MouseEventProvider } from './webgl-operate';
 import { FramePrecisionString } from './wizard';
+import { MouseEventProvider } from './mouseeventprovider';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }

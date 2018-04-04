@@ -2,13 +2,13 @@
 export * from './webgl-operate.slim';
 
 
-/* ADVANCED facilities */
+// /* ADVANCED facilities */
 
 import * as root_properties from './properties';
 export import properties = root_properties;
 
 
-/* DEBUG facilities */
+// /* DEBUG facilities */
 
 import * as debug_TestNavigation from './debug/testnavigation';
 import * as debug_TestRenderer from './debug/testrenderer';
