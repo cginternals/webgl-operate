@@ -1,5 +1,6 @@
 
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { vec2, vec4 } from 'gl-matrix';
 

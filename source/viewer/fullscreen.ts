@@ -36,17 +36,17 @@ namespace viewer {
         /**
          * Cached exit call of the clients specific fullscreen API.
          */
-        protected static exit: () => void;
+        protected static _exit: () => void;
 
         /**
          * Cached request call of the clients specific fullscreen API.
          */
-        protected static request: (element: HTMLElement) => void;
+        protected static _request: (element: HTMLElement) => void;
 
         /**
          * Cached element call returning the fullscreen element specific to the clients fullscreen API.
          */
-        protected static element: () => HTMLElement;
+        protected static _element: () => HTMLElement;
 
         /**
          * Event listener used to add the remove event listener using on indirection, that is, the first fullscreen
@@ -75,7 +75,7 @@ namespace viewer {
          * Query and cache the client specific fullscreen API.
          */
         protected static queryAndCacheAPI(): void {
-            if (Fullscreen.exit !== undefined) {
+            if (Fullscreen._exit !== undefined) {
                 return;
             }
 
@@ -101,34 +101,32 @@ namespace viewer {
                 break;
             }
 
-            console.log(api);
-
             switch (api) {
                 case 0: // native
-                    Fullscreen.exit = () => document.exitFullScreen();
-                    Fullscreen.request = (element: HTMLElement) => element.requestFullscreen();
-                    Fullscreen.element = () => document.fullscreenElement;
+                    Fullscreen._exit = () => document.exitFullScreen();
+                    Fullscreen._request = (element: HTMLElement) => element.requestFullscreen();
+                    Fullscreen._element = () => document.fullscreenElement;
                     Fullscreen._event = 'fullscreenchange';
                     break;
 
                 case 1: // microsoft
-                    Fullscreen.exit = () => document.msExitFullscreen();
-                    Fullscreen.request = (element: HTMLElement) => (element as any).msRequestFullscreen();
-                    Fullscreen.element = () => document.msFullscreenElement;
+                    Fullscreen._exit = () => document.msExitFullscreen();
+                    Fullscreen._request = (element: HTMLElement) => (element as any).msRequestFullscreen();
+                    Fullscreen._element = () => document.msFullscreenElement;
                     Fullscreen._event = 'msfullscreenchange';
                     break;
 
                 case 2: // mozilla
-                    Fullscreen.exit = () => document.mozCancelFullScreen();
-                    Fullscreen.request = (element: HTMLElement) => (element as any).mozRequestFullScreen();
-                    Fullscreen.element = () => document.mozFullScreenElement;
+                    Fullscreen._exit = () => document.mozCancelFullScreen();
+                    Fullscreen._request = (element: HTMLElement) => (element as any).mozRequestFullScreen();
+                    Fullscreen._element = () => document.mozFullScreenElement;
                     Fullscreen._event = 'mozfullscreenchange';
                     break;
 
                 case 3: // webkit
-                    Fullscreen.exit = () => document.webkitExitFullscreen();
-                    Fullscreen.request = (element: HTMLElement) => (element as any).webkitRequestFullscreen();
-                    Fullscreen.element = () => document.webkitFullscreenElement;
+                    Fullscreen._exit = () => document.webkitExitFullscreen();
+                    Fullscreen._request = (element: HTMLElement) => (element as any).webkitRequestFullscreen();
+                    Fullscreen._element = () => document.webkitFullscreenElement;
                     Fullscreen._event = 'webkitfullscreenchange';
                     break;
 
@@ -139,18 +137,17 @@ namespace viewer {
 
 
         /**
-         * Returns whether or not a fullscreen element exists, indicating wif fullscreen is active or not.
+         * Returns whether or not a fullscreen element exists, indicating if fullscreen is active or not.
          */
         static active(): boolean {
             /* tslint:disable-next-line:no-null-keyword */
-            return Fullscreen.element() !== undefined && Fullscreen.element() !== null;
+            return Fullscreen._element() !== undefined && Fullscreen._element() !== null;
         }
 
         /**
          * Requests or exits fullscreen mode for a given element. If the element is already in fullscreen, fullscreen
          * mode is exited. Else, fullscreen mode is requested. The function considers various platform specific
          * fullscreen interfaces, i.e., native, ms, moz, and webkit.
-         *
          * @param element - Element to toggle fullscreen state of.
          */
         static toggle(element: HTMLElement, callback?: () => void): void {
@@ -198,7 +195,7 @@ namespace viewer {
                 element.style.height = Fullscreen._size[1];
             }
 
-            isFullscreen ? Fullscreen.exit() : Fullscreen.request(element);
+            isFullscreen ? Fullscreen._exit() : Fullscreen._request(element);
         }
 
     }

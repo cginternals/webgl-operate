@@ -32,6 +32,7 @@ describe('webgl-operate slim API', () => {
             'EventHandler',
 
             'Buffer',
+            'Color',
             'DefaultFramebuffer',
             'Framebuffer',
             'Geometry',
@@ -46,9 +47,14 @@ describe('webgl-operate slim API', () => {
             'Wizard',
 
             'Camera',
-            'Color',
+            'CameraModifier',
             'Navigation',
-            'TrackBallNavigation',
+            'FirstPersonModifier',
+            'PanModifier',
+            'PointerLock',
+            'TrackballModifier',
+            'TurntableModifier',
+            'ZoomModifier',
 
             'NdcFillingRectangle',
             'NdcFillingTriangle',
