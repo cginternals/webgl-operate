@@ -1,11 +1,10 @@
 
-import { vec2, vec4 } from 'gl-matrix';
-
 import { assert } from './auxiliaries';
+
 import { Context } from './context';
-import { Glyph, GlyphIndex } from './glyph';
+import { Glyph } from './glyph';
 import { Texture2 } from './texture2';
-import { GLsizei2, GLsizei4 } from './tuples';
+import { GLfloat2, GLfloat4, GLsizei2 } from './tuples';
 import { Wizard } from './wizard';
 
 
@@ -38,21 +37,19 @@ export class FontFace {
     protected _lineGap = 0.0;
 
     /** @see {@link glyphTextureExtent} */
-    protected _glyphTextureExtent: GLsizei2 = [0, 0];
+    protected _glyphTextureExtent: GLfloat2 = [0.0, 0.0];
 
     /** @see {@link glyphTexturePadding} */
-    protected _glyphTexturePadding: GLsizei4 = [0, 0, 0, 0];
+    protected _glyphTexturePadding: GLfloat4 = [0.0, 0.0, 0.0, 0.0];
 
     /** @see {@link glyphTexturePadding} */
     protected _glyphTexture: Texture2;
 
     /**
      * Map associating a glyph index to a glyph (sub image of a texture).
-     * @see {@link glyph}
-     * @see {@link hasGlyph}
-     * @see {@link addGlyph}
+     * @see {@link glyph}, @see {@link hasGlyph}, @see {@link addGlyph}
      */
-    protected _glyphs = new Map<GlyphIndex, Glyph>();
+    protected _glyphs = new Map<GLsizei, Glyph>();
 
     protected _context: Context;
 
@@ -84,14 +81,6 @@ export class FontFace {
     }
 
     /**
-     * The font's base in pt. The base is the distance from the baseline to the top of the line in pt.
-     * @return - The distance from the baseline to the top of the line in pt.
-     */
-    get base(): number {
-        return this._base;
-    }
-
-    /**
      * Set the font's base in pt. The base is the distance from the baseline to the top of the line in pt.
      * @param base - The distance from the baseline to the top of the line in pt.
      */
@@ -99,14 +88,8 @@ export class FontFace {
         assert(base > 0.0, 'base should be larger than zero.');
         this._base = base;
     }
-
-    /**
-     * The font's ascent in pt. The ascent is the distance from the baseline to the tops of the tallest glyphs
-     * (ascenders) in pt.
-     * @return - The distance from the baseline to the topmost ascenders in pt.
-     */
-    get ascent(): number {
-        return this._ascent;
+    get base(): number {
+        return this._base;
     }
 
     /**
@@ -118,14 +101,8 @@ export class FontFace {
         assert(ascent > 0.0, 'ascent should be larger than zero.');
         this._ascent = ascent;
     }
-
-    /**
-     * The font's descent in pt. The descent is the distance from the baseline to the lowest descenders in pt. Please
-     * note that this value is usually negative (if the fonts lowest descenders are below the baseline).
-     * @return - The distance from the baseline to the lowest descenders in pt.
-     */
-    get descent(): number {
-        return this._descent;
+    get ascent(): number {
+        return this._ascent;
     }
 
     /**
@@ -138,14 +115,8 @@ export class FontFace {
         // assert(descent < 0.f, ...);
         this._descent = descent;
     }
-
-    /**
-     * The font's leading/line gap in pt. The leading is the distance from the lowest descenders to the topmost
-     * ascenders of a subsequent text line in pt.
-     * @return - The gap between two subsequent lines of text in pt.
-     */
-    get lineGap(): number {
-        return this._lineGap;
+    get descent(): number {
+        return this._descent;
     }
 
     /**
@@ -156,24 +127,30 @@ export class FontFace {
     set lineGap(lineGap: number) {
         this._lineGap = lineGap;
     }
-
-    /**
-     * The baseline-to-baseline distance in pt. The line height is derived as follows:
-     * line_height = size + line_gap, or alternatively: line_height = size * line_space
-     * @return - The line height (baseline-to-baseline distance) in pt.
-     */
-    get lineHeight(): number {
-        return this.size + this.lineGap;
+    get lineGap(): number {
+        return this._lineGap;
     }
 
     /**
-     * Set the baseline-to-baseline distance in pt. Negative values will result in negative linegap.
+     * Set the baseline-to-baseline distance in pt. Negative values will result in negative linegap. The line height is
+     * derived as follows: line_height = size + line_gap, or alternatively: line_height = size * line_space
      * @param lineHeight - The line height (baseline-to-baseline distance) in pt.
      */
     set lineHeight(lineHeight: number) {
         this._lineGap = lineHeight - this.size;
     }
+    get lineHeight(): number {
+        return this.size + this.lineGap;
+    }
 
+    /**
+     * Set the relative baseline-to-baseline distance w.r.t. the font's size. The line space is mapped to line gap as
+     * follows: line_gap = size * (line_space - 1). A space < 1.0 will result in a negative line gap.
+     * @param lineSpace - The relative baseline-to-baseline distance w.r.t. the font's size.
+     */
+    set lineSpace(lineSpace: number) {
+        this._lineGap = this.size * (lineSpace - 1);
+    }
     /**
      * The relative baseline-to-baseline distance w.r.t. the font's size. The relative line space is derived as follows:
      * line_space = size / line_height; Note that the descent is usually a negative value.
@@ -187,74 +164,53 @@ export class FontFace {
     }
 
     /**
-     * Set the relative baseline-to-baseline distance w.r.t. the font's size. The line space is mapped to line gap as
-     * follows: line_gap = size * (line_space - 1). A space < 1.0 will result in a negative line gap.
-     * @param lineSpace - The relative baseline-to-baseline distance w.r.t. the font's size.
+     * Sets the glyph texture atlas extent.
+     * @param extent - The texture extent in px
      */
-    set lineSpace(lineSpace: number) {
-        this._lineGap = this.size * (lineSpace - 1);
+    set glyphTextureExtent(extent: GLsizei2) {
+        assert(extent[0] > 0, 'expected extent.x to be larger than zero.');
+        assert(extent[1] > 0, 'expected extent.y to be larger than zero.');
+        this._glyphTextureExtent = extent;
     }
-
     /**
-     * The size/extent of the glyph texture in px. This can only be set via setGlyphTexture.
+     * The size/extent of the glyph texture in px.
      * @return - The size/extent of the glyph texture in px.
      */
     get glyphTextureExtent(): GLsizei2 {
         return this._glyphTextureExtent;
     }
 
-    // /**
-    //  * Sets the glyph texture atlas extent.
-    //  * @param extent - The texture extent in px
-    //  */
-    // set glyphTextureExtent(extent: GLsizei2) {
-    //     assert(extent[0] > 0, 'expected extent.x to be larger than zero.');
-    //     assert(extent[1] > 0, 'expected extent.y to be larger than zero.');
-    //     this._glyphTextureExtent = extent;
-    // }
-
     /**
      * The padding applied to every glyph in px. This can only be set via setGlyphTexture.
-     * @return - The CSS style (top, right, bottom, and left) padding applied to every glyph within the texture in px.
+     * @param padding - CSS style (top, right, bottom, left) padding applied to every glyph within the texture in px.
      */
-    get glyphTexturePadding(): GLsizei4 {
+    set glyphTexturePadding(padding: GLfloat4) {
+        assert(padding[0] >= 0.0, 'expected padding[0] to be larger than zero.');
+        assert(padding[1] >= 0.0, 'expected padding[1] to be larger than zero.');
+        assert(padding[2] >= 0.0, 'expected padding[2] to be larger than zero.');
+        assert(padding[3] >= 0.0, 'expected padding[3] to be larger than zero.');
+        this._glyphTexturePadding = padding;
+    }
+    get glyphTexturePadding(): GLfloat4 {
         return this._glyphTexturePadding;
     }
 
-    // /**
-    //  * Sets/updates the padding used for the glyph texture atlas.
-    //  * @param padding The CSS style (top, right, bottom, left) padding applied to every glyph within the texture
-    //  * in px.
-    //  */
-    // set glyphTexturePadding(padding: GLsizei4) {
-    //     assert(padding[0] >= 0.0, 'expected padding[0] to be larger than zero.');
-    //     assert(padding[1] >= 0.0, 'expected padding[1] to be larger than zero.');
-    //     assert(padding[2] >= 0.0, 'expected padding[2] to be larger than zero.');
-    //     assert(padding[3] >= 0.0, 'expected padding[3] to be larger than zero.');
-    //     this._glyphTexturePadding = padding;
-    // }
-
     /**
      * The font face's associated glyph atlas. All glyph data is associated to this texture atlas.
-     * @return - The texture object containing the texture atlas.
-     */
-    get glyphTexture(): Texture2 {
-        return this._glyphTexture;
-    }
-
-    /**
-     * Sets/updates the glyph texture atlas used for all comprised glyphs.
      * @param texture - The new texture atlas for all glyphs
      */
     set glyphTexture(texture: Texture2) {
         this._glyphTexture = texture;
+    }
+    get glyphTexture(): Texture2 {
+        return this._glyphTexture;
     }
 
     /**
      * Check if a glyph of a specific index is available.
      * @return - True if a glyph for the provided index was added.
      */
-    hasGlyph(index: GlyphIndex): boolean {
+    hasGlyph(index: GLsizei): boolean {
         return !!this._glyphs.get(index);
     }
 
@@ -264,7 +220,7 @@ export class FontFace {
      * @param index - Index of the glyph to access.
      * @return - Glyph with the matching index or an empty glyph, if index has not match
      */
-    glyph(index: GlyphIndex): Glyph {
+    glyph(index: GLsizei): Glyph {
         const existingGlyph = this._glyphs.get(index);
         if (existingGlyph) {
             return existingGlyph;
@@ -287,7 +243,7 @@ export class FontFace {
      * Generates aan array of all comprised glyph indices.
      * @return - An array of all glyph indices available to this font face.
      */
-    arrayOfGlyphIndices(): Array<GlyphIndex> {
+    arrayOfGlyphIndices(): Array<GLsizei> {
         return Array.from(this._glyphs.keys());
     }
 
@@ -298,7 +254,7 @@ export class FontFace {
      * @param index - Index of the glyph to access.
      * @return - Returns true if the glyph needs to be depicted/rendered.
      */
-    depictable(index: GlyphIndex): boolean {
+    depictable(index: GLsizei): boolean {
         return this.glyph(index).depictable();
     }
 
@@ -310,7 +266,7 @@ export class FontFace {
      * @return - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown to
      * this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
      */
-    kerning(index: GlyphIndex, subsequentIndex: GlyphIndex): number {
+    kerning(index: GLsizei, subsequentIndex: GLsizei): number {
         const glyph = this._glyphs.get(index);
         if (!glyph) {
             return 0.0;
@@ -325,7 +281,7 @@ export class FontFace {
      * @param subsequentIndex - The glyph index of the respective subsequent/next glyph.
      * @param kerning - Kerning of the two glyphs in pt.
      */
-    setKerning(index: GlyphIndex, subsequentIndex: GlyphIndex, kerning: number): void {
+    setKerning(index: GLsizei, subsequentIndex: GLsizei, kerning: number): void {
         const glyph = this._glyphs.get(index);
         if (!glyph || !this.hasGlyph(subsequentIndex)) {
             assert(false, 'expected glyph or glyph of subsequent index to exist.');
