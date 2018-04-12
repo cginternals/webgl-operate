@@ -36,6 +36,44 @@ export class Glyph {
     }
 
     /**
+     * Check if a glyph is depictable/renderable. If the glyph's sub texture vertical or horizontal extent is zero the
+     * glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well as
+     * unknown glyphs do not need to be processed for rendering.
+     * @return - True if the glyph needs to be depicted/rendered.
+     */
+    depictable(): boolean {
+        return this._subTextureExtent[0] > 0 && this._subTextureExtent[1] > 0;
+    }
+
+    /**
+     * The glyph's kernel w.r.t. a subsequent glyph in pt. The kerning provides a(usually negative) offset along the
+     * baseline that can be used to move the pen-position respectively, i.e., the subsequent pen-position is computed
+     * as follows: pen-position + advance + kerning
+     * @param subsequentIndex - The subsequent glyph's index.
+     * @return - The kerning w.r.t. to the subsequent glyph in pt. If no kerning data is available for the subsequent
+     * glyph, the return value is zero indicating no kerning.
+     */
+    kerning(subsequentIndex: GLsizei): GLfloat {
+        const kerning = this._kernings.get(subsequentIndex);
+        if (kerning !== undefined) {
+            return kerning;
+        }
+        return 0.0;
+    }
+
+    /**
+     * Set the glyph's kernel w.r.t. a subsequent glyph in pt. @see {@link kerning} 
+     * @param subsequentIndex - The subsequent glyph's index.
+     * @param kerning - The kerning value w.r.t. to the subsequent glyph in pt. Note that the kerning should be a
+     * negative value but is not enforced to be in terms of assertion or clamping. If kerning data for the subsequent
+     * glyph is already available it will be updated to the provided value.
+     */
+    setKerning(subsequentIndex: GLsizei, kerning: GLfloat) {
+        this._kernings.set(subsequentIndex, kerning);
+    }
+
+
+    /**
      * Set the index of one single distinguishable character.
      */
     set index(index: GLsizei) {
@@ -69,16 +107,6 @@ export class Glyph {
     }
     get subTextureExtent(): GLclampf2 {
         return this._subTextureExtent;
-    }
-
-    /**
-     * Check if a glyph is depictable/renderable. If the glyph's sub texture vertical or horizontal extent is zero the
-     * glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well as
-     * unknown glyphs do not need to be processed for rendering.
-     * @return - True if the glyph needs to be depicted/rendered.
-     */
-    public depictable(): boolean {
-        return this._subTextureExtent[0] > 0 && this._subTextureExtent[1] > 0;
     }
 
     /**
@@ -136,30 +164,4 @@ export class Glyph {
         return this._advance;
     }
 
-    /**
-     * The glyph's kernel w.r.t. a subsequent glyph in pt. The kerning provides a(usually negative) offset along the
-     * baseline that can be used to move the pen-position respectively, i.e., the subsequent pen-position is computed
-     * as follows: pen-position + advance + kerning
-     * @param subsequentIndex - The subsequent glyph's index.
-     * @return - The kerning w.r.t. to the subsequent glyph in pt. If no kerning data is available for the subsequent
-     * glyph, the return value is zero indicating no kerning.
-     */
-    public kerning(subsequentIndex: GLsizei): GLfloat {
-        const kerning = this._kernings.get(subsequentIndex);
-        if (kerning !== undefined) {
-            return kerning;
-        }
-        return 0.0;
-    }
-
-    /**
-     * Set the glyph's kernel w.r.t. a subsequent glyph in pt. @see {@link kerning} 
-     * @param subsequentIndex - The subsequent glyph's index.
-     * @param kerning - The kerning value w.r.t. to the subsequent glyph in pt. Note that the kerning should be a
-     * negative value but is not enforced to be in terms of assertion or clamping. If kerning data for the subsequent
-     * glyph is already available it will be updated to the provided value.
-     */
-    public setKerning(subsequentIndex: GLsizei, kerning: GLfloat) {
-        this._kernings.set(subsequentIndex, kerning);
-    }
 }
