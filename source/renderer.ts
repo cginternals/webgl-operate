@@ -149,6 +149,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Actual initialize call specified by inheritor.
+     * @returns - whether initialization was successful
      */
     protected abstract onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider | undefined,
@@ -163,6 +164,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Actual update call specified by inheritor.
+     * @returns - whether to redraw
      */
     protected abstract onUpdate(): boolean;
 
