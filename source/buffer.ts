@@ -77,7 +77,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: ArrayBufferView, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
+    data(data: ArrayBufferView | ArrayBuffer, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
