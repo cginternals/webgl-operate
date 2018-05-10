@@ -46,7 +46,7 @@
         "glob": "~7.1.2",
         "http-server": "~0.11.1",
         "jsonschema": "^1.2.4",
-        "mocha": "~5.0.5",
+        "mocha": "~5.1.0",
         "mocha-junit-reporter": "~1.17.0",
         "mocha-multi-reporters": "~1.1.7",
         "nyc": "~11.6.0",
