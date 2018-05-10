@@ -10,9 +10,9 @@ import { ChangeLookup } from './changelookup';
 import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
+import { MouseEventProvider } from './mouseeventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { FramePrecisionString } from './wizard';
-import { MouseEventProvider } from './mouseeventprovider';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
@@ -149,6 +149,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Actual initialize call specified by inheritor.
+     * @returns - whether initialization was successful
      */
     protected abstract onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider | undefined,
@@ -163,6 +164,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Actual update call specified by inheritor.
+     * @returns - whether to redraw
      */
     protected abstract onUpdate(): boolean;
 
