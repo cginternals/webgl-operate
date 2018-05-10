@@ -1,11 +1,13 @@
 
-import { vec2, vec3 } from 'gl-matrix';
+import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
+import { fromVec4, v4 } from './gl-matrix-extensions';
 
 import { assert } from './auxiliaries';
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
+import { GLfloat2 } from './tuples';
 
 
 /**
@@ -17,63 +19,6 @@ import { Label } from './label';
 export class Typesetter {
 
     protected static readonly DELIMITERS: string = '\x0A ,.-/()[]<>';
-
-    /**
-     * This function internally performs the typesetting of a Label, but only returns its extent, disregarding the
-     * resulting vertex array.
-     */
-    // extent(label: Label): vec2 {
-    //     //return typeset(label, null, 0, true);
-    // }
-
-
-    // rectangle(label: Label, origin: vec3): [vec2, vec2] {
-    //     let extent = Typesetter.extent(sequence);
-    //     let offset = sequence.fontFace.lineHeight - sequence.fontFace.base;
-
-    //     switch (sequence.lineAnchor) {
-    //         case LineAnchor.Ascent:
-    //             offset += sequence.fontFace.ascent;
-    //             break;
-    //         case LineAnchor.Center:
-    //             offset += sequence.fontFace.size * 0.5 + sequence.fontFace.descent;
-    //             break;
-    //         case LineAnchor.Descent:
-    //             offset += sequence.fontFace.descent;
-    //             break;
-    //         case LineAnchor.Top:
-    //             offset += sequence.fontFace.base;
-    //             break;
-    //         case LineAnchor.Bottom:
-    //             offset += sequence.fontFace.base - sequence.fontFace.lineHeight;
-    //             break;
-    //         case LineAnchor.Baseline:
-    //         default:
-    //             break;
-    //     }
-    //     origin[1] -= offset;
-
-    //     let transformedOrigin = vec4.create();
-    //     vec4.transformMat4(transformedOrigin, vec4.fromValues(origin[0], origin[1], origin[2], 1.0), sequence.transform);
-
-
-    //     switch (sequence.alignment) {
-    //         case Alignment.LeftAligned:
-    //             offset = 0.0;
-    //             break;
-    //         case Alignment.Centered:
-    //             offset = 0.5 * extent[0];
-    //             break;
-    //         case Alignment.RightAligned:
-    //             offset = extent[0];
-    //             break;
-    //         default:
-    //             break;
-    //     }
-
-    //     transformedOrigin[0] -= offset;
-    //     return [vec2.fromValues(transformedOrigin[0], transformedOrigin[1]), extent];
-    // }
 
     protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, safeForwardIndex: number): boolean {
         assert(label.wordWrap, `expected wordWrap to be enabled for label, given ${label}`);
@@ -127,7 +72,7 @@ export class Typesetter {
      * @param pen - In/out parameter: pen (typesetting position) to be used and adjusted.
      * @param extent - In/out parameter: extent to be adjusted.
      */
-    protected static backward(label: Label, index: number, begin: number, pen: vec2, extent: vec2): void {
+    protected static backward(label: Label, index: number, begin: number, pen: vec2, extent: vec2) {
         while (index > begin) {
             const precedingGlyph = label.fontFace.glyph(label.charCodeAt(index));
             if (precedingGlyph.depictable()) {
@@ -145,12 +90,12 @@ export class Typesetter {
      * the targeted line alignment.
      * @param pen - Current typesetting position (probably the end of the line in typesetting space).
      * @param alignment - Targeted alignment, e.g., left, center, or right.
-     * @param vertices - Glyph vertices for rendering to align the origins of (expected to be not yet transformed).
+     * @param vertices - Glyph vertices for rendering to align the origins' x-components of (expected untransformed).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      */
-    protected static align(pen: vec2, alignment: Label.Alignment,
-        vertices: GlyphVertices | undefined, begin: number, end: number): void {
+    protected static transformAlignment(pen: vec2, alignment: Label.Alignment,
+        vertices: GlyphVertices | undefined, begin: number, end: number) {
         if (vertices === undefined || alignment === Label.Alignment.Left) {
             return;
         }
@@ -167,14 +112,56 @@ export class Typesetter {
     }
 
     /**
-     * Configuring the vertex for a given glyph to be renderer. If no vertex is given or the glyph is not depictable,
+     * Adjusts the vertices for line anchor (done due after typesetting) w.r.t. the targeted anchoring.
+     * @param label - Label to adjust the y-positions for.
+     * @param vertices - Glyph vertices for rendering to align the origins' y-components of (expected untransformed).
+     * @param begin - Vertex index to start alignment at.
+     * @param end - Vertex index to stop alignment at.
+     *
+     * @todo Apply once at the beginning! Initial offset!
+     */
+    protected static transformLineAnchor(label: Label,
+        vertices: GlyphVertices | undefined, begin: number, end: number) {
+        if (vertices === undefined) {
+            return;
+        }
+
+        let offset = 0.0;
+        switch (label.lineAnchor) {
+            case Label.LineAnchor.Ascent:
+                offset = label.fontFace.ascent;
+                break;
+            case Label.LineAnchor.Center:
+                offset = label.fontFace.size * 0.5 + label.fontFace.descent;
+                break;
+            case Label.LineAnchor.Descent:
+                offset = label.fontFace.descent;
+                break;
+            case Label.LineAnchor.Top:
+                offset = label.fontFace.base;
+                break;
+            case Label.LineAnchor.Bottom:
+                offset = label.fontFace.base - label.fontFace.lineHeight;
+                break;
+            case Label.LineAnchor.Baseline:
+            default:
+                return;
+        }
+
+        for (let i = begin; i < end; ++i) {
+            vertices[i].origin[1] -= offset;
+        }
+    }
+
+    /**
+     * Configuring the vertex for a given glyph to be rendered. If no vertex is given or the glyph is not depictable,
      * this method immediately exits at the beginning.
      * @param fontFace - Font face to be applied for setting up the vertex.
      * @param pen - Typesetting position which is the not-yet-transformed position the glyph will be rendered at.
      * @param glyph - Glyph that is to be rendered/configured.
      * @param vertex - Associated vertex to store data required for rendering.
      */
-    protected static glyph(fontFace: FontFace, pen: vec2, glyph: Glyph, vertex: GlyphVertex | undefined): void {
+    protected static transformGlyph(fontFace: FontFace, pen: vec2, glyph: Glyph, vertex: GlyphVertex | undefined) {
         if (vertex === undefined || glyph.depictable() === false) {
             return;
         }
@@ -198,7 +185,51 @@ export class Typesetter {
     }
 
 
-    static typeset(label: Label, vertices?: GlyphVertices, begin?: number): vec2 {
+    /**
+     * Computes origin, tangent, and up vector for every vertex of in the given range.
+     * @param transform - Transformation to apply to every vertex.
+     * @param vertices - Glyph vertices to be transformed (expected untransformed, in typesetting space).
+     * @param begin - Vertex index to start alignment at.
+     * @param end - Vertex index to stop alignment at.
+     */
+    protected static transformVertex(transform: mat4,
+        vertices: GlyphVertices | undefined, begin: number, end: number): void {
+        if (vertices === undefined || mat4.equals(transform, mat4.create())) {
+            return;
+        }
+
+        for (let i: number = begin; i < end; ++i) {
+            const v = vertices[i];
+
+            const lowerLeft: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
+                v.origin[0], v.origin[1], v.origin[2], 1.0), transform);
+            const lowerRight: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
+                v.origin[0] + v.tangent[0], v.origin[1] + v.tangent[1], v.origin[2] + v.tangent[2], 1.0), transform);
+            const upperLeft: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
+                v.origin[0] + v.up[0], v.origin[1] + v.up[1], v.origin[2] + v.up[2], 1.0), transform);
+
+            v.origin = fromVec4(lowerLeft);
+            v.tangent = fromVec4(vec4.sub(v4(), lowerRight, lowerLeft));
+            v.up = fromVec4(vec4.sub(v4(), upperLeft, lowerLeft));
+        }
+    }
+
+
+    /**
+     * Transforms the labels extent (typesetting space to, e.g., world space or screen space).
+     * @param transform - Transformation that was applied to every vertex.
+     * @param extent - Untransformed label extent (in typesetting space) to be transformed.
+     * @returns - Transformed label extent (copy).
+     */
+    protected static transformExtent(transform: mat4, extent: vec2): GLfloat2 {
+        const lowerLeft = vec4.transformMat4(v4(), vec4.fromValues(0.0, 0.0, 0.0, 1.0), transform);
+        const lowerRight = vec4.transformMat4(v4(), vec4.fromValues(extent[0], 0.0, 0.0, 1.0), transform);
+        const upperLeft = vec4.transformMat4(v4(), vec4.fromValues(0.0, extent[1], 0.0, 1.0), transform);
+        return [vec4.distance(lowerRight, lowerLeft), vec4.distance(upperLeft, lowerLeft)];
+    }
+
+
+    static typeset(label: Label, vertices?: GlyphVertices, begin?: number): GLfloat2 {
         /* Horizontal and vertical position at which typesetting takes place/arrived. */
         const pen = vec2.create();
 
@@ -213,7 +244,8 @@ export class Typesetter {
         let safeForwardIndex = iBegin;
         let feedVertexIndex: number = vertexIndex;
 
-        for (let index = iBegin; index !== iEnd; ++index) {
+        let index = iBegin;
+        for (; index !== iEnd; ++index) {
             const glyph = label.fontFace.glyph(label.charCodeAt(index));
 
             /* Handle line feeds as well as word wrap for next word (or next glyph if word exceeds the line width). */
@@ -224,7 +256,7 @@ export class Typesetter {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
                 Typesetter.backward(label, index - 1, iBegin, pen, extent);
                 /* Handle alignment (does nothing if vertices are not required/undefined). */
-                Typesetter.align(pen, label.alignment, vertices, feedVertexIndex, vertexIndex);
+                Typesetter.transformAlignment(pen, label.alignment, vertices, feedVertexIndex, vertexIndex);
 
                 pen[0] = 0.0;
                 pen[1] -= label.fontFace.lineHeight;
@@ -236,102 +268,19 @@ export class Typesetter {
             }
 
             /* Add and configure data for rendering the current character/glyph of the label. */
-            Typesetter.glyph(label.fontFace, pen, glyph, vertices ? vertices[vertexIndex++] : undefined);
+            Typesetter.transformGlyph(label.fontFace, pen, glyph, vertices ? vertices[vertexIndex++] : undefined);
 
-            /* ... todo */
-
-            //     pen[0] += glyph.advance;
-
-            //     if (i + 1 == iEnd) // handle alignment (when last line of sequence is processed)
-            //     {
-            //         Typesetter.extent(fontFace, sequence, i, iBegin, pen, extent);
-
-            //         if (!dryrun) {
-            //             typeset_align(pen, sequence.alignment, vertices, feedVertexIndex, vertexIndex);
-            //         }
-            //     }
-            // }
-
-            // if (!dryRun) {
-            //     anchor_transform(sequence, vertices, begin, vertexIndex);
-            //     vertex_transform(sequence.transform, sequence.fontColor, sequence.superSampling, vertices, begin, vertexIndex);
-            // }
-            // return extent_transform(sequence, extent);
+            pen[0] += glyph.advance;
         }
 
+        /* Handle alignment (when last line of sequence is processed). */
+        Typesetter.backward(label, index - 1, iBegin, pen, extent);
+        /* Handle alignment and anchoring (does nothing if vertices are not required/undefined). */
+        Typesetter.transformAlignment(pen, label.alignment, vertices, feedVertexIndex, iEnd - 1);
+        Typesetter.transformLineAnchor(label, vertices, iBegin, iEnd - 1);
 
+        Typesetter.transformVertex(label.transform, vertices, iBegin, vertexIndex);
+        return Typesetter.transformExtent(label.transform, extent);
+    }
 
-
-// function anchor_transform(sequence: GlyphSequence, vertices: Vertices, begin: number, end: number): void {
-
-//     let offset: number = 0.0;
-
-//     switch (sequence.lineAnchor) {
-//         case LineAnchor.Ascent:
-//             offset = sequence.fontFace.ascent;
-//             break;
-//         case LineAnchor.Center:
-//             offset = sequence.fontFace.size * 0.5 + sequence.fontFace.descent;
-//             break;
-//         case LineAnchor.Descent:
-//             offset = sequence.fontFace.descent;
-//             break;
-//         case LineAnchor.Top:
-//             offset = sequence.fontFace.base;
-//             break;
-//         case LineAnchor.Bottom:
-//             offset = sequence.fontFace.base - sequence.fontFace.lineHeight;
-//             break;
-//         case LineAnchor.Baseline:
-//         default:
-//             return;
-//     }
-
-//     for (let i: number = begin; i < end; ++i) {
-//         let v = vertices[i];
-//         v.origin[1] -= offset;
-//     }
-// }
-
-// function vertex_transform(transform: mat4, fontColor: vec4, superSampling: SuperSampling | GLuint, vertices: Vertices, begin: number, end: number): void {
-//     for (let i: number = begin; i < end; ++i) {
-//         let v = vertices[i];
-
-//         let ll: vec4 = vec4.create();
-//         vec4.transformMat4(ll, vec4.fromValues(v.origin[0], v.origin[1], v.origin[2], 1.0), transform);
-
-//         let lr: vec4 = vec4.create();
-//         vec4.transformMat4(lr, vec4.fromValues(v.origin[0] + v.vtan[0], v.origin[1] + v.vtan[1], v.origin[2] + v.vtan[2], 1.0), transform);
-
-//         let ul: vec4 = vec4.create();
-//         vec4.transformMat4(ul, vec4.fromValues(v.origin[0] + v.vbitan[0], v.origin[1] + v.vbitan[1], v.origin[2] + v.vbitan[2], 1.0), transform);
-
-
-//         v.origin = vec3.fromValues(ll[0], ll[1], ll[2])
-
-//         let vtan: vec4 = vec4.create();
-//         vec4.sub(vtan, lr, ll);
-//         v.vtan = vec3.fromValues(vtan[0], vtan[1], vtan[2])
-
-//         let vbitan: vec4 = vec4.create();
-//         vec4.sub(vbitan, ul, ll);
-//         v.vbitan = vec3.fromValues(vbitan[0], vbitan[1], vbitan[2])
-
-//         v.fontColor = fontColor;
-//         v.superSampling = superSampling;
-//     }
-// }
-
-// function extent_transform(sequence: GlyphSequence, extent: vec2): vec2 {
-//     let ll = vec4.create();
-//     vec4.transformMat4(ll, vec4.fromValues(0.0, 0.0, 0.0, 1.0), sequence.transform);
-
-//     let lr = vec4.create();
-//     vec4.transformMat4(lr, vec4.fromValues(extent[0], 0.0, 0.0, 1.0), sequence.transform);
-
-//     let ul = vec4.create();
-//     vec4.transformMat4(ul, vec4.fromValues(0.0, extent[1], 0.0, 1.0), sequence.transform);
-
-//     return vec2.fromValues(vec4.distance(lr, ll), vec4.distance(ul, ll));
-// }
-//     }
+}

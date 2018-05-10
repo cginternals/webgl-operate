@@ -65,8 +65,6 @@ export class GlyphVertices extends Array<GlyphVertex> {
 // }
 
 
-
-
 //     // numDepictable
 //     // Extent(): number {
 //     //     let count = 0;
@@ -85,12 +83,9 @@ export class GlyphVertices extends Array<GlyphVertex> {
 //     // }
 
 
-
 //     protected _additionalTransform: mat4;
 //     protected _transformValid: boolean;
 //     protected _transform: mat4;
-
-
 
 
 //     // public setFromConfig(config: GlyphSequenceConfig) {

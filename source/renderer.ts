@@ -10,9 +10,9 @@ import { ChangeLookup } from './changelookup';
 import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
+import { MouseEventProvider } from './mouseeventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { FramePrecisionString } from './wizard';
-import { MouseEventProvider } from './mouseeventprovider';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }

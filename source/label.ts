@@ -1,4 +1,6 @@
 
+import { mat4 } from 'gl-matrix';
+
 import { ChangeLookup } from './changelookup';
 import { Color } from './color';
 import { FontFace } from './fontface';
@@ -36,6 +38,9 @@ export class Label {
 
     /** @see {@link background} */
     protected _backgroundColor: Color;
+
+    /** @see {@link transform} */
+    protected _transform: mat4;
 
 
     /** @see {@link altered} */
@@ -224,6 +229,24 @@ export class Label {
     get backgroundColor(): Color {
         return this._backgroundColor;
     }
+
+
+    /**
+     * Transformation used to move, scale, rotate, skew, etc. the label into an arbitrary coordinate space (e.g.,
+     * screen space, world space, ...). This can be set either explicitly or implicitly using various transformation
+     * utility functions.
+     */
+    set transform(transform: mat4) {
+        if (mat4.equals(this._transform, transform)) {
+            return;
+        }
+        this._altered.alter('transform');
+        this._transform = transform;
+    }
+    get transform(): mat4 {
+        return this._transform;
+    }
+
 
     toString(): string {
         if (this._text instanceof Text) {

@@ -1,8 +1,5 @@
 
 
-
-
-
 // protected _superSampling: SuperSampling;
 
 
@@ -26,8 +23,6 @@
 // }
 
 
-
-
 //     // numDepictable
 //     // Extent(): number {
 //     //     let count = 0;
@@ -46,12 +41,9 @@
 //     // }
 
 
-
 //     protected _additionalTransform: mat4;
 //     protected _transformValid: boolean;
 //     protected _transform: mat4;
-
-
 
 
 //     // public setFromConfig(config: GlyphSequenceConfig) {

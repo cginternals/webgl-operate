@@ -62,7 +62,7 @@ export class Glyph {
     }
 
     /**
-     * Set the glyph's kernel w.r.t. a subsequent glyph in pt. @see {@link kerning} 
+     * Set the glyph's kernel w.r.t. a subsequent glyph in pt. @see {@link kerning}
      * @param subsequentIndex - The subsequent glyph's index.
      * @param kerning - The kerning value w.r.t. to the subsequent glyph in pt. Note that the kerning should be a
      * negative value but is not enforced to be in terms of assertion or clamping. If kerning data for the subsequent
