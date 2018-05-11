@@ -1,16 +1,18 @@
 
-import { assert } from './auxiliaries';
+// import { assert } from './auxiliaries';
 
 
 /**
- * Check if externals are loaded and sample some definitions.
+ * Check if externals are loaded and sample some definitions. Disabled for now as well, since any other project
+ * using this might have problems, e.g., in tests or other case when it's not easy to resolve peer dependencies.
  */
 
-assert(window.hasOwnProperty('Rx'), `expected rxjs to be accessible via 'Rx'` +
-    `, try loading this peer dependency, e.g., with a preceeding script tag`);
-assert((window as any).Rx.hasOwnProperty('Observable'), `expected rxjs to have 'Observable' defined`);
-assert((window as any).Rx.hasOwnProperty('Subject'), `expected rxjs to have 'Subject' defined`);
-assert((window as any).Rx.hasOwnProperty('ReplaySubject'), `expected rxjs to have 'ReplaySubject' defined`);
+// assert(window.hasOwnProperty('Rx'), `expected rxjs to be accessible via 'Rx'` +
+//     `, try loading this peer dependency, e.g., with a preceeding script tag`);
+// assert((window as any).Rx.hasOwnProperty('Observable'), `expected rxjs to have 'Observable' defined`);
+// assert((window as any).Rx.hasOwnProperty('Subject'), `expected rxjs to have 'Subject' defined`);
+// assert((window as any).Rx.hasOwnProperty('ReplaySubject'), `expected rxjs to have 'ReplaySubject' defined`);
+
 
 /**
  * gl-matrix cannot be externalized directly for now. A workaround that assumes gl-matrix distribution to be loaded
