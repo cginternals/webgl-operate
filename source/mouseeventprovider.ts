@@ -1,5 +1,5 @@
 
-import { Observable, ReplaySubject } from 'rxjs/Rx';
+import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert } from './auxiliaries';
 

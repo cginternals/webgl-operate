@@ -24,7 +24,7 @@ module.exports = {
         libraryTarget: 'umd'
     },
     externals: {
-        'rxjs/Rx': 'Rx'
+        'rxjs': 'Rx'
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
