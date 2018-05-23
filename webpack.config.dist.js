@@ -1,4 +1,6 @@
 
+rxjsExternals = require('webpack-rxjs-externals');
+
 module.exports = require('./webpack.config');
 
 module.exports.cache = false;
@@ -15,6 +17,8 @@ module.exports.module.rules[0].use = {
         }
     }
 };
+
+module.exports.externals = [rxjsExternals()];
 
 module.exports.plugins[0].definitions = {
     DISABLE_ASSERTIONS: JSON.stringify(false),

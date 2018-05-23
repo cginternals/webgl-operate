@@ -23,11 +23,6 @@ module.exports = {
         library: 'gloperate',
         libraryTarget: 'umd'
     },
-    externals: {
-        'rxjs/Observable': 'Rx',
-        'rxjs/ReplaySubject': 'Rx',
-        'rxjs/Subscription': 'Rx',
-    },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
         extensions: ['.ts', '.tsx', '.js']
