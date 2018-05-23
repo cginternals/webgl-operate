@@ -39,7 +39,6 @@
         "@types/sinon": "~4.3.3",
         "chai": "~4.1.2",
         "chai-spies": "~1.0.0",
-        "concurrently": "~3.5.1",
         "coveralls": "~3.0.0",
         "cross-env": "~5.1.4",
         "gl-matrix": "~2.5.1",
@@ -49,6 +48,7 @@
         "mocha": "~5.1.1",
         "mocha-junit-reporter": "~1.17.0",
         "mocha-multi-reporters": "~1.1.7",
+        "npm-run-all": "~4.1.3",
         "nyc": "~11.7.3",
         "pug": "~2.0.3",
         "query-string": "~6.1.0",
@@ -73,8 +73,10 @@
     ],
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
+        "build-watch": "webpack-cli --mode development --watch",
+        "pug-watch": "node pugconfig.js --watch",
         "start": "http-server ./build -a localhost -p 4000",
-        "start-watch": "concurrently \"webpack-cli --mode development --watch\" \"node pugconfig.js --watch\" \"npm run-script start\"",
+        "start-watch": "run-p build-watch pug-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
         "cleanup": "rimraf ./dist ./lib ./build",
@@ -85,7 +87,7 @@
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
         "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.dist.js",
-        "prepack": "npm install && concurrently \"npm run-script build-dist\" \"npm run-script build-lib\""
+        "prepack": "npm install && run-p build-dist build-lib"
     },
     "keywords": [
         "webgl",
@@ -95,8 +97,5 @@
         "2d",
         "3d",
         "multiframe"
-    ],
-    "dependencies": {
-        "rxjs": "^5.5.10"
-    }
+    ]
 }
