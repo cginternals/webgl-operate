@@ -2,10 +2,14 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const rxjsExternals = require('webpack-rxjs-externals');
+
+
 module.exports = {
 
     context: __dirname + '/source',
     cache: true,
+    entry: { 'webgl-operate': ['webgl-operate.ts'] },
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
@@ -14,15 +18,13 @@ module.exports = {
         }),
         new webpack.IgnorePlugin(/^rx$/)
     ],
-    entry: {
-        'webgl-operate': ['externals.ts', 'require.ts', 'polyfill.ts', 'webgl-operate.ts']
-    },
     output: {
         path: __dirname + '/build',
         filename: '[name].js',
         library: 'gloperate',
         libraryTarget: 'umd'
     },
+    externals: [rxjsExternals()],
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
         extensions: ['.ts', '.tsx', '.js']
@@ -38,6 +40,7 @@ module.exports = {
                     options: {
                         compilerOptions: {
                             noUnusedLocals: false,
+                            declaration: false,
                             removeComments: false
                         }
                     }
@@ -49,3 +52,8 @@ module.exports = {
             }]
     },
 };
+
+if (process.env.ANALYZE) {
+    const analyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+    module.exports.plugins.push(new analyzer());
+}

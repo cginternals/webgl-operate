@@ -76,11 +76,11 @@
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
         "build-watch": "webpack-cli --mode development --watch",
-        "pug-watch": "node pugconfig.js --watch",
         "start": "http-server ./build -a localhost -p 4000",
         "start-watch": "run-p build-watch pug-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
+        "pug-watch": "node pugconfig.js --watch",
         "cleanup": "rimraf ./dist ./lib ./build",
         "lint": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
         "test": "nyc mocha",
@@ -88,7 +88,7 @@
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
         "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
-        "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.dist.js",
+        "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
         "prepack": "npm install && run-p build-dist build-lib"
     },
     "keywords": [

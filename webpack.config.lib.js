@@ -1,6 +1,4 @@
 
-rxjsExternals = require('webpack-rxjs-externals');
-
 module.exports = require('./webpack.config');
 
 module.exports.cache = false;
@@ -8,17 +6,10 @@ module.exports.entry = {
     '../lib/webgl-operate': ['externals.ts', 'require.ts', 'polyfill.ts', 'webgl-operate.ts']
 };
 
-module.exports.module.rules[0].use = {
-    loader: 'ts-loader',
-    options: {
-        compilerOptions: {
-            declaration: true,
-            removeComments: false
-        }
-    }
-};
 
-module.exports.externals = [rxjsExternals()];
+module.exports.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
+module.exports.module.rules[0].use.options.compilerOptions.declaration = true;
+module.exports.module.rules[0].use.options.compilerOptions.removeComments = false;
 
 module.exports.output.library = undefined;
 module.exports.output.libraryTarget = 'commonjs2';

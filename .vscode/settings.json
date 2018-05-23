@@ -65,6 +65,7 @@
         "debuggable",
         "defaultexts",
         "defaultframebuffer",
+        "devtool",
         "discretized",
         "drawable",
         "drawable's",
