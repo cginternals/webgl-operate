@@ -24,7 +24,9 @@ module.exports = {
         libraryTarget: 'umd'
     },
     externals: {
-        'rxjs': 'Rx'
+        'rxjs/Observable': 'Rx',
+        'rxjs/ReplaySubject': 'Rx',
+        'rxjs/Subscription': 'Rx',
     },
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
