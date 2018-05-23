@@ -9,7 +9,7 @@ module.exports = {
 
     context: __dirname + '/source',
     cache: true,
-    entry: { 'webgl-operate': ['webgl-operate.ts'] },
+    entry: { 'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'] },
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
