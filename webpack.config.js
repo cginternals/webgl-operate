@@ -15,8 +15,7 @@ module.exports = {
         new webpack.DefinePlugin({
             DISABLE_ASSERTIONS: JSON.stringify(false),
             LOG_VERBOSITY_THRESHOLD: JSON.stringify(2),
-        }),
-        new webpack.IgnorePlugin(/^rx$/)
+        })
     ],
     output: {
         path: __dirname + '/build',
