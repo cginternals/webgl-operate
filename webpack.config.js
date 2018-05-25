@@ -18,7 +18,7 @@ module.exports = {
         })
     ],
     output: {
-        path: __dirname + '/build',
+        path: __dirname + '/build/js',
         filename: '[name].js',
         library: 'gloperate',
         libraryTarget: 'umd'
