@@ -15,20 +15,33 @@ declare var LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 /** Namespace that comprises various utils (also cleans up documentation). */
 namespace auxiliaries {
 
-    export let disableAssertions: boolean;
+    let disableAssertions: boolean;
     try {
         disableAssertions = DISABLE_ASSERTIONS;
     } catch (error) {
         disableAssertions = false;
     }
 
-    export let logVerbosityThreshold: number;
+    let logVerbosityThreshold: number;
     try {
         logVerbosityThreshold = LOG_VERBOSITY_THRESHOLD;
     } catch (error) {
         logVerbosityThreshold = 2;
     }
 
+    export function logVerbosity(verbosity?: number): number {
+        if (verbosity) {
+            logVerbosityThreshold = verbosity;
+        }
+        return logVerbosityThreshold;
+    }
+
+    export function assertions(enable?: boolean): boolean {
+        if (enable) {
+            disableAssertions = !enable;
+        }
+        return disableAssertions;
+    }
 
     /**
      * Log verbosity levels:
@@ -120,7 +133,7 @@ namespace auxiliaries {
     /**
      * Tests if specific bits are set in a given bitfield and returns true if so, false otherwise.
      */
-    export function bitInBitfield(flags: GLbitfield, flag: GLbitfield): boolean {
+    export function bitInBitfield(flags: GLbitfield, flag: GLbitfield | undefined): boolean {
         if (flag === undefined) {
             return false;
         }

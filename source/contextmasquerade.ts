@@ -70,9 +70,12 @@ export class ContextMasquerade {
             preset = p;
             break;
         }
-        assert(preset !== undefined,
-            `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
 
+        if (preset === undefined) {
+            assert(false,
+                `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
+            return mask;
+        }
         preset = preset as ContextMasquerade.Preset;
 
         if (preset.extensions_hash !== undefined) {
