@@ -1,7 +1,7 @@
 
 export { Context } from './context';
 export { Canvas } from './canvas';
-export { Controllable, Controller } from './controller';
+export { Controller } from './controller';
 
 export { ContextMasquerade } from './contextmasquerade';
 export { ExtensionsHash } from './extensionshash';

@@ -5,7 +5,10 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { clamp } from './gl-matrix-extensions';
 
-
+/**
+ * This internal interface is not intended for module export and should not be used as generic rendering/controller
+ * interface. The renderer interface should be used for rendering related tasks instead.
+ */
 export interface Controllable {
 
     /**

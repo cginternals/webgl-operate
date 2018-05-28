@@ -38,8 +38,8 @@ module.exports = {
                     loader: 'ts-loader',
                     options: {
                         compilerOptions: {
-                            noUnusedLocals: false,
                             declaration: false,
+                            noUnusedLocals: false,
                             removeComments: false
                         }
                     }
