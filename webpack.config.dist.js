@@ -2,9 +2,10 @@
 module.exports = require('./webpack.config');
 
 module.exports.cache = false;
+module.exports.output.path = __dirname + '/dist';
 module.exports.entry = {
-    '../dist/webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'],
-    '../dist/webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
+    'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'],
+    'webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
 };
 
 module.exports.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
