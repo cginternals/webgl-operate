@@ -142,7 +142,6 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
                 resolve();
             };
 
-
             if (crossOrigin) {
                 image.crossOrigin = 'anonymous';
             }

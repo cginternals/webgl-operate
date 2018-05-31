@@ -33,6 +33,7 @@ describe('webgl-operate slim API', () => {
 
             'Buffer',
             'Color',
+            'ColorGradient',
             'DefaultFramebuffer',
             'Framebuffer',
             'Geometry',

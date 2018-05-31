@@ -605,4 +605,5 @@ export namespace Color {
         MinimumDecomposition,
         MaximumDecomposition,
     }
+
 }

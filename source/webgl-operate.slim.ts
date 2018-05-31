@@ -11,6 +11,7 @@ export { EventHandler } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
+export { ColorGradient } from './colorgradient';
 export { DefaultFramebuffer } from './defaultframebuffer';
 export { Framebuffer } from './framebuffer';
 export { Geometry } from './geometry';
