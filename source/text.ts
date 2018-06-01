@@ -1,9 +1,9 @@
 
 /**
- * The text object is intended as character sequence manipulation interface. A text can be referenced by multiple glyph
- * sequences for rendering and interaction. E.g., a single text could be renderer multiple times at different locations
- * or using different font faces, alignments, etc. The text object will probably increase in complexity when additional
- * features such as text formatting (bold, italic, varying size), (multi)cursor, (multi)selection, etc. will be added.
+ * The text object is intended as character sequence manipulation interface. A text can be referenced by multiple labels
+ * for rendering and interaction. E.g., a single text could be rendered multiple times at different locations or using
+ * different font faces, alignments, etc. The text object will probably increase in complexity when additional features
+ * such as text formatting (bold, italic, varying size), (multi)cursor, (multi)selection, etc. will be added.
  */
 export class Text {
 

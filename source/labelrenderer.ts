@@ -45,7 +45,7 @@
 //     protected _transformValid: boolean;
 //     protected _transform: mat4;
 
-
+/** TODO GlyphSequenceConfig --> LabelConfig */
 //     // public setFromConfig(config: GlyphSequenceConfig) {
 //     //     this.wordWrap = config.wordWrap;
 //     //     this.lineWidth = config.lineWidth;
