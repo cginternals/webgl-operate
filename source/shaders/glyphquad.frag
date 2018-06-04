@@ -1,3 +1,6 @@
+precision mediump float;
+
+@import ./facade.frag;
 
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
@@ -6,9 +9,6 @@
     layout(location = 0) out vec4 fragColor;
 #endif
 
-@import ./facade.frag;
-
-precision mediump float;
 
 // uniform sampler2D u_glyphs;
 

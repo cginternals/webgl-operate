@@ -1,14 +1,10 @@
-
-#if __VERSION__ == 100
-    #extension GL_EXT_draw_buffers : enable 
-#endif
-
-@import ./facade.vert;
-
 precision mediump float;
 precision lowp int;
 
+@import ./facade.vert;
+
 #if __VERSION__ == 100
+#extension GL_EXT_draw_buffers : enable 
 attribute vec2 a_vertex; 
 // attribute vec3 a_id; // encoded uint24 id in byte3
 // attribute vec4 a_texture_coord; // [ texture ll: vec2, ur: vec2 ]
