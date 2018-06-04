@@ -817,4 +817,103 @@ export class Context {
         return this._context.readBuffer !== undefined;
     }
 
+    // PARAMETER QUERIES
+
+    /**
+     * Queries various parameters (depending on the type of context and support of extensions) and returns them as
+     * formatted string.
+     * @returns - Array of 2-tuple containing (1) the queried enum as string and (2) the resulting parameter value.
+     */
+    about(): Array<[string, number | string]> {
+        const pNamesAndValues = new Array<[string, number | string]>();
+
+        if (this.isWebGL1 || this.isWebGL2) {
+
+            pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+                this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
+            pNamesAndValues.push(['MAX_CUBE_MAP_TEXTURE_SIZE',
+                this._context.getParameter(this._context.MAX_CUBE_MAP_TEXTURE_SIZE)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_VECTORS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_VECTORS)]);
+            pNamesAndValues.push(['MAX_RENDERBUFFER_SIZE',
+                this._context.getParameter(this._context.MAX_RENDERBUFFER_SIZE)]);
+            pNamesAndValues.push(['MAX_TEXTURE_IMAGE_UNITS',
+                this._context.getParameter(this._context.MAX_TEXTURE_IMAGE_UNITS)]);
+            pNamesAndValues.push(['MAX_TEXTURE_SIZE',
+                this._context.getParameter(this._context.MAX_TEXTURE_SIZE)]);
+            pNamesAndValues.push(['MAX_VARYING_VECTORS',
+                this._context.getParameter(this._context.MAX_VARYING_VECTORS)]);
+            pNamesAndValues.push(['MAX_VERTEX_ATTRIBS',
+                this._context.getParameter(this._context.MAX_VERTEX_ATTRIBS)]);
+            pNamesAndValues.push(['MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+                this._context.getParameter(this._context.MAX_VERTEX_TEXTURE_IMAGE_UNITS)]);
+            pNamesAndValues.push(['MAX_VERTEX_UNIFORM_VECTORS',
+                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_VECTORS)]);
+
+            const MAX_VIEWPORT_DIMS = this._context.getParameter(this._context.MAX_VIEWPORT_DIMS);
+            pNamesAndValues.push(['MAX_VIEWPORT_DIMS_WIDTH', MAX_VIEWPORT_DIMS[0]]);
+            pNamesAndValues.push(['MAX_VIEWPORT_DIMS_HEIGHT', MAX_VIEWPORT_DIMS[1]]);
+
+        }
+        // pNamesAndValues.push(['ReplaceMe',
+        //     this.query<GLint>(this._context.ReplaceMe)]);
+        // pNamesAndValues.push(['ReplaceMe',
+        //     this.query<GLint>(this._context.ReplaceMe)]);
+        // pNamesAndValues.push(['ReplaceMe',
+        //     this.query<GLint>(this._context.ReplaceMe)]);
+        // pNamesAndValues.push(['ReplaceMe',
+        //     this.query<GLint>(this._context.ReplaceMe)]);
+        // pNamesAndValues.push(['ReplaceMe',
+        //     this.query<GLint>(this._context.ReplaceMe)]);
+        // pNamesAndValues.push(['ReplaceMe',
+        //     this.query<GLint>(this._context.ReplaceMe)]);
+
+        return pNamesAndValues;
+    }
+
+    //     DEPTH_BITS
+    //     STENCIL_BITS
+    //     RED_BITS
+    //     GREEN_BITS
+    //     BLUE_BITS
+    //     ALPHA_BITS
+    //     SHADING_LANGUAGE_VERSION
+    //     RENDERER
+    //     VENDOR
+    //     VERSION
+
+    // webgl2
+    //     gl.MAX_3D_TEXTURE_SIZE	GLint	 
+    // gl.MAX_ARRAY_TEXTURE_LAYERS	GLint	 
+    // gl.MAX_CLIENT_WAIT_TIMEOUT_WEBGL	GLint64	 
+    // gl.MAX_COLOR_ATTACHMENTS	GLint	 
+    // gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS	GLint64	 
+    // gl.MAX_COMBINED_UNIFORM_BLOCKS	GLint	 
+    // gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS	GLint64	 
+    // gl.MAX_DRAW_BUFFERS	GLint	 
+    // gl.MAX_ELEMENT_INDEX	GLint64	 
+    // gl.MAX_ELEMENTS_INDICES	GLint	 
+    // gl.MAX_ELEMENTS_VERTICES	GLint	 
+    // gl.MAX_FRAGMENT_INPUT_COMPONENTS	GLint	 
+    // gl.MAX_FRAGMENT_UNIFORM_BLOCKS	GLint	 
+    // gl.MAX_FRAGMENT_UNIFORM_COMPONENTS	GLint	 
+    // gl.MAX_PROGRAM_TEXEL_OFFSET	GLint	 
+    // gl.MAX_SAMPLES	GLint	 
+    // gl.MAX_SERVER_WAIT_TIMEOUT	GLint64	 
+    // gl.MAX_TEXTURE_LOD_BIAS	GLfloat	 
+    // gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS	GLint	 
+    // gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS	GLint	 
+    // gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS	GLint	 
+    // gl.MAX_UNIFORM_BLOCK_SIZE	GLint64	 
+    // gl.MAX_UNIFORM_BUFFER_BINDINGS	GLint	 
+    // gl.MAX_VARYING_COMPONENTS	GLint	 
+    // gl.MAX_VERTEX_OUTPUT_COMPONENTS	GLint	 
+    // gl.MAX_VERTEX_UNIFORM_BLOCKS	GLint	 
+    // gl.MAX_VERTEX_UNIFORM_COMPONENTS	GLint	 
+    // gl.MIN_PROGRAM_TEXEL_OFFSET
+
+    // WEBGL_draw_buffers
+    // MAX_COLOR_ATTACHMENTS_WEBGL
+    // MAX_DRAW_BUFFERS_WEBGL
+
 }
