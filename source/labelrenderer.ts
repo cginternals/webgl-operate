@@ -58,14 +58,13 @@ export class LabelRenderer extends Renderer {
 
         /* Create and configure program and geometry. */
 
-        // const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
-        // vert.initialize(require('./shaders/glyphquad.vert'));
-        // const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
-        // frag.initialize(require('./shaders/glyphquad.frag'));
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'testrenderer.vert');
-        vert.initialize(require('./debug/testrenderer.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'testrenderer.frag');
-        frag.initialize(require('./debug/testrenderer.frag'));
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
+        vert.initialize(require('./shaders/glyphquad.vert'));
+
+
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
+        frag.initialize(require('./shaders/glyphquad.frag'));
+
 
         this._program = new Program(this._context);
         this._program.initialize([vert, frag]);
