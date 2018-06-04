@@ -19,6 +19,12 @@ export enum BackendType { Invalid, WebGL1, WebGL2 }
 export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
     | 'webgl2' | 'experimental-webgl2';
 
+/**
+ * At run-time, we cannot check string validity using a string literal type conversion. Thus this array is used to
+ * check whether a backend string is known or unknown.
+ */
+const validBackendTypeStrings = [
+    'auto', 'webgl', 'experimental-webgl', 'webgl1', 'experimental-webgl1', 'webgl2', 'experimental-webgl2'];
 
 /**
  * A controller for either a WebGLRenderingContext or WebGL2RenderingContext. It requests a context, tracks context
@@ -122,7 +128,8 @@ export class Context {
         let request = mask ? (mask.backend as string) :
             dataset.backend ? (dataset.backend as string).toLowerCase() : '';
 
-        if (!(request as BackendTypeString)) {
+        const validBackendString = validBackendTypeStrings.indexOf(request) > -1;
+        if (!validBackendString) {
             log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
             request = 'auto';
         }
