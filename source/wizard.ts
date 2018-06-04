@@ -1,10 +1,10 @@
 
-import { assert } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 
-
 export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
+
 
 /**
  * This wizard provides means for non-trivial, context specific framebuffer setups, texture formats, etc.
@@ -17,10 +17,11 @@ export class Wizard {
      * @param context - Wrapped gl context for function resolution (passed to all stages).
      * @param target - Target format, e.g., gl.RGBA, used to find the supported precision/accuracy for.
      * @param precision - Requested precision of the internal format: 'auto', 'float', 'half', 'byte'.
-     * @returns - 2-tuple containing the internal format and the type (required for some internal formats to work ...).
+     * @returns - 3-tuple containing the (1) internal format, (2) the type (required for some internal formats to work
+     * ...), and (3) the frame precision string that matches the resulting format best.
      */
     static queryInternalTextureFormat(context: Context, target: GLenum,
-        precision: FramePrecisionString): [GLenum, GLenum] {
+        precision: FramePrecisionString): [GLenum, GLenum, string] {
 
         const gl = context.gl;
         const gl2facade = context.gl2facade;
@@ -35,6 +36,11 @@ export class Wizard {
             (context.isWebGL2 && context.supportsColorBufferFloat);
 
         let query = precision;
+        const validPrecisionString = Wizard.validFramePrecisionStrings.indexOf(precision) > -1;
+        if (!validPrecisionString) {
+            log(LogLevel.Dev, `unknown frame precision '${query}' changed to 'auto'`);
+            precision = 'auto';
+        }
         if (precision === 'auto') { /* Derive maximum supported write to texture/buffer format. */
             query = floatWriteSupport ? 'float' : halfWriteSupport ? 'half' : 'byte';
         }
@@ -61,18 +67,28 @@ export class Wizard {
 
         /* In this case, no specialized internal formats are available. */
         if (context.isWebGL1) {
-            return [target, type];
+            return [target, type, query];
         }
 
         switch (target) {
             case gl.RGBA:
-                return [[gl.RGBA32F, gl.RGBA16F, gl.RGBA8][internalFormatIndex], type];
+                return [[gl.RGBA32F, gl.RGBA16F, gl.RGBA8][internalFormatIndex], type, query];
             case gl.RGB:
-                return [[gl.RGB32F, gl.RGB16F, gl.RGB8][internalFormatIndex], type];
+                return [[gl.RGB32F, gl.RGB16F, gl.RGB8][internalFormatIndex], type, query];
             default:
                 assert(false, `internal format querying is not yet supported for formats other than RGBA, RGB`);
         }
-        return [gl.NONE, gl.NONE];
+        return [gl.NONE, gl.NONE, query];
     }
+
+}
+
+export namespace Wizard {
+
+    /**
+     * At run-time, we cannot check string validity using a string literal type conversion. Thus this array is used to
+     * check whether a frame precision string is known or unknown.
+     */
+    export const validFramePrecisionStrings = ['float', 'half', 'byte', 'auto'];
 
 }

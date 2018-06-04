@@ -5,7 +5,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './gl-matrix-extensions';
 
-import { assert, logIf, LogLevel } from './auxiliaries';
+import { assert, logIf, log, LogLevel } from './auxiliaries';
 import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 
 
@@ -15,7 +15,7 @@ import { Controller } from './controller';
 import { MouseEventProvider } from './mouseeventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
-import { FramePrecisionString } from './wizard';
+import { FramePrecisionString, Wizard } from './wizard';
 
 
 /**
@@ -149,8 +149,14 @@ export class Canvas extends Resizable {
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
-        const dataFramePrecision = dataset.accumulationFormat as FramePrecisionString;
-        this._framePrecision = dataFramePrecision ? dataFramePrecision : Canvas.DEFAULT_FRAME_PRECISION;
+        let dataFramePrecision = dataset.accumulationFormat as FramePrecisionString;
+        const validFramePrecisionString = Wizard.validFramePrecisionStrings.indexOf(dataFramePrecision) > -1;
+        if (!validFramePrecisionString) {
+            dataFramePrecision = Canvas.DEFAULT_FRAME_PRECISION;
+            log(LogLevel.Dev,
+                `unknown frame precision '${dataset.accumulationFormat}' changed to '${dataFramePrecision}'`);
+        }
+        this._framePrecision = dataFramePrecision;
         this.framePrecisionNext();
     }
 
