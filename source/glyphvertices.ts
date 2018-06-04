@@ -87,7 +87,7 @@ export class GlyphVertices extends Array<GlyphVertex> {
 //     protected _transformValid: boolean;
 //     protected _transform: mat4;
 
-
+/** TODO GlyphSequenceConfig --> LabelConfig ( if at all ) */
 //     // public setFromConfig(config: GlyphSequenceConfig) {
 //     //     this.wordWrap = config.wordWrap;
 //     //     this.lineWidth = config.lineWidth;

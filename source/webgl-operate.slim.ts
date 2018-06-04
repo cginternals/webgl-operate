@@ -44,6 +44,7 @@ export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
+export { LabelRenderer } from './labelrenderer';
 
 import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;
