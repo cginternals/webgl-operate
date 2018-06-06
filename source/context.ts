@@ -4,8 +4,8 @@ import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
 import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+import { ExtensionsHash } from './extensionshash';
 import { GL2Facade } from './gl2facade';
-import { ExtensionsHash } from './webgl-operate';
 
 
 /**
