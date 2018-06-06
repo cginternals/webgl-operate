@@ -1,9 +1,9 @@
 
-import { vec4 } from 'gl-matrix';
-import { mix } from './gl-matrix-extensions';
+// import { vec4 } from 'gl-matrix';
+// import { mix } from './gl-matrix-extensions';
 
-import { Color } from './color';
-import { tuple4 } from './tuples';
+// import { Color } from './color';
+// import { tuple4 } from './tuples';
 
 /* tslint:disable:max-classes-per-file */
 
