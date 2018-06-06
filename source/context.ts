@@ -5,19 +5,8 @@ import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
 import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
 import { GL2Facade } from './gl2facade';
+import { ExtensionsHash } from './webgl-operate';
 
-
-/**
- * Supported OpenGL backend types.
- */
-export enum BackendType { Invalid, WebGL1, WebGL2 }
-
-/**
- * The list of valid backend identifiers that can be matched to backend types.
- * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
- */
-export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
-    | 'webgl2' | 'experimental-webgl2';
 
 /**
  * At run-time, we cannot check string validity using a string literal type conversion. Thus this array is used to
@@ -71,7 +60,7 @@ export class Context {
     };
 
     /** @see {@link backend} */
-    protected _backend: BackendType | undefined;
+    protected _backend: Context.BackendType | undefined;
 
     /**
      * Created context. The actual type depends on the created context.
@@ -291,11 +280,11 @@ export class Context {
         }
 
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL1`);
                 break;
 
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
                     `extension ${extension} supported by default in WebGL2`);
                 assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL2`);
@@ -318,7 +307,7 @@ export class Context {
     protected queryExtensionSupport(): void {
         this._extensions = this._context.getSupportedExtensions();
 
-        if (this._backend === BackendType.WebGL1) {
+        if (this._backend === Context.BackendType.WebGL1) {
             this.ANGLE_instanced_arrays_supported = this.supports('ANGLE_instanced_arrays');
 
             this.EXT_blend_minmax_supported = this.supports('EXT_blend_minmax');
@@ -339,7 +328,7 @@ export class Context {
             this.WEBGL_draw_buffers_supported = this.supports('WEBGL_draw_buffers');
         }
 
-        if (this._backend === BackendType.WebGL2) {
+        if (this._backend === Context.BackendType.WebGL2) {
             this.EXT_color_buffer_float_supported = this.supports('EXT_color_buffer_float');
             this.EXT_disjoint_timer_query_webgl2_supported = this.supports('EXT_disjoint_timer_query_webgl2');
         }
@@ -395,10 +384,10 @@ export class Context {
                 /CaptureContext/.test(contextString);
             const webgl2 = /WebGL2RenderingContext/.test(contextString);
 
-            this._backend = webgl1 ? BackendType.WebGL1 : webgl2 ? BackendType.WebGL2 : undefined;
+            this._backend = webgl1 ? Context.BackendType.WebGL1 : webgl2 ? Context.BackendType.WebGL2 : undefined;
         }
 
-        assert(this._backend !== undefined && this._backend.valueOf() !== BackendType.Invalid.valueOf(),
+        assert(this._backend !== undefined && this._backend.valueOf() !== Context.BackendType.Invalid.valueOf(),
             `context is neither webgl nor webgl2, given ${contextString}`);
 
         this.queryExtensionSupport();
@@ -440,9 +429,9 @@ export class Context {
      */
     get backendString(): string | undefined {
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 return 'WebGL';
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 return 'WebGL2';
             default:
                 return undefined;
@@ -481,14 +470,14 @@ export class Context {
      * True if the context is a WebGL1 context, otherwise false.
      */
     get isWebGL1(): boolean {
-        return this._backend === BackendType.WebGL1;
+        return this._backend === Context.BackendType.WebGL1;
     }
 
     /**
      * True if the context is a WebGL2 context, otherwise false.
      */
     get isWebGL2(): boolean {
-        return this._backend === BackendType.WebGL2;
+        return this._backend === Context.BackendType.WebGL2;
     }
 
 
@@ -662,9 +651,9 @@ export class Context {
     protected EXT_color_buffer_float_supported: boolean;
     get supportsColorBufferFloat(): boolean | undefined {
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 return this.WEBGL_color_buffer_float_supported;
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 return this.EXT_color_buffer_float_supported;
             default:
                 return undefined;
@@ -672,9 +661,9 @@ export class Context {
     }
     get colorBufferFloat(): any | undefined {
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 return this.extension(this.WEBGL_color_buffer_float, 'WEBGL_color_buffer_float');
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 return this.extension(this.EXT_color_buffer_float, 'EXT_color_buffer_float');
             default:
                 return undefined;
@@ -820,100 +809,192 @@ export class Context {
     // PARAMETER QUERIES
 
     /**
+     * Provides the context's extension hash. The hash can be used for context masquerade.
+     */
+    hash(): string {
+        return ExtensionsHash.encode(this._backend as Context.BackendType, this._extensions);
+    }
+
+    /**
      * Queries various parameters (depending on the type of context and support of extensions) and returns them as
      * formatted string.
      * @returns - Array of 2-tuple containing (1) the queried enum as string and (2) the resulting parameter value.
      */
     about(): Array<[string, number | string]> {
+
+        if (this._backend === Context.BackendType.Invalid) {
+            return new Array<[string, number | string]>();
+        }
+
         const pNamesAndValues = new Array<[string, number | string]>();
 
-        if (this.isWebGL1 || this.isWebGL2) {
+        pNamesAndValues.push(['RENDERER',
+            this._context.getParameter(this._context.RENDERER)]);
+        pNamesAndValues.push(['VENDOR',
+            this._context.getParameter(this._context.VENDOR)]);
+        pNamesAndValues.push(['VERSION',
+            this._context.getParameter(this._context.VERSION)]);
+        pNamesAndValues.push(['SHADING_LANGUAGE_VERSION',
+            this._context.getParameter(this._context.SHADING_LANGUAGE_VERSION)]);
 
-            pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
-                this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
-            pNamesAndValues.push(['MAX_CUBE_MAP_TEXTURE_SIZE',
-                this._context.getParameter(this._context.MAX_CUBE_MAP_TEXTURE_SIZE)]);
-            pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_VECTORS',
-                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_VECTORS)]);
-            pNamesAndValues.push(['MAX_RENDERBUFFER_SIZE',
-                this._context.getParameter(this._context.MAX_RENDERBUFFER_SIZE)]);
-            pNamesAndValues.push(['MAX_TEXTURE_IMAGE_UNITS',
-                this._context.getParameter(this._context.MAX_TEXTURE_IMAGE_UNITS)]);
-            pNamesAndValues.push(['MAX_TEXTURE_SIZE',
-                this._context.getParameter(this._context.MAX_TEXTURE_SIZE)]);
-            pNamesAndValues.push(['MAX_VARYING_VECTORS',
-                this._context.getParameter(this._context.MAX_VARYING_VECTORS)]);
-            pNamesAndValues.push(['MAX_VERTEX_ATTRIBS',
-                this._context.getParameter(this._context.MAX_VERTEX_ATTRIBS)]);
-            pNamesAndValues.push(['MAX_VERTEX_TEXTURE_IMAGE_UNITS',
-                this._context.getParameter(this._context.MAX_VERTEX_TEXTURE_IMAGE_UNITS)]);
-            pNamesAndValues.push(['MAX_VERTEX_UNIFORM_VECTORS',
-                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_VECTORS)]);
+        pNamesAndValues.push(['BACKEND (GLOPERATE)', this.backend as Context.BackendType]);
+        pNamesAndValues.push(['CONTEXT_HASH (GLOPERATE)', this.hash()]);
 
-            const MAX_VIEWPORT_DIMS = this._context.getParameter(this._context.MAX_VIEWPORT_DIMS);
-            pNamesAndValues.push(['MAX_VIEWPORT_DIMS_WIDTH', MAX_VIEWPORT_DIMS[0]]);
-            pNamesAndValues.push(['MAX_VIEWPORT_DIMS_HEIGHT', MAX_VIEWPORT_DIMS[1]]);
+        pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+            this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
+        pNamesAndValues.push(['MAX_CUBE_MAP_TEXTURE_SIZE',
+            this._context.getParameter(this._context.MAX_CUBE_MAP_TEXTURE_SIZE)]);
+        pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_VECTORS',
+            this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_VECTORS)]);
+        pNamesAndValues.push(['MAX_RENDERBUFFER_SIZE',
+            this._context.getParameter(this._context.MAX_RENDERBUFFER_SIZE)]);
+        pNamesAndValues.push(['MAX_TEXTURE_IMAGE_UNITS',
+            this._context.getParameter(this._context.MAX_TEXTURE_IMAGE_UNITS)]);
+        pNamesAndValues.push(['MAX_TEXTURE_SIZE',
+            this._context.getParameter(this._context.MAX_TEXTURE_SIZE)]);
+        pNamesAndValues.push(['MAX_VARYING_VECTORS',
+            this._context.getParameter(this._context.MAX_VARYING_VECTORS)]);
+        pNamesAndValues.push(['MAX_VERTEX_ATTRIBS',
+            this._context.getParameter(this._context.MAX_VERTEX_ATTRIBS)]);
+        pNamesAndValues.push(['MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+            this._context.getParameter(this._context.MAX_VERTEX_TEXTURE_IMAGE_UNITS)]);
+        pNamesAndValues.push(['MAX_VERTEX_UNIFORM_VECTORS',
+            this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_VECTORS)]);
 
+        const MAX_VIEWPORT_DIMS = this._context.getParameter(this._context.MAX_VIEWPORT_DIMS);
+        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (WIDTH)', MAX_VIEWPORT_DIMS[0]]);
+        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (HEIGHT)', MAX_VIEWPORT_DIMS[1]]);
+
+
+        if (this.isWebGL2) {
+            pNamesAndValues.push(['MAX_3D_TEXTURE_SIZE',
+                this._context.getParameter(this._context.MAX_3D_TEXTURE_SIZE)]);
+            pNamesAndValues.push(['MAX_ARRAY_TEXTURE_LAYERS',
+                this._context.getParameter(this._context.MAX_ARRAY_TEXTURE_LAYERS)]);
+            pNamesAndValues.push(['MAX_CLIENT_WAIT_TIMEOUT_WEBGL',
+                this._context.getParameter(this._context.MAX_CLIENT_WAIT_TIMEOUT_WEBGL)]);
+            pNamesAndValues.push(['MAX_COLOR_ATTACHMENTS',
+                this._context.getParameter(this._context.MAX_COLOR_ATTACHMENTS)]);
+            pNamesAndValues.push(['MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_COMBINED_UNIFORM_BLOCKS',
+                this._context.getParameter(this._context.MAX_COMBINED_UNIFORM_BLOCKS)]);
+            pNamesAndValues.push(['MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_DRAW_BUFFERS',
+                this._context.getParameter(this._context.MAX_DRAW_BUFFERS)]);
+            pNamesAndValues.push(['MAX_ELEMENT_INDEX',
+                this._context.getParameter(this._context.MAX_ELEMENT_INDEX)]);
+            pNamesAndValues.push(['MAX_ELEMENTS_INDICES',
+                this._context.getParameter(this._context.MAX_ELEMENTS_INDICES)]);
+            pNamesAndValues.push(['MAX_ELEMENTS_VERTICES',
+                this._context.getParameter(this._context.MAX_ELEMENTS_VERTICES)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_INPUT_COMPONENTS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_INPUT_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_BLOCKS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_BLOCKS)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_PROGRAM_TEXEL_OFFSET',
+                this._context.getParameter(this._context.MAX_PROGRAM_TEXEL_OFFSET)]);
+            pNamesAndValues.push(['MAX_SAMPLES',
+                this._context.getParameter(this._context.MAX_SAMPLES)]);
+            pNamesAndValues.push(['MAX_SERVER_WAIT_TIMEOUT',
+                this._context.getParameter(this._context.MAX_SERVER_WAIT_TIMEOUT)]);
+            pNamesAndValues.push(['MAX_TEXTURE_LOD_BIAS',
+                this._context.getParameter(this._context.MAX_TEXTURE_LOD_BIAS)]);
+            pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
+                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)]);
+            pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_UNIFORM_BLOCK_SIZE',
+                this._context.getParameter(this._context.MAX_UNIFORM_BLOCK_SIZE)]);
+            pNamesAndValues.push(['MAX_UNIFORM_BUFFER_BINDINGS',
+                this._context.getParameter(this._context.MAX_UNIFORM_BUFFER_BINDINGS)]);
+            pNamesAndValues.push(['MAX_VARYING_COMPONENTS',
+                this._context.getParameter(this._context.MAX_VARYING_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_VERTEX_OUTPUT_COMPONENTS',
+                this._context.getParameter(this._context.MAX_VERTEX_OUTPUT_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_VERTEX_UNIFORM_BLOCKS',
+                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_BLOCKS)]);
+            pNamesAndValues.push(['MAX_VERTEX_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MIN_PROGRAM_TEXEL_OFFSET',
+                this._context.getParameter(this._context.MIN_PROGRAM_TEXEL_OFFSET)]);
         }
-        // pNamesAndValues.push(['ReplaceMe',
-        //     this.query<GLint>(this._context.ReplaceMe)]);
-        // pNamesAndValues.push(['ReplaceMe',
-        //     this.query<GLint>(this._context.ReplaceMe)]);
-        // pNamesAndValues.push(['ReplaceMe',
-        //     this.query<GLint>(this._context.ReplaceMe)]);
-        // pNamesAndValues.push(['ReplaceMe',
-        //     this.query<GLint>(this._context.ReplaceMe)]);
-        // pNamesAndValues.push(['ReplaceMe',
-        //     this.query<GLint>(this._context.ReplaceMe)]);
-        // pNamesAndValues.push(['ReplaceMe',
-        //     this.query<GLint>(this._context.ReplaceMe)]);
+
+        if (this.isWebGL1) {
+            for (const extension of WEBGL1_EXTENSIONS) {
+                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : '']);
+            }
+        } else if (this.isWebGL2) {
+            for (const extension of WEBGL2_DEFAULT_EXTENSIONS) {
+                pNamesAndValues.push([`${extension} (default)`, 'ok']);
+            }
+            for (const extension of WEBGL2_EXTENSIONS) {
+                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : '']);
+            }
+        }
 
         return pNamesAndValues;
     }
 
-    //     DEPTH_BITS
-    //     STENCIL_BITS
-    //     RED_BITS
-    //     GREEN_BITS
-    //     BLUE_BITS
-    //     ALPHA_BITS
-    //     SHADING_LANGUAGE_VERSION
-    //     RENDERER
-    //     VENDOR
-    //     VERSION
+    /**
+     * Logs a well formated list of all queried about params (names and associated values).
+     * @param verbosity - Log verbosity that is to be used for logging.
+     */
+    logAbout(verbosity: LogLevel = LogLevel.Dev) {
+        const about = this.about();
 
-    // webgl2
-    //     gl.MAX_3D_TEXTURE_SIZE	GLint	 
-    // gl.MAX_ARRAY_TEXTURE_LAYERS	GLint	 
-    // gl.MAX_CLIENT_WAIT_TIMEOUT_WEBGL	GLint64	 
-    // gl.MAX_COLOR_ATTACHMENTS	GLint	 
-    // gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS	GLint64	 
-    // gl.MAX_COMBINED_UNIFORM_BLOCKS	GLint	 
-    // gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS	GLint64	 
-    // gl.MAX_DRAW_BUFFERS	GLint	 
-    // gl.MAX_ELEMENT_INDEX	GLint64	 
-    // gl.MAX_ELEMENTS_INDICES	GLint	 
-    // gl.MAX_ELEMENTS_VERTICES	GLint	 
-    // gl.MAX_FRAGMENT_INPUT_COMPONENTS	GLint	 
-    // gl.MAX_FRAGMENT_UNIFORM_BLOCKS	GLint	 
-    // gl.MAX_FRAGMENT_UNIFORM_COMPONENTS	GLint	 
-    // gl.MAX_PROGRAM_TEXEL_OFFSET	GLint	 
-    // gl.MAX_SAMPLES	GLint	 
-    // gl.MAX_SERVER_WAIT_TIMEOUT	GLint64	 
-    // gl.MAX_TEXTURE_LOD_BIAS	GLfloat	 
-    // gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS	GLint	 
-    // gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS	GLint	 
-    // gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS	GLint	 
-    // gl.MAX_UNIFORM_BLOCK_SIZE	GLint64	 
-    // gl.MAX_UNIFORM_BUFFER_BINDINGS	GLint	 
-    // gl.MAX_VARYING_COMPONENTS	GLint	 
-    // gl.MAX_VERTEX_OUTPUT_COMPONENTS	GLint	 
-    // gl.MAX_VERTEX_UNIFORM_BLOCKS	GLint	 
-    // gl.MAX_VERTEX_UNIFORM_COMPONENTS	GLint	 
-    // gl.MIN_PROGRAM_TEXEL_OFFSET
+        let maxPNameLength = 0;
+        for (const tuple of about) {
+            maxPNameLength = Math.max(tuple[0].length, maxPNameLength);
+        }
 
-    // WEBGL_draw_buffers
-    // MAX_COLOR_ATTACHMENTS_WEBGL
-    // MAX_DRAW_BUFFERS_WEBGL
+        let index = 0;
+        let message = `about\n\n`;
+
+        const extensionSeparator = this.isWebGL2 ? 46 + WEBGL2_DEFAULT_EXTENSIONS.length : -1;
+        for (const tuple of about) {
+            /* Provide some semantic grouping: Core, Limits, Extensions, ... */
+            switch (index) {
+                case 4:  // End of Core Context Info
+                case 6:  // End of Backend and Context Hash
+                case 18: // End of WebGL 1 Limits
+                case 46: // End of WebGL 2 Limit, start of extensions
+                case extensionSeparator: // End of default Extensions (in case of WebGL2) or -1
+                    message += `\n`;
+                    break;
+                default:
+                    break;
+            }
+            message += `  ${tuple[0]} ${'-'.repeat(maxPNameLength - tuple[0].length)}-- ${tuple[1]}\n`;
+            ++index;
+        }
+        message += `\n`;
+
+        log(verbosity, message);
+    }
+
+}
+
+export namespace Context {
+    /**
+     * Supported OpenGL backend types.
+     */
+    export enum BackendType {
+        Invalid = 'invalid',
+        WebGL1 = 'webgl1',
+        WebGL2 = 'webgl2',
+    }
+
+    /**
+     * The list of valid backend identifiers that can be matched to backend types.
+     * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
+     */
+    export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
+        | 'webgl2' | 'experimental-webgl2';
 
 }

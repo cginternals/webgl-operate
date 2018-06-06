@@ -5,7 +5,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { vec2, vec4 } from 'gl-matrix';
 import { clamp2, parseVec2, parseVec4 } from './gl-matrix-extensions';
 
-import { assert, logIf, log, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 
 
