@@ -20,6 +20,21 @@
         "skipLibCheck": true,
         "experimentalDecorators": true
     },
+    "typedocOptions": {
+        "mode": "file",
+        "out": "dist/doc",
+        "ignoreCompilerErrors": true,
+        "excludePrivate": false,
+        "excludeNotExported": false,
+        "target": "ES6",
+        "moduleResolution": "node",
+        "preserveConstEnums": true,
+        "stripInternal": true,
+        "suppressExcessPropertyErrors": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "hideGenerator": true,
+        "module": "umd"
+    },
     "include": [
         "source"
     ]
