@@ -142,7 +142,7 @@ export class Canvas extends Resizable {
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
         if (dataset.clearColor) {
-            dataClearColor = parseVec4(dataset.clearColor as string);
+            dataClearColor = parseVec4(dataset.clearColor);
             logIf(dataClearColor === undefined, LogLevel.Dev,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
@@ -173,7 +173,7 @@ export class Canvas extends Resizable {
         /* Retrieve multi-frame number from data attributes or set default. */
         let dataMFNum: number | undefined;
         if (dataset.multiFrameNumber) {
-            dataMFNum = parseInt(dataset.multiFrameNumber as string, 10);
+            dataMFNum = parseInt(dataset.multiFrameNumber, 10);
             logIf(isNaN(dataMFNum), LogLevel.Dev,
                 `data-multi-frame-number could not be parsed, given '${dataset.multiFrameNumber}'`);
         }
@@ -181,7 +181,7 @@ export class Canvas extends Resizable {
         /* Retrieve debug-frame number from data attributes or set default. */
         let dataDFNum: number | undefined;
         if (dataset.debugFrameNumber) {
-            dataDFNum = parseInt(dataset.debugFrameNumber as string, 10);
+            dataDFNum = parseInt(dataset.debugFrameNumber, 10);
             logIf(isNaN(dataDFNum), LogLevel.Dev,
                 `data-debug-frame-number could not be parsed, given '${dataset.debugFrameNumber}'`);
         }

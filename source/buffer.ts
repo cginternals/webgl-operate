@@ -149,9 +149,9 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * Target to which the buffer object is bound (either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER).
      * Readonly access to the target (as specified on initialization) the buffer will be bound to.
      */
-    get target(): GLenum {
+    get target(): GLenum | undefined {
         this.assertInitialized();
-        return this._target as GLenum;
+        return this._target;
     }
 
 }

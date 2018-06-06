@@ -6,8 +6,6 @@
     "author": "CG Internals",
     "homepage": "https://webgl-operate.org",
     "jsdelivr": "./dist/webgl-operate.js",
-    "main": "./lib/webgl-operate.js",
-    "types": "./lib/webgl-operate.d.ts",
     "bugs": {
         "email": "contact@cginternals.com",
         "url": "https://github.com/cginternals/webgl-operate/issues"
@@ -16,6 +14,12 @@
         "type": "git",
         "url": "https://github.com/cginternals/webgl-operate.git"
     },
+    "main": "./lib/webgl-operate.js",
+    "types": "./lib/webgl-operate.d.ts",
+    "sideEffects": [
+        "./source/polyfill.ts",
+        "./source/require.ts"
+    ],
     "contributors": [
         {
             "name": "Daniel Limberger",
