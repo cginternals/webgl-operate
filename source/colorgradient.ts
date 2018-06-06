@@ -237,3 +237,13 @@ export namespace ColorGradient {
     }
 
 }
+
+
+// allow custom color schemes from 
+    // colorbrewer
+    // viridis 
+    // custom json file - all async fetches!
+    // or manually using stops
+
+// > then convert into fixed color scale with const access time on interpolation and fixed resolution/always discrete
+
