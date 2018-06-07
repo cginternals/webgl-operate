@@ -6,6 +6,8 @@ import { AntiAliasingKernel } from './antialiasingkernel';
 import { BlitPass } from './blitpass';
 import { Context } from './context';
 import { DefaultFramebuffer } from './defaultframebuffer';
+import { FontFace } from './fontface';
+import { FontLoader } from './fontloader';
 import { Framebuffer } from './framebuffer';
 import { MouseEventProvider } from './mouseeventprovider';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
@@ -147,6 +149,9 @@ export class LabelRenderer extends Renderer {
     }
 
     protected onPrepare(): void {
+
+        this.loadFont();
+
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -195,6 +200,14 @@ export class LabelRenderer extends Renderer {
         this._blit.framebuffer = this._accumulate.framebuffer ?
             this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
         this._blit.frame();
+    }
+
+    protected loadFont(): void {
+        const loader = new FontLoader();
+
+        const fontFace: FontFace = loader.load(
+            this.context, './data/opensansr144/opensansr144.fnt', false, () => {
+            });
     }
 
 }
