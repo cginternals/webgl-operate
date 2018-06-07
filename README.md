@@ -28,18 +28,11 @@ npm install --save-dev webgl-operate
 
 ## Features
 
-#### 0.1.0 Features
+#### Implemented
 Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Professional Customer Support, Professional Integration Service
  
-#### 0.2.0 Features
-Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Camera Controllers
-
-#### 0.3.0 planned Features
-3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, ...
-
-#### 0.4.0 planned Features
-Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
-
+#### Planned
+Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Camera Controllers, 3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
 
 ## Getting Started
 
@@ -59,7 +52,15 @@ ToDo
 ## Dependencies
 
 *webgl-operate* has currently no non-dev dependencies.
-
+Please note the following fixed (allowing patch only) version dependencies, that should not be updated until further review/evaluation:
+* ES6+ problems (breaks in tpe prod build due to the used UglifyJS only supporting ES5). Solution: use last ES5 version
+   - `@types/gl-matrix: ~2.3.0,`
+   - `gl-matrix: ~2.3.2,`
+   - `query-string: ~5.1.1,`
+* RXJS 5.x peer dependency issues (e.g., to support angular 4.x):
+   - `webpack-rxjs-externals: ~1.1.0,`
+   - `rxjs: ~5.5.10,`
+   - `ts-node: ~5.0.1,`
 
 ## Source Structure
 
