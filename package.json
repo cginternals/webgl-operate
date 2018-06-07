@@ -87,7 +87,7 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc source/webgl-operate.ts",
-        "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
+        "ci": "run-s build-dist build-lib lint test",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
         "prepack": "npm install && run-p build-dist build-lib"
     },
