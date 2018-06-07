@@ -61,6 +61,9 @@ Please note the following fixed (allowing patch only) version dependencies, that
    - `webpack-rxjs-externals: ~1.1.0,`
    - `rxjs: ~5.5.10,`
    - `ts-node: ~5.0.1,`
+* TypeDoc compiler issues (could be resolved by ignoring compile erros in typedocOptions, but ...):
+   - `@types/sinon: ~4.3.3,`
+   - `sinon: ~4.5.0,`
 
 ## Source Structure
 
