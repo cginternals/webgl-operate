@@ -9,13 +9,6 @@ import { GL2Facade } from './gl2facade';
 
 
 /**
- * At run-time, we cannot check string validity using a string literal type conversion. Thus this array is used to
- * check whether a backend string is known or unknown.
- */
-const validBackendTypeStrings = [
-    'auto', 'webgl', 'experimental-webgl', 'webgl1', 'experimental-webgl1', 'webgl2', 'experimental-webgl2'];
-
-/**
  * A controller for either a WebGLRenderingContext or WebGL2RenderingContext. It requests a context, tracks context
  * attributes, extensions as well as multi frame specific rendering information and a (gpu)allocation registry.
  *
@@ -115,38 +108,37 @@ export class Context {
 
         /** Favor backend specification by masquerade over specification by data attribute. */
         let request = mask ? (mask.backend as string) :
-            dataset.backend ? (dataset.backend as string).toLowerCase() : '';
+            dataset.backend ? (dataset.backend as string).toLowerCase() : 'auto';
 
-        const validBackendString = validBackendTypeStrings.indexOf(request) > -1;
-        if (!validBackendString) {
-            log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
+        if (!(request in Context.BackendRequestType)) {
+            log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
             request = 'auto';
         }
 
         switch (request) {
-            case 'webgl':
+            case Context.BackendRequestType.webgl:
                 break;
-            case 'experimental-webgl':
-            case 'experimental-webgl1':
-            case 'webgl1':
-                request = 'webgl';
+            case Context.BackendRequestType.experimental:
+            case Context.BackendRequestType.webgl1:
+            case Context.BackendRequestType.experimental1:
+                request = Context.BackendRequestType.webgl;
                 break;
-            case 'experimental-webgl2':
-            case 'webgl2':
-                request = 'webgl2';
+            case Context.BackendRequestType.webgl2:
+            case Context.BackendRequestType.experimental2:
+                request = Context.BackendRequestType.webgl2;
                 break;
             default:
-                request = 'auto';
+                request = Context.BackendRequestType.auto;
         }
 
         let context;
-        if (request !== 'webgl') {
+        if (request !== Context.BackendRequestType.webgl) {
             context = this.requestWebGL2(element);
         }
         if (!context) {
             context = this.requestWebGL1(element);
-            logIf(context !== undefined && request === 'webgl2', LogLevel.Dev,
-                `backend changed to 'webgl', given '${request}'`);
+            logIf(context !== undefined && request === Context.BackendRequestType.webgl2, LogLevel.Dev,
+                `backend changed to '${Context.BackendRequestType.webgl}', given '${request}'`);
         }
 
         assert(!!context, `creating a context failed`);
@@ -159,13 +151,11 @@ export class Context {
      * @returns {WebGLRenderingContext} - WebGL context object or null.
      */
     protected static requestWebGL1(element: HTMLCanvasElement) {
-        let context = element.getContext('webgl', Context.CONTEXT_ATTRIBUTES);
+        let context = element.getContext(Context.BackendRequestType.webgl, Context.CONTEXT_ATTRIBUTES);
         if (context) {
             return context;
         }
-
-        context = element.getContext('experimental-webgl', Context.CONTEXT_ATTRIBUTES);
-
+        context = element.getContext(Context.BackendRequestType.experimental, Context.CONTEXT_ATTRIBUTES);
         return context;
     }
 
@@ -175,12 +165,11 @@ export class Context {
      * @returns {WebGL2RenderingContext} - WebGL2 context object or null.
      */
     protected static requestWebGL2(element: HTMLCanvasElement) {
-        let context = element.getContext('webgl2', Context.CONTEXT_ATTRIBUTES);
+        let context = element.getContext(Context.BackendRequestType.webgl2, Context.CONTEXT_ATTRIBUTES);
         if (context) {
             return context;
         }
-
-        context = element.getContext('experimental-webgl2', Context.CONTEXT_ATTRIBUTES);
+        context = element.getContext(Context.BackendRequestType.experimental2, Context.CONTEXT_ATTRIBUTES);
         return context;
     }
 
@@ -991,10 +980,17 @@ export namespace Context {
     }
 
     /**
-     * The list of valid backend identifiers that can be matched to backend types.
+     * The list of valid backend identifiers that can be requested and matched to backend types.
      * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
      */
-    export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
-        | 'webgl2' | 'experimental-webgl2';
+    export enum BackendRequestType {
+        auto = 'auto',
+        webgl = 'webgl',
+        experimental = 'experimental-webgl',
+        webgl1 = 'webgl1',
+        experimental1 = 'experimental-webgl1',
+        webgl2 = 'webgl2',
+        experimental2 = 'experimental-webgl2',
+    }
 
 }

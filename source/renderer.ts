@@ -13,7 +13,7 @@ import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { MouseEventProvider } from './mouseeventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
-import { FramePrecisionString } from './wizard';
+import { Wizard } from './wizard';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
@@ -87,7 +87,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * expected to take advantage of progressive rendering (e.g., multi-frame sampling) and accumulation as well as a
      * blit pass (since main intend is multi-frame based rendering).
      */
-    protected _framePrecision: FramePrecisionString = 'half';
+    protected _framePrecision: Wizard.Precision = Wizard.Precision.half;
 
     /**
      * The clear color, provided by the canvas the renderer is bound to. This is used in frame calls of inheritors.
@@ -325,7 +325,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Set the frame precision.
      * @param format - The accumulation format. Expected values are one of 'byte', 'half', 'float', or 'auto'
      */
-    set framePrecision(precision: FramePrecisionString) {
+    set framePrecision(precision: Wizard.Precision) {
         this.assertInitialized();
         if (this._framePrecision === precision) {
             return;

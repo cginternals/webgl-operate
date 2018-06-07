@@ -10,7 +10,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
-import { FramePrecisionString, Wizard } from './wizard';
+import { Wizard } from './wizard';
 
 
 /**
@@ -45,7 +45,7 @@ export class AccumulatePass extends Initializable {
     protected _texture: Texture2;
 
     /** @see {@link precision} */
-    protected _precision: FramePrecisionString = 'half';
+    protected _precision: Wizard.Precision = Wizard.Precision.half;
 
     /** @see {@link passThrough} */
     protected _passThrough: boolean;
@@ -285,7 +285,7 @@ export class AccumulatePass extends Initializable {
     /**
      * Allows to specify the accumulation precision.
      */
-    set precision(precision: FramePrecisionString) {
+    set precision(precision: Wizard.Precision) {
         this.assertInitialized();
         if (this._precision !== precision) {
             this._precision = precision;

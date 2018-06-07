@@ -15,7 +15,7 @@ import { Controller } from './controller';
 import { MouseEventProvider } from './mouseeventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
-import { FramePrecisionString, Wizard } from './wizard';
+import { Wizard } from './wizard';
 
 
 /**
@@ -41,7 +41,7 @@ export class Canvas extends Resizable {
     /**
      * Default frame precision, e.g., accumulation format when multi-frame rendering is used.
      */
-    protected static readonly DEFAULT_FRAME_PRECISION: FramePrecisionString = 'auto';
+    protected static readonly DEFAULT_FRAME_PRECISION: Wizard.Precision = Wizard.Precision.auto;
 
     /**
      * Default multi-frame number used if none is set via data attributes.
@@ -67,8 +67,8 @@ export class Canvas extends Resizable {
      * @see {@link framePrecision}
      * This property can be observed, e.g., `aCanvas.framePrecisionObservable.subscribe()`.
      */
-    protected _framePrecision: FramePrecisionString;
-    protected _framePrecisionSubject = new ReplaySubject<FramePrecisionString>(1);
+    protected _framePrecision: Wizard.Precision;
+    protected _framePrecisionSubject = new ReplaySubject<Wizard.Precision>(1);
 
 
     /**
@@ -149,9 +149,8 @@ export class Canvas extends Resizable {
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
-        let dataFramePrecision = dataset.accumulationFormat as FramePrecisionString;
-        const validFramePrecisionString = Wizard.validFramePrecisionStrings.indexOf(dataFramePrecision) > -1;
-        if (!validFramePrecisionString) {
+        let dataFramePrecision = dataset.accumulationFormat as Wizard.Precision;
+        if (!(dataFramePrecision in Wizard.Precision)) {
             dataFramePrecision = Canvas.DEFAULT_FRAME_PRECISION;
             log(LogLevel.Dev,
                 `unknown frame precision '${dataset.accumulationFormat}' changed to '${dataFramePrecision}'`);
@@ -165,7 +164,7 @@ export class Canvas extends Resizable {
      * multi-frame number and debug-frame number are set.
      * @param dataset - The attributes data-multi-frame-number and data-debug-frame-number are supported.
      */
-    protected configureController(dataset: DOMStringMap) {
+    protected configureController(dataset: DOMStringMap): void {
         /* Create and setup a multi-frame controller. */
         this._controller = new Controller();
         this._controller.block(); // Remain in block mode until renderer is bound and configured.
@@ -204,7 +203,7 @@ export class Canvas extends Resizable {
      * the native canvas size.
      * @param dataset - The attributes data-frame-size and data-frame-scale are supported.
      */
-    protected configureSizeAndScale(dataset: DOMStringMap) {
+    protected configureSizeAndScale(dataset: DOMStringMap): void {
 
         /* Setup frame scale with respect to the canvas size. */
         let dataFrameScale: vec2 | undefined;
@@ -242,7 +241,7 @@ export class Canvas extends Resizable {
     /**
      * Resize is invoked by the resizable mixin. It retrieves the canvas size and promotes it to the renderer.
      */
-    protected onResize() {
+    protected onResize(): void {
         this.retrieveSize();
 
         /**
@@ -305,7 +304,7 @@ export class Canvas extends Resizable {
      *
      * @param renderer - Either undefined or an uninitialized renderer.
      */
-    protected bind(renderer: Renderer | undefined) {
+    protected bind(renderer: Renderer | undefined): void {
         if (this._renderer === renderer) {
             return;
         }
@@ -342,7 +341,7 @@ export class Canvas extends Resizable {
      * Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
      * renderer.
      */
-    protected unbind() {
+    protected unbind(): void {
         if (this._renderer === undefined) {
             return;
         }
@@ -360,7 +359,7 @@ export class Canvas extends Resizable {
     /**
      * Uninitializes and deletes the controller as well as all other properties.
      */
-    dispose() {
+    dispose(): void {
         super.dispose();
 
         if (this._renderer) {
@@ -540,7 +539,7 @@ export class Canvas extends Resizable {
      * `canvas.framePrecisionObservable.subscribe()`.
      * @returns - Accumulation format as string passed to any renderer bound.
      */
-    get framePrecision(): FramePrecisionString {
+    get framePrecision(): Wizard.Precision {
         return this._framePrecision;
     }
 
@@ -549,7 +548,7 @@ export class Canvas extends Resizable {
      * bound in the future. This might be used for frame accumulation in multi-frame based rendering.
      * @param precision - Frame precision, 'float', 'half', 'byte' or 'auto' are supported.
      */
-    set framePrecision(precision: FramePrecisionString) {
+    set framePrecision(precision: Wizard.Precision) {
         this._framePrecision = precision;
 
         if (this._renderer) {

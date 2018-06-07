@@ -3,8 +3,6 @@ import { assert, log, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 
-export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
-
 
 /**
  * This wizard provides means for non-trivial, context specific framebuffer setups, texture formats, etc.
@@ -18,10 +16,10 @@ export class Wizard {
      * @param target - Target format, e.g., gl.RGBA, used to find the supported precision/accuracy for.
      * @param precision - Requested precision of the internal format: 'auto', 'float', 'half', 'byte'.
      * @returns - 3-tuple containing the (1) internal format, (2) the type (required for some internal formats to work
-     * ...), and (3) the frame precision string that matches the resulting format best.
+     * ...), and (3) the precision enum/string that matches the resulting format best.
      */
     static queryInternalTextureFormat(context: Context, target: GLenum,
-        precision: FramePrecisionString): [GLenum, GLenum, string] {
+        precision: Wizard.Precision | undefined): [GLenum, GLenum, Wizard.Precision] {
 
         const gl = context.gl;
         const gl2facade = context.gl2facade;
@@ -35,31 +33,38 @@ export class Wizard {
         const halfWriteSupport = (context.isWebGL1 && context.supportsTextureHalfFloat) ||
             (context.isWebGL2 && context.supportsColorBufferFloat);
 
-        let query = precision;
-        const validPrecisionString = Wizard.validFramePrecisionStrings.indexOf(precision) > -1;
-        if (!validPrecisionString) {
-            log(LogLevel.Dev, `unknown frame precision '${query}' changed to 'auto'`);
-            precision = 'auto';
+        if (precision === undefined) {
+            precision = Wizard.Precision.auto;
         }
-        if (precision === 'auto') { /* Derive maximum supported write to texture/buffer format. */
-            query = floatWriteSupport ? 'float' : halfWriteSupport ? 'half' : 'byte';
+        let query = precision === undefined ? Wizard.Precision.auto : precision;
+
+        if (!(precision in Wizard.Precision)) {
+            log(LogLevel.Dev, `unknown precision '${query}' changed to '${Wizard.Precision.auto}'`);
+            precision = Wizard.Precision.auto;
+        }
+        if (precision === Wizard.Precision.auto) { /* Derive maximum supported write to texture/buffer format. */
+            query = floatWriteSupport ? Wizard.Precision.float : halfWriteSupport ?
+                Wizard.Precision.half : Wizard.Precision.byte;
         }
 
         let type: GLenum;
         let internalFormatIndex: GLint; /* Utility index to reduce tuple return logic (see switch). */
 
         /* Query type and, if required), enable extension. */
-        if (query === 'half' && halfWriteSupport) {
+        if (query === Wizard.Precision.half && halfWriteSupport) {
             /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureHalfFloat;
             type = gl2facade.HALF_FLOAT;
             internalFormatIndex = 1;
-        } else if ((query === 'float' || query === 'half') && floatWriteSupport) {
+
+        } else if ((query === Wizard.Precision.float || query === Wizard.Precision.half)
+            && floatWriteSupport) {
             /* If not explicitly requested, fallback for half_float. */
             /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureFloat;
             type = gl.FLOAT;
             internalFormatIndex = 0;
+
         } else {
             type = gl.UNSIGNED_BYTE;
             internalFormatIndex = 2;
@@ -85,10 +90,11 @@ export class Wizard {
 
 export namespace Wizard {
 
-    /**
-     * At run-time, we cannot check string validity using a string literal type conversion. Thus this array is used to
-     * check whether a frame precision string is known or unknown.
-     */
-    export const validFramePrecisionStrings = ['float', 'half', 'byte', 'auto'];
+    export enum Precision {
+        float = 'float',
+        half = 'half',
+        byte = 'byte',
+        auto = 'auto',
+    }
 
 }
