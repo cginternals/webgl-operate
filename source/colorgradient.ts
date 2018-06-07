@@ -40,7 +40,8 @@ export class ColorGradient {
 
 
     // /**
-    //  * Performs a linear interpolation between x and y using a to weight between them within the gradient's color space.
+    //  * Performs a linear interpolation between x and y using a to weight between them within the gradient's
+    //  * color space.
     //  * @param x - First color stop for mix/linear interpolation.
     //  * @param y - Second color stop for mix/linear interpolation.
     //  * @param a - Specify the value to use to interpolate between x and y.
