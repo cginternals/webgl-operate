@@ -46,6 +46,8 @@ export class LabelRenderer extends Renderer {
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
+        this.loadFont(context);
+
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -150,8 +152,6 @@ export class LabelRenderer extends Renderer {
 
     protected onPrepare(): void {
 
-        this.loadFont();
-
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -202,14 +202,14 @@ export class LabelRenderer extends Renderer {
         this._blit.frame();
     }
 
-    protected loadFont(): void {
+    protected loadFont(context: Context): void {
         const loader = new FontLoader();
 
         const fontFace: FontFace = loader.load(
-            this.context, './data/opensansr144/opensansr144.fnt', false, () => {
+            context, './data/opensansr144/opensansr144.fnt', false, () => {
+                //TODO setup Labels
             });
     }
-
 }
 
 
