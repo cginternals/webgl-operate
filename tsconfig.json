@@ -23,10 +23,10 @@
     "typedocOptions": {
         "mode": "file",
         "out": "dist/doc",
-        "ignoreCompilerErrors": true,
+        "ignoreCompilerErrors": false,
         "excludePrivate": false,
         "excludeNotExported": false,
-        "target": "ES6",
+        "target": "ES5",
         "moduleResolution": "node",
         "preserveConstEnums": true,
         "stripInternal": true,
