@@ -1,6 +1,6 @@
 {
     "name": "webgl-operate",
-    "version": "0.2.12",
+    "version": "0.2.13",
     "license": "MIT",
     "description": "A TypeScript based WebGL rendering framework.",
     "author": "CG Internals",
