@@ -10,9 +10,9 @@ precision mediump float;
 #endif
 
 
-// uniform sampler2D u_glyphs;
+uniform sampler2D u_glyphs;
 
-// varying vec2 v_texture_coord;
+varying vec2 v_texture_coord;
 
 void main(void)
 {

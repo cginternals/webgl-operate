@@ -1,13 +1,13 @@
 
 import { assert } from './auxiliaries';
 
+import { mat4, vec3, vec4 } from 'gl-matrix';
+
 import { AccumulatePass } from './accumulatepass';
 import { AntiAliasingKernel } from './antialiasingkernel';
 import { BlitPass } from './blitpass';
 import { Context } from './context';
 import { DefaultFramebuffer } from './defaultframebuffer';
-import { FontFace } from './fontface';
-import { FontLoader } from './fontloader';
 import { Framebuffer } from './framebuffer';
 import { MouseEventProvider } from './mouseeventprovider';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
@@ -16,6 +16,14 @@ import { Renderbuffer } from './renderbuffer';
 import { Invalidate, Renderer } from './renderer';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
+
+import { FontFace } from './fontface';
+import { FontLoader } from './fontloader';
+import { GlyphVertex, GlyphVertices } from './glyphvertices';
+import { Label } from './label';
+import { Text } from './text';
+import { Typesetter } from './typesetter';
+
 
 import { TestNavigation } from './debug/testnavigation';
 
@@ -40,6 +48,7 @@ export class LabelRenderer extends Renderer {
 
     protected _testNavigation: TestNavigation;
 
+    protected _fontFace: FontFace;
 
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
@@ -207,8 +216,81 @@ export class LabelRenderer extends Renderer {
 
         const fontFace: FontFace = loader.load(
             context, './data/opensansr144/opensansr144.fnt', false, () => {
-                //TODO setup Labels
+                this.setupScene();
+                this.invalidate();
             });
+
+        this._fontFace = fontFace;
+    }
+
+    protected setupScene(): void {
+
+        // create Label with Text
+
+        this.prepareLabel('Hello World!');
+
+        // tell the Typesetter to typeset that Label with the loaded FontFace (using Glyph or Glyph Vertices)
+        // make a Geometry out of those vertices (or find another way of sending vertices to shader)
+
+    }
+
+    protected prepareLabel(/*userTransform: mat4,*/ str: string /*other params*/) {
+
+        const testLabel: Label = new Label();
+
+        testLabel.text = new Text(str);
+        testLabel.fontFace = this._fontFace;
+        testLabel.transform = mat4.create();
+
+        // const margins: vec4 = config.margins;
+
+        // // compute  transform matrix
+        // let transform = mat4.create();
+
+        // // translate to lower left in NDC
+        // mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
+
+        // // scale glyphs to NDC size
+        // // this._size was the viewport size in Haeley
+        // mat4.scale(transform, transform, vec3.fromValues(2.0 / this._size[0], 2.0 / this._size[1], 1.0));
+
+        // // scale glyphs to pixel size with respect to the displays ppi
+        // // mat4.scale(transform, transform, vec3.fromValues(config.ppiScale, config.ppiScale, config.ppiScale));
+
+        // // translate to origin in point space - scale origin within
+        // // margined extend (i.e., viewport with margined areas removed)
+        // let marginedExtent: vec2 = vec2.create();
+        // vec2.sub(marginedExtent, vec2.fromValues(this._size[0] / config.ppiScale, this._size[1] / config.ppiScale),
+        //     vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
+
+        // let v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
+        // vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
+        // mat4.translate(transform, transform, v3);
+
+        // sequence.additionalTransform = transform;
+
+        const numGlyphs = testLabel.length;
+
+
+        // prepare vertex storage (values will be overridden by typesetter)
+        const vertices = new GlyphVertices();
+        for (let i = 0; i < numGlyphs; ++i) {
+
+            const vertex: GlyphVertex = {
+                origin: vec3.create(),
+                tangent: vec3.create(),
+                up: vec3.create(),
+                // vec2 lowerLeft and vec2 upperRight in glyph texture (uv)
+                uvRect: vec4.create(),
+            };
+            vertices.push(vertex);
+        }
+
+
+        Typesetter.typeset(testLabel, vertices, 0);
+
+
+        return vertices;
     }
 }
 

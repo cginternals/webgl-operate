@@ -19,6 +19,16 @@ export class Text {
     /** @see {@link altered} */
     protected _altered = false;
 
+    /**
+     * Constructs a Text to be used for a Label.
+     * @param str - the actual content of this Text.
+     * @param lineFeed - char for lineFeed, default is LF.
+     */
+    constructor(str: string, lineFeed?: string) {
+        this._text = str;
+
+        this._lineFeed = lineFeed !== undefined ? lineFeed : this._lineFeed;
+    }
 
     /**
      * Length of the text, i.e., number of characters within the text.
