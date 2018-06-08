@@ -29,13 +29,25 @@ namespace auxiliaries {
         logVerbosityThreshold = 2;
     }
 
+    /**
+     * Allows to specify the log verbosity. The default verbosity depends on the bundle type, e.g., a production bundle
+     * might use a verbosity of 1, a local development bundle might favor a verbosity of 2. Even though verbosity levels
+     * can be used arbitrarily, a verbosity of 0 is intended for user info only, 1 for developers, and 2 for developers
+     * of this module. However, this semantic breaks when reusing this logging mechanism in other modules as well...
+     * @param verbosity - Log level threshold, -1:disabled, 0:user, 1:developer, and 2:module developer.
+     * @returns - The current log verbosity.
+     */
     export function logVerbosity(verbosity?: number): number {
         if (verbosity !== undefined) {
-            logVerbosityThreshold = Math.max(0, verbosity);
+            logVerbosityThreshold = Math.max(-1, verbosity);
         }
         return logVerbosityThreshold;
     }
 
+    /**
+     * Allows to specify whether or not assertions should be enabled or disabled/ignored.
+     * @param enable - If true, assertions will be evaluated and might throw errors.
+     */
     export function assertions(enable?: boolean): boolean {
         if (enable) {
             disableAssertions = !enable;
