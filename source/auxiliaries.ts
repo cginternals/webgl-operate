@@ -30,8 +30,8 @@ namespace auxiliaries {
     }
 
     export function logVerbosity(verbosity?: number): number {
-        if (verbosity) {
-            logVerbosityThreshold = verbosity;
+        if (verbosity !== undefined) {
+            logVerbosityThreshold = Math.max(0, verbosity);
         }
         return logVerbosityThreshold;
     }
