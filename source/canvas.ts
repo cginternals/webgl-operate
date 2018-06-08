@@ -149,7 +149,8 @@ export class Canvas extends Resizable {
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
-        let dataFramePrecision = dataset.accumulationFormat as Wizard.Precision;
+        let dataFramePrecision = dataset.accumulationFormat ?
+            dataset.accumulationFormat as Wizard.Precision : Canvas.DEFAULT_FRAME_PRECISION;
         if (!(dataFramePrecision in Wizard.Precision)) {
             dataFramePrecision = Canvas.DEFAULT_FRAME_PRECISION;
             log(LogLevel.Dev,
