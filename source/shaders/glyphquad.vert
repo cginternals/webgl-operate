@@ -6,7 +6,7 @@ precision lowp int;
 #if __VERSION__ == 100
 #extension GL_EXT_draw_buffers : enable 
 attribute vec2 a_vertex; 
-attribute vec4 a_texture_coord; // [ texture ll: vec2, ur: vec2 ]
+// attribute vec4 a_texture_coord; // [ texture ll: vec2, ur: vec2 ]
 // attribute vec3 a_id; // encoded uint24 id in byte3
 // attribute vec3 a_origin;
 // attribute vec3 a_tan;
@@ -18,7 +18,7 @@ attribute vec4 a_texture_coord; // [ texture ll: vec2, ur: vec2 ]
 // attribute vec4 a_transform4;
 #else
 layout(location = 0) in vec2 a_vertex; 
-layout(location = 1) in vec4 a_texture_coord; // [ texture ll: vec2, ur: vec2 ]
+// layout(location = 1) in vec4 a_texture_coord; // [ texture ll: vec2, ur: vec2 ]
 // layout(location = 2) in vec3 a_id; // encoded uint24 id in byte3
 // layout(location = 3) in vec3 a_origin;
 // layout(location = 4) in vec3 a_tan;
@@ -43,14 +43,16 @@ void main(void)
 
     //TEXTURE COORDS
 
-    float posX = a_texture_coord[0];
-    float posY = a_texture_coord[1];
+    // float posX = a_texture_coord[0];
+    // float posY = a_texture_coord[1];
 
-    float pos2X = a_texture_coord[2];
-    float pos2Y = a_texture_coord[3];
-    vec2 texExt = vec2(pos2X-posX, pos2Y-posY);
+    // float pos2X = a_texture_coord[2];
+    // float pos2Y = a_texture_coord[3];
+    // vec2 texExt = vec2(pos2X-posX, pos2Y-posY);
 
-    v_texture_coord = a_vertex * texExt + a_texture_coord.xy;
+    v_texture_coord = a_vertex.xy * 0.5 + 0.5;
+
+    //v_texture_coord = a_vertex; // * texExt + a_texture_coord.xy;
 
     //POSITIONING
 

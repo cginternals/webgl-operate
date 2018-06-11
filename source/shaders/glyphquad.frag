@@ -18,7 +18,7 @@ void main(void)
 {
     //requires blend: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // float d = texture(u_glyphs, v_texture_coord).r;
+    float d = texture(u_glyphs, v_texture_coord).r;
     /**
      * using if-statement and discard can slow down performance:
      * it's bad for IMR, TBR, TBDR and early-Z optimization
@@ -28,7 +28,8 @@ void main(void)
     //if(d < 0.45)
     //    discard;
 
-    vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green
+    // vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green
+    vec4 fc = vec4(d, d, d, 1.0); //debug texture
     
     //TODO mipmap access?
     // float a = step(0.5, d); //simplest aastep; when using multiframe sampling, smoothstep is not necessary and will add too much blur

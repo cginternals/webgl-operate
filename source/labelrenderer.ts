@@ -50,6 +50,8 @@ export class LabelRenderer extends Renderer {
 
     protected _fontFace: FontFace;
 
+    protected _uGlyphAtlas: WebGLUniformLocation;
+
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
@@ -84,6 +86,8 @@ export class LabelRenderer extends Renderer {
 
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uFrameNumber = this._program.uniform('u_frameNumber');
+
+        this._uGlyphAtlas = this._program.uniform('u_glyphs');
 
         this._ndcTriangle = new NdcFillingTriangle(this._context);
         const aVertex = this._program.attribute('a_vertex', 0);
@@ -129,6 +133,7 @@ export class LabelRenderer extends Renderer {
 
         this._uNdcOffset = -1;
         this._uFrameNumber = -1;
+        this._uGlyphAtlas = -1;
         this._program.uninitialize();
 
         this._ndcTriangle.uninitialize();
@@ -189,6 +194,14 @@ export class LabelRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
+        let wasBlendEnabled = false;
+        const oldBlendSRC: any = gl.getParameter(gl.BLEND_SRC_RGB);
+        const oldBlendDST: any = gl.getParameter(gl.BLEND_DST_RGB);
+
+        wasBlendEnabled = gl.isEnabled(gl.BLEND);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
         this._program.bind();
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
@@ -197,12 +210,21 @@ export class LabelRenderer extends Renderer {
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
         gl.uniform1i(this._uFrameNumber, frameNumber);
 
+        this._fontFace.glyphTexture.bind(gl.TEXTURE0);
+        gl.uniform1i(this._uGlyphAtlas, 0);
+
         this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();
         this._intermediateFBO.unbind();
 
         this._accumulate.frame(frameNumber);
+
+        this._fontFace.glyphTexture.unbind(gl.TEXTURE0);
+        gl.blendFunc(oldBlendSRC, oldBlendDST);
+        if (!wasBlendEnabled) {
+            gl.disable(gl.BLEND);
+        }
     }
 
     protected onSwap(): void {
@@ -236,11 +258,7 @@ export class LabelRenderer extends Renderer {
 
     protected prepareLabel(/*userTransform: mat4,*/ str: string /*other params*/) {
 
-        const testLabel: Label = new Label();
-
-        testLabel.text = new Text(str);
-        testLabel.fontFace = this._fontFace;
-        testLabel.transform = mat4.create();
+        const testLabel: Label = new Label(new Text(str), this._fontFace);
 
         // const margins: vec4 = config.margins;
 

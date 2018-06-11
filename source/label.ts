@@ -49,6 +49,18 @@ export class Label {
     });
 
     /**
+     * Constructs an unconfigured, empty label.
+     * @param text - Valid context to create the object for.
+     * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
+     */
+    constructor(text: Text, fontFace: FontFace) {
+        this._text = text;
+        this._fontFace = fontFace;
+        this._transform = mat4.create();
+    }
+
+
+    /**
      * Returns the character at the specified index.
      * @param pos - The zero-based index of the desired character.
      */
