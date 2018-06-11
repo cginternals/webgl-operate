@@ -50,9 +50,8 @@ void main(void)
     // float pos2Y = a_texture_coord[3];
     // vec2 texExt = vec2(pos2X-posX, pos2Y-posY);
 
+    // v_texture_coord = a_vertex; // * texExt + a_texture_coord.xy;
     v_texture_coord = a_vertex.xy * 0.5 + 0.5;
-
-    //v_texture_coord = a_vertex; // * texExt + a_texture_coord.xy;
 
     //POSITIONING
 

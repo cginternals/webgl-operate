@@ -213,6 +213,10 @@ export class LabelRenderer extends Renderer {
         this._fontFace.glyphTexture.bind(gl.TEXTURE0);
         gl.uniform1i(this._uGlyphAtlas, 0);
 
+        // TODO
+        //  labelgeometry.bind();
+        //  labelgeometry.draw();
+
         this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();
@@ -247,16 +251,15 @@ export class LabelRenderer extends Renderer {
 
     protected setupScene(): void {
 
-        // create Label with Text
-
-        this.prepareLabel('Hello World!');
-
+        // create Label with Text and
         // tell the Typesetter to typeset that Label with the loaded FontFace (using Glyph or Glyph Vertices)
-        // make a Geometry out of those vertices (or find another way of sending vertices to shader)
+        const vertices = this.prepareLabel('Hello World!');
 
+        // make a Geometry out of those vertices (or find another way of sending vertices to shader)
+        // TODO labelgeometry
     }
 
-    protected prepareLabel(/*userTransform: mat4,*/ str: string /*other params*/) {
+    protected prepareLabel(/*userTransform: mat4,*/ str: string /*other params*/): GlyphVertices {
 
         const testLabel: Label = new Label(new Text(str), this._fontFace);
 
