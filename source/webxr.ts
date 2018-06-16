@@ -49,7 +49,7 @@ interface XRSession extends EventTarget {
 
     depthNear: number;
     depthFar: number;
-    baseLayer: XRLayer;
+    baseLayer: XRWebGLLayer;
 
     // Methods
     requestFrameOfReference(type: XRFrameOfReferenceType, options?: XRFrameOfReferenceOptions):
@@ -86,11 +86,7 @@ interface XRCoordinateSystem extends EventTarget {
     getTransformTo(other: XRCoordinateSystem): Float32Array | null;
 }
 
-enum XRFrameOfReferenceType {
-    'head-model',
-    'eye-level',
-    'stage',
-}
+type XRFrameOfReferenceType = 'head-model' | 'eye-level' | 'stage';
 
 interface XRFrameOfReferenceOptions {
     /** Defaults to false */
@@ -115,10 +111,7 @@ interface XRStageBoundsPoint {
     readonly z: number;
 }
 
-enum XREye {
-    'left',
-    'right',
-}
+type XREye = 'left' | 'right';
 
 interface XRView {
     readonly eye: XREye;
@@ -137,17 +130,9 @@ interface XRDevicePose {
     getViewMatrix(view: XRView): Float32Array;
 }
 
-enum XRHandedness {
-    '',
-    'left',
-    'right',
-}
+type XRHandedness = '' | 'left' | 'right';
 
-enum XRTargetRayMode {
-    'gazing',
-    'pointing',
-    'tapping',
-}
+type XRTargetRayMode = 'gazing' | 'pointing' | 'tapping';
 
 interface XRInputSource {
     readonly handedness: XRHandedness;

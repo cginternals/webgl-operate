@@ -2,53 +2,118 @@
 
 import { assert, log, LogLevel } from './auxiliaries';
 import { Canvas } from './canvas';
-import { Context } from './context';
+import { Renderer } from './renderer';
 
 export function supportsXR(): boolean {
     return navigator.xr !== undefined;
 }
 
 /**
- * Request an XRDevice and check if the given session creation options are supported.
- * Returns `undefined` if no devices are found or the session creation options are not supported.
+ * Helper class to hold render configuration per XRView,
+ * i.e. per eye for standard VR/AR
  */
-export async function initXR(options?: XRSessionCreationOptions): Promise<XRDevice | undefined> {
-    assert(supportsXR(), 'WebXR not supported by browser');
-    let device;
-    try {
-        device = await navigator.xr.requestDevice();
-    } catch (e) {
-        log(LogLevel.ModuleDev, `Failed to request XR device: ${e}`);
-        return;
-    }
-    try {
-        if (await device.supportsSession(options)) {
-            return device;
-        }
-    } catch (e) { // === null
-        log(LogLevel.ModuleDev, `XR session with options ${options} not supported`);
+export class RenderView {
+    constructor(
+        public projectionMatrix: Float32Array,
+        public viewMatrix: Float32Array,
+        public viewport: XRViewport) {
     }
 }
 
-/**
- * Request an XR session and ...(TODO).
- * May fail with:
- * - NotSupportedError if the options are not supported
- * - InvalidStateError if options.immersive is true and the device already has an immersive session
- * - SecurityError if options.immersive is true and the algorithm is not triggered by user activation
- */
-export async function requestSession(device: XRDevice, options?: XRSessionCreationOptions): Promise<XRSession> {
-    const session = await device.requestSession(options);
+// tslint:disable-next-line:max-classes-per-file
+export class XRController {
+    // Configuration options for setting up and XR session.
 
-    // TODO!!: create WebGL context, XRWebGLLayer, requestFrameOfReference
-    const canvas = new Canvas('foo', { // TODO!!: id??
-        ...Context.CONTEXT_ATTRIBUTES,
-        compatibleXRDevice: session.device,
-    });
-    const gl = canvas.context.gl;
+    sessionCreationOptions?: XRSessionCreationOptions;
+    /**
+     * Attributes for WebGL context creation. `compatibleXRDevice` will be set
+     * automatically after session creation.
+     */
+    contextAttributes: WebGLContextAttributes = {};
+    webGLLayerInit?: XRWebGLLayerInit;
+    frameOfRefType: XRFrameOfReferenceType = 'eye-level';
+    frameOfRefOptions?: XRFrameOfReferenceOptions;
 
-    // TODO!!: configurable third param layerInit
-    session.baseLayer = new XRWebGLLayer(session, gl);
+    device: XRDevice;
+    session: XRSession;
+    gl: any;
+    frameOfRef: XRFrameOfReference;
 
-    return session;
+    renderer: Renderer;
+
+    constructor(sessionOpts?: XRSessionCreationOptions) {
+        this.sessionCreationOptions = sessionOpts;
+    }
+
+    /**
+     * Initializes `this.device` and checks if it supports sessions with the configured creation options.
+     * @returns - whether initialization was successful
+     */
+    async initialize(): Promise<boolean> {
+        assert(supportsXR(), 'WebXR not supported by browser');
+        try {
+            this.device = await navigator.xr.requestDevice();
+            this.contextAttributes.compatibleXRDevice = this.device;
+        } catch (e) {
+            log(LogLevel.ModuleDev, `Failed to request XR device: ${e}`);
+            return false;
+        }
+        try {
+            if (await this.device.supportsSession(this.sessionCreationOptions)) {
+                return true;
+            }
+        } catch (e) { // === null
+            log(LogLevel.ModuleDev, `XR session with options ${this.sessionCreationOptions} not supported`);
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * Request an XR session (`this.session`) using `this.sessionCreationOptions`
+     * and initialize WebGL context and `frameOfRef`.
+     * May fail with:
+     * - NotSupportedError if the options are not supported
+     * - InvalidStateError if options.immersive is true and the device already has an immersive session
+     * - SecurityError if options.immersive is true and the algorithm is not triggered by user activation
+     */
+    async requestSession(): Promise<void> {
+        this.session = await this.device.requestSession(this.sessionCreationOptions);
+
+        const canvasEl = document.createElement('canvas');
+        // TODO!: external canvas?
+        const canvas = new Canvas(canvasEl, this.contextAttributes);
+        this.gl = canvas.context.gl;
+
+        this.session.baseLayer = new XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
+        this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
+
+        this.session.requestAnimationFrame(() => this.onXRFrame);
+    }
+
+    onXRFrame(time: number, frame: XRFrame) {
+        this.session.requestAnimationFrame(() => this.onXRFrame);
+        const gl = this.gl;
+
+        const pose = frame.getDevicePose(this.frameOfRef);
+        // Getting the pose may fail if, for example, tracking is lost.
+        if (pose) {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.session.baseLayer.framebuffer);
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            const renderViews = [];
+            for (const view of frame.views) {
+                renderViews.push(new RenderView(
+                    view.projectionMatrix,
+                    pose.getViewMatrix(view),
+                    this.session.baseLayer.getViewport(view)!,
+                ));
+            }
+
+            this.renderer.frame(0, renderViews);
+        } else {
+            // TODO!: how to handle?
+        }
+    }
 }

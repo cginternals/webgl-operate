@@ -14,6 +14,7 @@ import { MouseEventProvider } from './mouseeventprovider';
 import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
+import { RenderView } from './xr';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
@@ -184,7 +185,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Actual frame call specified by inheritor. After (1) update and (2) preparation are invoked, a frame is invoked.
      * This should be used for actual rendering implementation.
      */
-    protected abstract onFrame(frameNumber: number): void;
+    protected abstract onFrame(frameNumber: number, renderViews?: RenderView[]): void;
 
     /**
      * Actual swap call specified by inheritor. After (1) update, (2) preparation, and (3) frame are invoked, a swap
@@ -264,10 +265,11 @@ export abstract class Renderer extends Initializable implements Controllable {
      * intermediate frame for accumulation to a full multi-frame or full frame for itself.  The inheritor should invoke
      * frames of relevant rendering and processing stages.
      * @param frameNumber - The current frame number forwarded to onFrame.
+     * @param renderViews - views for WebXR rendering
      */
     @Initializable.assert_initialized()
-    frame(frameNumber: number): void {
-        this.onFrame(frameNumber);
+    frame(frameNumber: number, renderViews?: RenderView[]): void {
+        this.onFrame(frameNumber, renderViews);
     }
 
     /**
