@@ -1,4 +1,5 @@
 // tslint:disable:member-ordering
+// tslint:disable:max-classes-per-file
 
 // TODO!: rename to .d.ts when done (-> error checking doesn't work properly with it)
 // TODO!: publish interfaces derived from spec on npm?
@@ -16,11 +17,9 @@ interface XR extends EventTarget {
     ondevicechange: EventHandler;
 }
 
-// declare global {
 interface Navigator {
     readonly xr: XR;
 }
-// }
 
 /**
  * https://immersive-web.github.io/webxr-reference/webxr-device-api/xrdevice
@@ -64,13 +63,13 @@ interface XRSession extends EventTarget {
     end(): Promise<void>;
 
     // Events
-    onblur: EventHandler;
-    onfocus: EventHandler;
-    onresetpose: EventHandler;
-    onend: EventHandler;
-    onselect: EventHandler;
-    onselectstart: EventHandler;
-    onselectend: EventHandler;
+    onblur: XRSessionEventHandler;
+    onfocus: XRSessionEventHandler;
+    onresetpose: XRSessionEventHandler;
+    onend: XRSessionEventHandler;
+    onselect: XRInputSourceEventHandler;
+    onselectstart: XRInputSourceEventHandler;
+    onselectend: XRInputSourceEventHandler;
 }
 
 type XRFrameRequestCallback = (time: number, frame: XRFrame) => void;
@@ -104,7 +103,7 @@ interface XRFrameOfReference extends XRCoordinateSystem {
     readonly bounds: XRStageBounds | null;
     readonly emulatedHeight: number;
 
-    onboundschange: EventHandler;
+    onboundschange: (ev: XRCoordinateSystemEvent) => void;
 }
 
 interface XRStageBounds {
@@ -204,23 +203,38 @@ declare class XRWebGLLayer implements XRLayer {
 
     // Static Methods
     static getNativeFramebufferScaleFactor(session: XRSession): number;
-};
+}
 
-// TODO!!!: continue here
+interface WebGLContextAttributes {
+    /** Default: null */
+    compatibleXRDevice: XRDevice | null;
+}
+
+interface WebGLRenderingContextBase {
+    setCompatibleXRDevice(device: XRDevice): Promise<void>;
+}
 
 interface XRPresentationContext {
-    // TODO
+    readonly canvas: HTMLCanvasElement;
 }
 
-interface XRFrameOfReferenceOptions {
-    // TODO
+// NOTE: ignoring constructors for events
+
+interface XRSessionEvent extends Event {
+    readonly frame: XRFrame;
+    readonly inputSource: XRInputSource;
 }
 
-interface XRFrameOfReference {
-    // TODO
+type XRSessionEventHandler = (ev: XRSessionEvent) => void;
+
+
+interface XRInputSourceEvent extends Event {
+    readonly frame: XRFrame;
+    readonly inputSource: XRInputSource;
 }
 
-interface XRInputSource {
-    // TODO
-}
+type XRInputSourceEventHandler = (ev: XRInputSourceEvent) => void;
 
+interface XRCoordinateSystemEvent extends Event {
+    readonly coordinateSystem: XRCoordinateSystem;
+}
