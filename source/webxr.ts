@@ -163,7 +163,6 @@ interface XRInputPose {
 // tslint:disable-next-line:no-empty-interface
 interface XRLayer { }
 
-declare type WebGL2RenderingContext = any;
 type XRWebGLRenderingContext = WebGLRenderingContext | WebGL2RenderingContext;
 
 interface XRWebGLLayerInit {
@@ -207,7 +206,7 @@ declare class XRWebGLLayer implements XRLayer {
 
 interface WebGLContextAttributes {
     /** Default: null */
-    compatibleXRDevice: XRDevice | null;
+    compatibleXRDevice?: XRDevice | null;
 }
 
 interface WebGLRenderingContextBase {
