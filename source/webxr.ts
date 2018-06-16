@@ -1,11 +1,7 @@
-/// WebXR playground - to be refactored into a reasonable file structure later
-
-import { assert } from './auxiliaries';
-
-// TODO!: publish interfaces derived from spec on npm?
-
 // tslint:disable:member-ordering
 
+// TODO!: rename to .d.ts when done (-> error checking doesn't work properly with it)
+// TODO!: publish interfaces derived from spec on npm?
 
 /// https://immersive-web.github.io/webxr/#idl-index
 
@@ -20,11 +16,11 @@ interface XR extends EventTarget {
     ondevicechange: EventHandler;
 }
 
-declare global {
-    interface Navigator {
-        readonly xr: XR;
-    }
+// declare global {
+interface Navigator {
+    readonly xr: XR;
 }
+// }
 
 /**
  * https://immersive-web.github.io/webxr-reference/webxr-device-api/xrdevice
@@ -130,17 +126,89 @@ interface XRView {
     readonly projectionMatrix: Float32Array;
 }
 
-// TODO!!!: continue here
-
-// TODO!!: tmp
-type XRDevicePose = any;
-type XRInputPose = any;
-
-interface XRPresentationContext {
-    // TODO
+interface XRViewport {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
 }
 
-interface XRLayer {
+interface XRDevicePose {
+    readonly poseModelMatrix: Float32Array;
+    getViewMatrix(view: XRView): Float32Array;
+}
+
+enum XRHandedness {
+    '',
+    'left',
+    'right',
+}
+
+enum XRTargetRayMode {
+    'gazing',
+    'pointing',
+    'tapping',
+}
+
+interface XRInputSource {
+    readonly handedness: XRHandedness;
+    readonly targetRayMode: XRTargetRayMode;
+}
+
+interface XRInputPose {
+    readonly emulatedPosition: boolean;
+    readonly targetRayMatrix: Float32Array;
+    readonly gripMatrix: Float32Array | null;
+}
+
+// tslint:disable-next-line:no-empty-interface
+interface XRLayer { }
+
+declare type WebGL2RenderingContext = any;
+type XRWebGLRenderingContext = WebGLRenderingContext | WebGL2RenderingContext;
+
+interface XRWebGLLayerInit {
+    /** Default: true */
+    antialias: boolean;
+    /** Default: false */
+    depth: boolean;
+    /** Default: false */
+    stencil: boolean;
+    /** Default: true */
+    alpha: boolean;
+    /** Default: false */
+    multiview: boolean;
+    /** Default: 1.0 */
+    framebufferScaleFactor: number;
+}
+
+declare class XRWebGLLayer implements XRLayer {
+    constructor(session: XRSession, context: XRWebGLRenderingContext, layerInit?: XRWebGLLayerInit);
+
+    // Attributes
+    readonly context: XRWebGLRenderingContext;
+
+    readonly antialias: boolean;
+    readonly depth: boolean;
+    readonly stencil: boolean;
+    readonly alpha: boolean;
+    readonly multiview: boolean;
+
+    readonly framebuffer: WebGLFramebuffer;
+    readonly framebufferWidth: number;
+    readonly framebufferHeight: number;
+
+    // Methods
+    getViewport(view: XRView): XRViewport | null;
+    requestViewportScaling(viewportScaleFactor: number): void;
+
+    // Static Methods
+    static getNativeFramebufferScaleFactor(session: XRSession): number;
+};
+
+// TODO!!!: continue here
+
+interface XRPresentationContext {
     // TODO
 }
 
@@ -156,13 +224,3 @@ interface XRInputSource {
     // TODO
 }
 
-///
-
-export function supportsXR(): boolean {
-    return navigator.xr !== undefined;
-}
-
-export async function initXR() {
-    assert(supportsXR(), 'WebXR not supported by browser');
-    let device = await navigator.xr.requestDevice();
-}
