@@ -1,6 +1,8 @@
 /// WebXR playground - to be refactored into a reasonable file structure later
 
 import { assert, log, LogLevel } from './auxiliaries';
+import { Canvas } from './canvas';
+import { Context } from './context';
 
 export function supportsXR(): boolean {
     return navigator.xr !== undefined;
@@ -39,6 +41,14 @@ export async function requestSession(device: XRDevice, options?: XRSessionCreati
     const session = await device.requestSession(options);
 
     // TODO!!: create WebGL context, XRWebGLLayer, requestFrameOfReference
+    const canvas = new Canvas('foo', { // TODO!!: id??
+        ...Context.CONTEXT_ATTRIBUTES,
+        compatibleXRDevice: session.device,
+    });
+    const gl = canvas.context.gl;
+
+    // TODO!!: configurable third param layerInit
+    session.baseLayer = new XRWebGLLayer(session, gl);
 
     return session;
 }
