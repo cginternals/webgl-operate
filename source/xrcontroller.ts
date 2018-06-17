@@ -1,5 +1,6 @@
 /// WebXR playground - to be refactored into a reasonable file structure later
 
+import { mat4, vec3 } from 'gl-matrix';
 import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Controllable } from './controller';
@@ -14,10 +15,21 @@ export function supportsXR(): boolean {
  * i.e. per eye for standard VR/AR
  */
 export class RenderView {
+    cameraPosition: vec3 | undefined;
     constructor(
         public projectionMatrix: Float32Array,
         public viewMatrix: Float32Array,
         public viewport: XRViewport) {
+    }
+
+    /**
+     * Computes camera position from viewMatrix. Not done by default since it's not cheap.
+     * To reduce allocations, a pre-allocated matrix may be passed in
+     */
+    computeCameraPosition(matrix: mat4 = mat4.create()) {
+        const inverseMatrix = mat4.invert(matrix, this.viewMatrix as mat4) as mat4;
+        this.cameraPosition = vec3.create();
+        vec3.transformMat4(this.cameraPosition, this.cameraPosition, inverseMatrix);
     }
 }
 
