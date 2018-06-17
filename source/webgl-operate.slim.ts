@@ -65,3 +65,5 @@ export import gl_matrix_extensions = root_gl_matrix_extensions;
 
 import * as root_tuples from './tuples';
 export import tuples = root_tuples;
+
+export { supportsXR, RenderView, XRController } from './xrcontroller';
