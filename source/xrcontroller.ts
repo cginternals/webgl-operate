@@ -2,8 +2,8 @@
 
 import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
-import { Renderer } from './renderer';
 import { Controllable } from './controller';
+import { Renderer } from './renderer';
 
 export function supportsXR(): boolean {
     return navigator.xr !== undefined;
@@ -36,9 +36,9 @@ export class XRController {
     frameOfRefOptions?: XRFrameOfReferenceOptions;
 
     device: XRDevice;
-    session: XRSession;
+    session: XRSession | undefined;
     gl: any;
-    frameOfRef: XRFrameOfReference;
+    frameOfRef: XRFrameOfReference | undefined;
 
     renderer: Renderer;
 
@@ -91,23 +91,35 @@ export class XRController {
         this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
 
         this.session.requestAnimationFrame(() => this.onXRFrame);
+
+        this.session.addEventListener('end', () => this.onEndSession());
+    }
+
+    async endSession(): Promise<void> {
+        await this.session!.end();
+    }
+
+    onEndSession() {
+        this.session = undefined;
+        this.gl = undefined;
+        this.frameOfRef = undefined;
     }
 
     onXRFrame(time: number, frame: XRFrame) {
-        this.session.requestAnimationFrame(() => this.onXRFrame);
+        this.session!.requestAnimationFrame(() => this.onXRFrame);
         const gl = this.gl;
 
-        const pose = frame.getDevicePose(this.frameOfRef);
+        const pose = frame.getDevicePose(this.frameOfRef!);
         // Getting the pose may fail if, for example, tracking is lost.
         if (pose) {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this.session.baseLayer.framebuffer);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.session!.baseLayer.framebuffer);
 
             const renderViews = [];
             for (const view of frame.views) {
                 renderViews.push(new RenderView(
                     view.projectionMatrix,
                     pose.getViewMatrix(view),
-                    this.session.baseLayer.getViewport(view)!,
+                    this.session!.baseLayer.getViewport(view)!,
                 ));
             }
 
