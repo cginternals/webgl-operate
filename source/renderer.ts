@@ -14,7 +14,7 @@ import { MouseEventProvider } from './mouseeventprovider';
 import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
-import { RenderView } from './xr';
+import { RenderView } from './xrcontroller';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
