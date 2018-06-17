@@ -21,8 +21,11 @@ export class RenderView {
     }
 }
 
+// tslint:disable-next:member-ordering
 // tslint:disable-next-line:max-classes-per-file
 export class XRController {
+    private onXRFrameCallback = this.onXRFrame.bind(this);
+
     // Configuration options for setting up and XR session.
 
     sessionCreationOptions?: XRSessionCreationOptions;
@@ -35,8 +38,9 @@ export class XRController {
     frameOfRefType: XRFrameOfReferenceType = 'eye-level';
     frameOfRefOptions?: XRFrameOfReferenceOptions;
 
-    device: XRDevice;
+    device: XRDevice | undefined;
     session: XRSession | undefined;
+    canvas: Canvas | undefined;
     gl: any;
     frameOfRef: XRFrameOfReference | undefined;
 
@@ -64,7 +68,7 @@ export class XRController {
     async supportsSession(): Promise<boolean> {
         assert(this.device !== undefined, 'this.device not initialized');
         try {
-            await this.device.supportsSession(this.sessionCreationOptions);
+            await this.device!.supportsSession(this.sessionCreationOptions);
             return true;
         } catch (e) { // === null
             return false;
@@ -80,17 +84,17 @@ export class XRController {
      * - SecurityError if options.immersive is true and the algorithm is not triggered by user activation
      */
     async requestSession(): Promise<void> {
-        this.session = await this.device.requestSession(this.sessionCreationOptions);
+        this.session = await this.device!.requestSession(this.sessionCreationOptions);
 
         const canvasEl = document.createElement('canvas');
         // TODO!: external canvas?
-        const canvas = new Canvas(canvasEl, this.contextAttributes);
-        this.gl = canvas.context.gl;
+        this.canvas = new Canvas(canvasEl, this.contextAttributes, this);
+        this.gl = this.canvas.context.gl;
 
         this.session.baseLayer = new XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
         this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
 
-        this.session.requestAnimationFrame(() => this.onXRFrame);
+        this.session.requestAnimationFrame(this.onXRFrameCallback);
 
         this.session.addEventListener('end', () => this.onEndSession());
     }
@@ -101,12 +105,13 @@ export class XRController {
 
     onEndSession() {
         this.session = undefined;
+        this.canvas = undefined;
         this.gl = undefined;
         this.frameOfRef = undefined;
     }
 
     onXRFrame(time: number, frame: XRFrame) {
-        this.session!.requestAnimationFrame(() => this.onXRFrame);
+        this.session!.requestAnimationFrame(this.onXRFrameCallback);
         const gl = this.gl;
 
         const pose = frame.getDevicePose(this.frameOfRef!);
@@ -130,14 +135,18 @@ export class XRController {
     }
 
     // TODO!!: stub other controller methods/properties
+    // tslint:disable-next-line:member-ordering
+    _block = false;
     block() {
-        // TODO!?
+        this._block = true;
     }
     get blocked() {
-        return false;
+        // TODO!?
+        return this._block;
     }
     unblock() {
         // TODO!?
+        this._block = false;
     }
     set controllable(c: Controllable) {
         this.renderer = c as Renderer;

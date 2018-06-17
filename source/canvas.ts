@@ -144,6 +144,7 @@ export class Canvas extends Resizable {
         this._context = Context.request(this._element, attributes);
         if (controller) {
             this._controller = controller;
+            this._controller.block(); // Remain in block mode until renderer is bound and configured.
         } else {
             this.configureController(dataset);
         }
