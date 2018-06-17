@@ -1,6 +1,6 @@
 /// WebXR playground - to be refactored into a reasonable file structure later
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Renderer } from './renderer';
 
@@ -47,26 +47,27 @@ export class XRController {
 
     /**
      * Initializes `this.device` and checks if it supports sessions with the configured creation options.
+     * @throws {NotFoundError} - No devices found.
      * @returns - whether initialization was successful
      */
-    async initialize(): Promise<boolean> {
+    async initialize(): Promise<void> {
         assert(supportsXR(), 'WebXR not supported by browser');
+        this.device = await navigator.xr.requestDevice();
+        this.contextAttributes.compatibleXRDevice = this.device;
+    }
+
+    /**
+     * Checks whether device supports a session with `this.sessionCreationOptions`.
+     * Must call `initialize` before.
+     */
+    async supportsSession(): Promise<boolean> {
+        assert(this.device !== undefined, 'this.device not initialized');
         try {
-            this.device = await navigator.xr.requestDevice();
-            this.contextAttributes.compatibleXRDevice = this.device;
-        } catch (e) {
-            log(LogLevel.ModuleDev, `Failed to request XR device: ${e}`);
-            return false;
-        }
-        try {
-            if (await this.device.supportsSession(this.sessionCreationOptions)) {
-                return true;
-            }
+            await this.device.supportsSession(this.sessionCreationOptions);
+            return true;
         } catch (e) { // === null
-            log(LogLevel.ModuleDev, `XR session with options ${this.sessionCreationOptions} not supported`);
             return false;
         }
-        return false;
     }
 
     /**
