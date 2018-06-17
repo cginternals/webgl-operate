@@ -16,6 +16,7 @@ import { Renderer } from './renderer';
 import { Resizable } from './resizable';
 import { TouchEventProvider } from './toucheventprovider';
 import { Wizard } from './wizard';
+import { XRController } from './xrcontroller';
 
 
 /**
@@ -53,7 +54,7 @@ export class Canvas extends Resizable {
     protected _context: Context;
 
     /** @see {@link controller} */
-    protected _controller: Controller;
+    protected _controller: Controller | XRController;
 
     /** @see {@link renderer} */
     protected _renderer: Renderer | undefined;
@@ -129,7 +130,8 @@ export class Canvas extends Resizable {
      * @param element - Canvas element or element id {string} to be used for querying the canvas element.
      * @param attributes - Overrides the internal default attributes @see{Context.DEFAULT_ATTRIBUTES}.
      */
-    constructor(element: HTMLCanvasElement | string, attributes?: WebGLContextAttributes) {
+    constructor(element: HTMLCanvasElement | string, attributes?: WebGLContextAttributes,
+        controller?: Controller | XRController) {
         super(); // setup resize event handling
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
@@ -140,7 +142,11 @@ export class Canvas extends Resizable {
 
         /* Requesting a context asserts when no context could be created. */
         this._context = Context.request(this._element, attributes);
-        this.configureController(dataset);
+        if (controller) {
+            this._controller = controller;
+        } else {
+            this.configureController(dataset);
+        }
 
         this.configureSizeAndScale(dataset);
 
@@ -396,7 +402,7 @@ export class Canvas extends Resizable {
      * @returns - The controller used by the canvas.
      */
     get controller(): Controller {
-        return this._controller;
+        return this._controller as Controller; // TODO!
     }
 
     /**

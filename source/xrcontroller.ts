@@ -3,6 +3,7 @@
 import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Renderer } from './renderer';
+import { Controllable } from './controller';
 
 export function supportsXR(): boolean {
     return navigator.xr !== undefined;
@@ -101,8 +102,6 @@ export class XRController {
         if (pose) {
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.session.baseLayer.framebuffer);
 
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
             const renderViews = [];
             for (const view of frame.views) {
                 renderViews.push(new RenderView(
@@ -116,5 +115,22 @@ export class XRController {
         } else {
             // TODO!: how to handle?
         }
+    }
+
+    // TODO!!: stub other controller methods/properties
+    block() {
+        // TODO!?
+    }
+    get blocked() {
+        return false;
+    }
+    unblock() {
+        // TODO!?
+    }
+    set controllable(c: Controllable) {
+        this.renderer = c as Renderer;
+    }
+    update(force: boolean = false): void {
+        // TODO:!?
     }
 }
