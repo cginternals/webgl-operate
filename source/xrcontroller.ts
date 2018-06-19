@@ -86,6 +86,21 @@ export class XRController {
 
     renderer: Renderer;
 
+    /**
+     * Hints:
+     * To mirror the content of an immersive session to a canvas on the page:
+     *
+     * ```
+     * let mirrorCanvas = document.createElement('canvas');
+     * document.body.appendChild(mirrorCanvas);
+     * let ctx = mirrorCanvas.getContext('xrpresent');
+     * let xrc = new XRController({
+     *     immersive: true,
+     *     outputContext: ctx;
+     * })
+     * ```
+     * To create a 'magic window', do the same, but with `immersive` set to `false`.
+     */
     constructor(sessionOpts?: XRSessionCreationOptions) {
         this.sessionCreationOptions = sessionOpts;
     }
@@ -128,6 +143,7 @@ export class XRController {
 
         const canvasEl = document.createElement('canvas');
         // TODO!: external canvas?
+        // TODO!!: check what happens to old canvas when switching from magic window to immersive
         this.canvas = new Canvas(canvasEl, this.contextAttributes, this);
         this.gl = this.canvas.context.gl;
 
