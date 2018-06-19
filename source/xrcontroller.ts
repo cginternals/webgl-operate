@@ -12,24 +12,51 @@ export function supportsXR(): boolean {
 
 /**
  * Helper class to hold render configuration per XRView,
- * i.e. per eye for standard VR/AR
+ * i.e. per eye for standard VR/AR.
+ * NOTE: Optimized to avoid allocations during render loop.
  */
 export class RenderView {
-    cameraPosition: vec3 | undefined;
-    constructor(
-        public projectionMatrix: Float32Array,
-        public viewMatrix: Float32Array,
-        public viewport: XRViewport) {
+    private _cameraPositionValid = false;
+    private _cameraPosition = vec3.create();
+    private _inverseViewMatrix: Float32Array;
+
+    private _projectionMatrix: Float32Array;
+    get projectionMatrix() {
+        return this._projectionMatrix;
+    }
+    private _viewMatrix: Float32Array;
+    get viewMatrix() {
+        return this._viewMatrix;
+    }
+    private _viewport: XRViewport;
+    get viewport() {
+        return this._viewport;
+    }
+
+    set(projectionMatrix: Float32Array, viewMatrix: Float32Array, viewport: XRViewport) {
+        this._projectionMatrix = projectionMatrix;
+        this._viewMatrix = viewMatrix;
+        this._viewport = viewport;
+
+        this._cameraPositionValid = false;
     }
 
     /**
      * Computes camera position from viewMatrix. Not done by default since it's not cheap.
-     * To reduce allocations, a pre-allocated matrix may be passed in
      */
-    computeCameraPosition(matrix: mat4 = mat4.create()) {
-        const inverseMatrix = mat4.invert(matrix, this.viewMatrix as mat4) as mat4;
-        this.cameraPosition = vec3.create();
-        vec3.transformMat4(this.cameraPosition, this.cameraPosition, inverseMatrix);
+    get cameraPosition() {
+        if (this._cameraPositionValid) {
+            return this._cameraPosition;
+        }
+        if (!this._inverseViewMatrix) {
+            this._inverseViewMatrix = mat4.create();
+        }
+
+        mat4.invert(this._inverseViewMatrix as mat4, this.viewMatrix as mat4);
+        vec3.transformMat4(this._cameraPosition, this._cameraPosition, this._inverseViewMatrix as mat4);
+
+        this._cameraPositionValid = true;
+        return this._cameraPosition;
     }
 }
 
@@ -37,6 +64,7 @@ export class RenderView {
 // tslint:disable-next-line:max-classes-per-file
 export class XRController {
     private onXRFrameCallback = this.onXRFrame.bind(this);
+    private renderViews: RenderView[] = [new RenderView()];
 
     // Configuration options for setting up and XR session.
 
@@ -131,16 +159,19 @@ export class XRController {
         if (pose) {
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.session!.baseLayer.framebuffer);
 
-            const renderViews = [];
-            for (const view of frame.views) {
-                renderViews.push(new RenderView(
+            for (let i = 0; i < frame.views.length; ++i) {
+                const view = frame.views[i];
+                if (!this.renderViews[i]) {
+                    this.renderViews[i] = new RenderView();
+                }
+                this.renderViews[i].set(
                     view.projectionMatrix,
                     pose.getViewMatrix(view),
                     this.session!.baseLayer.getViewport(view)!,
-                ));
+                );
             }
 
-            this.renderer.frame(0, renderViews);
+            this.renderer.frame(0, this.renderViews);
         } else {
             // TODO!: how to handle?
         }
