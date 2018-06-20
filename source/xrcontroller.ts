@@ -16,10 +16,11 @@ export function supportsXR(): boolean {
  * NOTE: Optimized to avoid allocations during render loop.
  */
 export class RenderView {
-    private _cameraPositionValid = false;
     private _cameraPosition = vec3.create();
+    private _cameraPositionValid = false; // use extra flag to avoid allocation new vec3's
     private _inverseViewMatrix: Float32Array;
 
+    // TODO!: Float32Array vs mat4
     private _projectionMatrix: Float32Array;
     get projectionMatrix() {
         return this._projectionMatrix;
@@ -28,6 +29,9 @@ export class RenderView {
     get viewMatrix() {
         return this._viewMatrix;
     }
+    private _viewProjectionMatrix: Float32Array;
+    private _viewProjectionMatrixValid = false; // use extra flag to avoid allocation new mat4's
+
     private _viewport: XRViewport;
     get viewport() {
         return this._viewport;
@@ -39,12 +43,13 @@ export class RenderView {
         this._viewport = viewport;
 
         this._cameraPositionValid = false;
+        this._viewProjectionMatrixValid = false;
     }
 
     /**
-     * Computes camera position from viewMatrix. Not done by default since it's not cheap.
+     * Computes camera position from viewMatrix and caches it.
      */
-    get cameraPosition() {
+    get cameraPosition(): vec3 {
         if (this._cameraPositionValid) {
             return this._cameraPosition;
         }
@@ -57,6 +62,18 @@ export class RenderView {
 
         this._cameraPositionValid = true;
         return this._cameraPosition;
+    }
+
+    /** Computes viewProjection matrix and caches it */
+    get viewProjectionMatrix(): Float32Array {
+        if (this._viewProjectionMatrixValid) {
+            return this._viewProjectionMatrix as mat4;
+        }
+        if (!this._viewProjectionMatrix) {
+            this._viewProjectionMatrix = mat4.create();
+        }
+        mat4.multiply(this._viewProjectionMatrix as mat4, this.projectionMatrix as mat4, this.viewMatrix as mat4);
+        return this._viewProjectionMatrix;
     }
 }
 
