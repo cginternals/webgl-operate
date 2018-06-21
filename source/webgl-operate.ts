@@ -7,6 +7,12 @@ export * from './webgl-operate.slim';
 import * as root_properties from './properties';
 export import properties = root_properties;
 
+import * as root_fetch from './fetch';
+export import fetch = root_fetch;
+
+import * as root_raymath from './raymath';
+export import ray_math = root_raymath;
+
 
 // /* DEBUG facilities */
 
