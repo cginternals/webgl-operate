@@ -13,13 +13,13 @@ const pug = require('pug');
 const copy = require('./copy.js');
 
 const websiteDir = './website';
-const distDir = './build';
+const buildDir = './build';
 
 const entries = ['index.pug'];
 
 const assets = [
-    [websiteDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
-    ['./source', distDir, ['data/{colorbrewer,smithwalt}.json'], [], false]
+    [websiteDir, buildDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
+    ['./source', buildDir, ['data/{colorbrewer,smithwalt}.json'], [], false]
 ];
 
 
@@ -30,7 +30,7 @@ function build() {
 
     entries.forEach((entry) => {
         const src = path.join(websiteDir, entry);
-        const dst = path.join(distDir, path.basename(entry, path.extname(entry)) + '.html');
+        const dst = path.join(buildDir, path.basename(entry, path.extname(entry)) + '.html');
 
         if (!fs.existsSync(src)) {
             console.log('skipped:', entry);
