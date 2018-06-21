@@ -66,6 +66,11 @@ export class ColorScale {
      * ColorScale.fromPreset('./colorbrewer.json', 'YlGnBu', 7);
      * ColorScale.fromPreset('./smithwalt.json', 'viridis', 16);
      * ```
+     * And resolving the promise:
+     * ```
+     * var scale = undefined;
+     * gloperate.ColorScale.fromPreset('./data/colorbrewer.json', 'YlGnBu', 5).then((value) => scale = value);
+     * ```
      * @param url - Uniform resource locator string referencing a json file complying to the JSON color schema.
      * @param preset - Name of a preset to choose from the json file.
      * @param stepCount - Number of steps to be used for the resulting color scheme.
