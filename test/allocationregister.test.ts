@@ -6,7 +6,7 @@ const expect = chai.expect;
 import { AllocationRegister } from '../source/allocationregister';
 
 
-describe('AllocationTracker', () => {
+describe('AllocationRegister', () => {
 
     it('should provide unique identifier', () => {
         const tracker = new AllocationRegister();
