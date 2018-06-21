@@ -1,6 +1,4 @@
 
-import { parse } from 'query-string';
-
 /**
  * If true, assertions immediately return on invocation (variable can be set via webpack define plugin).
  */
@@ -174,8 +172,12 @@ namespace auxiliaries {
      *  * @param parameter - Name/identifier of the parameter to query for.
      */
     export function GETparameter(parameter: string): string | undefined {
-        const params = parse(GETsearch());
-        return params[parameter];
+        const re = new RegExp(`${parameter}=([^&]+)`);
+        const match = document.location.search.match(re);
+        if (!match) {
+            return undefined;
+        }
+        return match[1];
     }
 
 }

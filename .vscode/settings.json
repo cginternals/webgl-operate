@@ -5,7 +5,8 @@
     "[json]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4,
-        "editor.autoIndent": false
+        "editor.autoIndent": false,
+        "editor.formatOnSave": false
     },
     "[pug]": {
         "editor.insertSpaces": true,
@@ -55,6 +56,7 @@
         "cmyk",
         "cmyka",
         "cobertura",
+        "colorbrewer",
         "complementation",
         "contextmasquerade",
         "controllable",
@@ -156,6 +158,7 @@
         "vaos",
         "vbos",
         "vertexarray",
+        "viridis",
         "webgl"
     ],
     "cSpell.flagWords": [
