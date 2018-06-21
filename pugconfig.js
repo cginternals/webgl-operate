@@ -18,7 +18,9 @@ const distDir = './build';
 const entries = ['index.pug'];
 
 const assets = [
-    [websiteDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false]];
+    [websiteDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
+    ['./source', distDir, ['data/{colorbrewer,smithwalt}.json'], [], false]
+];
 
 
 var build_pending = false;

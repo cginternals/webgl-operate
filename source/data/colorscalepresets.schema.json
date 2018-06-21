@@ -2,17 +2,20 @@
     "id": "/ColorScalePresets",
     "title": "Color Scale Presets Schema",
     "description": "JSON schema for a color scale presets data, used in the webgl-operate module for validation.",
-    "type": "object",
-    "properties": {
+    "type": "array",
+    "items": { 
+        "type": "object",
+        "properties": {
 
-        "identifier": { "type": "string" },
-        "type": { "type": "string", "enum": [ "sequential", "diverging", "qualitative" ] },
-        "format": { "type": "string", "enum": [ "rgb", "rgbf" ] },
+            "identifier": { "type": "string" },
+            "type": { "type": "string", "enum": [ "sequential", "diverging", "qualitative" ] },
+            "format": { "type": "string", "enum": [ "rgb", "rgbf" ] },
 
-        "colors": { "type": "array", "items": { "type": "array", "items": { "type":  ["integer","number"] } } },
-        "positions": { "type": "array", "items": { "type": "array", "items": { "type":  ["integer","number"] } } }
+            "colors": { "type": "array", "items": { "type": "array", "items": { "type":  ["integer","number"] } } },
+            "positions": { "type": "array", "items": { "type": "array", "items": { "type":  ["integer","number"] } } }
 
-    },
-    "required": [ "identifier", "format", "colors" ],
-    "additionalProperties": false
+        },
+        "required": [ "identifier", "format", "colors" ],
+        "additionalProperties": false
+    }
 }

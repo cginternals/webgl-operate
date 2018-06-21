@@ -77,27 +77,36 @@ export class ColorScale {
         const transform = (data: any): ColorScale | undefined => {
 
             /* Find named preset. */
-            if (!data.hasOwnProperty(preset)) {
+            let p: ColorScale.Preset | undefined;
+            for (const item of data) {
+                if (item.identifier !== preset) {
+                    continue;
+                }
+                p = item as ColorScale.Preset;
+                break;
+            }
+            if (p === undefined) {
                 return undefined;
             }
 
-            const type = (data[preset] as ColorScale.Preset).format;
+            const type = p.format;
             const stride = ColorScale.stride(type);
 
             /* Find best color array match for targeted step count. The best match is either the exact number of
             colors or the largest available number. */
-            const colorsByStepCount = (data[preset] as ColorScale.Preset).colors;
+            const colorsByStepCount = p.colors;
             let index = colorsByStepCount.length - 1;
             for (let i = 0; i < colorsByStepCount.length; ++i) {
                 if (colorsByStepCount[i].length !== stepCount * stride) {
                     continue;
                 }
                 index = i;
+                break;
             }
             const colors = colorsByStepCount[index];
 
             /* Check if there is a matching positions array to the selected color array. */
-            const positionsByStepCount = (data[preset] as ColorScale.Preset).positions;
+            const positionsByStepCount = p.positions;
             if (positionsByStepCount === undefined) {
                 return ColorScale.fromArray(colors, type, stepCount, undefined);
             }
@@ -132,11 +141,11 @@ export class ColorScale {
 
         const array = interleavedColorComponents; // just a shorter handle
         const stride = ColorScale.stride(type);
-        const colors = new Array<Color>(array.length / stride);
-        const size = colors.length;
+        const size = array.length / stride;
+        const colors = new Array<Color>(size);
 
         /* Transform the interleaved array values into instances of Color. */
-        for (let i = 0; i < size; i += stride) {
+        for (let i = 0; i < array.length; i += stride) {
             const color = new Color();
             switch (type) {
                 case ColorScale.ArrayType.RGB:
@@ -153,7 +162,7 @@ export class ColorScale {
                     break;
                 default:
             }
-            colors.push(color);
+            colors[i / stride] = color;
         }
 
         const scale = new ColorScale();
@@ -176,7 +185,7 @@ export class ColorScale {
             positions[0] = 0.0;
 
             for (let i = 1; i < size; ++i) {
-                positions[i] = (size - 1) / i;
+                positions[i] = i / (size - 1);
             }
         }
         assert(positions.length === colors.length, `expected number of positions to match number of colors`);
@@ -187,7 +196,7 @@ export class ColorScale {
 
         /* Compute requested number of colors using linear interpolation of positioned colors. */
         for (let i = 0; i < stepCount; ++i) {
-            const position = i === 0 ? 0 : (stepCount - 1) / i;
+            const position = i === 0 ? 0 : i / (stepCount - 1);
 
             /* If position is before first or after last stop, return that stop respectively. */
             if (position <= positions[lower]) {
@@ -298,7 +307,7 @@ export class ColorScale {
         const bits = new Uint8Array(size * stride);
 
         for (let i = 0; i < size; ++i) {
-            const color = (this.color(i / size) as Color).tuple(space, alpha);
+            const color = this._colors[i].tuple(space, alpha);
             bits[i * stride + 0] = color[0] * 255;
             bits[i * stride + 1] = color[1] * 255;
             bits[i * stride + 2] = color[2] * 255;
@@ -320,7 +329,7 @@ export class ColorScale {
         const bits = new Float32Array(size * stride);
 
         for (let i = 0; i < size; ++i) {
-            const color = (this.color(i / size) as Color).tuple(space, alpha);
+            const color = this._colors[i].tuple(space, alpha);
             bits[i * stride + 0] = color[0];
             bits[i * stride + 1] = color[1];
             bits[i * stride + 2] = color[2];

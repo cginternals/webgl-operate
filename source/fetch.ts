@@ -63,7 +63,7 @@ namespace fetch {
                 }
 
                 const json = request.responseText;
-                if (schema !== undefined && !validate(json, schema, [])) {
+                if (schema !== undefined && !validate(json, schema)) {
                     return;
                 }
 
@@ -76,7 +76,7 @@ namespace fetch {
                 }
 
                 const object = transform(data);
-                if (transform === undefined) {
+                if (object === undefined) {
                     reject(`fetching '${url}' failed (TransformError): transforming the object failed.`);
                     return;
                 }
