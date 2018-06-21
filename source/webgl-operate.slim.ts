@@ -11,7 +11,7 @@ export { EventHandler } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
-export { ColorGradient } from './colorgradient';
+export { ColorScale } from './colorscale';
 export { DefaultFramebuffer } from './defaultframebuffer';
 export { Framebuffer } from './framebuffer';
 export { Geometry } from './geometry';
@@ -54,9 +54,6 @@ export { mat2, mat3, mat4 } from 'gl-matrix';
 
 import * as root_gl_matrix_extensions from './gl-matrix-extensions';
 export import gl_matrix_extensions = root_gl_matrix_extensions;
-
-import * as root_raymath from './raymath';
-export import ray_math = root_raymath;
 
 import * as root_tuples from './tuples';
 export import tuples = root_tuples;
