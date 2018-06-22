@@ -6,32 +6,34 @@
 
 /// https://immersive-web.github.io/webxr/#idl-index
 
-type EventHandler = (ev: Event) => void;
+export type EventHandler = (ev: Event) => void;
 
 /**
  * https://immersive-web.github.io/webxr-reference/webxr-device-api/xr
  * https://immersive-web.github.io/webxr/#xr
  */
-interface XR extends EventTarget {
+export interface XR extends EventTarget {
     requestDevice(): Promise<XRDevice>;
     ondevicechange: EventHandler;
 }
 
-interface Navigator {
-    readonly xr: XR;
+declare global {
+    export interface Navigator {
+        readonly xr: XR;
+    }
 }
 
 /**
  * https://immersive-web.github.io/webxr-reference/webxr-device-api/xrdevice
  * https://immersive-web.github.io/webxr/#xrdevice
  */
-interface XRDevice {
+export interface XRDevice {
     supportsSession(options?: XRSessionCreationOptions): Promise<void>;
     requestSession(options?: XRSessionCreationOptions): Promise<XRSession>;
 }
 
 /** https://immersive-web.github.io/webxr/#dictdef-xrsessioncreationoptions */
-interface XRSessionCreationOptions {
+export interface XRSessionCreationOptions {
     /** Defaults to false. */
     immersive?: boolean;
     outputContext?: XRPresentationContext;
@@ -41,7 +43,7 @@ interface XRSessionCreationOptions {
  * https://immersive-web.github.io/webxr-reference/webxr-device-api/xrsession
  * https://immersive-web.github.io/webxr/#xrsession-interface
  */
-interface XRSession extends EventTarget {
+export interface XRSession extends EventTarget {
     // Attributes
     readonly device: XRDevice;
     readonly immersive: boolean;
@@ -72,9 +74,9 @@ interface XRSession extends EventTarget {
     onselectend: XRInputSourceEventHandler;
 }
 
-type XRFrameRequestCallback = (time: number, frame: XRFrame) => void;
+export type XRFrameRequestCallback = (time: number, frame: XRFrame) => void;
 
-interface XRFrame {
+export interface XRFrame {
     readonly session: XRSession;
     readonly views: Array<XRView>;
 
@@ -82,75 +84,75 @@ interface XRFrame {
     getInputPose(inputSource: XRInputSource, coordinateSystem: XRCoordinateSystem): XRInputPose | null;
 }
 
-interface XRCoordinateSystem extends EventTarget {
+export interface XRCoordinateSystem extends EventTarget {
     getTransformTo(other: XRCoordinateSystem): Float32Array | null;
 }
 
-type XRFrameOfReferenceType = 'head-model' | 'eye-level' | 'stage';
+export type XRFrameOfReferenceType = 'head-model' | 'eye-level' | 'stage';
 
-interface XRFrameOfReferenceOptions {
+export interface XRFrameOfReferenceOptions {
     /** Defaults to false */
     disableStageEmulation: boolean;
     /** Defaults to 0.0 */
     stageEmulationHeight: number;
 }
 
-interface XRFrameOfReference extends XRCoordinateSystem {
+export interface XRFrameOfReference extends XRCoordinateSystem {
     readonly bounds: XRStageBounds | null;
     readonly emulatedHeight: number;
 
     onboundschange: (ev: XRCoordinateSystemEvent) => void;
 }
 
-interface XRStageBounds {
+export interface XRStageBounds {
     readonly geometry: Array<XRStageBoundsPoint>;
 }
 
-interface XRStageBoundsPoint {
+export interface XRStageBoundsPoint {
     readonly x: number;
     readonly z: number;
 }
 
-type XREye = 'left' | 'right';
+export type XREye = 'left' | 'right';
 
-interface XRView {
+export interface XRView {
     readonly eye: XREye;
     readonly projectionMatrix: Float32Array;
 }
 
-interface XRViewport {
+export interface XRViewport {
     readonly x: number;
     readonly y: number;
     readonly width: number;
     readonly height: number;
 }
 
-interface XRDevicePose {
+export interface XRDevicePose {
     readonly poseModelMatrix: Float32Array;
     getViewMatrix(view: XRView): Float32Array;
 }
 
-type XRHandedness = '' | 'left' | 'right';
+export type XRHandedness = '' | 'left' | 'right';
 
-type XRTargetRayMode = 'gazing' | 'pointing' | 'tapping';
+export type XRTargetRayMode = 'gazing' | 'pointing' | 'tapping';
 
-interface XRInputSource {
+export interface XRInputSource {
     readonly handedness: XRHandedness;
     readonly targetRayMode: XRTargetRayMode;
 }
 
-interface XRInputPose {
+export interface XRInputPose {
     readonly emulatedPosition: boolean;
     readonly targetRayMatrix: Float32Array;
     readonly gripMatrix: Float32Array | null;
 }
 
 // tslint:disable-next-line:no-empty-interface
-interface XRLayer { }
+export interface XRLayer { }
 
-type XRWebGLRenderingContext = WebGLRenderingContext | WebGL2RenderingContext;
+export type XRWebGLRenderingContext = WebGLRenderingContext | WebGL2RenderingContext;
 
-interface XRWebGLLayerInit {
+export interface XRWebGLLayerInit {
     /** Default: true */
     antialias: boolean;
     /** Default: false */
@@ -165,7 +167,7 @@ interface XRWebGLLayerInit {
     framebufferScaleFactor: number;
 }
 
-declare class XRWebGLLayer implements XRLayer {
+export declare class XRWebGLLayer implements XRLayer {
     constructor(session: XRSession, context: XRWebGLRenderingContext, layerInit?: XRWebGLLayerInit);
 
     // Attributes
@@ -189,36 +191,39 @@ declare class XRWebGLLayer implements XRLayer {
     static getNativeFramebufferScaleFactor(session: XRSession): number;
 }
 
-interface WebGLContextAttributes {
-    /** Default: null */
-    compatibleXRDevice?: XRDevice | null;
+declare global {
+    export interface WebGLContextAttributes {
+        /** Default: null */
+        compatibleXRDevice?: XRDevice | null;
+    }
 }
 
-interface WebGLRenderingContextBase {
+
+export interface WebGLRenderingContextBase {
     setCompatibleXRDevice(device: XRDevice): Promise<void>;
 }
 
-interface XRPresentationContext {
+export interface XRPresentationContext {
     readonly canvas: HTMLCanvasElement;
 }
 
 // NOTE: ignoring constructors for events
 
-interface XRSessionEvent extends Event {
+export interface XRSessionEvent extends Event {
     readonly frame: XRFrame;
     readonly inputSource: XRInputSource;
 }
 
-type XRSessionEventHandler = (ev: XRSessionEvent) => void;
+export type XRSessionEventHandler = (ev: XRSessionEvent) => void;
 
 
-interface XRInputSourceEvent extends Event {
+export interface XRInputSourceEvent extends Event {
     readonly frame: XRFrame;
     readonly inputSource: XRInputSource;
 }
 
-type XRInputSourceEventHandler = (ev: XRInputSourceEvent) => void;
+export type XRInputSourceEventHandler = (ev: XRInputSourceEvent) => void;
 
-interface XRCoordinateSystemEvent extends Event {
+export interface XRCoordinateSystemEvent extends Event {
     readonly coordinateSystem: XRCoordinateSystem;
 }

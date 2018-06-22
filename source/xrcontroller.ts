@@ -5,6 +5,14 @@ import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Controllable } from './controller';
 import { Renderer } from './renderer';
+import {
+    XRDevice,
+    XRFrame,
+    XRFrameOfReference, XRFrameOfReferenceOptions, XRFrameOfReferenceType,
+    XRSession, XRSessionCreationOptions,
+    XRViewport,
+    XRWebGLLayer, XRWebGLLayerInit,
+} from './webxr';
 
 export function supportsXR(): boolean {
     return navigator.xr !== undefined;
@@ -85,7 +93,7 @@ export class XRController {
 
     // Configuration options for setting up and XR session.
 
-    sessionCreationOptions?: XRSessionCreationOptions;
+    sessionCreationOptions: XRSessionCreationOptions;
     /**
      * Attributes for WebGL context creation. `compatibleXRDevice` will be set
      * automatically after session creation.
@@ -119,7 +127,7 @@ export class XRController {
      * To create a 'magic window', do the same, but with `immersive` set to `false`.
      */
     constructor(sessionOpts?: XRSessionCreationOptions) {
-        this.sessionCreationOptions = sessionOpts;
+        this.sessionCreationOptions = sessionOpts || {};
     }
 
     /**
