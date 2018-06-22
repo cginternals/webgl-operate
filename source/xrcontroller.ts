@@ -11,7 +11,7 @@ import {
     XRFrameOfReference, XRFrameOfReferenceOptions, XRFrameOfReferenceType,
     XRSession, XRSessionCreationOptions,
     XRViewport,
-    XRWebGLLayer, XRWebGLLayerInit,
+    XRWebGLLayerInit,
 } from './webxr';
 
 export function supportsXR(): boolean {
@@ -172,7 +172,8 @@ export class XRController {
         this.canvas = new Canvas(canvasEl, this.contextAttributes, this);
         this.gl = this.canvas.context.gl;
 
-        this.session.baseLayer = new XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
+        // TODO!: how to declare/export XRWebGLLayer properly?
+        this.session.baseLayer = new (window as any).XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
         this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
 
         this.session.requestAnimationFrame(this.onXRFrameCallback);
