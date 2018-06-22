@@ -3,6 +3,8 @@ export { Context } from './context';
 export { Canvas } from './canvas';
 export { Controller } from './controller';
 
+export { Initializable } from './initializable';
+
 export { ContextMasquerade } from './contextmasquerade';
 export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';

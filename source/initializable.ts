@@ -8,7 +8,7 @@ import { assert } from './auxiliaries';
  * is not initialized. It can be initialized only when it is not initialized and uninitialized vice versa. Failure
  * states result in invalid asserts.
  * The initialization status within the inheritor can be asserted using assertInitialized and assertUninitialized.
- *
+ * Note that the use of this class requires decorator support (compilerOptions: experimentalDecorators: true).
  * ```
  * class Test extends Initializable {
  *
