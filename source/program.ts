@@ -12,17 +12,21 @@ import { Shader } from './shader';
  * uniform location retrieval. A program is intended to be used as follows:
  *
  * ```
- * this.program.initialize(
- *  [('screenaligned.vert', require('../shaders/screenaligned.vert'))],
- *  [('blit.frag', require('../shaders/blit.frag'))]);
+ * const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
+ * vert.initialize(require('./shaders/ndcvertices.vert'));
+ * const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag');
+ * frag.initialize(require('./shaders/blit.frag'));
  *
- * this.a_vertex = this.program.attribute('a_vertex');
- * const u_texture = this.program.uniform('u_texture');
+ * this._program = new Program(this._context, 'BlitProgram');
+ * this._program.initialize([vert, frag]);
  *
- * this.program.bind();
- * gl.uniform1i(u_texture, 0);
+ * this.aVertex = this._program.attribute('a_vertex');
+ * const uTexture = this._program.uniform('u_texture');
+ *
+ * this._program.bind();
+ * gl.uniform1i(uTexture, 0);
  * // ... draw
- * this.program.unbind();
+ * this._program.unbind();
  * ```
  */
 export class Program extends AbstractObject<WebGLProgram> implements Bindable {

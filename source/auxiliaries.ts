@@ -74,7 +74,7 @@ namespace auxiliaries {
             return;
         }
 
-        // Note: the parameters are intentionally not forwarded to console.assert since it does not interrupt execution.
+        /* The parameters are intentionally not forwarded to console.assert since it does not interrupt execution. */
         throw new EvalError(message);
     }
 
