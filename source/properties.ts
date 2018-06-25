@@ -78,15 +78,11 @@ namespace properties {
                         /* Invoke recursive defaulting for already defined object with properties. */
                         complement(instance[key], propertySchema);
 
-                    } else if (hasProperties) {
-                        /* Invoke recursive defaulting for not yet defined object with properties. */
-                        Object.defineProperty(instance, key, { value: {} });
-                        complement(instance[key], propertySchema);
-
                     } else if (!isDefined && hasDefault) {
                         /* Default value for not yet defined property. */
                         Object.defineProperty(instance, key, { value: propertySchema['default'] });
                     }
+                    // Don't complement non-existent objects on target tree
                 }
                 break;
 
