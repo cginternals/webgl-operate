@@ -57,6 +57,7 @@ export class Controller {
     protected _batchSize = 1;
     set batch(size: number) {
         log(LogLevel.Dev, `(adaptive) batch multi-frame rendering is experimental for now`);
+        this._batchSize = Math.max(1, size);
     }
 
 
