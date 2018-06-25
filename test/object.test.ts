@@ -56,9 +56,9 @@ describe('Object', () => {
     it('should generate identifier when none is given', () => {
         const context = new ContextMock();
         let object = new ObjectMock(false, context);
-        expect(object.identifier).to.be.equal('ObjectMock');
+        expect(object.identifier).to.be.equal('Object');
         object = new ObjectMock(false, context, '');
-        expect(object.identifier).to.be.equal('ObjectMock');
+        expect(object.identifier).to.be.equal('Object');
     });
 
     it('should create object on initialize', () => {
