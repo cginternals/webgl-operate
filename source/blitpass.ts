@@ -141,7 +141,7 @@ export class BlitPass extends Initializable {
 
 
         if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle (blit)');
+            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Blit');
         } else {
             this._ndcTriangle = ndcTriangle;
             this._ndcTriangleShared = true;
