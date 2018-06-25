@@ -25,15 +25,15 @@ void main(void)
      * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
      * But it is necessary: overlapping glyphs (like in 'ft') should not fight each other
      */
-    //if(d < 0.45)
-    //    discard;
+    // if(d < 0.45)
+    //     discard;
 
-    // vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green
-    vec4 fc = vec4(d, d, d, 1.0); //debug texture
+    vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green
+    // vec4 fc = vec4(d, d, d, 1.0); //debug texture
+        
+    // TODO mipmap access?
+    float a = step(0.5, d); //simplest aastep; when using multiframe sampling, smoothstep is not necessary and will add too much blur
     
-    //TODO mipmap access?
-    // float a = step(0.5, d); //simplest aastep; when using multiframe sampling, smoothstep is not necessary and will add too much blur
-    
-    //fragColor = vec4(fc.rgb, fc.a * a);
+    fragColor = vec4(fc.rgb, fc.a * a);
     fragColor = vec4(fc.rgb, 1.0);
 }

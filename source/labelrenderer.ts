@@ -10,7 +10,7 @@ import { Context } from './context';
 import { DefaultFramebuffer } from './defaultframebuffer';
 import { Framebuffer } from './framebuffer';
 import { MouseEventProvider } from './mouseeventprovider';
-import { NdcFillingTriangle } from './ndcfillingtriangle';
+// import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Renderbuffer } from './renderbuffer';
 import { Invalidate, Renderer } from './renderer';
@@ -21,9 +21,9 @@ import { FontFace } from './fontface';
 import { FontLoader } from './fontloader';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
+import { LabelGeometry } from './LabelGeometry';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
-
 
 import { TestNavigation } from './debug/testnavigation';
 
@@ -36,7 +36,7 @@ export class LabelRenderer extends Renderer {
     protected _ndcOffsetKernel: AntiAliasingKernel;
     protected _uNdcOffset: WebGLUniformLocation;
     protected _uFrameNumber: WebGLUniformLocation;
-    protected _ndcTriangle: NdcFillingTriangle;
+    // protected _ndcTriangle: NdcFillingTriangle;
 
     protected _accumulate: AccumulatePass;
     protected _blit: BlitPass;
@@ -49,7 +49,7 @@ export class LabelRenderer extends Renderer {
     protected _testNavigation: TestNavigation;
 
     protected _fontFace: FontFace;
-
+    protected _labelGeometry: LabelGeometry;
     protected _uGlyphAtlas: WebGLUniformLocation;
 
     protected onInitialize(context: Context, callback: Invalidate,
@@ -89,9 +89,13 @@ export class LabelRenderer extends Renderer {
 
         this._uGlyphAtlas = this._program.uniform('u_glyphs');
 
-        this._ndcTriangle = new NdcFillingTriangle(this._context);
+        this._labelGeometry = new LabelGeometry(this._context);
         const aVertex = this._program.attribute('a_vertex', 0);
-        this._ndcTriangle.initialize(aVertex);
+        this._labelGeometry.initialize(aVertex);
+
+        // this._ndcTriangle = new NdcFillingTriangle(this._context);
+        // const aVertex = this._program.attribute('a_vertex', 0);
+        // this._ndcTriangle.initialize(aVertex);
 
         this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
@@ -108,7 +112,7 @@ export class LabelRenderer extends Renderer {
         /* Create and configure accumulation pass. */
 
         this._accumulate = new AccumulatePass(this._context);
-        this._accumulate.initialize(this._ndcTriangle);
+        this._accumulate.initialize(/*this._ndcTriangle*/);
         this._accumulate.precision = this._framePrecision;
         this._accumulate.texture = this._colorRenderTexture;
         // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
@@ -116,7 +120,7 @@ export class LabelRenderer extends Renderer {
         /* Create and configure blit pass. */
 
         this._blit = new BlitPass(this._context);
-        this._blit.initialize(this._ndcTriangle);
+        this._blit.initialize(/*this._ndcTriangle*/);
         this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
         this._blit.drawBuffer = gl.BACK;
         this._blit.target = this._defaultFBO;
@@ -136,7 +140,7 @@ export class LabelRenderer extends Renderer {
         this._uGlyphAtlas = -1;
         this._program.uninitialize();
 
-        this._ndcTriangle.uninitialize();
+        // this._ndcTriangle.uninitialize();
 
         this._intermediateFBO.uninitialize();
         this._defaultFBO.uninitialize();
@@ -213,13 +217,13 @@ export class LabelRenderer extends Renderer {
         this._fontFace.glyphTexture.bind(gl.TEXTURE0);
         gl.uniform1i(this._uGlyphAtlas, 0);
 
-        // TODO
-        //  labelgeometry.bind();
-        //  labelgeometry.draw();
-
         this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
-        this._ndcTriangle.bind();
-        this._ndcTriangle.draw();
+
+        this._labelGeometry.bind();
+        this._labelGeometry.draw();
+
+        // this._ndcTriangle.bind();
+        // this._ndcTriangle.draw();
         this._intermediateFBO.unbind();
 
         this._accumulate.frame(frameNumber);
@@ -253,10 +257,55 @@ export class LabelRenderer extends Renderer {
 
         // create Label with Text and
         // tell the Typesetter to typeset that Label with the loaded FontFace (using Glyph or Glyph Vertices)
-        const vertices = this.prepareLabel('Hello World!');
+        const glyphVertices = this.prepareLabel('Hello World!');
 
         // make a Geometry out of those vertices (or find another way of sending vertices to shader)
         // TODO labelgeometry
+        const vertices: Array<number> = [];
+        const texCoords: Array<number> = [];
+
+        const l = glyphVertices.length;
+
+        for (let i = 0; i < l; i++) {
+            const v = glyphVertices[i];
+
+            // ll
+            vertices.push(v.origin[0]);
+            vertices.push(v.origin[1]);
+            vertices.push(v.origin[2]);
+            texCoords.push(v.uvRect[0]);
+            texCoords.push(v.uvRect[1]);
+
+            const lr = vec3.create();
+            vec3.add(lr, v.origin, v.tangent);
+            vertices.push(lr[0]);
+            vertices.push(lr[1]);
+            vertices.push(lr[2]);
+            texCoords.push(v.uvRect[2]);
+            texCoords.push(v.uvRect[1]);
+
+            const ul = vec3.create();
+            vec3.add(ul, v.origin, v.up);
+            vertices.push(ul[0]);
+            vertices.push(ul[1]);
+            vertices.push(ul[2]);
+            texCoords.push(v.uvRect[0]);
+            texCoords.push(v.uvRect[3]);
+
+            const ur = vec3.create();
+            vec3.add(ur, lr, v.up);
+            vertices.push(ur[0]);
+            vertices.push(ur[1]);
+            vertices.push(ur[2]);
+            texCoords.push(v.uvRect[2]);
+            texCoords.push(v.uvRect[3]);
+        }
+
+        console.log(this._frameSize);
+
+
+        this._labelGeometry.setVertices(Float32Array.from(vertices));
+        this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
     }
 
     protected prepareLabel(/*userTransform: mat4,*/ str: string /*other params*/): GlyphVertices {
@@ -307,12 +356,17 @@ export class LabelRenderer extends Renderer {
             vertices.push(vertex);
         }
 
-
         Typesetter.typeset(testLabel, vertices, 0);
-
 
         return vertices;
     }
+
+    /**
+     * This is ugly, but it should do the trick for now.
+     * Later, we want to have a labelrenderpass and a labelpositionpass.
+     * The first one bakes the geometry, the second one adapts the placement regarding dynamic placement algorithms.
+     * For now, we will have both as a labelrenderer, and split it up later.
+     */
 }
 
 

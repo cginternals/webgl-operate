@@ -11,6 +11,9 @@ import { Initializable } from './initializable';
  */
 export class LabelGeometry extends Geometry {
 
+    protected _vertices: Float32Array = new Float32Array(0);
+    protected _texCoords: Float32Array = new Float32Array(0);
+
     /**
      * Object constructor, requires a context and an identifier.
      * @param context - Valid context to create the object for.
@@ -23,9 +26,9 @@ export class LabelGeometry extends Geometry {
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
         const vertexVBO = new Buffer(context, identifier + 'VBO');
-        const indexBuffer = new Buffer(context, identifier + 'TexCoordBuffer');
+        const texCoordBuffer = new Buffer(context, identifier + 'TexCoordBuffer');
         this._buffers.push(vertexVBO);
-        this._buffers.push(indexBuffer);
+        this._buffers.push(texCoordBuffer);
     }
 
     /**
@@ -52,28 +55,51 @@ export class LabelGeometry extends Geometry {
     @Initializable.assert_initialized()
     draw(): void {
         const gl = this.context.gl;
-        gl.drawElements(gl.TRIANGLE_STRIP, /* TODO */ 4, gl.UNSIGNED_BYTE, 0);
+        // gl.drawElements(gl.TRIANGLE_STRIP, /* TODO */ 4, gl.UNSIGNED_BYTE, 0);
+        const count = this._texCoords.length / 2; // because a texCoord has 4 values: ll, lr, ul, ur
+        // gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, count);
     }
 
     /**
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
+     * // TODO doesnt really initialize the data!
      * @param aVertex - Attribute binding point for vertices.
      */
     initialize(aVertex: GLuint): boolean {
+
         const gl = this.context.gl;
 
-        // TODO: do not bind index to location 4
-        const valid = super.initialize([gl.ARRAY_BUFFER, gl.ELEMENT_ARRAY_BUFFER], [aVertex, 8]);
+        // TODO: do not bind index to location 4 // why not?
+        const valid = super.initialize([gl.ARRAY_BUFFER, gl.ARRAY_BUFFER], [aVertex, 8]);
+
+        return valid;
+    }
+
+    setVertices(data: Float32Array): void {
 
         assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
             `expected valid WebGLBuffer`);
 
+        this._vertices = data;
+
+        const gl = this.context.gl;
+        // TODO: is DYNAMIC_DRAW more appropriate?
+        this._buffers[0].data(this._vertices, gl.STATIC_DRAW);
+
+    }
+
+    setTexCoords(data: Float32Array): void {
+
         assert(this._buffers[1] !== undefined && this._buffers[1].object instanceof WebGLBuffer,
             `expected valid WebGLBuffer`);
 
-        this._buffers[0].data(/*TODO vertices */, gl.STATIC_DRAW);
-        this._buffers[1].data(/*TODO tex coords*/, gl.STATIC_DRAW);
+        this._texCoords = data;
 
-        return valid;
+        const gl = this.context.gl;
+        // TODO: is DYNAMIC_DRAW more appropriate?
+        this._buffers[1].data(this._texCoords, gl.STATIC_DRAW);
     }
+
+
 }
