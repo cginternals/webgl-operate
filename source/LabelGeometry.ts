@@ -55,10 +55,17 @@ export class LabelGeometry extends Geometry {
     @Initializable.assert_initialized()
     draw(): void {
         const gl = this.context.gl;
+        const count = this._texCoords.length / 2;
+
         // gl.drawElements(gl.TRIANGLE_STRIP, /* TODO */ 4, gl.UNSIGNED_BYTE, 0);
-        const count = this._texCoords.length / 2; // because a texCoord has 4 values: ll, lr, ul, ur
         // gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, count);
+
+        // TODO refactor this for performance! ( = only 1 draw call)
+        for (let i = 0; i < count; i = i + 4) {
+            gl.drawArrays(gl.TRIANGLE_STRIP, i, 4);
+        }
+
+        // gl.drawArrays(gl.TRIANGLE_STRIP, 0, count);
     }
 
     /**

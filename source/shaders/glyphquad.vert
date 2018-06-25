@@ -43,8 +43,8 @@ void main(void)
     v_texture_coord = a_texCoord;
 
     //POSITIONING
-
-    vec4 vertex = vec4(0.003*a_vertex, 1.0);
+    // magic numbers for debugging purpose, as there is no meaningful positioning yet.
+    vec4 vertex = vec4(0.002*a_vertex + vec3(-0.8,0,0), 1.0);
 
     //vertex = u_viewProjection * vertex;
 

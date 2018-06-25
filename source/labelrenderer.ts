@@ -301,9 +301,6 @@ export class LabelRenderer extends Renderer {
             texCoords.push(v.uvRect[3]);
         }
 
-        console.log(this._frameSize);
-
-
         this._labelGeometry.setVertices(Float32Array.from(vertices));
         this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
     }

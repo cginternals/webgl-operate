@@ -5,6 +5,7 @@ import { Context } from './context';
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GLfloat2, GLfloat4 } from './tuples';
+import { Texture2 } from './texture2';
 
 
 type StringPairs = Map<string, string>;
@@ -93,37 +94,41 @@ export class FontLoader {
 
         const pngPath: string = path + file.split('.')[0] + '.png';
 
-        const img = new Image();
-        img.src = pngPath;
 
-        img.onload = () => {
-            onImageLoad();
+        fontFace.glyphTexture.load(pngPath).then(
 
-            const gl = context.gl;
+            function fulfilled(img) {
+                onImageLoad();
+                const gl = context.gl;
 
-            fontFace.glyphTexture.bind();
+                fontFace.glyphTexture.bind();
 
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-            const w: number = img.naturalWidth;
-            const h: number = img.naturalHeight;
+                // const w: number = img.naturalWidth;
+                // const h: number = img.naturalHeight;
 
-            fontFace.glyphTexture.reformat(gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, false, false);
-            fontFace.glyphTexture.resize(w, h, false, false);
-            fontFace.glyphTexture.data(img, false, false);
+                fontFace.glyphTexture.reformat(gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, false, false);
+                // fontFace.glyphTexture.resize(w, h, false, false);
+                // fontFace.glyphTexture.data(img, false, false);
 
-            /**
-             * mipmaps are usually a good idea, but: using Fonts based on Distance Fields and super sampling
-             * (accumulation frames), the rendered Glyph looks more readable when not using mipmaps.
-             * Maybe manually provide mipmaps; smaller than 8x8 could be blank (can't render glyphs that small?)
-             */
-            fontFace.glyphTexture.filter(gl.LINEAR, gl.LINEAR, false, false);
-            fontFace.glyphTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE, false, false);
+                /**
+                 * mipmaps are usually a good idea, but: using Fonts based on Distance Fields and super sampling
+                 * (accumulation frames), the rendered Glyph looks more readable when not using mipmaps.
+                 * Maybe manually provide mipmaps; smaller than 8x8 could be blank (can't render glyphs that small?)
+                 */
+                fontFace.glyphTexture.filter(gl.LINEAR, gl.LINEAR, false, false);
+                fontFace.glyphTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE, false, false);
 
-            fontFace.glyphTexture.unbind();
+                fontFace.glyphTexture.unbind();
 
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-        };
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
+            },
+            function rejected() {
+                console.error('ERROR: Could not load glyph Texture. Image was not found?');
+            }
+        );
     }
 
     protected handleChar(stream: Array<string>, fontFace: FontFace): void {
