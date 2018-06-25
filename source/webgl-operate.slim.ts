@@ -24,6 +24,7 @@ export { Shader } from './shader';
 export { Texture2 } from './texture2';
 export { TextureCube } from './texturecube';
 export { VertexArray } from './vertexarray';
+export { Vertexbuffer } from './vertexbuffer';
 export { Wizard } from './wizard';
 
 export { Camera } from './camera';
