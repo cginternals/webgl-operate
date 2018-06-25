@@ -40,7 +40,7 @@ export abstract class AbstractObject<T> extends Initializable {
     constructor(context: Context, identifier?: string) {
         super();
         this._context = context;
-        this._identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
+        this._identifier = identifier !== undefined && identifier !== `` ? identifier : 'Object';
     }
 
 
