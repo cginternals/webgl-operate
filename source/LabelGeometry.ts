@@ -37,7 +37,7 @@ export class LabelGeometry extends Geometry {
     protected bindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit bind in attribEnable */
         this._buffers[0].attribEnable(indices[0], 3, this.context.gl.FLOAT, false, 0, 0, true, false);
-        this._buffers[1].bind();
+        this._buffers[1].attribEnable(indices[1], 2, this.context.gl.FLOAT, false, 0, 0, true, false);
     }
 
     /**
@@ -46,7 +46,7 @@ export class LabelGeometry extends Geometry {
     protected unbindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit unbind in attribEnable is skipped */
         this._buffers[0].attribDisable(indices[0], true, true);
-        this._buffers[1].unbind();
+        this._buffers[1].attribDisable(indices[1], true, true);
     }
 
     /**
@@ -72,13 +72,14 @@ export class LabelGeometry extends Geometry {
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
      * // TODO doesnt really initialize the data!
      * @param aVertex - Attribute binding point for vertices.
+     * @param aTexCoord - Attribute binding point for texture coordinates.
      */
-    initialize(aVertex: GLuint): boolean {
+    initialize(aVertex: GLuint, aTexCoord: GLuint): boolean {
 
         const gl = this.context.gl;
 
         // TODO: do not bind index to location 4 // why not?
-        const valid = super.initialize([gl.ARRAY_BUFFER, gl.ARRAY_BUFFER], [aVertex, 8]);
+        const valid = super.initialize([gl.ARRAY_BUFFER, gl.ARRAY_BUFFER], [aVertex, aTexCoord]);
 
         return valid;
     }

@@ -91,7 +91,8 @@ export class LabelRenderer extends Renderer {
 
         this._labelGeometry = new LabelGeometry(this._context);
         const aVertex = this._program.attribute('a_vertex', 0);
-        this._labelGeometry.initialize(aVertex);
+        const aTexCoord = this._program.attribute('a_texCoord', 1);
+        this._labelGeometry.initialize(aVertex, aTexCoord);
 
         // this._ndcTriangle = new NdcFillingTriangle(this._context);
         // const aVertex = this._program.attribute('a_vertex', 0);

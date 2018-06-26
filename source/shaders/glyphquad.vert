@@ -40,7 +40,7 @@ varying vec2 v_texture_coord;
 
 void main(void)
 {
-    v_texture_coord = a_texCoord;
+    v_texture_coord = vec2(a_texCoord.x, 1.0-a_texCoord.y);
 
     //POSITIONING
     // magic numbers for debugging purpose, as there is no meaningful positioning yet.

@@ -97,33 +97,8 @@ export class FontLoader {
 
         fontFace.glyphTexture.load(pngPath).then(
 
-            function fulfilled(img) {
+            function fulfilled() {
                 onImageLoad();
-                const gl = context.gl;
-
-                fontFace.glyphTexture.bind();
-
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-                // const w: number = img.naturalWidth;
-                // const h: number = img.naturalHeight;
-
-                fontFace.glyphTexture.reformat(gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, false, false);
-                // fontFace.glyphTexture.resize(w, h, false, false);
-                // fontFace.glyphTexture.data(img, false, false);
-
-                /**
-                 * mipmaps are usually a good idea, but: using Fonts based on Distance Fields and super sampling
-                 * (accumulation frames), the rendered Glyph looks more readable when not using mipmaps.
-                 * Maybe manually provide mipmaps; smaller than 8x8 could be blank (can't render glyphs that small?)
-                 */
-                fontFace.glyphTexture.filter(gl.LINEAR, gl.LINEAR, false, false);
-                fontFace.glyphTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE, false, false);
-
-                fontFace.glyphTexture.unbind();
-
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-
             },
             function rejected() {
                 console.error('ERROR: Could not load glyph Texture. Image was not found?');
