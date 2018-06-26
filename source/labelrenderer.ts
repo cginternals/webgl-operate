@@ -10,7 +10,6 @@ import { Context } from './context';
 import { DefaultFramebuffer } from './defaultframebuffer';
 import { Framebuffer } from './framebuffer';
 import { MouseEventProvider } from './mouseeventprovider';
-// import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Renderbuffer } from './renderbuffer';
 import { Invalidate, Renderer } from './renderer';
@@ -27,7 +26,6 @@ import { Typesetter } from './typesetter';
 
 import { TestNavigation } from './debug/testnavigation';
 
-
 export class LabelRenderer extends Renderer {
 
     protected _extensions = false;
@@ -36,7 +34,6 @@ export class LabelRenderer extends Renderer {
     protected _ndcOffsetKernel: AntiAliasingKernel;
     protected _uNdcOffset: WebGLUniformLocation;
     protected _uFrameNumber: WebGLUniformLocation;
-    // protected _ndcTriangle: NdcFillingTriangle;
 
     protected _accumulate: AccumulatePass;
     protected _blit: BlitPass;
@@ -76,10 +73,8 @@ export class LabelRenderer extends Renderer {
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
         vert.initialize(require('./shaders/glyphquad.vert'));
 
-
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
         frag.initialize(require('./shaders/glyphquad.frag'));
-
 
         this._program = new Program(this._context);
         this._program.initialize([vert, frag]);
@@ -93,10 +88,6 @@ export class LabelRenderer extends Renderer {
         const aVertex = this._program.attribute('a_vertex', 0);
         const aTexCoord = this._program.attribute('a_texCoord', 1);
         this._labelGeometry.initialize(aVertex, aTexCoord);
-
-        // this._ndcTriangle = new NdcFillingTriangle(this._context);
-        // const aVertex = this._program.attribute('a_vertex', 0);
-        // this._ndcTriangle.initialize(aVertex);
 
         this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
@@ -113,7 +104,7 @@ export class LabelRenderer extends Renderer {
         /* Create and configure accumulation pass. */
 
         this._accumulate = new AccumulatePass(this._context);
-        this._accumulate.initialize(/*this._ndcTriangle*/);
+        this._accumulate.initialize();
         this._accumulate.precision = this._framePrecision;
         this._accumulate.texture = this._colorRenderTexture;
         // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
@@ -121,7 +112,7 @@ export class LabelRenderer extends Renderer {
         /* Create and configure blit pass. */
 
         this._blit = new BlitPass(this._context);
-        this._blit.initialize(/*this._ndcTriangle*/);
+        this._blit.initialize();
         this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
         this._blit.drawBuffer = gl.BACK;
         this._blit.target = this._defaultFBO;
@@ -140,8 +131,6 @@ export class LabelRenderer extends Renderer {
         this._uFrameNumber = -1;
         this._uGlyphAtlas = -1;
         this._program.uninitialize();
-
-        // this._ndcTriangle.uninitialize();
 
         this._intermediateFBO.uninitialize();
         this._defaultFBO.uninitialize();
@@ -223,8 +212,6 @@ export class LabelRenderer extends Renderer {
         this._labelGeometry.bind();
         this._labelGeometry.draw();
 
-        // this._ndcTriangle.bind();
-        // this._ndcTriangle.draw();
         this._intermediateFBO.unbind();
 
         this._accumulate.frame(frameNumber);
