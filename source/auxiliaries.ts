@@ -45,15 +45,6 @@ namespace auxiliaries {
     }
 
     /**
-     * Allows to specify whether or not assertions should be enabled or disabled/ignored.
-     * @param enable - If true, assertions will be evaluated and might throw errors.
-     */
-    export function assertions(enable?: boolean): boolean {
-        disableAssertions = !enable;
-        return !disableAssertions;
-    }
-
-    /**
      * Log verbosity levels.
      */
     export enum LogLevel { Debug = 3, Info = 2, Warning = 1, Error = 0 }
@@ -66,18 +57,30 @@ namespace auxiliaries {
      * @param expression - Result of an expression expected to be true.
      * @param message - Message to be passed to the error (if thrown).
      */
-    export let assert = (expression: boolean, message: string): void => {
+    const assertImpl = (expression: boolean, message: string): void => {
         if (expression) {
             return;
         }
-
         /* The parameters are intentionally not forwarded to console.assert since it does not interrupt execution. */
         throw new EvalError(message);
     };
+    const assertEmpty = (expression: boolean, message: string): void => { };
+
+    export let assert = assertImpl;
     if (typeof DISABLE_ASSERTIONS !== 'undefined' && DISABLE_ASSERTIONS) {
-        assert = (expression: boolean, message: string): void => { };
+        assert = assertEmpty;
     }
 
+    /**
+     * Allows to specify whether or not assertions should be enabled or disabled/ignored.
+     * @param enable - If true, assertions will be evaluated and might throw errors.
+     */
+    export function assertions(enable?: boolean): boolean {
+        if (enable !== undefined) {
+            assert = enable ? assertImpl : assertEmpty;
+        }
+        return assert !== assertEmpty;
+    }
 
     /**
      * Writes a warning to the console when the evaluated expression is false.
