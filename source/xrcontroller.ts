@@ -26,18 +26,18 @@ export function supportsXR(): boolean {
 export class RenderView {
     private _cameraPosition = vec3.create();
     private _cameraPositionValid = false; // use extra flag to avoid allocation new vec3's
-    private _inverseViewMatrix: Float32Array;
+    private _inverseViewMatrix: mat4;
 
     // TODO!: Float32Array vs mat4
-    private _projectionMatrix: Float32Array;
+    private _projectionMatrix: mat4;
     get projectionMatrix() {
         return this._projectionMatrix;
     }
-    private _viewMatrix: Float32Array;
+    private _viewMatrix: mat4;
     get viewMatrix() {
         return this._viewMatrix;
     }
-    private _viewProjectionMatrix: Float32Array;
+    private _viewProjectionMatrix: mat4;
     private _viewProjectionMatrixValid = false; // use extra flag to avoid allocation new mat4's
 
     private _viewport: XRViewport;
@@ -46,8 +46,8 @@ export class RenderView {
     }
 
     set(projectionMatrix: Float32Array, viewMatrix: Float32Array, viewport: XRViewport) {
-        this._projectionMatrix = projectionMatrix;
-        this._viewMatrix = viewMatrix;
+        this._projectionMatrix = projectionMatrix as mat4;
+        this._viewMatrix = viewMatrix as mat4;
         this._viewport = viewport;
 
         this._cameraPositionValid = false;
@@ -172,7 +172,7 @@ export class XRController {
         this.canvas = new Canvas(canvasEl, this.contextAttributes, this);
         this.gl = this.canvas.context.gl;
 
-        // TODO!: how to declare/export XRWebGLLayer properly?
+        // TODO!!!: how to declare/export XRWebGLLayer properly?
         this.session.baseLayer = new (window as any).XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
         this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
 
@@ -193,6 +193,7 @@ export class XRController {
     }
 
     onXRFrame(time: number, frame: XRFrame) {
+        // TODO!!!: handle undefined after session end
         this.session!.requestAnimationFrame(this.onXRFrameCallback);
         const gl = this.gl;
 
@@ -216,6 +217,7 @@ export class XRController {
             this.renderer.frame(0, this.renderViews);
         } else {
             // TODO!: how to handle?
+            console.warn('no pose - this is not handled yet.');
         }
     }
 
