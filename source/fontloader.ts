@@ -5,7 +5,6 @@ import { Context } from './context';
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GLfloat2, GLfloat4 } from './tuples';
-import { Texture2 } from './texture2';
 
 
 type StringPairs = Map<string, string>;
@@ -200,6 +199,7 @@ export class FontLoader {
         const fontFace = new FontFace(context);
 
         // asynchronous loading
+        // TODO: refactoring using Promise?
         xmlhttp.open('GET', filename, true);
         xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState === 4) {

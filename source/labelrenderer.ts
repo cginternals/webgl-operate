@@ -27,6 +27,12 @@ import { Typesetter } from './typesetter';
 
 import { TestNavigation } from './debug/testnavigation';
 
+/**
+ * This is ugly, but it should do the trick for now:
+ * Later, we want to have a labelrenderpass and a labelpositionpass.
+ * The first one bakes the geometry, the second one adapts the placement regarding dynamic placement algorithms.
+ * For now, we will have both as a labelrenderer, and split it up later.
+ */
 export class LabelRenderer extends Renderer {
 
     protected _extensions = false;
@@ -262,11 +268,9 @@ export class LabelRenderer extends Renderer {
     protected setupScene(): void {
 
         // create Label with Text and
-        // tell the Typesetter to typeset that Label with the loaded FontFace (using Glyph or Glyph Vertices)
+        // tell the Typesetter to typeset that Label with the loaded FontFace
         const glyphVertices = this.prepareLabel('Hello World!');
 
-        // make a Geometry out of those vertices (or find another way of sending vertices to shader)
-        // TODO labelgeometry
         const vertices: Array<number> = [];
         const texCoords: Array<number> = [];
 
@@ -311,7 +315,7 @@ export class LabelRenderer extends Renderer {
         this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
     }
 
-    protected prepareLabel(/*userTransform: mat4,*/ str: string /*other params*/): GlyphVertices {
+    protected prepareLabel(/*userTransform: mat4,*/ str: string): GlyphVertices {
 
         const testLabel: Label = new Label(new Text(str), this._fontFace);
 
@@ -344,7 +348,6 @@ export class LabelRenderer extends Renderer {
 
         const numGlyphs = testLabel.length;
 
-
         // prepare vertex storage (values will be overridden by typesetter)
         const vertices = new GlyphVertices();
         for (let i = 0; i < numGlyphs; ++i) {
@@ -363,13 +366,6 @@ export class LabelRenderer extends Renderer {
 
         return vertices;
     }
-
-    /**
-     * This is ugly, but it should do the trick for now.
-     * Later, we want to have a labelrenderpass and a labelpositionpass.
-     * The first one bakes the geometry, the second one adapts the placement regarding dynamic placement algorithms.
-     * For now, we will have both as a labelrenderer, and split it up later.
-     */
 }
 
 

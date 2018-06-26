@@ -94,7 +94,6 @@ export class LabelGeometry extends Geometry {
         const gl = this.context.gl;
         // TODO: is DYNAMIC_DRAW more appropriate?
         this._buffers[0].data(this._vertices, gl.STATIC_DRAW);
-
     }
 
     setTexCoords(data: Float32Array): void {
@@ -108,6 +107,5 @@ export class LabelGeometry extends Geometry {
         // TODO: is DYNAMIC_DRAW more appropriate?
         this._buffers[1].data(this._texCoords, gl.STATIC_DRAW);
     }
-
 
 }

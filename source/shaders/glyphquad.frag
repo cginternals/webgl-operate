@@ -31,7 +31,6 @@ void main(void)
 
     vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green
 
-        
     // TODO mipmap access?
     float a = step(0.5, d); //simplest aastep; when using multiframe sampling, smoothstep is not necessary and will add too much blur
     fragColor = vec4(fc.rgb, fc.a * a);
