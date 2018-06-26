@@ -164,7 +164,7 @@ export class AccumulatePass extends Initializable {
     @Initializable.assert_initialized()
     update() {
         if (!this._texture || !this._texture.valid) {
-            log(LogLevel.Dev, `valid texture for accumulation update expected, given ${this._texture}`);
+            log(LogLevel.Warning, `valid texture for accumulation update expected, given ${this._texture}`);
             return;
         }
 
@@ -234,7 +234,7 @@ export class AccumulatePass extends Initializable {
         if (this._passThrough || this._texture === undefined) {
             return;
         }
-        logIf(!this._texture || !this._texture.valid, LogLevel.Dev,
+        logIf(!this._texture || !this._texture.valid, LogLevel.Warning,
             `valid texture for accumulation frame expected, given ${this._texture}`);
 
         const gl = this._context.gl;

@@ -111,7 +111,7 @@ export class Context {
             dataset.backend ? (dataset.backend as string).toLowerCase() : 'auto';
 
         if (!(request in Context.BackendRequestType)) {
-            log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
+            log(LogLevel.Warning, `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
             request = 'auto';
         }
 
@@ -137,7 +137,7 @@ export class Context {
         }
         if (!context) {
             context = this.requestWebGL1(element);
-            logIf(context !== undefined && request === Context.BackendRequestType.webgl2, LogLevel.Dev,
+            logIf(context !== undefined && request === Context.BackendRequestType.webgl2, LogLevel.Info,
                 `backend changed to '${Context.BackendRequestType.webgl}', given '${request}'`);
         }
 
@@ -934,7 +934,7 @@ export class Context {
      * Logs a well formated list of all queried about params (names and associated values).
      * @param verbosity - Log verbosity that is to be used for logging.
      */
-    logAbout(verbosity: LogLevel = LogLevel.Dev) {
+    logAbout(verbosity: LogLevel = LogLevel.Info) {
         const about = this.about();
 
         let maxPNameLength = 0;

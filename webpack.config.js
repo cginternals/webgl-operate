@@ -13,8 +13,10 @@ module.exports = {
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
+            // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
             DISABLE_ASSERTIONS: JSON.stringify(false),
-            LOG_VERBOSITY_THRESHOLD: JSON.stringify(2),
+            // Log verbosity levels: Debug = 3, Info = 2, Warning = 1, Error = 0 
+            LOG_VERBOSITY_THRESHOLD: JSON.stringify(options.mode === 'development' ? 3 : 2),
         })
     ],
     output: {

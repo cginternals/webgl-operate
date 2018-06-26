@@ -15,7 +15,9 @@ namespace auxiliaries {
 
     let disableAssertions: boolean;
     try {
-        disableAssertions = DISABLE_ASSERTIONS;
+        if (typeof DISABLE_ASSERTIONS !== 'undefined') {
+            disableAssertions = DISABLE_ASSERTIONS;
+        }
     } catch (error) {
         disableAssertions = false;
     }
@@ -24,7 +26,7 @@ namespace auxiliaries {
     try {
         logVerbosityThreshold = LOG_VERBOSITY_THRESHOLD;
     } catch (error) {
-        logVerbosityThreshold = 2;
+        logVerbosityThreshold = 3;
     }
 
     /**
@@ -47,19 +49,14 @@ namespace auxiliaries {
      * @param enable - If true, assertions will be evaluated and might throw errors.
      */
     export function assertions(enable?: boolean): boolean {
-        if (enable) {
-            disableAssertions = !enable;
-        }
-        return disableAssertions;
+        disableAssertions = !enable;
+        return !disableAssertions;
     }
 
     /**
-     * Log verbosity levels:
-     *   0: a non dev user should find this information useful
-     *   1: a dev user should find this information useful
-     *   2: a module dev should find this information useful
+     * Log verbosity levels.
      */
-    export enum LogLevel { User, Dev, ModuleDev }
+    export enum LogLevel { Debug = 3, Info = 2, Warning = 1, Error = 0 }
 
     /**
      * Evaluates the provided expression and throws an evaluation error if false.
@@ -69,13 +66,16 @@ namespace auxiliaries {
      * @param expression - Result of an expression expected to be true.
      * @param message - Message to be passed to the error (if thrown).
      */
-    export function assert(expression: boolean, message: string): void {
-        if (disableAssertions || expression) {
+    export let assert = (expression: boolean, message: string): void => {
+        if (expression) {
             return;
         }
 
         /* The parameters are intentionally not forwarded to console.assert since it does not interrupt execution. */
         throw new EvalError(message);
+    };
+    if (typeof DISABLE_ASSERTIONS !== 'undefined' && DISABLE_ASSERTIONS) {
+        assert = (expression: boolean, message: string): void => { };
     }
 
 
@@ -98,10 +98,10 @@ namespace auxiliaries {
     /**
      * Writes a lo message to the console when the evaluated expression is false.
      * ```
-     * logIf(!vec2.equals(this._scale, scale), LogLevel.Dev, `scale changed to ${scale}, given ${this._scale}`);
+     * logIf(!vec2.equals(this._scale, scale), LogLevel.Info, `scale changed to ${scale}, given ${this._scale}`);
      * ```
      * @param expression - Result of an expression expected to be true.
-     * @param verbosity - Verbosity of log level: user, developer, or module developer.
+     * @param verbosity - Verbosity of log level: debug, info, warning, or error.
      * @param message - Message to be passed to the error (if thrown).
      */
     export function logIf(expression: boolean, verbosity: LogLevel, message: string): void {

@@ -8,6 +8,7 @@ chai.use(spies);
 const expect = chai.expect;
 const stub = sinon.stub;
 
+
 import * as aux from '../source/auxiliaries';
 
 
@@ -31,14 +32,14 @@ describe('auxiliaries log and logIf', () => {
 
     it('should not log on false expression', () => {
         const consoleLogStub = stub(console, 'log');
-        aux.logIf(false, aux.LogLevel.User, 'never log');
+        aux.logIf(false, aux.LogLevel.Error, 'never log');
         expect(consoleLogStub.notCalled).to.be.true;
         consoleLogStub.restore();
     });
 
     it('should log on true expression', () => {
         const consoleLogStub = stub(console, 'log');
-        aux.logIf(true, aux.LogLevel.User, 'always log');
+        aux.logIf(true, aux.LogLevel.Error, 'always log');
         expect(consoleLogStub.calledOnce).to.be.true;
 
         consoleLogStub.restore();
@@ -48,14 +49,17 @@ describe('auxiliaries log and logIf', () => {
         let output = '';
         const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
 
-        aux.log(aux.LogLevel.User, 'log level 0');
+        aux.log(aux.LogLevel.Error, 'log level 0');
         expect(output).to.string('[0]');
 
-        aux.log(aux.LogLevel.Dev, 'log level 1');
+        aux.log(aux.LogLevel.Warning, 'log level 1');
         expect(output).to.string('[1]');
 
-        aux.log(aux.LogLevel.ModuleDev, 'log level 2');
+        aux.log(aux.LogLevel.Info, 'log level 2');
         expect(output).to.string('[2]');
+
+        aux.log(aux.LogLevel.Debug, 'log level 3');
+        expect(output).to.string('[3]');
 
         consoleLogStub.restore();
     });
@@ -64,17 +68,20 @@ describe('auxiliaries log and logIf', () => {
         let output = '';
         const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
 
-        aux.log(aux.LogLevel.User, 'log level 0');
+        aux.log(aux.LogLevel.Error, 'log level 0');
         expect(output).to.string('[0]');
 
-        aux.log(aux.LogLevel.Dev, 'log level 1');
+        aux.log(aux.LogLevel.Warning, 'log level 1');
         expect(output).to.string('[1]');
 
-        aux.log(aux.LogLevel.ModuleDev, 'log level 2');
+        aux.log(aux.LogLevel.Info, 'log level 2');
         expect(output).to.string('[2]');
 
+        aux.log(aux.LogLevel.Debug, 'log level 3');
+        expect(output).to.string('[3]');
+
         aux.log(4, 'log level 4');
-        expect(output).to.string('[2]');
+        expect(output).to.string('[3]'); // uses previous output (nothing changed)
 
         const thresholdRestore = aux.logVerbosity();
         aux.logVerbosity(4);

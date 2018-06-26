@@ -379,7 +379,7 @@ export abstract class Renderer extends Initializable implements Controllable {
         if (this._debugTexture === index) {
             return;
         }
-        logIf(index >= this._debugTextures.length, LogLevel.Dev, `invalid texture index, ` +
+        logIf(index >= this._debugTextures.length, LogLevel.Error, `invalid texture index, ` +
             `debug texture disabled (index set to -1) | ${index} not in [-1,+${this._debugTextures.length - 1}]`);
         this._debugTexture = index < this._debugTextures.length ?
             clamp(index, -1, this._debugTextures.length - 1) : -1;

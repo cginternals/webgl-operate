@@ -143,7 +143,7 @@ export class Canvas extends Resizable {
         let dataClearColor: vec4 | undefined;
         if (dataset.clearColor) {
             dataClearColor = parseVec4(dataset.clearColor);
-            logIf(dataClearColor === undefined, LogLevel.Dev,
+            logIf(dataClearColor === undefined, LogLevel.Warning,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
         this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
@@ -153,7 +153,7 @@ export class Canvas extends Resizable {
             dataset.accumulationFormat as Wizard.Precision : Canvas.DEFAULT_FRAME_PRECISION;
         if (!(dataFramePrecision in Wizard.Precision)) {
             dataFramePrecision = Canvas.DEFAULT_FRAME_PRECISION;
-            log(LogLevel.Dev,
+            log(LogLevel.Warning,
                 `unknown frame precision '${dataset.accumulationFormat}' changed to '${dataFramePrecision}'`);
         }
         this._framePrecision = dataFramePrecision;
@@ -174,7 +174,7 @@ export class Canvas extends Resizable {
         let dataMFNum: number | undefined;
         if (dataset.multiFrameNumber) {
             dataMFNum = parseInt(dataset.multiFrameNumber, 10);
-            logIf(isNaN(dataMFNum), LogLevel.Dev,
+            logIf(isNaN(dataMFNum), LogLevel.Warning,
                 `data-multi-frame-number could not be parsed, given '${dataset.multiFrameNumber}'`);
         }
 
@@ -182,7 +182,7 @@ export class Canvas extends Resizable {
         let dataDFNum: number | undefined;
         if (dataset.debugFrameNumber) {
             dataDFNum = parseInt(dataset.debugFrameNumber, 10);
-            logIf(isNaN(dataDFNum), LogLevel.Dev,
+            logIf(isNaN(dataDFNum), LogLevel.Warning,
                 `data-debug-frame-number could not be parsed, given '${dataset.debugFrameNumber}'`);
         }
 
@@ -190,11 +190,11 @@ export class Canvas extends Resizable {
         this._controller.debugFrameNumber = dataDFNum ? dataDFNum : 0;
 
         const mfNumChanged = dataMFNum ? dataMFNum !== this._controller.multiFrameNumber : false;
-        logIf(mfNumChanged, LogLevel.Dev, `data-multi-frame-number changed to `
+        logIf(mfNumChanged, LogLevel.Warning, `data-multi-frame-number changed to `
             + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
 
         const dfNumChanged = dataDFNum ? dataDFNum !== this._controller.debugFrameNumber : false;
-        logIf(dfNumChanged, LogLevel.Dev, `data-debug-frame-number changed to `
+        logIf(dfNumChanged, LogLevel.Warning, `data-debug-frame-number changed to `
             + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
     }
 
@@ -210,7 +210,7 @@ export class Canvas extends Resizable {
         let dataFrameScale: vec2 | undefined;
         if (dataset.frameScale) {
             dataFrameScale = parseVec2(dataset.frameScale);
-            logIf(dataset.frameScale !== undefined && dataFrameScale === undefined, LogLevel.Dev,
+            logIf(dataset.frameScale !== undefined && dataFrameScale === undefined, LogLevel.Warning,
                 `data-frame-scale could not be parsed, given '${dataset.frameScale}'`);
         }
         this._frameScale = dataFrameScale ? tuple2<GLfloat>(dataFrameScale) : [1.0, 1.0];
@@ -219,7 +219,7 @@ export class Canvas extends Resizable {
         let dataFrameSize: vec2 | undefined;
         if (dataset.frameSize) {
             dataFrameSize = parseVec2(dataset.frameSize);
-            logIf(dataset.frameSize !== undefined && dataFrameSize === undefined, LogLevel.Dev,
+            logIf(dataset.frameSize !== undefined && dataFrameSize === undefined, LogLevel.Warning,
                 `data-frame-size could not be parsed, given '${dataset.frameSize}'`);
         }
         this._favorSizeOverScale = dataFrameSize !== undefined;
@@ -421,9 +421,9 @@ export class Canvas extends Resizable {
      */
     set frameScale(frameScale: GLclampf2) {
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
-        logIf(frameScale[0] < 0.0 || frameScale[0] > 1.0, LogLevel.Dev,
+        logIf(frameScale[0] < 0.0 || frameScale[0] > 1.0, LogLevel.Info,
             `frame width scale clamped to [0.0,1.0], given ${frameScale[0]}`);
-        logIf(frameScale[1] < 0.0 || frameScale[1] > 1.0, LogLevel.Dev,
+        logIf(frameScale[1] < 0.0 || frameScale[1] > 1.0, LogLevel.Info,
             `frame height scale clamped to [0.0,1.0], given ${frameScale[0]}`);
 
         const scale = vec2.create();
@@ -477,16 +477,16 @@ export class Canvas extends Resizable {
      * @returns - The frame size in [1, canvas-size].
      */
     set frameSize(frameSize: GLsizei2) {
-        logIf(frameSize[0] < 1 || frameSize[0] > this._size[0], LogLevel.Dev,
+        logIf(frameSize[0] < 1 || frameSize[0] > this._size[0], LogLevel.Info,
             `frame width scale clamped to [1,${this._size[0]}], given ${frameSize[0]}`);
-        logIf(frameSize[1] < 1 || frameSize[1] > this._size[1], LogLevel.Dev,
+        logIf(frameSize[1] < 1 || frameSize[1] > this._size[1], LogLevel.Info,
             `frame height scale clamped to [1, ${this._size[1]}], given ${frameSize[1]}`);
 
         const size = vec2.create();
         clamp2(size, frameSize, [1.0, 1.0], this._size);
         vec2.round(size, size);
 
-        logIf(!vec2.exactEquals(size, frameSize), LogLevel.ModuleDev,
+        logIf(!vec2.exactEquals(size, frameSize), LogLevel.Warning,
             `frame size was adjusted to ${size.toString()}, given ${frameSize.toString()}`);
 
         const scale = vec2.create();

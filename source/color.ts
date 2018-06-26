@@ -258,7 +258,7 @@ export class Color {
         const rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
 
         if (!Color.HEX_FORMAT_REGEX.test(hex)) {
-            log(LogLevel.User, `hexadecimal RGBA color string must conform to either \
+            log(LogLevel.Warning, `hexadecimal RGBA color string must conform to either \
 '0x0000', '#0000', '0000', '0x00000000', '#00000000', or '00000000', given '${hex}'`);
             return rgba;
         }

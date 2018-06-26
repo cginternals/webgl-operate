@@ -167,7 +167,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         /* Check status and cache minimum renderable area. */
         const status: GLenum = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         this._valid = gl.isFramebuffer(this._object) && (status === gl.FRAMEBUFFER_COMPLETE);
-        logIf(!this._valid, LogLevel.Dev, Framebuffer.statusString(this.context, status));
+        logIf(!this._valid, LogLevel.Warning, Framebuffer.statusString(this.context, status));
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
 
@@ -336,7 +336,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             this.context.supportsDrawBuffers, `WebGL2 context expected for clearing multiple color attachments.`);
 
         const alphaIssue: boolean = color[3] < 1.0 && !this.context.alpha;
-        logIf(alphaIssue, LogLevel.Dev, `context has alpha disabled, clear color alpha is ignored`);
+        logIf(alphaIssue, LogLevel.Warning, `context has alpha disabled, clear color alpha is ignored`);
 
         const color2: GLclampf4 = [color[0], color[1], color[2], alphaIssue ? 1.0 : color[3]];
 

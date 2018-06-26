@@ -73,7 +73,7 @@
     },
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
-        "build-watch": "webpack-cli --mode development --watch",
+        "build-watch": "webpack-cli --mode production --watch",
         "start": "http-server ./build -a localhost -p 4000",
         "start-watch": "run-p build-watch pug-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
@@ -81,11 +81,12 @@
         "pug-watch": "node pugconfig.js --watch",
         "cleanup": "rimraf ./dist ./lib ./build",
         "lint": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
-        "test": "nyc mocha",
+        "test": "mocha",
+        "test-nyc": "nyc mocha",
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc source/webgl-operate.ts",
-        "ci": "run-s build-dist build-lib lint test",
+        "ci": "run-s build-dist build-lib lint test-nyc",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
         "prepack": "npm install && run-p build-dist build-lib"
     },

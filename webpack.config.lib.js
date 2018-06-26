@@ -16,12 +16,5 @@ module.exports = (env, options) => {
     config.output.library = undefined;
     config.output.libraryTarget = 'commonjs2';
 
-    if (options.mode == 'production') {
-        config.plugins[0].definitions = {
-            DISABLE_ASSERTIONS: JSON.stringify(true),
-            LOG_VERBOSITY_THRESHOLD: JSON.stringify(0),
-        };
-    }
-
     return config;
 };

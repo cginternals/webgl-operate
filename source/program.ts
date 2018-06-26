@@ -49,7 +49,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
 
         for (const shader of shaders) {
             if (!shader.initialized) {
-                log(LogLevel.Dev, `shader '${shader.identifier}' not initialized.`);
+                log(LogLevel.Error, `shader '${shader.identifier}' not initialized.`);
                 continue;
             }
             gl.attachShader(this._object, shader.object);
@@ -71,7 +71,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
 
         if (!gl.getProgramParameter(this._object, gl.LINK_STATUS)) {
             const infoLog: string = gl.getProgramInfoLog(this._object);
-            log(LogLevel.Dev, `linking of program '${this._identifier}' failed: '${infoLog}'`);
+            log(LogLevel.Error, `linking of program '${this._identifier}' failed: '${infoLog}'`);
             return false;
         }
         return true;
@@ -118,8 +118,8 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
                     break;
             }
         }
-        logIf(numVertShaders < 1, LogLevel.Dev, `at least one vertex shader is expected`);
-        logIf(numFragShaders < 1, LogLevel.Dev, `at least one fragment shader is expected`);
+        logIf(numVertShaders < 1, LogLevel.Error, `at least one vertex shader is expected`);
+        logIf(numFragShaders < 1, LogLevel.Error, `at least one fragment shader is expected`);
         if (numVertShaders < 1 || numFragShaders < 1) {
             return undefined;
         }
