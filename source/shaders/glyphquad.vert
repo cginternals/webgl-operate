@@ -30,7 +30,7 @@ layout(location = 1) in vec2 a_texCoord; // [ texture ll: vec2, ur: vec2 ]
 // layout(location = 10) in vec4 a_transform4;
 #endif
 
-// uniform mat4 u_viewProjection;
+uniform mat4 u_viewProjection;
 uniform vec2 u_ndcOffset;
 
 varying vec2 v_texture_coord;
@@ -46,7 +46,7 @@ void main(void)
     // magic numbers for debugging purpose, as there is no meaningful positioning yet.
     vec4 vertex = vec4(0.002*a_vertex + vec3(-0.8,0,0), 1.0);
 
-    //vertex = u_viewProjection * vertex;
+    vertex = u_viewProjection * vertex;
 
     ndcOffset(vertex, u_ndcOffset);
     gl_Position = vertex;

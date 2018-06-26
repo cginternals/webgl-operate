@@ -6,6 +6,7 @@ import { mat4, vec3, vec4 } from 'gl-matrix';
 import { AccumulatePass } from './accumulatepass';
 import { AntiAliasingKernel } from './antialiasingkernel';
 import { BlitPass } from './blitpass';
+import { Camera } from './camera';
 import { Context } from './context';
 import { DefaultFramebuffer } from './defaultframebuffer';
 import { Framebuffer } from './framebuffer';
@@ -37,6 +38,9 @@ export class LabelRenderer extends Renderer {
 
     protected _accumulate: AccumulatePass;
     protected _blit: BlitPass;
+
+    protected _camera: Camera;
+    protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
     protected _colorRenderTexture: Texture2;
@@ -81,6 +85,7 @@ export class LabelRenderer extends Renderer {
 
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uFrameNumber = this._program.uniform('u_frameNumber');
+        this._uViewProjection = this._program.uniform('u_viewProjection');
 
         this._uGlyphAtlas = this._program.uniform('u_glyphs');
 
@@ -118,6 +123,13 @@ export class LabelRenderer extends Renderer {
         this._blit.target = this._defaultFBO;
 
         /* Create and configure test navigation. */
+
+        this._camera = new Camera();
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
+        this._camera.near = 0.1;
+        this._camera.far = 8.0;
 
         this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
 
@@ -170,8 +182,12 @@ export class LabelRenderer extends Renderer {
             this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
                 , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
 
+            this._camera.aspect = this._frameSize[0] / this._frameSize[1];
+
         } else if (this._altered.frameSize) {
             this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
+            this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
+            this._camera.aspect = this._frameSize[0] / this._frameSize[1];
         }
 
         if (this._altered.clearColor) {
@@ -203,6 +219,8 @@ export class LabelRenderer extends Renderer {
         ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
         gl.uniform1i(this._uFrameNumber, frameNumber);
+
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
         this._fontFace.glyphTexture.bind(gl.TEXTURE0);
         gl.uniform1i(this._uGlyphAtlas, 0);
