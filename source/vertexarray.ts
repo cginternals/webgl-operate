@@ -127,13 +127,16 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     /**
      * Specifies the memory layout of the buffer for a binding point.
      * @param index - Index of the vertex attribute that is to be setup and enabled.
+     * @param buffer - Buffer to bind.
      * @param size - Number of components per vertex attribute.
      * @param type - Data type of each component in the array.
      * @param normalized - Whether integer data values should be normalized when being casted to a float.
      * @param stride - Offset in bytes between the beginning of consecutive vertex attributes.
      * @param offset - Offset in bytes of the first component in the vertex attribute array.
-     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
-     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
+     * @param bind - Allows to skip binding the vertex array (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the vertex array (e.g., when binding is handled outside).
+     * @param vboBind - Allows to skip binding the buffer (e.g., when binding is handled outside).
+     * @param vboUnbind - Allows to skip unbinding the buffer (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
     attribEnable(index: GLuint, buffer: Buffer, size: GLint, type: GLenum, normalized: GLboolean = false,
