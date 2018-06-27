@@ -96,9 +96,13 @@ export class LabelRenderer extends Renderer {
         this._uGlyphAtlas = this._program.uniform('u_glyphs');
 
         this._labelGeometry = new LabelGeometry(this._context);
-        const aVertex = this._program.attribute('a_vertex', 0);
+        const aVertex = this._program.attribute('a_quadVertex', 0);
         const aTexCoord = this._program.attribute('a_texCoord', 1);
-        this._labelGeometry.initialize(aVertex, aTexCoord);
+        const aOrigin = this._program.attribute('a_origin', 2);
+        const aTan = this._program.attribute('a_tan', 3);
+        const aUp = this._program.attribute('a_up', 4);
+
+        this._labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
 
         this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
@@ -235,6 +239,7 @@ export class LabelRenderer extends Renderer {
 
         this._labelGeometry.bind();
         this._labelGeometry.draw();
+        this._labelGeometry.unbind();
 
         this._intermediateFBO.unbind();
 
@@ -271,47 +276,38 @@ export class LabelRenderer extends Renderer {
         // tell the Typesetter to typeset that Label with the loaded FontFace
         const glyphVertices = this.prepareLabel('Hello World!');
 
-        const vertices: Array<number> = [];
+        const origins: Array<number> = [];
+        const tans: Array<number> = [];
+        const ups: Array<number> = [];
         const texCoords: Array<number> = [];
 
         const l = glyphVertices.length;
 
         for (let i = 0; i < l; i++) {
+            // TODO: shouldn't there be an easier way to achieve this?
+            // concat doesn't work as vec3 apparently is not an Array.
+
             const v = glyphVertices[i];
 
-            // ll
-            vertices.push(v.origin[0]);
-            vertices.push(v.origin[1]);
-            vertices.push(v.origin[2]);
+            origins.push(v.origin[0]);
+            origins.push(v.origin[1]);
+            origins.push(v.origin[2]);
+
+            tans.push(v.tangent[0]);
+            tans.push(v.tangent[1]);
+            tans.push(v.tangent[2]);
+
+            ups.push(v.up[0]);
+            ups.push(v.up[1]);
+            ups.push(v.up[2]);
+
             texCoords.push(v.uvRect[0]);
             texCoords.push(v.uvRect[1]);
-
-            const lr = vec3.create();
-            vec3.add(lr, v.origin, v.tangent);
-            vertices.push(lr[0]);
-            vertices.push(lr[1]);
-            vertices.push(lr[2]);
-            texCoords.push(v.uvRect[2]);
-            texCoords.push(v.uvRect[1]);
-
-            const ul = vec3.create();
-            vec3.add(ul, v.origin, v.up);
-            vertices.push(ul[0]);
-            vertices.push(ul[1]);
-            vertices.push(ul[2]);
-            texCoords.push(v.uvRect[0]);
-            texCoords.push(v.uvRect[3]);
-
-            const ur = vec3.create();
-            vec3.add(ur, lr, v.up);
-            vertices.push(ur[0]);
-            vertices.push(ur[1]);
-            vertices.push(ur[2]);
             texCoords.push(v.uvRect[2]);
             texCoords.push(v.uvRect[3]);
         }
 
-        this._labelGeometry.setVertices(Float32Array.from(vertices));
+        this._labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
         this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
     }
 
