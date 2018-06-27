@@ -56,12 +56,11 @@ Please note the following fixed (allowing patch only) version dependencies, that
 * ES6+ problems (breaks build due to the used UglifyJS only supporting ES5): 
    - `@types/gl-matrix: ~2.3.0,`
    - `gl-matrix: ~2.3.2,`
-   - `query-string: ~5.1.1,`
 * RXJS 5.x peer dependency issues (e.g., to support angular 4.x):
    - `webpack-rxjs-externals: ~1.1.0,`
    - `rxjs: ~5.5.10,`
    - `ts-node: ~5.0.1,`
-* TypeDoc compiler issues (could be resolved by ignoring compile erros in typedocOptions, but ...):
+* TypeDoc compiler issues (could be resolved by ignoring compile errors in typedocOptions, but ...):
    - `@types/sinon: ~4.3.3,`
    - `sinon: ~4.5.0,`
 
