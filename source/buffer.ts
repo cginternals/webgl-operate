@@ -94,50 +94,6 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     }
 
     /**
-     * Specifies the memory layout of the buffer for a binding point.
-     * @param index - Index of the vertex attribute that is to be setup and enabled.
-     * @param size - Number of components per vertex attribute.
-     * @param type - Data type of each component in the array.
-     * @param normalized - Whether integer data values should be normalized when being casted to a float.
-     * @param stride - Offset in bytes between the beginning of consecutive vertex attributes.
-     * @param offset - Offset in bytes of the first component in the vertex attribute array.
-     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
-     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
-     */
-    @Initializable.assert_initialized()
-    attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false,
-        stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
-
-        const gl = this.context.gl;
-        if (bind) {
-            this.bind();
-        }
-        gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
-        gl.enableVertexAttribArray(index);
-        if (unbind) {
-            this.unbind();
-        }
-    }
-
-    /**
-     * Disables a buffer binding point.
-     * @param index - Index of the vertex attribute that is to be disabled.
-     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
-     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
-     */
-    @Initializable.assert_initialized()
-    attribDisable(index: GLuint, bind: boolean = true, unbind: boolean = true): void {
-        const gl = this.context.gl;
-        if (bind) {
-            this.bind();
-        }
-        gl.disableVertexAttribArray(index);
-        if (unbind) {
-            this.unbind();
-        }
-    }
-
-    /**
      * Returns the number of bytes this object approximately allocates on the GPU.
      */
     get bytes() {
