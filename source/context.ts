@@ -42,7 +42,7 @@ export class Context {
     /**
      * Context creation attribute defaults.
      */
-    protected static readonly CONTEXT_ATTRIBUTES = {
+    protected static readonly DEFAULT_ATTRIBUTES = {
         alpha: true,
         antialias: false,
         depth: false,
@@ -100,9 +100,12 @@ export class Context {
      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
      * calls to getContext of an element will return null.
      * @param element - Canvas element to request context from.
+     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
      * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext.
      */
-    static request(element: HTMLCanvasElement): Context {
+    static request(element: HTMLCanvasElement,
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES): Context {
+
         const dataset: DOMStringMap = element.dataset;
         const mask = Context.createMasqueradeFromGETorDataAttribute(dataset);
 
@@ -111,7 +114,8 @@ export class Context {
             dataset.backend ? (dataset.backend as string).toLowerCase() : 'auto';
 
         if (!(request in Context.BackendRequestType)) {
-            log(LogLevel.Warning, `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
+            log(LogLevel.Warning,
+                `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
             request = 'auto';
         }
 
@@ -133,10 +137,10 @@ export class Context {
 
         let context;
         if (request !== Context.BackendRequestType.webgl) {
-            context = this.requestWebGL2(element);
+            context = this.requestWebGL2(element, attributes);
         }
         if (!context) {
-            context = this.requestWebGL1(element);
+            context = this.requestWebGL1(element, attributes);
             logIf(context !== undefined && request === Context.BackendRequestType.webgl2, LogLevel.Info,
                 `backend changed to '${Context.BackendRequestType.webgl}', given '${request}'`);
         }
@@ -148,28 +152,34 @@ export class Context {
     /**
      * Helper that tries to create a WebGL 1 context (requests to 'webgl' and 'experimental-webgl' are made).
      * @param element - Canvas element to request context from.
+     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
      * @returns {WebGLRenderingContext} - WebGL context object or null.
      */
-    protected static requestWebGL1(element: HTMLCanvasElement) {
-        let context = element.getContext(Context.BackendRequestType.webgl, Context.CONTEXT_ATTRIBUTES);
+    protected static requestWebGL1(element: HTMLCanvasElement,
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES) {
+
+        let context = element.getContext(Context.BackendRequestType.webgl, attributes);
         if (context) {
             return context;
         }
-        context = element.getContext(Context.BackendRequestType.experimental, Context.CONTEXT_ATTRIBUTES);
+        context = element.getContext(Context.BackendRequestType.experimental, attributes);
         return context;
     }
 
     /**
      * Helper that tries to create a WebGL 2 context (requests to 'webgl2' and 'experimental-webgl2' are made).
      * @param element - Canvas element to request context from.
+     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
      * @returns {WebGL2RenderingContext} - WebGL2 context object or null.
      */
-    protected static requestWebGL2(element: HTMLCanvasElement) {
-        let context = element.getContext(Context.BackendRequestType.webgl2, Context.CONTEXT_ATTRIBUTES);
+    protected static requestWebGL2(element: HTMLCanvasElement,
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES) {
+
+        let context = element.getContext(Context.BackendRequestType.webgl2, attributes);
         if (context) {
             return context;
         }
-        context = element.getContext(Context.BackendRequestType.experimental2, Context.CONTEXT_ATTRIBUTES);
+        context = element.getContext(Context.BackendRequestType.experimental2, attributes);
         return context;
     }
 
@@ -970,6 +980,7 @@ export class Context {
 }
 
 export namespace Context {
+
     /**
      * Supported OpenGL backend types.
      */
