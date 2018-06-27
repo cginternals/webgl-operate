@@ -1,7 +1,7 @@
 
 import { Validator } from 'jsonschema';
 
-import { assert } from './auxiliaries';
+import { assert, logIf, LogLevel } from './auxiliaries';
 import { ChangeLookup } from './changelookup';
 
 
@@ -24,8 +24,7 @@ namespace properties {
         /* Validate of (sub) schema of given POJO/JSON. */
         const result = validator.validate(instance, schema);
 
-        /** @todo: the assert throws when testing because it's not defined!? */
-        // assert(result.valid === true, `schema expected to be valid:\n${result.toString()}`);
+        logIf(result.valid === true, LogLevel.Warning, `schema expected to be valid:\n${result.toString()}`);
         return result.valid;
     }
 

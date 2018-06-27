@@ -6,17 +6,14 @@ const rxjsExternals = require('webpack-rxjs-externals');
 
 
 module.exports = {
-
     context: __dirname + '/source',
     cache: true,
     entry: { 'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'] },
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
-            // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
             DISABLE_ASSERTIONS: JSON.stringify(false),
-            // Log verbosity levels: Debug = 3, Info = 2, Warning = 1, Error = 0 
-            LOG_VERBOSITY_THRESHOLD: JSON.stringify(options.mode === 'development' ? 3 : 2),
+            LOG_VERBOSITY_THRESHOLD: JSON.stringify(3),
         })
     ],
     output: {

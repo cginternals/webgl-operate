@@ -1,5 +1,5 @@
 
-import { assert, logIf, LogLevel } from './auxiliaries';
+import { assert } from './auxiliaries';
 
 import { GLsizei3 } from './tuples';
 

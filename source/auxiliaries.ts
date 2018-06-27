@@ -13,21 +13,7 @@ declare var LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 /** Namespace that comprises various utils (also cleans up documentation). */
 namespace auxiliaries {
 
-    let disableAssertions: boolean;
-    try {
-        if (typeof DISABLE_ASSERTIONS !== 'undefined') {
-            disableAssertions = DISABLE_ASSERTIONS;
-        }
-    } catch (error) {
-        disableAssertions = false;
-    }
-
-    let logVerbosityThreshold: number;
-    try {
-        logVerbosityThreshold = LOG_VERBOSITY_THRESHOLD;
-    } catch (error) {
-        logVerbosityThreshold = 3;
-    }
+    let logVerbosityThreshold = typeof LOG_VERBOSITY_THRESHOLD !== 'undefined' ? LOG_VERBOSITY_THRESHOLD : 3;
 
     /**
      * Allows to specify the log verbosity. The default verbosity depends on the bundle type, e.g., a production bundle
