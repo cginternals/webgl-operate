@@ -112,6 +112,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /** @callback Invalidate
      * A callback intended to be invoked whenever the specialized renderer itself or one of its objects is invalid. This
      * callback should be passed during initialization to all objects that might handle invalidation internally as well.
+     * As a result, rendering of a new frame will be triggered and enforced.
      */
     @Initializable.assert_initialized()
     protected invalidate(force: boolean = false): void {
@@ -164,23 +165,31 @@ export abstract class Renderer extends Initializable implements Controllable {
 
 
     /**
-     * Actual update call specified by inheritor.
-     * @returns - whether to redraw
+     * Actual update call specified by inheritor. This is invoked in order to check if rendering of a frame is required
+     * by means of implementation specific evaluation (e.g., lazy non continuous rendering). Regardless of the return
+     * value a new frame (preparation, frame, swap) might be invoked anyway, e.g., when update is forced or canvas or
+     * context properties have changed or the renderer was invalidated @see{@link invalidate}.
+     * @returns - Whether to redraw
      */
     protected abstract onUpdate(): boolean;
 
     /**
-     * Actual prepare call specified by inheritor.
+     * Actual prepare call specified by inheritor. This is invoked in order to prepare rendering of one or more frames.
+     * This should be used for rendering preparation, e.g., when using multi-frame rendering this might specify uniforms
+     * that do not change for every intermediate frame.
      */
     protected abstract onPrepare(): void;
 
     /**
-     * Actual frame call specified by inheritor.
+     * Actual frame call specified by inheritor. After (1) update and (2) preparation are invoked, a frame is invoked.
+     * This should be used for actual rendering implementation.
      */
     protected abstract onFrame(frameNumber: number): void;
 
     /**
-     * Actual swap call specified by inheritor.
+     * Actual swap call specified by inheritor. After (1) update, (2) preparation, and (3) frame are invoked, a swap
+     * might be invoked. In case of experimental batch rendering when using multi-frame a swap might be withhold for
+     * multiple frames.
      */
     protected abstract onSwap(): void;
 
