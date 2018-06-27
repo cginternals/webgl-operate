@@ -18,7 +18,10 @@ const distDir = './build';
 const entries = ['index.pug'];
 
 const assets = [
-    [websiteDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false]];
+    [websiteDir, distDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
+    ['./source/data/', distDir+'/data', ['*'], [], false],
+    ['./source/data/opensansr144', distDir+'/data/opensansr144', ['*'], [], false],
+    ['./source/data/verdana', distDir+'/data/verdana', ['*'], [], false]];
 
 
 var build_pending = false;
