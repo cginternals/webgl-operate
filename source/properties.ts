@@ -24,7 +24,7 @@ namespace properties {
         /* Validate of (sub) schema of given POJO/JSON. */
         const result = validator.validate(instance, schema);
 
-        logIf(result.valid === true, LogLevel.Warning, `schema expected to be valid:\n${result.toString()}`);
+        logIf(!result.valid, LogLevel.Warning, `schema expected to be valid:\n${result.toString()}`);
         return result.valid;
     }
 
