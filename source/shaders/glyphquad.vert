@@ -28,25 +28,24 @@ varying vec2 v_texture_coord;
 void main(void)
 {
     //TEXTURE COORDS
+    // flip y coordinates
 
     float posX = a_texCoord[0];
     float posY = a_texCoord[1];
 
     float pos2X = a_texCoord[2];
     float pos2Y = a_texCoord[3];
-    vec2 texExt = vec2(pos2X-posX, pos2Y-posY);
+    vec2 texExt = vec2(pos2X-posX, posY-pos2Y);
 
-    v_texture_coord = a_quadVertex * texExt + a_texCoord.xy;
-    //v_texture_coord = vec2(a_texCoord.x, 1.0-a_texCoord.y);
+    v_texture_coord = a_quadVertex * texExt + vec2(a_texCoord[0], 1.0-a_texCoord[1]);
 
     //POSITIONING
+    // quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex)
+
+
+    vec4 vertex = a_quadVertex.x*vec4(a_tan, 1.0) + a_quadVertex.y*vec4(a_up, 1.0) + vec4(a_origin, 0.0);
     // magic numbers for debugging purpose, as there is no meaningful positioning yet.
-    // vec4 vertex = vec4(0.002*a_vertex + vec3(-0.8,0,0), 1.0);
-
-    //quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex)
-
-    vec4 vertex = vec4(a_quadVertex, 0.0, 1.0) * (vec4(a_tan, 1.0) + vec4(a_up, 1.0)) + vec4(a_origin, 0.0);
-    vertex = u_viewProjection * ( vertex * 0.002 + vec4(-0.8, 0, 0, 0) );
+    vertex = u_viewProjection * ( vec4(vec3(vertex * 0.001), 1.0) + vec4(-0.8, 0, 0, 0) );
 
     ndcOffset(vertex, u_ndcOffset);
     gl_Position = vertex;

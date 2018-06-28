@@ -222,6 +222,9 @@ export class LabelRenderer extends Renderer {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+        // gl.enable(gl.POLYGON_OFFSET_FILL);
+        // gl.polygonOffset(-1, 1); // avoid z-fighting with other geometry
+
         this._program.bind();
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
@@ -250,6 +253,8 @@ export class LabelRenderer extends Renderer {
         if (!wasBlendEnabled) {
             gl.disable(gl.BLEND);
         }
+
+        // gl.disable(gl.POLYGON_OFFSET_FILL);
     }
 
     protected onSwap(): void {
@@ -307,8 +312,8 @@ export class LabelRenderer extends Renderer {
             texCoords.push(v.uvRect[3]);
         }
 
-        this._labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
         this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
+        this._labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
     }
 
     protected prepareLabel(/*userTransform: mat4,*/ str: string): GlyphVertices {
