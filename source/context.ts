@@ -941,10 +941,9 @@ export class Context {
     }
 
     /**
-     * Logs a well formated list of all queried about params (names and associated values).
-     * @param verbosity - Log verbosity that is to be used for logging.
+     * Creates a well formated about string, e.g., for logging.
      */
-    logAbout(verbosity: LogLevel = LogLevel.Info) {
+    aboutString(): string {
         const about = this.about();
 
         let maxPNameLength = 0;
@@ -953,7 +952,7 @@ export class Context {
         }
 
         let index = 0;
-        let message = `about\n\n`;
+        let message = ``;
 
         const extensionSeparator = this.isWebGL2 ? 46 + WEBGL2_DEFAULT_EXTENSIONS.length : -1;
         for (const tuple of about) {
@@ -974,7 +973,15 @@ export class Context {
         }
         message += `\n`;
 
-        log(verbosity, message);
+        return message;
+    }
+
+    /**
+     * Logs a well formated list of all queried about params (names and associated values).
+     * @param verbosity - Log verbosity that is to be used for logging.
+     */
+    logAbout(verbosity: LogLevel = LogLevel.Info) {
+        log(verbosity, `context.about\n\n` + this.aboutString());
     }
 
 }
