@@ -11,8 +11,6 @@ import { Initializable } from './initializable';
  */
 export class LabelGeometry extends Geometry {
 
-    private _bindIndices: Array<GLuint>;
-
     protected _vertices: Float32Array = new Float32Array(0);
     protected _texCoords: Float32Array = new Float32Array(0);
     protected _origins: Float32Array = new Float32Array(0);
@@ -48,8 +46,6 @@ export class LabelGeometry extends Geometry {
     protected bindBuffers(indices: Array<GLuint>): void {
         const gl = this.context.gl;
         const gl2facade = this.context.gl2facade;
-
-        this._bindIndices = indices;
 
         /* Please note the implicit bind in attribEnable */
         // quadVertex
@@ -88,25 +84,11 @@ export class LabelGeometry extends Geometry {
         const gl = this.context.gl;
         const count = this._origins.length / 3;
 
-        // gl.drawElements(gl.TRIANGLE_STRIP, /* TODO */ 4, gl.UNSIGNED_BYTE, 0);
-        // gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
-
-        this.bindBuffers(this._bindIndices);
-
         this.context.gl2facade.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
-
-        this.unbindBuffers(this._bindIndices);
-
-        // for (let i = 0; i < count; i = i + 4) {
-        //     gl.drawArrays(gl.TRIANGLE_STRIP, i, 4);
-        // }
-
-        // gl.drawArrays(gl.TRIANGLE_STRIP, 0, count);
     }
 
     /**
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
-     * // TODO doesnt really initialize the data!
      * @param aQuadVertex - Attribute binding point for vertices.
      * @param aTexCoord - Attribute binding point for texture coordinates.
      * @param aOrigin - Attribute binding point for glyph origin coordinates
@@ -117,7 +99,6 @@ export class LabelGeometry extends Geometry {
 
         const gl = this.context.gl;
 
-        // TODO: do not bind index to location 4 // why not?
         const valid = super.initialize(
             [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER]
             , [aQuadVertex, aTexCoord, aOrigin, aTan, aUp]);
@@ -130,6 +111,13 @@ export class LabelGeometry extends Geometry {
         return valid;
     }
 
+    /**
+     * Use this method to set (or update) the glyph coordinates, e.g. after typesetting or after the calculations
+     * of a placement algorithm.
+     * @param dataOrigin xyz-coordinates of the lower left corner of every glyph
+     * @param dataTan tangent vector for every glyph (direction along base line)
+     * @param dataUp up vector for every glyph (orthogonal to its tangent vector)
+     */
     setGlyphCoords(dataOrigin: Float32Array, dataTan: Float32Array, dataUp: Float32Array): void {
 
         assert(this._buffers[2] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
@@ -151,6 +139,10 @@ export class LabelGeometry extends Geometry {
         this._buffers[4].data(this._ups, gl.STATIC_DRAW);
     }
 
+    /**
+     * Use this method to set (or update) the texture coordinates for every glyph, e.g. after typesetting.
+     * @param data The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y
+     */
     setTexCoords(data: Float32Array): void {
 
         assert(this._buffers[1] !== undefined && this._buffers[1].object instanceof WebGLBuffer,

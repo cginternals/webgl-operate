@@ -28,7 +28,7 @@ varying vec2 v_texture_coord;
 void main(void)
 {
     //TEXTURE COORDS
-    // flip y coordinates
+    // flip y-coordinates
 
     float posX = a_texCoord[0];
     float posY = a_texCoord[1];
@@ -41,7 +41,6 @@ void main(void)
 
     //POSITIONING
     // quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex)
-
 
     vec4 vertex = a_quadVertex.x*vec4(a_tan, 1.0) + a_quadVertex.y*vec4(a_up, 1.0) + vec4(a_origin, 0.0);
     // magic numbers for debugging purpose, as there is no meaningful positioning yet.
