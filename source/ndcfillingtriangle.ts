@@ -65,8 +65,7 @@ export class NdcFillingTriangle extends Geometry {
      */
     protected bindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit bind in attribEnable */
-        this._vertexArray.attribEnable(indices[0], this._buffers[0], 2, this.context.gl.FLOAT,
-            false, 0, 0, true, false);
+        this._buffers[0].attribEnable(indices[0], 2, this.context.gl.FLOAT, false, 0, 0, true, false);
         this._aVertex = indices[0];
     }
 
@@ -75,7 +74,7 @@ export class NdcFillingTriangle extends Geometry {
      */
     protected unbindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit unbind in attribEnable is skipped */
-        this._vertexArray.attribDisable(indices[0], true, true);
+        this._buffers[0].attribDisable(indices[0], true, true);
     }
 
 
