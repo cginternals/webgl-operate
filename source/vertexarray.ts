@@ -135,8 +135,8 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
      * @param offset - Offset in bytes of the first component in the vertex attribute array.
      * @param bind - Allows to skip binding the vertex array (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the vertex array (e.g., when binding is handled outside).
-     * @param vboBind - Allows to skip binding the buffer (e.g., when binding is handled outside).
-     * @param vboUnbind - Allows to skip unbinding the buffer (e.g., when binding is handled outside).
+     * @param bindBuffer - Allows to skip binding the buffer (e.g., when binding is handled outside).
+     * @param unbindBuffer - Allows to skip unbinding the buffer (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
     attribEnable(index: GLuint, buffer: Buffer, size: GLint, type: GLenum, normalized: GLboolean = false,
