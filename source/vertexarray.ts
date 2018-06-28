@@ -141,24 +141,22 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     @Initializable.assert_initialized()
     attribEnable(index: GLuint, buffer: Buffer, size: GLint, type: GLenum, normalized: GLboolean = false,
         stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true,
-        vboBind = true, vboUnbind = true): void {
+        bindBuffer = true, unbindBuffer = true): void {
 
         const gl = this.context.gl;
         if (bind) {
             this.bind();
         }
-
-        if (vboBind) {
+        if (bindBuffer) {
             buffer.bind();
         }
 
         gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
         gl.enableVertexAttribArray(index);
 
-        if (vboUnbind) {
+        if (unbindBuffer) {
             buffer.unbind();
         }
-
         if (unbind) {
             this.unbind();
         }
