@@ -926,14 +926,14 @@ export class Context {
 
         if (this.isWebGL1) {
             for (const extension of WEBGL1_EXTENSIONS) {
-                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : '']);
+                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : 'ns']);
             }
         } else if (this.isWebGL2) {
             for (const extension of WEBGL2_DEFAULT_EXTENSIONS) {
                 pNamesAndValues.push([`${extension} (default)`, 'ok']);
             }
             for (const extension of WEBGL2_EXTENSIONS) {
-                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : '']);
+                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : 'ns']);
             }
         }
 
