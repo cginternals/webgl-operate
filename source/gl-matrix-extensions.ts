@@ -226,6 +226,11 @@ namespace gl_matrix_extensions {
      * @returns - Three component vector based on x.
      */
     export function fromVec4(x: vec4): vec3 {
+        if (x[3] === 0) {
+            // avoid division by 0
+            return vec3.fromValues(x[0], x[1], x[2]);
+        }
+
         return vec3.fromValues(x[0] / x[3], x[1] / x[3], x[2] / x[3]);
     }
 
