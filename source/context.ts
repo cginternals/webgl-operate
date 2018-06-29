@@ -821,11 +821,17 @@ export class Context {
      */
     about(): Array<[string, number | string]> {
 
+        const available = 'ok';
+        const unavailable = 'na';
+
         if (this._backend === Context.BackendType.Invalid) {
             return new Array<[string, number | string]>();
         }
 
         const pNamesAndValues = new Array<[string, number | string]>();
+
+        pNamesAndValues.push(['BACKEND (GLOPERATE)', this.backend as Context.BackendType]);
+        pNamesAndValues.push(['CONTEXT_HASH (GLOPERATE)', this.hash()]);
 
         pNamesAndValues.push(['RENDERER',
             this._context.getParameter(this._context.RENDERER)]);
@@ -836,8 +842,10 @@ export class Context {
         pNamesAndValues.push(['SHADING_LANGUAGE_VERSION',
             this._context.getParameter(this._context.SHADING_LANGUAGE_VERSION)]);
 
-        pNamesAndValues.push(['BACKEND (GLOPERATE)', this.backend as Context.BackendType]);
-        pNamesAndValues.push(['CONTEXT_HASH (GLOPERATE)', this.hash()]);
+        pNamesAndValues.push(['UNMASKED_VENDOR_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
+            this._context.getParameter(this.debugRendererInfo.UNMASKED_VENDOR_WEBGL)]);
+        pNamesAndValues.push(['UNMASKED_RENDERER_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
+            this._context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
 
         pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
             this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
@@ -926,14 +934,14 @@ export class Context {
 
         if (this.isWebGL1) {
             for (const extension of WEBGL1_EXTENSIONS) {
-                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : 'ns']);
+                pNamesAndValues.push([extension, this.supports(extension) ? available : unavailable]);
             }
         } else if (this.isWebGL2) {
             for (const extension of WEBGL2_DEFAULT_EXTENSIONS) {
-                pNamesAndValues.push([`${extension} (default)`, 'ok']);
+                pNamesAndValues.push([`${extension} (default)`, available]);
             }
             for (const extension of WEBGL2_EXTENSIONS) {
-                pNamesAndValues.push([extension, this.supports(extension) ? 'ok' : 'ns']);
+                pNamesAndValues.push([extension, this.supports(extension) ? available : unavailable]);
             }
         }
 
@@ -958,10 +966,11 @@ export class Context {
         for (const tuple of about) {
             /* Provide some semantic grouping: Core, Limits, Extensions, ... */
             switch (index) {
-                case 4:  // End of Core Context Info
-                case 6:  // End of Backend and Context Hash
-                case 18: // End of WebGL 1 Limits
-                case 46: // End of WebGL 2 Limit, start of extensions
+                case 2:  // End of Backend and Context Hash
+                case 6:  // End of Core Context Info
+                case 8:  // End of Backend and Context Hash
+                case 20: // End of WebGL 1 Limits
+                case 48: // End of WebGL 2 Limit, start of extensions
                 case extensionSeparator: // End of default Extensions (in case of WebGL2) or -1
                     message += `\n`;
                     break;

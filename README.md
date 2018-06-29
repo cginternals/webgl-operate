@@ -23,7 +23,7 @@ npm install --save-dev webgl-operate
 ```
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.2/dist/webgl-operate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.3/dist/webgl-operate.min.js"></script>
 ```
 
 ## Features
