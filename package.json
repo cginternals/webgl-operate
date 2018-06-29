@@ -74,7 +74,7 @@
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
         "build-watch": "webpack-cli --mode production --watch",
-        "start": "http-server ./build -a localhost -p 4000",
+        "start": "http-server ./build -a localhost -c-1",
         "start-watch": "run-p build-watch pug-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
