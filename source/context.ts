@@ -842,9 +842,9 @@ export class Context {
         pNamesAndValues.push(['SHADING_LANGUAGE_VERSION',
             this._context.getParameter(this._context.SHADING_LANGUAGE_VERSION)]);
 
-        pNamesAndValues.push(['UNMASKED_VENDOR_WEBGL', !this.debugRendererInfo ? unavailable :
+        pNamesAndValues.push(['UNMASKED_VENDOR_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
             this._context.getParameter(this.debugRendererInfo.UNMASKED_VENDOR_WEBGL)]);
-        pNamesAndValues.push(['UNMASKED_RENDERER_WEBGL', !this.debugRendererInfo ? unavailable :
+        pNamesAndValues.push(['UNMASKED_RENDERER_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
             this._context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
 
         pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
