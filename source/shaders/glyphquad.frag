@@ -29,7 +29,7 @@ void main(void)
     if(d < 0.45)
         discard;
 
-    vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green, TODO: font color as vertex attrib or uniform?
+    vec4 fc = vec4(0.0, 0.0, 0.0, 1.0); //black. TODO: font color as vertex attrib or uniform?
 
     // TODO mipmap access?
     float a = step(0.5, d); //simplest aastep; when using multiframe sampling, smoothstep is not necessary and will add too much blur

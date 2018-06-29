@@ -281,10 +281,11 @@ export class LabelRenderer extends Renderer {
         // tell the Typesetter to typeset that Label with the loaded FontFace
 
         const userTransform = mat4.create();
-        mat4.translate(userTransform, userTransform, vec3.fromValues(-1, 0.0, 0));
+        mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
         mat4.rotateX(userTransform, userTransform, Math.PI * -0.4);
         mat4.rotateY(userTransform, userTransform, Math.PI * 0.2);
         mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
+        mat4.translate(userTransform, userTransform, vec3.fromValues(-1, 0.0, 0));
         let glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
 
         glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
