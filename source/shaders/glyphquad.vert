@@ -42,9 +42,9 @@ void main(void)
     //POSITIONING
     // quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex)
 
-    vec4 vertex = a_quadVertex.x*vec4(a_tan, 1.0) + a_quadVertex.y*vec4(a_up, 1.0) + vec4(a_origin, 0.0);
-    // magic numbers for debugging purpose, as there is no meaningful positioning yet.
-    vertex = u_viewProjection * ( vec4(vec3(vertex * 0.001), 1.0) + vec4(-0.8, 0, 0, 0) );
+    vec4 vertex = vec4(a_quadVertex, 0.0, 1.0) * (vec4(a_tan, 1.0) + vec4(a_up, 1.0)) + vec4(a_origin, 0.0);
+
+    vertex = u_viewProjection * vertex;
 
     ndcOffset(vertex, u_ndcOffset);
     gl_Position = vertex;

@@ -1,5 +1,5 @@
 
-import { mat4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from './changelookup';
 import { Color } from './color';
@@ -29,6 +29,9 @@ export class Label {
     /** @see {@link lineWidth} */
     protected _lineWidth = 0.0;
 
+    /** @see {@link fontSize} */
+    protected _fontSize = 50.0;
+
 
     /** @see {@link fontFace} */
     protected _fontFace: FontFace;
@@ -45,7 +48,7 @@ export class Label {
 
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, color: false, resources: false, text: false, typesetting: false, transformation: false,
+        any: false, color: false, resources: false, text: false, typesetting: false, transform: false,
     });
 
     /**
@@ -200,6 +203,21 @@ export class Label {
     }
 
     /**
+     * Font Size in pt or px // TODO unit??
+     */
+    set fontSize(newSize: number) {
+        if (this._fontSize === newSize) {
+            return;
+        }
+        this._altered.alter('typesetting');
+        this._altered.alter('transform');
+        this._fontSize = newSize;
+    }
+    get fontSize(): number {
+        return this._fontSize;
+    }
+
+    /**
      * Font face used for typesetting, transformation, and rendering.
      */
     set fontFace(fontFace: FontFace) {
@@ -256,6 +274,10 @@ export class Label {
         this._transform = transform;
     }
     get transform(): mat4 {
+
+        const s = this._fontSize / this._fontFace.size;
+        mat4.scale(this._transform, this._transform, vec3.fromValues(s, s, s));
+
         return this._transform;
     }
 
