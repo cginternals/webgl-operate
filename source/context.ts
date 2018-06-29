@@ -849,14 +849,14 @@ export class Context {
             this._context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
 
         /* Actual Context Attributes. */
-        pNamesAndValues.push(['ALPHA (ATTRIBUTE)', this._context.alpha as string]);
-        pNamesAndValues.push(['ANTIALIAS (ATTRIBUTE)', this._context.antialias as string]);
-        pNamesAndValues.push(['DEPTH (ATTRIBUTE)', this._context.depth as string]);
+        pNamesAndValues.push(['ALPHA (ATTRIBUTE)', String(this.alpha)]);
+        pNamesAndValues.push(['ANTIALIAS (ATTRIBUTE)', String(this.antialias)]);
+        pNamesAndValues.push(['DEPTH (ATTRIBUTE)', String(this.depth)]);
         pNamesAndValues.push(['FAIL_IF_MAJOR_PERFORMANCE_CAVEAT (ATTRIBUTE)',
-            this._context.failIfMajorPerformanceCaveat as string]);
-        pNamesAndValues.push(['PREMULTIPLIED_ALPHA (ATTRIBUTE)', this._context.premultipliedAlpha as string]);
-        pNamesAndValues.push(['PRESERVE_DRAWING_BUFFER (ATTRIBUTE)', this._context.preserveDrawingBuffer as string]);
-        pNamesAndValues.push(['STENCIL (ATTRIBUTE)', this._context.stencil as string]);
+            String(this.failIfMajorPerformanceCaveat)]);
+        pNamesAndValues.push(['PREMULTIPLIED_ALPHA (ATTRIBUTE)', String(this.premultipliedAlpha)]);
+        pNamesAndValues.push(['PRESERVE_DRAWING_BUFFER (ATTRIBUTE)', String(this.preserveDrawingBuffer)]);
+        pNamesAndValues.push(['STENCIL (ATTRIBUTE)', String(this.stencil)]);
 
         /* Window Info. */
         pNamesAndValues.push(['DEVICE_PIXEL_RATIO (WINDOW)', window.devicePixelRatio]);
