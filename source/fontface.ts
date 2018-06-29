@@ -66,7 +66,7 @@ export class FontFace {
 
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
         this._glyphTexture = new Texture2(context, identifier + 'GlyphAtlas');
-        const internalFormat = Wizard.queryInternalTextureFormat(context, gl.RGBA, 'byte');
+        const internalFormat = Wizard.queryInternalTextureFormat(context, gl.RGBA, Wizard.Precision.byte);
         this._glyphTexture.initialize(1, 1, internalFormat[0], gl.RGBA, internalFormat[1]);
     }
 
