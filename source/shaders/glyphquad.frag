@@ -27,7 +27,7 @@ void main(void)
      * But it is necessary: overlapping glyphs (like in 'ft') should not fight each other
      */
     if(d < 0.45)
-         discard;
+        discard;
 
     vec4 fc = vec4(0.0, 1.0, 0.0, 1.0); //debug color green, TODO: font color as vertex attrib or uniform?
 

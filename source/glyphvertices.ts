@@ -35,9 +35,9 @@ export interface GlyphVertex {
  */
 export class GlyphVertices extends Array<GlyphVertex> {
 
-    optimize() {
+    // optimize() {
 
-    }
+    // }
 
 }
 

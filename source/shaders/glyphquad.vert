@@ -42,7 +42,7 @@ void main(void)
     //POSITIONING
     // quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex)
 
-    vec4 vertex = vec4(a_quadVertex, 0.0, 1.0) * (vec4(a_tan, 1.0) + vec4(a_up, 1.0)) + vec4(a_origin, 0.0);
+    vec4 vertex = vec4(a_origin + a_quadVertex.x*a_tan + a_quadVertex.y*a_up, 1.0);
 
     vertex = u_viewProjection * vertex;
 

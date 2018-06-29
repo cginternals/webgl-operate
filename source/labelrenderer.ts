@@ -279,7 +279,15 @@ export class LabelRenderer extends Renderer {
 
         // create Label with Text and
         // tell the Typesetter to typeset that Label with the loaded FontFace
-        const glyphVertices = this.prepareLabel('Hello World!');
+
+        const userTransform = mat4.create();
+        mat4.translate(userTransform, userTransform, vec3.fromValues(-1, 0.0, 0));
+        mat4.rotateX(userTransform, userTransform, Math.PI * -0.4);
+        mat4.rotateY(userTransform, userTransform, Math.PI * 0.2);
+        mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
+        let glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
+
+        glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
 
         const origins: Array<number> = [];
         const tans: Array<number> = [];
@@ -316,7 +324,7 @@ export class LabelRenderer extends Renderer {
         this._labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
     }
 
-    protected prepareLabel(/*userTransform: mat4,*/ str: string): GlyphVertices {
+    protected prepareLabel(str: string, userTransform?: mat4): GlyphVertices {
 
         const testLabel: Label = new Label(new Text(str), this._fontFace);
 
@@ -349,12 +357,8 @@ export class LabelRenderer extends Renderer {
         vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
         mat4.translate(transform, transform, v3);
 
-        // let userTransform = mat4.create();
-        // mat4.translate(userTransform, userTransform, vec3.fromValues(-1, 0.0, 0));
-        // mat4.rotateZ(userTransform, userTransform, Math.PI * 0.3);
-
-        // testLabel.transform = mat4.mul(testLabel.transform, userTransform, transform);
-        testLabel.transform = transform;
+        testLabel.transform = mat4.mul(testLabel.transform,
+            userTransform !== undefined ? userTransform : mat4.create(), transform);
 
         const numGlyphs = testLabel.length;
 
