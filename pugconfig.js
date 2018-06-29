@@ -22,7 +22,7 @@ const assets = [
     ['./source', buildDir, ['data/{colorbrewer,smithwalt}.json'], [], false],
     ['./source/data/', buildDir+'/data', ['*'], [], false],
     ['./source/data/opensansr144', buildDir+'/data/opensansr144', ['*'], [], false],
-    ['./source/data/verdana', buildDir+'/data/verdana', ['*'], [], false]];
+    ['./source/data/verdana', buildDir+'/data/verdana', ['*'], [], false],
     ['./node_modules/rxjs/bundles/', `${buildDir}/js`, ['rxjs.umd.min.js'], [], false]];
 
 
