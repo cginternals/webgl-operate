@@ -1,13 +1,11 @@
 {
     "name": "webgl-operate",
-    "version": "0.2.5",
+    "version": "0.3.2",
     "license": "MIT",
     "description": "A TypeScript based WebGL rendering framework.",
     "author": "CG Internals",
     "homepage": "https://webgl-operate.org",
     "jsdelivr": "./dist/webgl-operate.js",
-    "main": "./lib/webgl-operate.js",
-    "types": "./lib/webgl-operate.d.ts",
     "bugs": {
         "email": "contact@cginternals.com",
         "url": "https://github.com/cginternals/webgl-operate/issues"
@@ -16,6 +14,11 @@
         "type": "git",
         "url": "https://github.com/cginternals/webgl-operate.git"
     },
+    "main": "./lib/webgl-operate.js",
+    "types": "./lib/webgl-operate.d.ts",
+    "sideEffects": [
+        "./source/polyfill.ts"
+    ],
     "contributors": [
         {
             "name": "Daniel Limberger",
@@ -31,61 +34,61 @@
         }
     ],
     "devDependencies": {
-        "@types/chai": "~4.1.2",
-        "@types/chai-spies": "~0.0.0",
-        "@types/gl-matrix": "~2.4.0",
-        "@types/mocha": "~5.0.0",
-        "@types/query-string": "~5.1.0",
-        "@types/sinon": "~4.3.0",
+        "@types/chai": "~4.1.3",
+        "@types/chai-spies": "~0.0.1",
+        "@types/gl-matrix": "~2.3.0",
+        "@types/mocha": "~5.2.1",
+        "@types/sinon": "~4.3.3",
         "chai": "~4.1.2",
         "chai-spies": "~1.0.0",
-        "concurrently": "~3.5.1",
-        "coveralls": "~3.0.0",
-        "cross-env": "~5.1.4",
-        "gl-matrix": "~2.4.0",
+        "coveralls": "~3.0.1",
+        "cross-env": "~5.2.0",
+        "gl-matrix": "~2.3.2",
         "glob": "~7.1.2",
         "http-server": "~0.11.1",
-        "jsonschema": "^1.2.4",
-        "mocha": "~5.0.5",
+        "jsonschema": "~1.2.4",
+        "mocha": "~5.2.0",
         "mocha-junit-reporter": "~1.17.0",
         "mocha-multi-reporters": "~1.1.7",
-        "nyc": "~11.6.0",
+        "npm-run-all": "~4.1.3",
+        "nyc": "~12.0.2",
         "pug": "~2.0.3",
-        "query-string": "~6.0.0",
         "rimraf": "~2.6.2",
+        "rxjs": "~6.2.1",
         "sinon": "~4.5.0",
-        "source-map-support": "~0.5.4",
-        "ts-loader": "~4.1.0",
+        "source-map-support": "~0.5.6",
+        "ts-loader": "~4.4.1",
         "ts-node": "~5.0.1",
-        "tslint": "~5.9.1",
+        "tslint": "~5.10.0",
         "typedoc": "~0.11.1",
-        "typescript": "~2.8.1",
-        "webpack": "^4.4.1",
-        "webpack-bundle-analyzer": "~2.11.1",
-        "webpack-cli": "~2.0.13",
-        "webpack-glsl-loader": "~1.0.1"
+        "typescript": "~2.9.1",
+        "webpack": "~4.12.2",
+        "webpack-bundle-analyzer": "~2.13.1",
+        "webpack-cli": "~3.0.2",
+        "webpack-glsl-loader": "~1.0.1",
+        "webpack-rxjs-externals": "~2.0.0"
     },
     "peerDependencies": {
-        "rxjs": "~5.5.8"
+        "rxjs": "~6.2.1"
     },
-    "sideEffects": [
-        "./source/polyfill.ts"
-    ],
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
+        "build-watch": "webpack-cli --mode production --watch",
         "start": "http-server ./build -a localhost -p 4000",
-        "start-watch": "concurrently \"webpack-cli --mode development --watch\" \"node pugconfig.js --watch\" \"npm run-script start\"",
+        "start-watch": "run-p build-watch pug-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
+        "pug-watch": "node pugconfig.js --watch",
         "cleanup": "rimraf ./dist ./lib ./build",
         "lint": "tslint --project tsconfig.json --force --format stylish --config tslint.json",
-        "test": "nyc mocha",
+        "test": "mocha",
+        "test-nyc": "nyc mocha",
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
-        "doc": "typedoc --hideGenerator --readme README.md --target ES6 --module commonjs --mode file --out dist/doc/ source/",
-        "ci": "npm run-script build-dist && npm run-script build-lib && npm run-script lint && npm run-script test",
-        "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.dist.js",
-        "prepack": "npm install && concurrently \"npm run-script build-dist\" \"npm run-script build-lib\""
+        "doc": "typedoc source/webgl-operate.ts",
+        "ci": "run-s build-dist build-lib lint test-nyc",
+        "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
+        "prepack": "npm install && run-p build-dist build-lib"
     },
     "keywords": [
         "webgl",
@@ -94,6 +97,12 @@
         "engine",
         "2d",
         "3d",
-        "multiframe"
+        "multiframe",
+        "path-tracing",
+        "ray-tracing",
+        "ray-marching",
+        "voxel",
+        "glTF",
+        "viewer"
     ]
 }

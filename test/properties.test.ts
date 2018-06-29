@@ -137,10 +137,7 @@ describe('Property complementation', () => {
         let object: any = {};
         complement(object, schema);
 
-        expect(object).to.haveOwnProperty('foo');
-        expect(object.foo).to.haveOwnProperty('bar');
-        expect(object.foo.bar).to.equal(2.0);
-        expect(object.foo).to.not.haveOwnProperty('baz');
+        expect(object).to.not.haveOwnProperty('foo');
 
         object = { foo: {} };
         complement(object, schema);
@@ -175,9 +172,7 @@ describe('Property complementation', () => {
 
         expect(object[0]).to.haveOwnProperty('foo');
         expect(object[0].foo).to.equal('baz');
-        expect(object[0]).to.haveOwnProperty('bar');
-        expect(object[0].bar).to.haveOwnProperty('baz');
-        expect(object[0].bar.baz).to.equal(5);
+        expect(object[0]).to.not.haveOwnProperty('bar');
 
         consoleLogStub.restore();
     });

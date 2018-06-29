@@ -1,6 +1,4 @@
 
-import { parse } from 'query-string';
-
 /**
  * If true, assertions immediately return on invocation (variable can be set via webpack define plugin).
  */
@@ -15,28 +13,27 @@ declare var LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 /** Namespace that comprises various utils (also cleans up documentation). */
 namespace auxiliaries {
 
-    export let disableAssertions: boolean;
-    try {
-        disableAssertions = DISABLE_ASSERTIONS;
-    } catch (error) {
-        disableAssertions = false;
-    }
-
-    export let logVerbosityThreshold: number;
-    try {
-        logVerbosityThreshold = LOG_VERBOSITY_THRESHOLD;
-    } catch (error) {
-        logVerbosityThreshold = 2;
-    }
-
+    let logVerbosityThreshold = typeof LOG_VERBOSITY_THRESHOLD !== 'undefined' ? LOG_VERBOSITY_THRESHOLD : 3;
 
     /**
-     * Log verbosity levels:
-     *   0: a non dev user should find this information useful
-     *   1: a dev user should find this information useful
-     *   2: a module dev should find this information useful
+     * Allows to specify the log verbosity. The default verbosity depends on the bundle type, e.g., a production bundle
+     * might use a verbosity of 1, a local development bundle might favor a verbosity of 2. Even though verbosity levels
+     * can be used arbitrarily, a verbosity of 0 is intended for user info only, 1 for developers, and 2 for developers
+     * of this module. However, this semantic breaks when reusing this logging mechanism in other modules as well...
+     * @param verbosity - Log level threshold, -1:disabled, 0:user, 1:developer, and 2:module developer.
+     * @returns - The current log verbosity.
      */
-    export enum LogLevel { User, Dev, ModuleDev }
+    export function logVerbosity(verbosity?: number): number {
+        if (verbosity !== undefined) {
+            logVerbosityThreshold = Math.max(-1, verbosity);
+        }
+        return logVerbosityThreshold;
+    }
+
+    /**
+     * Log verbosity levels.
+     */
+    export enum LogLevel { Debug = 3, Info = 2, Warning = 1, Error = 0 }
 
     /**
      * Evaluates the provided expression and throws an evaluation error if false.
@@ -46,15 +43,30 @@ namespace auxiliaries {
      * @param expression - Result of an expression expected to be true.
      * @param message - Message to be passed to the error (if thrown).
      */
-    export function assert(expression: boolean, message: string): void {
-        if (disableAssertions || expression) {
+    const assertImpl = (expression: boolean, message: string): void => {
+        if (expression) {
             return;
         }
-
-        // Note: the parameters are intentionally not forwarded to console.assert since it does not interrupt execution.
+        /* The parameters are intentionally not forwarded to console.assert since it does not interrupt execution. */
         throw new EvalError(message);
+    };
+    const assertEmpty = (expression: boolean, message: string): void => { };
+
+    export let assert = assertImpl;
+    if (typeof DISABLE_ASSERTIONS !== 'undefined' && DISABLE_ASSERTIONS) {
+        assert = assertEmpty;
     }
 
+    /**
+     * Allows to specify whether or not assertions should be enabled or disabled/ignored.
+     * @param enable - If true, assertions will be evaluated and might throw errors.
+     */
+    export function assertions(enable?: boolean): boolean {
+        if (enable !== undefined) {
+            assert = enable ? assertImpl : assertEmpty;
+        }
+        return assert !== assertEmpty;
+    }
 
     /**
      * Writes a warning to the console when the evaluated expression is false.
@@ -75,10 +87,10 @@ namespace auxiliaries {
     /**
      * Writes a lo message to the console when the evaluated expression is false.
      * ```
-     * logIf(!vec2.equals(this._scale, scale), LogLevel.Dev, `scale changed to ${scale}, given ${this._scale}`);
+     * logIf(!vec2.equals(this._scale, scale), LogLevel.Info, `scale changed to ${scale}, given ${this._scale}`);
      * ```
      * @param expression - Result of an expression expected to be true.
-     * @param verbosity - Verbosity of log level: user, developer, or module developer.
+     * @param verbosity - Verbosity of log level: debug, info, warning, or error.
      * @param message - Message to be passed to the error (if thrown).
      */
     export function logIf(expression: boolean, verbosity: LogLevel, message: string): void {
@@ -120,7 +132,7 @@ namespace auxiliaries {
     /**
      * Tests if specific bits are set in a given bitfield and returns true if so, false otherwise.
      */
-    export function bitInBitfield(flags: GLbitfield, flag: GLbitfield): boolean {
+    export function bitInBitfield(flags: GLbitfield, flag: GLbitfield | undefined): boolean {
         if (flag === undefined) {
             return false;
         }
@@ -149,8 +161,12 @@ namespace auxiliaries {
      *  * @param parameter - Name/identifier of the parameter to query for.
      */
     export function GETparameter(parameter: string): string | undefined {
-        const params = parse(GETsearch());
-        return params[parameter];
+        const re = new RegExp(`${parameter}=([^&]+)`);
+        const match = document.location.search.match(re);
+        if (!match) {
+            return undefined;
+        }
+        return match[1];
     }
 
 }

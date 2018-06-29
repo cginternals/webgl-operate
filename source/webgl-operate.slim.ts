@@ -3,6 +3,8 @@ export { Context } from './context';
 export { Canvas } from './canvas';
 export { Controller } from './controller';
 
+export { Initializable } from './initializable';
+
 export { ContextMasquerade } from './contextmasquerade';
 export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
@@ -11,6 +13,7 @@ export { EventHandler } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
+export { ColorScale } from './colorscale';
 export { DefaultFramebuffer } from './defaultframebuffer';
 export { Framebuffer } from './framebuffer';
 export { Geometry } from './geometry';
@@ -49,11 +52,11 @@ export { LabelRenderer } from './labelrenderer';
 import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;
 
+export { vec2, vec3, vec4 } from 'gl-matrix';
+export { mat2, mat3, mat4 } from 'gl-matrix';
+
 import * as root_gl_matrix_extensions from './gl-matrix-extensions';
 export import gl_matrix_extensions = root_gl_matrix_extensions;
-
-import * as root_raymath from './raymath';
-export import ray_math = root_raymath;
 
 import * as root_tuples from './tuples';
 export import tuples = root_tuples;

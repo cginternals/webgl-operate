@@ -111,7 +111,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
         this._object = gl.createFramebuffer();
 
-        // Initialize clearing.
+        /* Initialize clearing. */
 
         this._clearColors = new Array<GLclampf4>(gl2facade.COLOR_ATTACHMENT_MAX - gl2facade.COLOR_ATTACHMENT0);
         this._clearDepth = 1.0;
@@ -119,7 +119,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
         this.clear = this.context.isWebGL1 ? this.es2Clear : this.es3Clear;
 
-        // Classify color attachments in textures and renderbuffer.
+        /* Classify color attachments in textures and renderbuffer. */
 
         for (const tuple of attachments) {
             const attachment = tuple[0];
@@ -135,19 +135,19 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
                 continue;
             }
 
-            // Queue color attachments for color clearing.
+            /* Queue color attachments for color clearing. */
             this._drawBuffers.push(attachment);
 
-            // Derive the draw buffer index as GLint is required for clearBuffer
+            /* Derive the draw buffer index as GLint is required for clearBuffer. */
             const index = attachment - gl.COLOR_ATTACHMENT0;
             this._colorClearQueue.push(index as GLint);
-            // setup default clear color (required in webgl2 or drawBuffers extension)
+            /* Setup default clear color (required in webgl2 or drawBuffers extension). */
             this._clearColors[index] = [0.0, 0.0, 0.0, 0.0];
         }
         this._drawBuffersChanged = true;
 
 
-        // Setup attachments.
+        /* Setup attachments. */
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._object);
 
@@ -164,10 +164,10 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         }
 
 
-        // Check status and cache minimum renderable area.
+        /* Check status and cache minimum renderable area. */
         const status: GLenum = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         this._valid = gl.isFramebuffer(this._object) && (status === gl.FRAMEBUFFER_COMPLETE);
-        logIf(!this._valid, LogLevel.Dev, Framebuffer.statusString(this.context, status));
+        logIf(!this._valid, LogLevel.Warning, Framebuffer.statusString(this.context, status));
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
 
@@ -254,7 +254,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         }
 
         if (clearColor) {
-            // Multiple color attachments either by WebGL2 or WEBGL_draw_buffers can be expected.
+            /* Multiple color attachments either by WebGL2 or WEBGL_draw_buffers can be expected. */
             for (const drawBuffer of colorClearQueue ? colorClearQueue : this._colorClearQueue) {
                 gl.clearBufferfv(gl.COLOR, drawBuffer, this._clearColors[drawBuffer]);
             }
@@ -336,12 +336,12 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             this.context.supportsDrawBuffers, `WebGL2 context expected for clearing multiple color attachments.`);
 
         const alphaIssue: boolean = color[3] < 1.0 && !this.context.alpha;
-        logIf(alphaIssue, LogLevel.Dev, `context has alpha disabled, clear color alpha is ignored`);
+        logIf(alphaIssue, LogLevel.Warning, `context has alpha disabled, clear color alpha is ignored`);
 
         const color2: GLclampf4 = [color[0], color[1], color[2], alphaIssue ? 1.0 : color[3]];
 
         if (this.context.premultipliedAlpha && !alphaIssue) {
-            // premultiply alpha
+            /* Premultiply alpha. */
             color2[0] *= color2[3];
             color2[1] *= color2[3];
             color2[2] *= color2[3];

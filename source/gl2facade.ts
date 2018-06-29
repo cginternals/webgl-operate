@@ -2,7 +2,7 @@
 
 import { assert } from './auxiliaries';
 
-import { BackendType, Context } from './context';
+import { Context } from './context';
 
 
 export type TexImage2DData = GLintptr | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
@@ -53,12 +53,12 @@ export class GL2Facade {
      */
     protected queryHalfFloatSupport(context: Context): void {
         switch (context.backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 this._halfFloat = context.supportsTextureHalfFloat && context.textureHalfFloat ?
                     context.textureHalfFloat.HALF_FLOAT_OES : undefined;
                 break;
 
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
             /* falls through */
             default:
                 this._halfFloat = context.gl.HALF_FLOAT;
@@ -161,7 +161,7 @@ export class GL2Facade {
          * This maps the various default color attachment identifier to a unified interface.
          */
         switch (context.backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 const drawBuffers = context.supportsDrawBuffers ? context.drawBuffers : undefined;
 
                 this._colorAttachmentMin = this._colorAttachments[0];
@@ -178,7 +178,7 @@ export class GL2Facade {
                 }
                 break;
 
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
             /* falls through */
             default:
                 this._colorAttachmentMin = context.gl.COLOR_ATTACHMENT0;

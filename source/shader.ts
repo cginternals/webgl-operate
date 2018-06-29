@@ -70,7 +70,7 @@ export class Shader extends AbstractObject<WebGLShader> {
 
         if (!gl.getShaderParameter(this._object, gl.COMPILE_STATUS)) {
             const infoLog: string = gl.getShaderInfoLog(this._object);
-            log(LogLevel.Dev, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
+            log(LogLevel.Error, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
 
             this.delete();
             return undefined;

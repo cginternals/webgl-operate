@@ -77,7 +77,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: ArrayBufferView, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
+    data(data: ArrayBufferView | ArrayBuffer, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
@@ -149,9 +149,9 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * Target to which the buffer object is bound (either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER).
      * Readonly access to the target (as specified on initialization) the buffer will be bound to.
      */
-    get target(): GLenum {
+    get target(): GLenum | undefined {
         this.assertInitialized();
-        return this._target as GLenum;
+        return this._target;
     }
 
 }

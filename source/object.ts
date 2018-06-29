@@ -40,7 +40,7 @@ export abstract class AbstractObject<T> extends Initializable {
     constructor(context: Context, identifier?: string) {
         super();
         this._context = context;
-        this._identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
+        this._identifier = identifier !== undefined && identifier !== `` ? identifier : 'Object';
     }
 
 
@@ -70,7 +70,7 @@ export abstract class AbstractObject<T> extends Initializable {
 
         if (!this._valid) {
             this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
-            log(LogLevel.Dev, `initialization of '${this._identifier}' failed`);
+            log(LogLevel.Error, `initialization of '${this._identifier}' failed`);
         }
         return this._valid;
     }

@@ -2,18 +2,12 @@
 
 *webgl-operate* (or *[gloperate](https://github.com/cginternals/gloperate) for WebGL*) is a TypeScript based WebGL rendering framework.
 
-
-[![Travis](https://img.shields.io/travis/cginternals/webgl-operate/master.svg?style=flat&logo=travis)](https://travis-ci.org/cginternals/webgl-operate)
-[![Coveralls](https://img.shields.io/coveralls/github/cginternals/webgl-operate.svg?style=flat)](https://coveralls.io/github/cginternals/webgl-operate)
-[![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate)](https://github.com/Aaronepower/tokei)
-[![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate?category=comments)](https://github.com/Aaronepower/tokei)
-[![bitHound](https://img.shields.io/bithound/code/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate)
-[![bitHound](https://img.shields.io/bithound/dependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
-[![bitHound](https://img.shields.io/bithound/devDependencies/github/cginternals/webgl-operate.svg?style=flat&logo=bithound)](https://www.bithound.io/github/cginternals/webgl-operate/master/dependencies/npm)
-
 [![npm Version](https://img.shields.io/npm/v/webgl-operate.svg?style=flat)](https://www.npmjs.com/package/webgl-operate)
 [![Examples](https://img.shields.io/badge/examples-online-blue.svg?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMC41IDEzLjciPjxwYXRoIGQ9Ik0xMS41IDYuOGwtMy43IDYuNEwuNS41aDE0LjdsLTEuMyAyLjFINC4yTDcuOCA5bDIuNS00LjN6bTcuMyA0LjNsMS4yIDIuMWgtOS43TDE3LjYuNWwxLjIgMi4xLTQuOSA4LjV6IiBmaWxsPSIjZmZmIi8%2BPC9zdmc%2B)](https://www.webgl-operate.org)
 [![Documentation](https://img.shields.io/badge/documentation-online-blue.svg?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMC41IDEzLjciPjxwYXRoIGQ9Ik0xMS41IDYuOGwtMy43IDYuNEwuNS41aDE0LjdsLTEuMyAyLjFINC4yTDcuOCA5bDIuNS00LjN6bTcuMyA0LjNsMS4yIDIuMWgtOS43TDE3LjYuNWwxLjIgMi4xLTQuOSA4LjV6IiBmaWxsPSIjZmZmIi8%2BPC9zdmc%2B)](https://www.webgl-operate.org/doc)
+[![Travis](https://img.shields.io/travis/cginternals/webgl-operate/master.svg?style=flat&logo=travis)](https://travis-ci.org/cginternals/webgl-operate)
+[![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate)](https://github.com/Aaronepower/tokei)
+[![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate?category=comments)](https://github.com/Aaronepower/tokei)
 
 *webgl-operate* encapsulates WebGL and provides various rendering capabilities such as common rendering controllers for single-frame and multi-frame rendering, raycasting, or progressive path-tracing as well as a multitude of common rendering processes and shaders. 
 In contrast to most other rendering engines, neither a specific rendering approach/pipeline or style is favored nor a specific use-case is assumed. 
@@ -29,23 +23,16 @@ npm install --save-dev webgl-operate
 ```
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.2.5/dist/webgl-operate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.2/dist/webgl-operate.min.js"></script>
 ```
 
 ## Features
 
-#### 0.1.0 Features
+#### Implemented
 Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Professional Customer Support, Professional Integration Service
  
-#### 0.2.0 Features
-Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Camera Controllers
-
-#### 0.3.0 planned Features
-3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, ...
-
-#### 0.4.0 planned Features
-Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
-
+#### Planned
+Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Camera Controllers, 3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
 
 ## Getting Started
 
@@ -65,7 +52,15 @@ ToDo
 ## Dependencies
 
 *webgl-operate* has currently no non-dev dependencies.
-
+Please note the following fixed (allowing patch only) version dependencies, that should not be updated until further review/evaluation:
+* ES6+ problems (breaks build due to the used UglifyJS only supporting ES5): 
+   - `@types/gl-matrix: ~2.3.0,`
+   - `gl-matrix: ~2.3.2,`
+* Typescript problems
+   - `ts-node: ~5.0.1,` (compilation errors in tests with version 6/7)
+* TypeDoc compiler issues (could be resolved by ignoring compile errors in typedocOptions, but ...):
+   - `@types/sinon: ~4.3.3,`
+   - `sinon: ~4.5.0,`
 
 ## Source Structure
 
@@ -107,7 +102,7 @@ Please note that deployment of documentation and examples is managed by CG Inter
 
 ## Visual Studio Code configuration
 
-"[Visual Studio Code](https://code.visualstudio.com/) is a code editor redefined and optimized for building and debugging modern web and cloud applications." 
+"[Visual Studio Code](https://code.visualstudio.com/) is a code editor redefined and optimized for building and debugging modern web and cloud applications."
 Please not that the workspace configuration `.vscode/settings.json` has automatic format on save enabled.
 
 #### tasks

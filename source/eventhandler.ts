@@ -1,7 +1,8 @@
 
 import { vec2 } from 'gl-matrix';
 
-import { Observable, Subscription } from 'rxjs/Rx';
+import { Observable, Subscription } from 'rxjs';
+
 
 import { assert } from './auxiliaries';
 

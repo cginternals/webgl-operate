@@ -1,10 +1,8 @@
 
-import { assert } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 
-
-export type FramePrecisionString = 'float' | 'half' | 'byte' | 'auto';
 
 /**
  * This wizard provides means for non-trivial, context specific framebuffer setups, texture formats, etc.
@@ -17,10 +15,11 @@ export class Wizard {
      * @param context - Wrapped gl context for function resolution (passed to all stages).
      * @param target - Target format, e.g., gl.RGBA, used to find the supported precision/accuracy for.
      * @param precision - Requested precision of the internal format: 'auto', 'float', 'half', 'byte'.
-     * @returns - 2-tuple containing the internal format and the type (required for some internal formats to work ...).
+     * @returns - 3-tuple containing the (1) internal format, (2) the type (required for some internal formats to work
+     * ...), and (3) the precision enum/string that matches the resulting format best.
      */
     static queryInternalTextureFormat(context: Context, target: GLenum,
-        precision: FramePrecisionString): [GLenum, GLenum] {
+        precision: Wizard.Precision | undefined): [GLenum, GLenum, Wizard.Precision] {
 
         const gl = context.gl;
         const gl2facade = context.gl2facade;
@@ -34,26 +33,38 @@ export class Wizard {
         const halfWriteSupport = (context.isWebGL1 && context.supportsTextureHalfFloat) ||
             (context.isWebGL2 && context.supportsColorBufferFloat);
 
-        let query = precision;
-        if (precision === 'auto') { /* Derive maximum supported write to texture/buffer format. */
-            query = floatWriteSupport ? 'float' : halfWriteSupport ? 'half' : 'byte';
+        if (precision === undefined) {
+            precision = Wizard.Precision.auto;
+        }
+        let query = precision === undefined ? Wizard.Precision.auto : precision;
+
+        if (!(precision in Wizard.Precision)) {
+            log(LogLevel.Warning, `unknown precision '${query}' changed to '${Wizard.Precision.auto}'`);
+            precision = Wizard.Precision.auto;
+        }
+        if (precision === Wizard.Precision.auto) { /* Derive maximum supported write to texture/buffer format. */
+            query = floatWriteSupport ? Wizard.Precision.float : halfWriteSupport ?
+                Wizard.Precision.half : Wizard.Precision.byte;
         }
 
         let type: GLenum;
         let internalFormatIndex: GLint; /* Utility index to reduce tuple return logic (see switch). */
 
         /* Query type and, if required), enable extension. */
-        if (query === 'half' && halfWriteSupport) {
+        if (query === Wizard.Precision.half && halfWriteSupport) {
             /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureHalfFloat;
             type = gl2facade.HALF_FLOAT;
             internalFormatIndex = 1;
-        } else if ((query === 'float' || query === 'half') && floatWriteSupport) {
+
+        } else if ((query === Wizard.Precision.float || query === Wizard.Precision.half)
+            && floatWriteSupport) {
             /* If not explicitly requested, fallback for half_float. */
             /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureFloat;
             type = gl.FLOAT;
             internalFormatIndex = 0;
+
         } else {
             type = gl.UNSIGNED_BYTE;
             internalFormatIndex = 2;
@@ -61,18 +72,29 @@ export class Wizard {
 
         /* In this case, no specialized internal formats are available. */
         if (context.isWebGL1) {
-            return [target, type];
+            return [target, type, query];
         }
 
         switch (target) {
             case gl.RGBA:
-                return [[gl.RGBA32F, gl.RGBA16F, gl.RGBA8][internalFormatIndex], type];
+                return [[gl.RGBA32F, gl.RGBA16F, gl.RGBA8][internalFormatIndex], type, query];
             case gl.RGB:
-                return [[gl.RGB32F, gl.RGB16F, gl.RGB8][internalFormatIndex], type];
+                return [[gl.RGB32F, gl.RGB16F, gl.RGB8][internalFormatIndex], type, query];
             default:
                 assert(false, `internal format querying is not yet supported for formats other than RGBA, RGB`);
         }
-        return [gl.NONE, gl.NONE];
+        return [gl.NONE, gl.NONE, query];
+    }
+
+}
+
+export namespace Wizard {
+
+    export enum Precision {
+        float = 'float',
+        half = 'half',
+        byte = 'byte',
+        auto = 'auto',
     }
 
 }

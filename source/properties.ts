@@ -2,7 +2,6 @@
 import { Validator } from 'jsonschema';
 
 import { assert, logIf, LogLevel } from './auxiliaries';
-
 import { ChangeLookup } from './changelookup';
 
 
@@ -25,7 +24,7 @@ namespace properties {
         /* Validate of (sub) schema of given POJO/JSON. */
         const result = validator.validate(instance, schema);
 
-        logIf(!result.valid, LogLevel.Dev, `schema conformance issue (setter ignored):\n${result.toString()}`);
+        logIf(!result.valid, LogLevel.Warning, `schema expected to be valid:\n${result.toString()}`);
         return result.valid;
     }
 
@@ -78,15 +77,11 @@ namespace properties {
                         /* Invoke recursive defaulting for already defined object with properties. */
                         complement(instance[key], propertySchema);
 
-                    } else if (hasProperties) {
-                        /* Invoke recursive defaulting for not yet defined object with properties. */
-                        Object.defineProperty(instance, key, { value: {} });
-                        complement(instance[key], propertySchema);
-
                     } else if (!isDefined && hasDefault) {
                         /* Default value for not yet defined property. */
                         Object.defineProperty(instance, key, { value: propertySchema['default'] });
                     }
+                    // Don't complement non-existent objects on target tree
                 }
                 break;
 

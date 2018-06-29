@@ -13,7 +13,7 @@ import { AbstractObject } from './object';
  *
  * The VertexArray can be used wrapped around any VertexBuffer interface:
  * ```
- * export class ScreenFillingTriangle extends VertexBuffer {
+ * export class ScreenFillingTriangle extends VertexArray {
  * // ...
  *     bind(index: GLuint): void { ...  }
  *     unbind(index: GLuint): void { ... }
@@ -121,6 +121,13 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     @Initializable.assert_initialized()
     unbind(): void {
         this._unbind();
+    }
+
+    /**
+     * Can be used to enforce rebinding all buffers, e.g., when data has changed.
+     */
+    invalidate() {
+        this._buffersBound = false;
     }
 
 }

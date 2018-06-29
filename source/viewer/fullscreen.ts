@@ -131,7 +131,8 @@ namespace viewer {
                     break;
 
                 default:
-                    assert(false, `none of the following fullscreen apis was found: native, ms, moz, or webkit`);
+                    assert(false,
+                        `none of the following fullscreen apis was found: native, ms, moz, or webkit`);
             }
         }
 

@@ -11,7 +11,7 @@ import { ContextMasquerade } from '../source/contextmasquerade';
 
 describe('ContextMasquerade', () => {
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     afterEach(() => sandbox.restore());
     after(() => sandbox.restore());

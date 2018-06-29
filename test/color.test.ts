@@ -1,12 +1,8 @@
 
 import * as chai from 'chai';
-import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
 
-chai.use(spies);
-
 const expect = chai.expect;
-const spy = chai.spy;
 const stub = sinon.stub;
 
 import { Color } from '../source/color';

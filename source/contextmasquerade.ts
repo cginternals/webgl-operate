@@ -22,7 +22,7 @@ import { ExtensionsHash } from './extensionshash';
 export class ContextMasquerade {
 
     /** @see {@link presets} */
-    protected static readonly MASQUERADE_JSON: ContextMasquerade.Presets = require('./data/masquerade.json');
+    protected static readonly MASQUERADE_JSON: Array<ContextMasquerade.Preset> = require('./data/masquerade.json');
 
     /** @see {@link backend} */
     protected _backend: string;
@@ -70,9 +70,12 @@ export class ContextMasquerade {
             preset = p;
             break;
         }
-        assert(preset !== undefined,
-            `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
 
+        if (preset === undefined) {
+            assert(false,
+                `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
+            return mask;
+        }
         preset = preset as ContextMasquerade.Preset;
 
         if (preset.extensions_hash !== undefined) {
@@ -128,7 +131,7 @@ export class ContextMasquerade {
      * simplify cross-browser testing without actually using different browsers.
      */
     static presets() {
-        return this.MASQUERADE_JSON.presets;
+        return this.MASQUERADE_JSON;
     }
 
     /**
@@ -176,13 +179,6 @@ export namespace ContextMasquerade {
         extensions_strive: Array<string>;
         extensions_conceal: Array<string>;
         functions_undefine: Array<string>;
-    }
-
-    /**
-     * Interfaces required to prevent implicit any when parsing masquerade.json.
-     */
-    export interface Presets {
-        presets: Array<Preset>;
     }
 
 }

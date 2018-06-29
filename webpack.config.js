@@ -2,30 +2,27 @@
 const path = require('path');
 const webpack = require('webpack');
 
-module.exports = {
+const rxjsExternals = require('webpack-rxjs-externals');
 
+
+module.exports = {
     context: __dirname + '/source',
     cache: true,
+    entry: { 'webgl-operate': ['polyfill.ts', 'webgl-operate.ts'] },
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
             DISABLE_ASSERTIONS: JSON.stringify(false),
-            LOG_VERBOSITY_THRESHOLD: JSON.stringify(2),
-        }),
-        new webpack.IgnorePlugin(/^rx$/)
+            LOG_VERBOSITY_THRESHOLD: JSON.stringify(3),
+        })
     ],
-    entry: {
-        'webgl-operate': ['externals.ts', 'require.ts', 'polyfill.ts', 'webgl-operate.ts']
-    },
     output: {
-        path: __dirname + '/build',
+        path: __dirname + '/build/js',
         filename: '[name].js',
         library: 'gloperate',
         libraryTarget: 'umd'
     },
-    externals: {
-        'rxjs/Rx': 'Rx'
-    },
+    externals: [rxjsExternals()],
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
         extensions: ['.ts', '.tsx', '.js']
@@ -40,6 +37,7 @@ module.exports = {
                     loader: 'ts-loader',
                     options: {
                         compilerOptions: {
+                            declaration: false,
                             noUnusedLocals: false,
                             removeComments: false
                         }
@@ -52,3 +50,8 @@ module.exports = {
             }]
     },
 };
+
+if (process.env.ANALYZE) {
+    const analyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+    module.exports.plugins.push(new analyzer());
+}

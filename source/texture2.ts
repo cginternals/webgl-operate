@@ -77,8 +77,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);
-        this.context.allocationRegister.reallocate(this._identifier, 0);
 
+        this.reallocate();
         return this._object;
     }
 
@@ -98,6 +98,20 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
         this._width = 0;
         this._height = 0;
+    }
+
+    protected reallocate(): void {
+        const gl = this.context.gl;
+        const gl2facade = this._context.gl2facade;
+
+        let bytes: GLsizei = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat);
+        // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
+        if (this._type === gl2facade.HALF_FLOAT && this._internalFormat !== gl.RGBA16F) {
+            bytes *= 2;
+        } else if (this._type === gl.FLOAT && this._internalFormat !== gl.RGBA16F) {
+            bytes *= 4;
+        }
+        this.context.allocationRegister.reallocate(this._identifier, bytes);
     }
 
     /**
@@ -142,7 +156,6 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
                 resolve();
             };
 
-
             if (crossOrigin) {
                 image.crossOrigin = 'anonymous';
             }
@@ -171,20 +184,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (unbind) {
             this.unbind();
         }
-
-        let bytes: GLsizei = 0;
-        // update allocated bytes
-        if (data !== undefined) {
-
-            bytes = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
-            // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
-            if (this._type === this.context.gl2facade.HALF_FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
-                bytes *= 2;
-            } else if (this._type === this.context.gl.FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
-                bytes *= 4;
-            }
-        }
-        this.context.allocationRegister.reallocate(this._identifier, bytes);
+        this.reallocate();
     }
 
     /**
@@ -293,7 +293,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     get internalFormat(): GLenum {
         this.assertInitialized();
-        return this._internalFormat as GLenum;
+        return this._internalFormat!;
     }
 
     /**
@@ -302,7 +302,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     get format(): GLenum {
         this.assertInitialized();
-        return this._format as GLenum;
+        return this._format!;
     }
 
     /**
@@ -311,7 +311,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     get type(): GLenum {
         this.assertInitialized();
-        return this._type as GLenum;
+        return this._type!;
     }
 
     /**

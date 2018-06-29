@@ -1,5 +1,5 @@
 
-import { Observable, ReplaySubject } from 'rxjs/Rx';
+import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert, prettyPrintBytes } from './auxiliaries';
 
@@ -106,7 +106,7 @@ export class AllocationRegister {
             return;
         }
 
-        const bytes = (this._bytesByIdentifier.get(identifier) as number) + allocate;
+        const bytes = (this._bytesByIdentifier.get(identifier)!) + allocate;
         this._bytesByIdentifier.set(identifier, bytes);
 
         this._bytes = this._bytes + allocate; // allocate total
@@ -121,7 +121,7 @@ export class AllocationRegister {
     deallocate(identifier: string, deallocate: number): void {
         this.assertIdentifier(identifier);
 
-        const bytes = this._bytesByIdentifier.get(identifier) as number;
+        const bytes = this._bytesByIdentifier.get(identifier)!;
         assert(deallocate >= 0, `positive number of bytes expected for deallocation, given ${deallocate}`);
         assert(deallocate <= bytes, `deallocation cannot exceed previous allocations of ${bytes}, given ${deallocate}`);
 
@@ -145,7 +145,7 @@ export class AllocationRegister {
         this.assertIdentifier(identifier);
         assert(reallocate >= 0, `positive number of bytes expected for reallocation, given ${reallocate}`);
 
-        const previousBytes = this._bytesByIdentifier.get(identifier) as number;
+        const previousBytes = this._bytesByIdentifier.get(identifier)!;
 
         /* Nothing to do if same size should be reallocated */
         if (previousBytes === reallocate) {
@@ -170,7 +170,7 @@ export class AllocationRegister {
             return this._bytes;
         }
         this.assertIdentifier(identifier);
-        return this._bytesByIdentifier.get(identifier) as number;
+        return this._bytesByIdentifier.get(identifier)!;
     }
 
     /**
