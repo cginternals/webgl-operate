@@ -40,12 +40,12 @@ export class Context {
     /* tslint:disable:member-ordering variable-name */
 
     /**
-     * Context creation attribute defaults.
+     * Context creation attribute defaults. The defaults are taken directly from the spec.
      */
     protected static readonly DEFAULT_ATTRIBUTES = {
         alpha: true,
-        antialias: false,
-        depth: false,
+        antialias: true,
+        depth: true,
         failIfMajorPerformanceCaveat: false,
         premultipliedAlpha: true,
         preserveDrawingBuffer: false,
@@ -100,7 +100,7 @@ export class Context {
      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
      * calls to getContext of an element will return null.
      * @param element - Canvas element to request context from.
-     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
+     * @param attributes - Overrides the internal default attributes @see{Context.DEFAULT_ATTRIBUTES}.
      * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext.
      */
     static request(element: HTMLCanvasElement,
