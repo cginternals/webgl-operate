@@ -15,7 +15,6 @@ import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
 
 
-
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
 
 
