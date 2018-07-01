@@ -46,7 +46,7 @@ The canvas can be integrated into HTML5 as follows:
 
 This canvas can then be setup by associating the canvas element with a single-frame or multi-frame controller and attaching a renderer using JavaScript as follows:
 ```
-ToDo
+ToDo 
 ```
 
 ## Dependencies
