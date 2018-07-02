@@ -345,6 +345,14 @@ export class ColorScale {
         return bits;
     }
 
+
+    /**
+     * Provides read access to the number of colors of this scale. This is a shortcut for this.colors.length.
+     */
+    get length(): number {
+        return this._colors.length;
+    }
+
 }
 
 
