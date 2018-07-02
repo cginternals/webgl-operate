@@ -2,6 +2,7 @@
 import { assert } from './auxiliaries';
 
 import { Context } from './context';
+import { fetchAsync } from './fetch';
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GLfloat2, GLfloat4 } from './tuples';
@@ -193,42 +194,36 @@ export class FontLoader {
      * @param onImageLoad Callback is called when the glyph atlas is loaded.
      */
     load(context: Context, filename: string, headless: boolean, onImageLoad: (() => void)): FontFace {
-        const xmlhttp = new XMLHttpRequest();
-
-        // fontface: Objects and arrays are passed by reference (JS)
         const fontFace = new FontFace(context);
 
-        // asynchronous loading
-        // TODO: refactoring using Promise?
-        xmlhttp.open('GET', filename, true);
-        xmlhttp.onreadystatechange = () => {
-            if (xmlhttp.readyState === 4) {
-                if (xmlhttp.status === 200 || xmlhttp.status === 0) {
-                    const text = xmlhttp.responseText;
+        fetchAsync(filename, (text) => text).then(
+            (text) => {
+                // promise fulfilled
+                const lines = text.split('\n');
 
-                    const lines = text.split('\n');
+                for (const l of lines) {
+                    let line = l.split(' ');
+                    const identifier = line[0];
+                    line = line.slice(1);
 
-                    for (const l of lines) {
-                        let line = l.split(' ');
-                        const identifier = line[0];
-                        line = line.slice(1);
-
-                        if (identifier === 'info') {
-                            this.handleInfo(line, fontFace);
-                        } else if (identifier === 'common') {
-                            this.handleCommon(line, fontFace);
-                        } else if (identifier === 'page' && !headless) {
-                            this.handlePage(line, fontFace, filename, context, onImageLoad);
-                        } else if (identifier === 'char') {
-                            this.handleChar(line, fontFace);
-                        } else if (identifier === 'kerning') {
-                            this.handleKerning(line, fontFace);
-                        }
+                    if (identifier === 'info') {
+                        this.handleInfo(line, fontFace);
+                    } else if (identifier === 'common') {
+                        this.handleCommon(line, fontFace);
+                    } else if (identifier === 'page' && !headless) {
+                        this.handlePage(line, fontFace, filename, context, onImageLoad);
+                    } else if (identifier === 'char') {
+                        this.handleChar(line, fontFace);
+                    } else if (identifier === 'kerning') {
+                        this.handleKerning(line, fontFace);
                     }
                 }
+            },
+            (text) => {
+                // promise rejected
+                console.error('ERROR: Could not load font file. filename is: ' + filename);
             }
-        };
-        xmlhttp.send();
+        );
 
         // TODO: assert? throw exception?
         // if (headless || fontFace.glyphTexture) {
