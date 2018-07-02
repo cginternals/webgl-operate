@@ -40,12 +40,12 @@ export class Context {
     /* tslint:disable:member-ordering variable-name */
 
     /**
-     * Context creation attribute defaults.
+     * Context creation attribute defaults. The defaults are taken directly from the spec.
      */
     protected static readonly DEFAULT_ATTRIBUTES = {
         alpha: true,
-        antialias: false,
-        depth: false,
+        antialias: false, /* Not defaulted to true, since it might interfere with manual blitting. */
+        depth: true,
         failIfMajorPerformanceCaveat: false,
         premultipliedAlpha: true,
         preserveDrawingBuffer: false,
@@ -100,7 +100,7 @@ export class Context {
      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
      * calls to getContext of an element will return null.
      * @param element - Canvas element to request context from.
-     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
+     * @param attributes - Overrides the internal default attributes @see{Context.DEFAULT_ATTRIBUTES}.
      * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext.
      */
     static request(element: HTMLCanvasElement,
@@ -842,11 +842,35 @@ export class Context {
         pNamesAndValues.push(['SHADING_LANGUAGE_VERSION',
             this._context.getParameter(this._context.SHADING_LANGUAGE_VERSION)]);
 
+        /* Debug Render Info Extension - Unmasked Vendor and Renderer. */
         pNamesAndValues.push(['UNMASKED_VENDOR_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
             this._context.getParameter(this.debugRendererInfo.UNMASKED_VENDOR_WEBGL)]);
         pNamesAndValues.push(['UNMASKED_RENDERER_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
             this._context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
 
+        /* Actual Context Attributes. */
+        pNamesAndValues.push(['ALPHA (ATTRIBUTE)', String(this.alpha)]);
+        pNamesAndValues.push(['ANTIALIAS (ATTRIBUTE)', String(this.antialias)]);
+        pNamesAndValues.push(['DEPTH (ATTRIBUTE)', String(this.depth)]);
+        pNamesAndValues.push(['FAIL_IF_MAJOR_PERFORMANCE_CAVEAT (ATTRIBUTE)',
+            String(this.failIfMajorPerformanceCaveat)]);
+        pNamesAndValues.push(['PREMULTIPLIED_ALPHA (ATTRIBUTE)', String(this.premultipliedAlpha)]);
+        pNamesAndValues.push(['PRESERVE_DRAWING_BUFFER (ATTRIBUTE)', String(this.preserveDrawingBuffer)]);
+        pNamesAndValues.push(['STENCIL (ATTRIBUTE)', String(this.stencil)]);
+
+        /* Window Info. */
+        pNamesAndValues.push(['DEVICE_PIXEL_RATIO (WINDOW)', window.devicePixelRatio]);
+
+        /* Navigator Info. */
+        pNamesAndValues.push(['APP_CODE_NAME (NAVIGATOR)', window.navigator.appCodeName]);
+        pNamesAndValues.push(['APP_NAME (NAVIGATOR)', window.navigator.appName]);
+        pNamesAndValues.push(['APP_VERSION (NAVIGATOR)', window.navigator.appVersion]);
+        pNamesAndValues.push(['PLATFORM (NAVIGATOR)', window.navigator.platform]);
+        pNamesAndValues.push(['HARDWARE_CONCURRENCY (NAVIGATOR)', window.navigator.appCodeName]);
+        pNamesAndValues.push(['VENDOR (NAVIGATOR)', window.navigator.vendor]);
+        pNamesAndValues.push(['VENDOR_SUB (NAVIGATOR)', window.navigator.vendorSub]);
+
+        /* Max and min queries - context limitations. */
         pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
             this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
         pNamesAndValues.push(['MAX_CUBE_MAP_TEXTURE_SIZE',
@@ -962,15 +986,18 @@ export class Context {
         let index = 0;
         let message = ``;
 
-        const extensionSeparator = this.isWebGL2 ? 46 + WEBGL2_DEFAULT_EXTENSIONS.length : -1;
+        const extensionSeparator = this.isWebGL2 ? 63 + WEBGL2_DEFAULT_EXTENSIONS.length : -1;
         for (const tuple of about) {
             /* Provide some semantic grouping: Core, Limits, Extensions, ... */
             switch (index) {
                 case 2:  // End of Backend and Context Hash
                 case 6:  // End of Core Context Info
-                case 8:  // End of Backend and Context Hash
-                case 20: // End of WebGL 1 Limits
-                case 48: // End of WebGL 2 Limit, start of extensions
+                case 8:  // End of unmasked vendor and renderer
+                case 15: // End of context attributes
+                case 16: // End of window attributes
+                case 23: // End of navigator attributes
+                case 35: // End of WebGL 1 specific Limits
+                case 63: // End of WebGL 2 specific Limit, start of extensions
                 case extensionSeparator: // End of default Extensions (in case of WebGL2) or -1
                     message += `\n`;
                     break;

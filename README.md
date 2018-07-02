@@ -23,7 +23,7 @@ npm install --save-dev webgl-operate
 ```
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.3/dist/webgl-operate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.4/dist/webgl-operate.min.js"></script>
 ```
 
 ## Features
@@ -46,7 +46,7 @@ The canvas can be integrated into HTML5 as follows:
 
 This canvas can then be setup by associating the canvas element with a single-frame or multi-frame controller and attaching a renderer using JavaScript as follows:
 ```
-ToDo
+ToDo 
 ```
 
 ## Dependencies
