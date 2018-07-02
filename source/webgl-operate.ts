@@ -13,6 +13,13 @@ export import fetch = root_fetch;
 import * as root_raymath from './raymath';
 export import ray_math = root_raymath;
 
+export { FontFace } from './fontface';
+export { FontLoader } from './fontloader';
+export { GlyphVertex, GlyphVertices } from './glyphvertices';
+export { Label } from './label';
+export { LabelGeometry } from './labelgeometry';
+export { Text } from './text';
+export { Typesetter } from './typesetter';
 
 // /* DEBUG facilities */
 
