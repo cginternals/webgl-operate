@@ -298,27 +298,12 @@ export class LabelRenderer extends Renderer {
         const l = glyphVertices.length;
 
         for (let i = 0; i < l; i++) {
-            // TODO: shouldn't there be an easier way to achieve this?
-            // concat doesn't work as vec3 apparently is not an Array.
-
             const v = glyphVertices[i];
 
-            origins.push(v.origin[0]);
-            origins.push(v.origin[1]);
-            origins.push(v.origin[2]);
-
-            tans.push(v.tangent[0]);
-            tans.push(v.tangent[1]);
-            tans.push(v.tangent[2]);
-
-            ups.push(v.up[0]);
-            ups.push(v.up[1]);
-            ups.push(v.up[2]);
-
-            texCoords.push(v.uvRect[0]);
-            texCoords.push(v.uvRect[1]);
-            texCoords.push(v.uvRect[2]);
-            texCoords.push(v.uvRect[3]);
+            origins.push.apply(origins, v.origin);
+            tans.push.apply(tans, v.tangent);
+            ups.push.apply(ups, v.up);
+            texCoords.push.apply(texCoords, v.uvRect);
         }
 
         this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
