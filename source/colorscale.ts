@@ -139,7 +139,7 @@ export class ColorScale {
      * @returns - A color scale of fixed number and position of colors for index and linear interpolation access.
      */
     static fromArray(interleavedColorComponents: Array<number>, type: ColorScale.ArrayType,
-        stepCount: number, positions: Array<number> | undefined): ColorScale {
+        stepCount: number, positions?: Array<number>): ColorScale {
         if (stepCount === 0 || interleavedColorComponents.length === 0) {
             return new ColorScale();
         }
