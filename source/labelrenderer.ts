@@ -173,10 +173,6 @@ export class LabelRenderer extends Renderer {
             return false;
         }
 
-        if (this._altered.multiFrameNumber) {
-            this._ndcOffsetKernel.width = this._multiFrameNumber;
-        }
-
         return redraw;
     }
 
@@ -198,6 +194,13 @@ export class LabelRenderer extends Renderer {
             this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
             this._camera.aspect = this._frameSize[0] / this._frameSize[1];
+        }
+        if (this._altered.multiFrameNumber) {
+            this._ndcOffsetKernel.width = this._multiFrameNumber;
+        }
+
+        if (this._altered.framePrecision) {
+            this._accumulate.precision = this._framePrecision;
         }
 
         if (this._altered.clearColor) {
