@@ -193,37 +193,36 @@ export class FontLoader {
      * @param headless
      * @param onImageLoad Callback is called when the glyph atlas is loaded.
      */
-    load(context: Context, filename: string, headless: boolean, onImageLoad: (() => void)): FontFace {
+    async load(context: Context, filename: string, headless: boolean, onImageLoad: (() => void)): Promise<FontFace> {
         const fontFace = new FontFace(context);
 
-        fetchAsync(filename, (text) => text).then(
-            (text) => {
-                // promise fulfilled
-                const lines = text.split('\n');
+        try {
+            const text = await fetchAsync(filename, (text) => text);
+            // promise fulfilled
+            const lines = text.split('\n');
 
-                for (const l of lines) {
-                    let line = l.split(' ');
-                    const identifier = line[0];
-                    line = line.slice(1);
+            for (const l of lines) {
+                let line = l.split(' ');
+                const identifier = line[0];
+                line = line.slice(1);
 
-                    if (identifier === 'info') {
-                        this.handleInfo(line, fontFace);
-                    } else if (identifier === 'common') {
-                        this.handleCommon(line, fontFace);
-                    } else if (identifier === 'page' && !headless) {
-                        this.handlePage(line, fontFace, filename, context, onImageLoad);
-                    } else if (identifier === 'char') {
-                        this.handleChar(line, fontFace);
-                    } else if (identifier === 'kerning') {
-                        this.handleKerning(line, fontFace);
-                    }
+                if (identifier === 'info') {
+                    this.handleInfo(line, fontFace);
+                } else if (identifier === 'common') {
+                    this.handleCommon(line, fontFace);
+                } else if (identifier === 'page' && !headless) {
+                    this.handlePage(line, fontFace, filename, context, onImageLoad);
+                } else if (identifier === 'char') {
+                    this.handleChar(line, fontFace);
+                } else if (identifier === 'kerning') {
+                    this.handleKerning(line, fontFace);
                 }
-            },
-            (text) => {
-                // promise rejected
-                console.error('ERROR: Could not load font file. filename is: ' + filename);
             }
-        );
+
+        } catch (e) {
+            // promise rejected
+            console.error('ERROR: Could not load font file. filename is: ' + filename);
+        }
 
         // TODO: assert? throw exception?
         // if (headless || fontFace.glyphTexture) {
