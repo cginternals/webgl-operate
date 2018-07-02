@@ -137,10 +137,6 @@ namespace debug {
                 return false;
             }
 
-            if (this._altered.multiFrameNumber) {
-                this._ndcOffsetKernel.width = this._multiFrameNumber;
-            }
-
             return redraw;
         }
 
@@ -157,6 +153,12 @@ namespace debug {
 
             } else if (this._altered.frameSize) {
                 this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
+            }
+            if (this._altered.multiFrameNumber) {
+                this._ndcOffsetKernel.width = this._multiFrameNumber;
+            }
+            if (this._altered.framePrecision) {
+                this._accumulate.precision = this._framePrecision;
             }
 
             if (this._altered.clearColor) {
