@@ -194,6 +194,12 @@ export class LabelRenderer extends Renderer {
             this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
             this._camera.aspect = this._frameSize[0] / this._frameSize[1];
+            /* TODO
+             * update the geometry of the labels that use pt sizes (e.g. labels in screen space)
+             * and/or update: labels that get too small (to be readable) should not be rendered anymore
+             * (a.k.a. threshold for readability)
+             */
+            // this.setupScene();
         }
         if (this._altered.multiFrameNumber) {
             this._ndcOffsetKernel.width = this._multiFrameNumber;
