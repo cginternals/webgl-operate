@@ -208,6 +208,7 @@ namespace tuples {
     export function equals4<T extends GLclampf | GLfloat | GLsizei>(t0: [T, T, T, T], t1: [T, T, T, T]): boolean {
         return t0[0] === t1[0] && t0[1] === t1[1] && t0[2] === t1[2] && t0[3] === t1[3];
     }
+
 }
 
 export = tuples;
