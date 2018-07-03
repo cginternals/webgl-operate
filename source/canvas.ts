@@ -422,7 +422,7 @@ export class Canvas extends Resizable {
      */
     set frameScale(frameScale: GLclampf2) {
         if (!isFinite(frameScale[0]) || !isFinite(frameScale[1])) {
-            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given  ${frameScale}`);
+            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameScale}]`);
             return;
         }
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
@@ -483,7 +483,7 @@ export class Canvas extends Resizable {
      */
     set frameSize(frameSize: GLsizei2) {
         if (!isFinite(frameSize[0]) || !isFinite(frameSize[1])) {
-            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given  ${frameSize}`);
+            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameSize}]`);
             return;
         }
         logIf(frameSize[0] < 1 || frameSize[0] > this._size[0], LogLevel.Info,
