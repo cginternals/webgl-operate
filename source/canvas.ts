@@ -415,11 +415,16 @@ export class Canvas extends Resizable {
      * Set the targeted scale for rendering with respect to the canvas size. The scale will be clamped to [0.0,1.0]. A
      * scale of 0.0 results in 1px frame resolution for the respective component.
      * The frame scale allows to detach the rendering resolution from the native canvas resolution, e.g., in order to
-     * decrease rendering cost. The frame resolution can also be specified explicitly by width and height.
+     * decrease rendering cost. The frame resolution can also be specified explicitly by width and height. Non-finite
+     * values will be ignored.
      * @param frameScale - Scale of rendering.
      * @returns - The frame scale in [0.0,1.0].
      */
     set frameScale(frameScale: GLclampf2) {
+        if (!isFinite(frameScale[0]) || !isFinite(frameScale[1])) {
+            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameScale}]`);
+            return;
+        }
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
         logIf(frameScale[0] < 0.0 || frameScale[0] > 1.0, LogLevel.Info,
             `frame width scale clamped to [0.0,1.0], given ${frameScale[0]}`);
@@ -471,12 +476,16 @@ export class Canvas extends Resizable {
     /**
      * Set the targeted size for rendering in pixels. The size will be clamped to [1, canvas-size]. The frame size
      * allows to detach the rendering resolution from the native canvas resolution, e.g., in order to decrease
-     * rendering cost.
+     * rendering cost. Non-finite values will be ignored.
      * The render resolution can also be specified implicitly by width and height in scale (@see frameScale).
      * @param frameSize - Size for rendering in pixel (must not be physical/native pixels).
      * @returns - The frame size in [1, canvas-size].
      */
     set frameSize(frameSize: GLsizei2) {
+        if (!isFinite(frameSize[0]) || !isFinite(frameSize[1])) {
+            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameSize}]`);
+            return;
+        }
         logIf(frameSize[0] < 1 || frameSize[0] > this._size[0], LogLevel.Info,
             `frame width scale clamped to [1,${this._size[0]}], given ${frameSize[0]}`);
         logIf(frameSize[1] < 1 || frameSize[1] > this._size[1], LogLevel.Info,
