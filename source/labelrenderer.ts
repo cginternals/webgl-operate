@@ -21,7 +21,7 @@ import { FontFace } from './fontface';
 import { FontLoader } from './fontloader';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
-import { LabelGeometry } from './LabelGeometry';
+import { LabelGeometry } from './labelgeometry';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
 
@@ -275,12 +275,16 @@ export class LabelRenderer extends Renderer {
     protected loadFont(context: Context): void {
         const loader = new FontLoader();
 
-        const fontFace: FontFace = loader.load(
-            context, './data/opensansr144/opensansr144.fnt', false, () => {
-                this.setupScene();
-                this.invalidate();
-            });
+        // This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader
+        const fontFace: FontFace = new FontFace(context);
 
+        loader.load(context, './data/opensansr144/opensansr144.fnt', false).then(
+            (fontFace) => {
+                this._fontFace = fontFace;
+                this.setupScene();
+                this.invalidate(true);
+            },
+        );
         this._fontFace = fontFace;
     }
 

@@ -84,8 +84,7 @@ export class FontLoader {
     }
 
     protected handlePage(
-        stream: Array<string>, fontFace: FontFace, filename: string, context: Context
-        , onImageLoad: (() => void)): void {
+        stream: Array<string>, fontFace: FontFace, filename: string, context: Context): Promise<void> {
 
         const pairs = this.readKeyValuePairs(stream, ['file']);
 
@@ -94,16 +93,7 @@ export class FontLoader {
 
         const pngPath: string = path + file.split('.')[0] + '.png';
 
-
-        fontFace.glyphTexture.load(pngPath).then(
-
-            function fulfilled() {
-                onImageLoad();
-            },
-            function rejected() {
-                console.error('ERROR: Could not load glyph Texture. Image was not found?');
-            }
-        );
+        return fontFace.glyphTexture.load(pngPath);
     }
 
     protected handleChar(stream: Array<string>, fontFace: FontFace): void {
@@ -193,7 +183,7 @@ export class FontLoader {
      * @param headless
      * @param onImageLoad Callback is called when the glyph atlas is loaded.
      */
-    async load(context: Context, filename: string, headless: boolean, onImageLoad: (() => void)): Promise<FontFace> {
+    async load(context: Context, filename: string, headless: boolean): Promise<FontFace> {
         const fontFace = new FontFace(context);
 
         try {
@@ -201,6 +191,7 @@ export class FontLoader {
             // promise fulfilled
             const lines = text.split('\n');
 
+            const promises = [];
             for (const l of lines) {
                 let line = l.split(' ');
                 const identifier = line[0];
@@ -211,13 +202,14 @@ export class FontLoader {
                 } else if (identifier === 'common') {
                     this.handleCommon(line, fontFace);
                 } else if (identifier === 'page' && !headless) {
-                    this.handlePage(line, fontFace, filename, context, onImageLoad);
+                    promises.push(this.handlePage(line, fontFace, filename, context));
                 } else if (identifier === 'char') {
                     this.handleChar(line, fontFace);
                 } else if (identifier === 'kerning') {
                     this.handleKerning(line, fontFace);
                 }
             }
+            await Promise.all(promises);
 
         } catch (e) {
             // promise rejected
