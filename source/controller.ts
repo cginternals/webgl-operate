@@ -414,7 +414,7 @@ export class Controller {
 
     /**
      * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
-     * If updates where blocked using ```block```, block updates is disabled.
+     * If updates where blocked using `block`, block updates is disabled.
      */
     update(force: boolean = false): void {
         if (this.reset()) {
@@ -433,7 +433,7 @@ export class Controller {
 
     /**
      * Block implicit updates, e.g., caused by various setters. This can be used to reconfigure the controller without
-     * triggering to multiple intermediate updates. The block updates mode can be exited using ``unblock```.
+     * triggering to multiple intermediate updates. The block updates mode can be exited using `unblock`.
      */
     block(): void {
         logIf(this._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
