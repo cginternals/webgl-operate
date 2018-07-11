@@ -107,7 +107,7 @@ export class ReadbackPass extends Initializable {
     /**
      * Frame implementation clearing depth and ID caches. To avoid unnecessary readbacks (potentially causing sync
      * points), the requested and found IDs and depths are cached by position. Hence, these cached values have to be
-     * cleared whenever the frame buffers are written/rendered to.
+     * cleared whenever the framebuffers are written/rendered to.
      */
     protected onFrame() {
         this._cachedDepths.clear();
@@ -127,7 +127,7 @@ export class ReadbackPass extends Initializable {
 
     /**
      * Retrieve the depth of a fragment in normalized device coordinates. This function implements the direct readback
-     * of uint8x3 encoded depth values from a given frame buffer (see depthFBO and depthAttachment).
+     * of uint8x3 encoded depth values from a given framebuffer (see depthFBO and depthAttachment).
      * @param x - Horizontal coordinate from the upper left corner of the viewport origin.
      * @param y - Vertical coordinate from the upper left corner of the viewport origin.
      * @returns - Either the depth at location x, y or undefined, if the far plane was hit.
@@ -259,7 +259,7 @@ export class ReadbackPass extends Initializable {
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         this._program.unbind();
 
-        /* Configure read back frame buffer and color attachment. */
+        /* Configure read back framebuffer and color attachment. */
 
         this._texture = new Texture2(this._context, 'ReadbackRenderTexture');
         this._texture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
@@ -343,8 +343,7 @@ export class ReadbackPass extends Initializable {
         const size = (this._idFBO.texture(this._idAttachment) as Texture2).size;
 
         this._idFBO.bind();
-        if ((this._context.isWebGL2 || this._context.supportsDrawBuffers)
-            && gl.readBuffer) {
+        if ((this._context.isWebGL2 || this._context.supportsDrawBuffers) && gl.readBuffer) {
             gl.readBuffer(this._idAttachment);
         }
         gl.readPixels(x, size[1] - (y + 0.5), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
@@ -356,6 +355,11 @@ export class ReadbackPass extends Initializable {
             this._cachedIDs.set(hash, id);
         }
         return id;
+    }
+
+
+    frame() {
+        this.onFrame();
     }
 
 
