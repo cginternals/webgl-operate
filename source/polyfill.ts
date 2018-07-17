@@ -4,7 +4,7 @@
  */
 if (String.prototype.startsWith === undefined) {
     /* tslint:disable-next-line:space-before-function-paren */
-    String.prototype.startsWith = (searchString, position): boolean => {
+    String.prototype.startsWith = function (searchString, position): boolean {
         position = position || 0;
         return this.indexOf(searchString, position) === position;
     };
