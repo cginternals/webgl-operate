@@ -35,8 +35,8 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
 
     /**
      * Create a renderbuffer object on the GPU.
-     * @param context - Stored for local access to the WebGL API.
-     * @param size - Initial size of the renderbuffer.
+     * @param width - Initial width of the renderbuffer.
+     * @param height - Initial height of the renderbuffer.
      * @param internalFormat - Internal format of the renderbuffer data.
      */
     protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum): WebGLRenderbuffer | undefined {
