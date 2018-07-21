@@ -11,10 +11,10 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { MouseEventProvider } from './mouseeventprovider';
+import { RenderView } from './renderview';
 import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
-import { RenderView } from './xrcontroller';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }

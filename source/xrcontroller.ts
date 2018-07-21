@@ -1,16 +1,15 @@
 /// WebXR playground - to be refactored into a reasonable file structure later
 
-import { mat4, vec3 } from 'gl-matrix';
 import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Controllable } from './controller';
 import { Renderer } from './renderer';
+import { RenderView } from './renderview';
 import {
     XRDevice,
     XRFrame,
     XRFrameOfReference, XRFrameOfReferenceOptions, XRFrameOfReferenceType,
     XRSession, XRSessionCreationOptions,
-    XRViewport,
     XRWebGLLayerInit,
 } from './webxr';
 
@@ -18,75 +17,7 @@ export function supportsXR(): boolean {
     return navigator.xr !== undefined;
 }
 
-/**
- * Helper class to hold render configuration per XRView,
- * i.e. per eye for standard VR/AR.
- * NOTE: Optimized to avoid allocations during render loop.
- */
-export class RenderView {
-    private _cameraPosition = vec3.create();
-    private _cameraPositionValid = false; // use extra flag to avoid allocation new vec3's
-    private _inverseViewMatrix: mat4;
-
-    // TODO!: Float32Array vs mat4
-    private _projectionMatrix: mat4;
-    get projectionMatrix() {
-        return this._projectionMatrix;
-    }
-    private _viewMatrix: mat4;
-    get viewMatrix() {
-        return this._viewMatrix;
-    }
-    private _viewProjectionMatrix: mat4;
-    private _viewProjectionMatrixValid = false; // use extra flag to avoid allocation new mat4's
-
-    private _viewport: XRViewport;
-    get viewport() {
-        return this._viewport;
-    }
-
-    set(projectionMatrix: Float32Array, viewMatrix: Float32Array, viewport: XRViewport) {
-        this._projectionMatrix = projectionMatrix as mat4;
-        this._viewMatrix = viewMatrix as mat4;
-        this._viewport = viewport;
-
-        this._cameraPositionValid = false;
-        this._viewProjectionMatrixValid = false;
-    }
-
-    /**
-     * Computes camera position from viewMatrix and caches it.
-     */
-    get cameraPosition(): vec3 {
-        if (this._cameraPositionValid) {
-            return this._cameraPosition;
-        }
-        if (!this._inverseViewMatrix) {
-            this._inverseViewMatrix = mat4.create();
-        }
-
-        mat4.invert(this._inverseViewMatrix as mat4, this.viewMatrix as mat4);
-        vec3.transformMat4(this._cameraPosition, this._cameraPosition, this._inverseViewMatrix as mat4);
-
-        this._cameraPositionValid = true;
-        return this._cameraPosition;
-    }
-
-    /** Computes viewProjection matrix and caches it */
-    get viewProjectionMatrix(): Float32Array {
-        if (this._viewProjectionMatrixValid) {
-            return this._viewProjectionMatrix as mat4;
-        }
-        if (!this._viewProjectionMatrix) {
-            this._viewProjectionMatrix = mat4.create();
-        }
-        mat4.multiply(this._viewProjectionMatrix as mat4, this.projectionMatrix as mat4, this.viewMatrix as mat4);
-        return this._viewProjectionMatrix;
-    }
-}
-
 // tslint:disable-next:member-ordering
-// tslint:disable-next-line:max-classes-per-file
 export class XRController {
     private onXRFrameCallback = this.onXRFrame.bind(this);
     private renderViews: RenderView[] = [new RenderView()];
@@ -172,8 +103,7 @@ export class XRController {
         this.canvas = new Canvas(canvasEl, this.contextAttributes, this);
         this.gl = this.canvas.context.gl;
 
-        // TODO!!!: how to declare/export XRWebGLLayer properly?
-        this.session.baseLayer = new (window as any).XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
+        this.session.baseLayer = new XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
         this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
 
         this.session.requestAnimationFrame(this.onXRFrameCallback);

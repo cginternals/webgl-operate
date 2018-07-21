@@ -172,9 +172,7 @@ export interface XRWebGLLayerInit {
     framebufferScaleFactor: number;
 }
 
-export declare class XRWebGLLayer implements XRLayer {
-    constructor(session: XRSession, context: XRWebGLRenderingContext, layerInit?: XRWebGLLayerInit);
-
+export interface XRWebGLLayer extends XRLayer {
     // Attributes
     readonly context: XRWebGLRenderingContext;
 
@@ -191,9 +189,11 @@ export declare class XRWebGLLayer implements XRLayer {
     // Methods
     getViewport(view: XRView): XRViewport | null;
     requestViewportScaling(viewportScaleFactor: number): void;
+}
 
-    // Static Methods
-    static getNativeFramebufferScaleFactor(session: XRSession): number;
+export interface XRWebGLLayerConstructor {
+    new(session: XRSession, context: XRWebGLRenderingContext, layerInit?: XRWebGLLayerInit): XRWebGLLayer;
+    getNativeFramebufferScaleFactor(session: XRSession): number;
 }
 
 declare global {
@@ -201,6 +201,9 @@ declare global {
         /** Default: null */
         compatibleXRDevice?: XRDevice | null;
     }
+
+    // tslint:disable-next-line:variable-name
+    var XRWebGLLayer: XRWebGLLayerConstructor;
 }
 
 
