@@ -1,16 +1,17 @@
 // tslint:disable:member-ordering
 // tslint:disable:max-classes-per-file
 
-// TODO!: rename to .d.ts when done (-> error checking doesn't work properly with it)
-// TODO!: publish interfaces derived from spec on npm?
+// TODO!: publish interfaces derived from spec on npm (@types)?
 
+/// All types are derived from the WebXR WebIDL:
 /// https://immersive-web.github.io/webxr/#idl-index
+/// Last sync with the spec: 2018-07-21
 
 export type EventHandler = (ev: Event) => void;
 
 /**
- * https://immersive-web.github.io/webxr-reference/webxr-device-api/xr
- * https://immersive-web.github.io/webxr/#xr
+ * Reference: https://immersive-web.github.io/webxr-reference/webxr-device-api/xr
+ * Specification: https://immersive-web.github.io/webxr/#xr
  */
 export interface XR extends EventTarget {
     requestDevice(): Promise<XRDevice>;
@@ -24,30 +25,34 @@ declare global {
 }
 
 /**
- * https://immersive-web.github.io/webxr-reference/webxr-device-api/xrdevice
- * https://immersive-web.github.io/webxr/#xrdevice
+ * Reference: https://immersive-web.github.io/webxr-reference/webxr-device-api/xrdevice
+ * Specification: https://immersive-web.github.io/webxr/#xrdevice
  */
 export interface XRDevice {
     supportsSession(options?: XRSessionCreationOptions): Promise<void>;
     requestSession(options?: XRSessionCreationOptions): Promise<XRSession>;
 }
 
-/** https://immersive-web.github.io/webxr/#dictdef-xrsessioncreationoptions */
+/** Specification: https://immersive-web.github.io/webxr/#dictdef-xrsessioncreationoptions */
 export interface XRSessionCreationOptions {
     /** Defaults to false. */
     immersive?: boolean;
     outputContext?: XRPresentationContext;
 }
 
+/** Specification: https://immersive-web.github.io/webxr/#enumdef-xrenvironmentblendmode */
+export type XREnvironmentBlendMode = 'opaque' | 'additive' | 'alpha-blend';
+
 /**
- * https://immersive-web.github.io/webxr-reference/webxr-device-api/xrsession
- * https://immersive-web.github.io/webxr/#xrsession-interface
+ * Reference: https://immersive-web.github.io/webxr-reference/webxr-device-api/xrsession
+ * Specification: https://immersive-web.github.io/webxr/#xrsession-interface
  */
 export interface XRSession extends EventTarget {
     // Attributes
     readonly device: XRDevice;
     readonly immersive: boolean;
     readonly outputContext: XRPresentationContext;
+    readonly environmentBlendMode: XREnvironmentBlendMode;
 
     depthNear: number;
     depthFar: number;
@@ -134,7 +139,7 @@ export interface XRDevicePose {
 
 export type XRHandedness = '' | 'left' | 'right';
 
-export type XRTargetRayMode = 'gazing' | 'pointing' | 'tapping';
+export type XRTargetRayMode = 'gaze' | 'tracked-pointer' | 'screen';
 
 export interface XRInputSource {
     readonly handedness: XRHandedness;
