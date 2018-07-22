@@ -9,6 +9,7 @@ import {
     XRDevice,
     XRFrame,
     XRFrameOfReference, XRFrameOfReferenceOptions, XRFrameOfReferenceType,
+    XRInputPose,
     XRSession, XRSessionCreationOptions,
     XRWebGLLayerInit,
 } from './webxr';
@@ -18,6 +19,25 @@ export function supportsXR(): boolean {
 }
 
 // tslint:disable-next:member-ordering
+/**
+ * Controller for WebXR sessions. Basic workflow:
+ *
+ * ```ts
+ * let xrc = new XRController({ immersive: true });
+ * await xrc.initialize(); // may throw `NotFoundError`
+ * if (await xrc.supportsSession()) { // optional check
+ *   await xrc.requestSession(); // may throw
+ *   // assign any subclass of `Renderer` that uses the `renderViews` parameter in `onFrame`
+ *   xrc.canvas!.renderer = new WebXRRenderer();
+ *
+ *   xrc.session!.addEventListener('end', () => { ... });
+ *   ...
+ *   xrc.endSession();
+ * }
+ *
+ * ```
+ * @experimental
+ */
 export class XRController {
     private onXRFrameCallback = this.onXRFrame.bind(this);
     private renderViews: RenderView[] = [new RenderView()];
@@ -42,11 +62,13 @@ export class XRController {
 
     renderer: Renderer;
 
+    inputPoses: Array<XRInputPose | null> = [];
+
     /**
      * Hints:
      * To mirror the content of an immersive session to a canvas on the page:
      *
-     * ```
+     * ```ts
      * let mirrorCanvas = document.createElement('canvas');
      * document.body.appendChild(mirrorCanvas);
      * let ctx = mirrorCanvas.getContext('xrpresent');
@@ -59,6 +81,20 @@ export class XRController {
      */
     constructor(sessionOpts?: XRSessionCreationOptions) {
         this.sessionCreationOptions = sessionOpts || {};
+    }
+
+    private updateInputSources(frame: XRFrame) {
+        const inputSources = this.session!.getInputSources();
+
+        // Re-using the same array to avoid allocations per frame -> adjust length in case
+        // number of input sources changes
+        if (inputSources.length !== this.inputPoses.length) {
+            this.inputPoses.length = inputSources.length;
+        }
+
+        for (let i = 0; i < inputSources.length; ++i) {
+            this.inputPoses[i] = frame.getInputPose(inputSources[i], this.frameOfRef!);
+        }
     }
 
     /**
@@ -123,15 +159,22 @@ export class XRController {
     }
 
     onXRFrame(time: number, frame: XRFrame) {
-        // TODO!!!: handle undefined after session end
-        this.session!.requestAnimationFrame(this.onXRFrameCallback);
+        if (!this.session) { return; }
+        this.session.requestAnimationFrame(this.onXRFrameCallback);
         const gl = this.gl;
+
+        this.updateInputSources(frame);
 
         const pose = frame.getDevicePose(this.frameOfRef!);
         // Getting the pose may fail if, for example, tracking is lost.
         if (pose) {
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.session!.baseLayer.framebuffer);
 
+            // Re-using the same array to avoid allocations per frame -> adjust length in case
+            // number of views changes
+            if (frame.views.length !== this.renderViews.length) {
+                this.renderViews.length = frame.views.length;
+            }
             for (let i = 0; i < frame.views.length; ++i) {
                 const view = frame.views[i];
                 if (!this.renderViews[i]) {
@@ -144,7 +187,7 @@ export class XRController {
                 );
             }
 
-            this.renderer.frame(0, this.renderViews);
+            this.renderer.frame(0, this.renderViews, this.inputPoses);
         } else {
             // TODO!: how to handle?
             console.warn('no pose - this is not handled yet.');
