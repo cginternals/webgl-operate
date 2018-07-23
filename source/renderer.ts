@@ -171,6 +171,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      * by means of implementation specific evaluation (e.g., lazy non continuous rendering). Regardless of the return
      * value a new frame (preparation, frame, swap) might be invoked anyway, e.g., when update is forced or canvas or
      * context properties have changed or the renderer was invalidated @see{@link invalidate}.
+     *
+     * NOT called when using WebXR (a new frame is always invoked because the view parameters generally change always)
+     *
      * @returns - Whether to redraw
      */
     protected abstract onUpdate(): boolean;
@@ -179,6 +182,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Actual prepare call specified by inheritor. This is invoked in order to prepare rendering of one or more frames.
      * This should be used for rendering preparation, e.g., when using multi-frame rendering this might specify uniforms
      * that do not change for every intermediate frame.
+     *
+     * NOT called when using WebXR (multi-frame rendering is not supported)
+     *
      */
     protected abstract onPrepare(): void;
 
@@ -191,8 +197,11 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Actual swap call specified by inheritor. After (1) update, (2) preparation, and (3) frame are invoked, a swap
-     * might be invoked. In case of experimental batch rendering when using multi-frame a swap might be withhold for
+     * might be invoked. In case of experimental batch rendering when using multi-frame a swap might be withheld for
      * multiple frames.
+     *
+     * NOT called when using WebXR
+     *
      */
     protected abstract onSwap(): void;
 

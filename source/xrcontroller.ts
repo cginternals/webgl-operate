@@ -1,5 +1,3 @@
-/// WebXR playground - to be refactored into a reasonable file structure later
-
 import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Controllable } from './controller';
@@ -84,6 +82,10 @@ export class XRController {
     }
 
     private updateInputSources(frame: XRFrame) {
+        // XRInputSources are generally 3DOF/6DOF hand controllers
+        // 3DOF controllers often have emulated 3D positions - signified
+        // by the `emulatedPosition` field
+
         const inputSources = this.session!.getInputSources();
 
         // Re-using the same array to avoid allocations per frame -> adjust length in case
@@ -92,7 +94,11 @@ export class XRController {
             this.inputPoses.length = inputSources.length;
         }
 
+        // TODO!!!: saving input sources (and passing them to renderer.frame) is insufficent
+        // -> pose.handedness and pose.targetRayMode should also be passed
         for (let i = 0; i < inputSources.length; ++i) {
+            // NOTE: might be `null` if tracking has been lost - save it anyway, since the renderer
+            // might want to handle that case explicitly.
             this.inputPoses[i] = frame.getInputPose(inputSources[i], this.frameOfRef!);
         }
     }
@@ -194,18 +200,19 @@ export class XRController {
         }
     }
 
-    // TODO!!: stub other controller methods/properties
+    // TODO!!: the block/unblock-methods don't make much sense for WebXR I think,
+    // but they need to be present and 'work' (otherwise some assertions fail).
+    // They are ignored for in the render loop however.
+
     // tslint:disable-next-line:member-ordering
     _block = false;
     block() {
         this._block = true;
     }
     get blocked() {
-        // TODO!?
         return this._block;
     }
     unblock() {
-        // TODO!?
         this._block = false;
     }
     set controllable(c: Controllable) {
