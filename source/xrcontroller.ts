@@ -22,7 +22,7 @@ export function supportsXR(): boolean {
  *
  * ```ts
  * let xrc = new XRController({ immersive: true });
- * await xrc.initialize(); // may throw `NotFoundError`
+ * await xrc.requestDevice(); // may throw `NotFoundError`
  * if (await xrc.supportsSession()) { // optional check
  *   await xrc.requestSession(); // may throw
  *   // assign any subclass of `Renderer` that uses the `renderViews` parameter in `onFrame`
@@ -104,11 +104,12 @@ export class XRController {
     }
 
     /**
-     * Initializes `this.device` and checks if it supports sessions with the configured creation options.
+     * Requests a device (e.g. a HMD) and stores it in `this.device`.
      * @throws {NotFoundError} - No devices found.
-     * @returns - whether initialization was successful
+     * @throws {EvalError} - WebXR is not supported.
+     * @returns - a promise that resolves if a device is available.
      */
-    async initialize(): Promise<void> {
+    async requestDevice(): Promise<void> {
         assert(supportsXR(), 'WebXR not supported by browser');
         this.device = await navigator.xr.requestDevice();
         this.contextAttributes.compatibleXRDevice = this.device;
@@ -116,7 +117,7 @@ export class XRController {
 
     /**
      * Checks whether device supports a session with `this.sessionCreationOptions`.
-     * Must call `initialize` before.
+     * Must call `requestDevice` before.
      */
     async supportsSession(): Promise<boolean> {
         assert(this.device !== undefined, 'this.device not initialized');
@@ -132,9 +133,9 @@ export class XRController {
      * Request an XR session (`this.session`) using `this.sessionCreationOptions`
      * and initialize WebGL context and `frameOfRef`.
      * May fail with:
-     * - NotSupportedError if the options are not supported
-     * - InvalidStateError if options.immersive is true and the device already has an immersive session
-     * - SecurityError if options.immersive is true and the algorithm is not triggered by user activation
+     * - `NotSupportedError` if the options are not supported
+     * - `InvalidStateError` if options.immersive is true and the device already has an immersive session
+     * - `SecurityError` if options.immersive is true and the algorithm is not triggered by user activation
      */
     async requestSession(): Promise<void> {
         this.session = await this.device!.requestSession(this.sessionCreationOptions);
