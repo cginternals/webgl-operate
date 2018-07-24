@@ -12,10 +12,6 @@ import {
     XRWebGLLayerInit,
 } from './webxr';
 
-export function supportsXR(): boolean {
-    return navigator.xr !== undefined;
-}
-
 // tslint:disable-next:member-ordering
 /**
  * Controller for WebXR sessions. Basic workflow:
@@ -62,6 +58,11 @@ export class XRController {
 
     inputPoses: Array<XRInputPose | null> = [];
 
+    /** Checks whether WebXR is supported by the browser. */
+    static supportsXR(): boolean {
+        return navigator.xr !== undefined;
+    }
+
     /**
      * Hints:
      * To mirror the content of an immersive session to a canvas on the page:
@@ -106,11 +107,11 @@ export class XRController {
     /**
      * Requests a device (e.g. a HMD) and stores it in `this.device`.
      * @throws {NotFoundError} - No devices found.
-     * @throws {EvalError} - WebXR is not supported.
+     * @throws {EvalError} - WebXR is not supported (use the static `supportsXR` function to check before)
      * @returns - a promise that resolves if a device is available.
      */
     async requestDevice(): Promise<void> {
-        assert(supportsXR(), 'WebXR not supported by browser');
+        assert(XRController.supportsXR(), 'WebXR not supported by browser');
         this.device = await navigator.xr.requestDevice();
         this.contextAttributes.compatibleXRDevice = this.device;
     }
@@ -141,7 +142,6 @@ export class XRController {
         this.session = await this.device!.requestSession(this.sessionCreationOptions);
 
         const canvasEl = document.createElement('canvas');
-        // TODO!: external canvas?
         // TODO!!: check what happens to old canvas when switching from magic window to immersive
         this.canvas = new Canvas(canvasEl, this.contextAttributes, this);
         this.gl = this.canvas.context.gl;
