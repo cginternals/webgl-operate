@@ -139,6 +139,7 @@ export class XRController {
      * - `SecurityError` if options.immersive is true and the algorithm is not triggered by user activation
      */
     async requestSession(): Promise<void> {
+        assert(!this.session, 'a session is already in progress');
         this.session = await this.device!.requestSession(this.sessionCreationOptions);
 
         const canvasEl = document.createElement('canvas');
@@ -166,7 +167,7 @@ export class XRController {
     }
 
     onXRFrame(time: number, frame: XRFrame) {
-        if (!this.session) { return; }
+        if (!this.session) { return; } // TODO!: cancelAnimationFrame in onEndSession instead?
         this.session.requestAnimationFrame(this.onXRFrameCallback);
         const gl = this.gl;
 
