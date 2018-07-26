@@ -139,7 +139,8 @@ export class XRController {
      * - `SecurityError` if options.immersive is true and the algorithm is not triggered by user activation
      */
     async requestSession(): Promise<void> {
-        assert(!this.session, 'a session is already in progress');
+        // TODO!: fix example first...
+        // assert(!this.session, 'a session is already in progress');
         this.session = await this.device!.requestSession(this.sessionCreationOptions);
 
         const canvasEl = document.createElement('canvas');
