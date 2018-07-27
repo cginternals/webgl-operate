@@ -41,7 +41,7 @@ export class XRController {
     sessionCreationOptions: XRSessionCreationOptions;
     /**
      * Attributes for WebGL context creation. `compatibleXRDevice` will be set
-     * automatically after session creation.
+     * automatically after requesting a device.
      */
     contextAttributes: WebGLContextAttributes = {};
     webGLLayerInit?: XRWebGLLayerInit;
@@ -87,7 +87,7 @@ export class XRController {
         // 3DOF controllers often have emulated 3D positions - signified
         // by the `emulatedPosition` field
 
-        const inputSources = this.session!.getInputSources();
+        const inputSources = frame.session.getInputSources();
 
         // Re-using the same array to avoid allocations per frame -> adjust length in case
         // number of input sources changes
@@ -169,7 +169,8 @@ export class XRController {
 
     onXRFrame(time: number, frame: XRFrame) {
         if (!this.session) { return; } // TODO!: cancelAnimationFrame in onEndSession instead?
-        this.session.requestAnimationFrame(this.onXRFrameCallback);
+        const session = frame.session;
+        session.requestAnimationFrame(this.onXRFrameCallback);
         const gl = this.gl;
 
         this.updateInputSources(frame);
@@ -177,25 +178,26 @@ export class XRController {
         const pose = frame.getDevicePose(this.frameOfRef!);
         // Getting the pose may fail if, for example, tracking is lost.
         if (pose) {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this.session!.baseLayer.framebuffer);
+            const views = frame.views;
 
             // Re-using the same array to avoid allocations per frame -> adjust length in case
             // number of views changes
-            if (frame.views.length !== this.renderViews.length) {
-                this.renderViews.length = frame.views.length;
+            if (views.length !== this.renderViews.length) {
+                this.renderViews.length = views.length;
             }
-            for (let i = 0; i < frame.views.length; ++i) {
-                const view = frame.views[i];
+            for (let i = 0; i < views.length; ++i) {
+                const view = views[i];
                 if (!this.renderViews[i]) {
                     this.renderViews[i] = new RenderView();
                 }
                 this.renderViews[i].set(
                     view.projectionMatrix,
                     pose.getViewMatrix(view),
-                    this.session!.baseLayer.getViewport(view)!,
+                    session.baseLayer.getViewport(view)!,
                 );
             }
 
+            gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
             this.renderer.frame(0, this.renderViews, this.inputPoses);
         } else {
             // TODO!: how to handle?

@@ -47,8 +47,12 @@ export class RenderView {
             this._inverseViewMatrix = mat4.create();
         }
 
-        mat4.invert(this._inverseViewMatrix as mat4, this.viewMatrix as mat4);
-        vec3.transformMat4(this._cameraPosition, this._cameraPosition, this._inverseViewMatrix as mat4);
+        this._cameraPosition[0] = 0;
+        this._cameraPosition[1] = 0;
+        this._cameraPosition[2] = 0;
+
+        mat4.invert(this._inverseViewMatrix, this.viewMatrix);
+        vec3.transformMat4(this._cameraPosition, this._cameraPosition, this._inverseViewMatrix);
 
         this._cameraPositionValid = true;
         return this._cameraPosition;
@@ -57,12 +61,13 @@ export class RenderView {
     /** Computes viewProjection matrix and caches it */
     get viewProjectionMatrix(): Float32Array {
         if (this._viewProjectionMatrixValid) {
-            return this._viewProjectionMatrix as mat4;
+            return this._viewProjectionMatrix;
         }
         if (!this._viewProjectionMatrix) {
             this._viewProjectionMatrix = mat4.create();
         }
-        mat4.multiply(this._viewProjectionMatrix as mat4, this.projectionMatrix as mat4, this.viewMatrix as mat4);
+        mat4.multiply(this._viewProjectionMatrix, this.projectionMatrix, this.viewMatrix);
+        this._viewProjectionMatrixValid = true;
         return this._viewProjectionMatrix;
     }
 }
