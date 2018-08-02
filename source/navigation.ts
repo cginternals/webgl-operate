@@ -64,7 +64,7 @@ export class Navigation {
         this._invalidate = invalidate;
 
         /* Create event handler that listens to mouse events. */
-        this._eventHandler = new EventHandler(invalidate, mouseEventProvider);
+        this._eventHandler = new EventHandler(invalidate, mouseEventProvider, undefined);
 
         /* Listen to mouse events. */
         this._eventHandler.pushMouseDownHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>

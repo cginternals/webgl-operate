@@ -12,7 +12,7 @@ export class TestNavigation {
 
 
     constructor(invalidate: Invalidate, mouseEventProvider: MouseEventProvider) {
-        this._eventHandler = new EventHandler(invalidate, mouseEventProvider);
+        this._eventHandler = new EventHandler(invalidate, mouseEventProvider, undefined);
         this._eventHandler.pushMouseEnterHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
             this.onMouseEnter(latests, previous));
         this._eventHandler.pushMouseLeaveHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
