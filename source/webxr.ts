@@ -213,28 +213,11 @@ export interface XRInputSource {
 }
 
 /**
- * [Specification](https://drafts.fxtf.org/geometry/#DOMPoint)
- * Partial type (some methods omitted)
- */
-interface DOMPointReadOnly {
-    // static DOMPointReadOnly fromPoint(optional DOMPointInit other);
-
-    readonly x: number;
-    readonly y: number;
-    readonly z: number;
-    readonly w: number;
-
-    // matrixTransform(optional DOMMatrixInit matrix): DOMPoint;
-
-    toJSON(): any;
-}
-
-/**
  * [Specification](https://immersive-web.github.io/webxr/#xrray-interface)
  */
 export interface XRRay {
-    readonly origin: DOMPointReadOnly;
-    readonly direction: DOMPointReadOnly;
+    readonly origin: GeometryDom.DOMPointReadOnly;
+    readonly direction: GeometryDom.DOMPointReadOnly;
     readonly transformMatrix: Float32Array;
 }
 
