@@ -96,7 +96,7 @@ export class XRController {
         }
 
         // TODO!!!: saving input sources (and passing them to renderer.frame) is insufficent
-        // -> pose.handedness and pose.targetRayMode should also be passed
+        // -> source.handedness and source.targetRayMode should also be passed
         for (let i = 0; i < inputSources.length; ++i) {
             // NOTE: might be `null` if tracking has been lost - save it anyway, since the renderer
             // might want to handle that case explicitly.

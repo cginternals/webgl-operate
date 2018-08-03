@@ -2,7 +2,7 @@ import { mat4, vec3 } from 'gl-matrix';
 import { XRViewport } from './webxr';
 
 /**
- * Helper class to hold render configuration per XRView,
+ * WebXR helper class to hold render configuration per XRView,
  * i.e. per eye for standard VR/AR.
  * NOTE: Optimized to avoid allocations during render loop.
  */
