@@ -5,7 +5,7 @@
 
 /// All types are derived from the WebXR WebIDL:
 /// https://immersive-web.github.io/webxr/#idl-index
-/// Last sync with the spec: 2018-07-21
+/// Last sync with the spec: 2018-08-03
 
 export type EventHandler = (ev: Event) => void;
 
@@ -213,13 +213,39 @@ export interface XRInputSource {
 }
 
 /**
+ * [Specification](https://drafts.fxtf.org/geometry/#DOMPoint)
+ * Partial type (some methods omitted)
+ */
+interface DOMPointReadOnly {
+    // static DOMPointReadOnly fromPoint(optional DOMPointInit other);
+
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly w: number;
+
+    // matrixTransform(optional DOMMatrixInit matrix): DOMPoint;
+
+    toJSON(): any;
+}
+
+/**
+ * [Specification](https://immersive-web.github.io/webxr/#xrray-interface)
+ */
+export interface XRRay {
+    readonly origin: DOMPointReadOnly;
+    readonly direction: DOMPointReadOnly;
+    readonly transformMatrix: Float32Array;
+}
+
+/**
  * [Reference](https://immersive-web.github.io/webxr-reference/webxr-device-api/xrinputpose.html)
  *
  * [Specification](https://immersive-web.github.io/webxr/#xrinputpose-interface)
  */
 export interface XRInputPose {
     readonly emulatedPosition: boolean;
-    readonly targetRayMatrix: Float32Array;
+    readonly targetRay: XRRay;
     readonly gripMatrix: Float32Array | null;
 }
 
