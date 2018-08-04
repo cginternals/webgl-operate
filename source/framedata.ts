@@ -14,7 +14,9 @@ export class FrameData {
     private _frame: XRFrame;
     private _frameOfReference: XRFrameOfReference;
     private _renderViews: RenderView[] = [];
+    private _renderViewsValid = false;
     private _inputData: XRInputData[] = [];
+    private _inputDataValid = false;
 
     /** The timestamp passed to requestAnimationFrame */
     get time(): number { return this._time; }
@@ -25,14 +27,21 @@ export class FrameData {
     get frame(): XRFrame { return this._frame; }
     set frame(frame: XRFrame) {
         this._frame = frame;
+        this._renderViewsValid = false;
+        this._inputDataValid = false;
     }
 
     get frameOfReference(): XRFrameOfReference { return this._frameOfReference; }
     set frameOfReference(frameOfReference: XRFrameOfReference) {
         this._frameOfReference = frameOfReference;
+        this._inputDataValid = false;
     }
 
     get renderViews(): RenderView[] {
+        if (this._renderViewsValid) {
+            return this._renderViews;
+        }
+
         const pose = this.frame.getDevicePose(this.frameOfReference);
         // Getting the pose may fail if, for example, tracking is lost.
         if (pose) {
@@ -56,10 +65,15 @@ export class FrameData {
             }
         } // else: return last frame's data (assumption: object is reused)
 
+        this._renderViewsValid = true;
         return this._renderViews;
     }
 
     get inputData(): XRInputData[] {
+        if (this._inputDataValid) {
+            return this._inputData;
+        }
+
         const sources = this._frame.session.getInputSources();
         if (sources.length !== this.inputData.length) {
             this.inputData.length = sources.length;
@@ -75,6 +89,7 @@ export class FrameData {
             this.inputData[i].pose = pose;
         }
 
+        this._inputDataValid = true;
         return this._inputData;
     }
 }

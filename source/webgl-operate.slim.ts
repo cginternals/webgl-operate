@@ -67,4 +67,6 @@ import * as root_tuples from './tuples';
 export import tuples = root_tuples;
 
 export { XRController } from './xrcontroller';
+export { XRRenderer } from './xrrenderer';
+export { FrameData } from './framedata';
 export { RenderView } from './renderview';

@@ -11,10 +11,8 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { MouseEventProvider } from './mouseeventprovider';
-import { RenderView } from './renderview';
 import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
-import { XRInputPose } from './webxr';
 import { Wizard } from './wizard';
 
 
@@ -192,8 +190,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Actual frame call specified by inheritor. After (1) update and (2) preparation are invoked, a frame is invoked.
      * This should be used for actual rendering implementation.
      */
-    protected abstract onFrame(frameNumber: number, renderViews?: RenderView[],
-        inputPoses?: Array<XRInputPose | null>): void;
+    protected abstract onFrame(frameNumber: number): void;
 
     /**
      * Actual swap call specified by inheritor. After (1) update, (2) preparation, and (3) frame are invoked, a swap
@@ -280,8 +277,8 @@ export abstract class Renderer extends Initializable implements Controllable {
      * @param inputPoses - WebXR controller input poses
      */
     @Initializable.assert_initialized()
-    frame(frameNumber: number, renderViews?: RenderView[], inputPoses?: Array<XRInputPose | null>): void {
-        this.onFrame(frameNumber, renderViews, inputPoses);
+    frame(frameNumber: number): void {
+        this.onFrame(frameNumber);
     }
 
     /**

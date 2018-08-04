@@ -1,8 +1,7 @@
 import { assert } from './auxiliaries';
 import { Canvas } from './canvas';
 import { Controllable } from './controller';
-import { Renderer } from './renderer';
-import { RenderView } from './renderview';
+import { FrameData } from './framedata';
 import {
     XRDevice,
     XRFrame,
@@ -11,6 +10,7 @@ import {
     XRSession, XRSessionCreationOptions,
     XRWebGLLayerInit,
 } from './webxr';
+import { XRRenderer } from './xrrenderer';
 
 // tslint:disable-next:member-ordering
 /**
@@ -34,7 +34,7 @@ import {
  */
 export class XRController {
     private onXRFrameCallback = this.onXRFrame.bind(this);
-    private renderViews: RenderView[] = [new RenderView()];
+    private frameData: FrameData = new FrameData();
 
     // Configuration options for setting up and XR session.
 
@@ -54,7 +54,7 @@ export class XRController {
     gl: any;
     frameOfRef: XRFrameOfReference | undefined;
 
-    renderer: Renderer;
+    renderer: XRRenderer;
 
     inputPoses: Array<XRInputPose | null> = [];
 
@@ -80,28 +80,6 @@ export class XRController {
      */
     constructor(sessionOpts?: XRSessionCreationOptions) {
         this.sessionCreationOptions = sessionOpts || {};
-    }
-
-    private updateInputSources(frame: XRFrame) {
-        // XRInputSources are generally 3DOF/6DOF hand controllers
-        // 3DOF controllers often have emulated 3D positions - signified
-        // by the `emulatedPosition` field
-
-        const inputSources = frame.session.getInputSources();
-
-        // Re-using the same array to avoid allocations per frame -> adjust length in case
-        // number of input sources changes
-        if (inputSources.length !== this.inputPoses.length) {
-            this.inputPoses.length = inputSources.length;
-        }
-
-        // TODO!!!: saving input sources (and passing them to renderer.frame) is insufficent
-        // -> source.handedness and source.targetRayMode should also be passed
-        for (let i = 0; i < inputSources.length; ++i) {
-            // NOTE: might be `null` if tracking has been lost - save it anyway, since the renderer
-            // might want to handle that case explicitly.
-            this.inputPoses[i] = frame.getInputPose(inputSources[i], this.frameOfRef!);
-        }
     }
 
     /**
@@ -150,6 +128,7 @@ export class XRController {
 
         this.session.baseLayer = new XRWebGLLayer(this.session, this.gl, this.webGLLayerInit);
         this.frameOfRef = await this.session.requestFrameOfReference(this.frameOfRefType, this.frameOfRefOptions);
+        this.frameData.frameOfReference = this.frameOfRef;
 
         this.session.requestAnimationFrame(this.onXRFrameCallback);
 
@@ -165,6 +144,7 @@ export class XRController {
         this.canvas = undefined;
         this.gl = undefined;
         this.frameOfRef = undefined;
+        this.frameData = new FrameData();
     }
 
     onXRFrame(time: number, frame: XRFrame) {
@@ -173,36 +153,11 @@ export class XRController {
         session.requestAnimationFrame(this.onXRFrameCallback);
         const gl = this.gl;
 
-        this.updateInputSources(frame);
+        this.frameData.time = time;
+        this.frameData.frame = frame;
 
-        const pose = frame.getDevicePose(this.frameOfRef!);
-        // Getting the pose may fail if, for example, tracking is lost.
-        if (pose) {
-            const views = frame.views;
-
-            // Re-using the same array to avoid allocations per frame -> adjust length in case
-            // number of views changes
-            if (views.length !== this.renderViews.length) {
-                this.renderViews.length = views.length;
-            }
-            for (let i = 0; i < views.length; ++i) {
-                const view = views[i];
-                if (!this.renderViews[i]) {
-                    this.renderViews[i] = new RenderView();
-                }
-                this.renderViews[i].set(
-                    view.projectionMatrix,
-                    pose.getViewMatrix(view),
-                    session.baseLayer.getViewport(view)!,
-                );
-            }
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
-            this.renderer.frame(0, this.renderViews, this.inputPoses);
-        } else {
-            // TODO!: how to handle?
-            console.warn('no pose - this is not handled yet.');
-        }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
+        this.renderer.xrframe(this.frameData);
     }
 
     // TODO!!: the block/unblock-methods don't make much sense for WebXR I think,
@@ -221,7 +176,8 @@ export class XRController {
         this._block = false;
     }
     set controllable(c: Controllable) {
-        this.renderer = c as Renderer;
+        assert(c instanceof XRRenderer, 'Controllable must be an `XRRenderer`');
+        this.renderer = c as XRRenderer;
     }
     update(force: boolean = false): void {
         // TODO:!?
