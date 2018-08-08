@@ -25,6 +25,16 @@ describe('auxiliaries assert', () => {
         const message = 'always throw';
         expect(() => aux.assert(false, message)).to.throw();
     });
+
+    it('should be allowed to be disabled', () => {
+        expect(aux.assertions()).to.be.true;
+        aux.assertions(false);
+        expect(aux.assertions()).to.be.false;
+        expect(() => aux.assert(false, 'ignore')).to.not.throw();
+        aux.assertions(true);
+        expect(() => aux.assert(false, 'ignore')).to.throw();
+    });
+
 });
 
 
@@ -129,6 +139,32 @@ describe('auxiliaries prettyPrintBytes', () => {
     it('should print kibi bytes for bytes between 1024, 1048575', () => {
         expect(aux.prettyPrintBytes(1024)).to.equal('1.000KiB');
         expect(aux.prettyPrintBytes(1048575)).to.equal('1023.999KiB');
+    });
+
+});
+
+
+describe('auxiliaries prettyPrintMilliseconds', () => {
+
+    it('should convert and use correct suffixes', () => {
+        expect(aux.prettyPrintMilliseconds(0.00)).to.equal('0.000ms');
+        expect(aux.prettyPrintMilliseconds(1e+0)).to.equal('1.000ms');
+
+        expect(aux.prettyPrintMilliseconds(1e+1)).to.equal('10.000ms');
+        expect(aux.prettyPrintMilliseconds(1e+2)).to.equal('0.100s');
+        expect(aux.prettyPrintMilliseconds(1e+3)).to.equal('1.000s');
+        expect(aux.prettyPrintMilliseconds(1e+4)).to.equal('10.000s');
+        expect(aux.prettyPrintMilliseconds(1e+5)).to.equal('100.000s');
+
+        expect(aux.prettyPrintMilliseconds(1e-1)).to.equal('0.100ms');
+        expect(aux.prettyPrintMilliseconds(1e-2)).to.equal('10.000μs');
+        expect(aux.prettyPrintMilliseconds(1e-3)).to.equal('1.000μs');
+        expect(aux.prettyPrintMilliseconds(1e-4)).to.equal('0.100μs');
+        expect(aux.prettyPrintMilliseconds(1e-5)).to.equal('10.000ns');
+        expect(aux.prettyPrintMilliseconds(1e-6)).to.equal('1.000ns');
+        expect(aux.prettyPrintMilliseconds(1e-7)).to.equal('0.100ns');
+        expect(aux.prettyPrintMilliseconds(1e-8)).to.equal('0.010ns');
+        expect(aux.prettyPrintMilliseconds(1e-9)).to.equal('0.001ns');
     });
 
 });
