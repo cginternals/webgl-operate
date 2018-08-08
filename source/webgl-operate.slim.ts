@@ -9,6 +9,7 @@ export { ContextMasquerade } from './contextmasquerade';
 export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
+export { TouchEventProvider } from './toucheventprovider';
 export { EventHandler } from './eventhandler';
 
 export { Buffer } from './buffer';
