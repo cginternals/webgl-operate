@@ -106,19 +106,19 @@ export class MouseEventProvider {
     observable(type: MouseEventProvider.Type): Observable<MouseEvent> | Observable<WheelEvent> | undefined {
         switch (type) {
             case MouseEventProvider.Type.Click:
-                return this.clickObservable;
+                return this.click$;
             case MouseEventProvider.Type.Enter:
-                return this.enterObservable;
+                return this.enter$;
             case MouseEventProvider.Type.Leave:
-                return this.leaveObservable;
+                return this.leave$;
             case MouseEventProvider.Type.Down:
-                return this.downObservable;
+                return this.down$;
             case MouseEventProvider.Type.Up:
-                return this.upObservable;
+                return this.up$;
             case MouseEventProvider.Type.Move:
-                return this.moveObservable;
+                return this.move$;
             case MouseEventProvider.Type.Wheel:
-                return this.wheelObservable;
+                return this.wheel$;
             default:
                 return undefined;
         }
@@ -139,7 +139,7 @@ export class MouseEventProvider {
         return PointerLock.active(this._element);
     }
 
-    get clickObservable(): Observable<MouseEvent> {
+    get click$(): Observable<MouseEvent> {
         if (this._clickSubject === undefined) {
             this._clickSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._clickListener = (event: MouseEvent) => {
@@ -151,7 +151,7 @@ export class MouseEventProvider {
         return this._clickSubject.asObservable();
     }
 
-    get enterObservable(): Observable<MouseEvent> {
+    get enter$(): Observable<MouseEvent> {
         if (this._enterSubject === undefined) {
             this._enterSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._enterListener = (event: MouseEvent) => {
@@ -163,7 +163,7 @@ export class MouseEventProvider {
         return this._enterSubject.asObservable();
     }
 
-    get leaveObservable(): Observable<MouseEvent> {
+    get leave$(): Observable<MouseEvent> {
         if (this._leaveSubject === undefined) {
             this._leaveSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._leaveListener = (event: MouseEvent) => {
@@ -175,7 +175,7 @@ export class MouseEventProvider {
         return this._leaveSubject.asObservable();
     }
 
-    get downObservable(): Observable<MouseEvent> {
+    get down$(): Observable<MouseEvent> {
         if (this._downSubject === undefined) {
             this._downSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._downListener = (event: MouseEvent) => {
@@ -187,7 +187,7 @@ export class MouseEventProvider {
         return this._downSubject.asObservable();
     }
 
-    get upObservable(): Observable<MouseEvent> {
+    get up$(): Observable<MouseEvent> {
         if (this._upSubject === undefined) {
             this._upSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._upListener = (event: MouseEvent) => {
@@ -199,7 +199,7 @@ export class MouseEventProvider {
         return this._upSubject.asObservable();
     }
 
-    get moveObservable(): Observable<MouseEvent> {
+    get move$(): Observable<MouseEvent> {
         if (this._moveSubject === undefined) {
             this._moveSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._moveListener = (event: MouseEvent) => {
@@ -211,7 +211,7 @@ export class MouseEventProvider {
         return this._moveSubject.asObservable();
     }
 
-    get wheelObservable(): Observable<WheelEvent> {
+    get wheel$(): Observable<WheelEvent> {
         if (this._wheelSubject === undefined) {
             this._wheelSubject = new ReplaySubject<WheelEvent>(undefined, this._timeframe);
             this._wheelListener = (event: WheelEvent) => {

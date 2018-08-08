@@ -81,20 +81,20 @@ export class TouchEventProvider {
         /* tslint:disable-next-line:switch-default */
         switch (type) {
             case TouchEventProvider.Type.Start:
-                return this.startObservable;
+                return this.start$;
             case TouchEventProvider.Type.End:
-                return this.endObservable;
+                return this.end$;
             case TouchEventProvider.Type.Move:
-                return this.moveObservable;
+                return this.move$;
             case TouchEventProvider.Type.Cancel:
-                return this.cancelObservable;
+                return this.cancel$;
         }
 
         assert(false, 'Encountered unknown touch event.');
         return new Observable<TouchEvent>();
     }
 
-    get startObservable(): Observable<TouchEvent> {
+    get start$(): Observable<TouchEvent> {
         if (this._startSubject === undefined) {
             this._startSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._startListener = (event: TouchEvent) => {
@@ -106,7 +106,7 @@ export class TouchEventProvider {
         return this._startSubject.asObservable();
     }
 
-    get endObservable(): Observable<TouchEvent> {
+    get end$(): Observable<TouchEvent> {
         if (this._endSubject === undefined) {
             this._endSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._endListener = (event: TouchEvent) => {
@@ -118,7 +118,7 @@ export class TouchEventProvider {
         return this._endSubject.asObservable();
     }
 
-    get moveObservable(): Observable<TouchEvent> {
+    get move$(): Observable<TouchEvent> {
         if (this._moveSubject === undefined) {
             this._moveSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._moveListener = (event: TouchEvent) => {
@@ -130,7 +130,7 @@ export class TouchEventProvider {
         return this._moveSubject.asObservable();
     }
 
-    get cancelObservable(): Observable<TouchEvent> {
+    get cancel$(): Observable<TouchEvent> {
         if (this._cancelSubject === undefined) {
             this._cancelSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._cancelListener = (event: TouchEvent) => {

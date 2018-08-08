@@ -464,7 +464,7 @@ export class Canvas extends Resizable {
     /**
      * Observable that can be used to subscribe to frame scale changes.
      */
-    get frameScaleObservable(): Observable<GLclampf2> {
+    get frameScale$(): Observable<GLclampf2> {
         return this._frameScaleSubject.asObservable();
     }
 
@@ -522,7 +522,7 @@ export class Canvas extends Resizable {
     /**
      * Observable that can be used to subscribe to frame size changes.
      */
-    get frameSizeObservable(): Observable<GLsizei2> {
+    get frameSize$(): Observable<GLsizei2> {
         return this._frameSizeSubject.asObservable();
     }
 
@@ -576,7 +576,7 @@ export class Canvas extends Resizable {
     /**
      * Observable that can be used to subscribe to frame precision changes.
      */
-    get framePrecisionObservable(): Observable<string> {
+    get framePrecision$(): Observable<string> {
         return this._framePrecisionSubject.asObservable();
     }
 
@@ -612,7 +612,7 @@ export class Canvas extends Resizable {
     /**
      * Observable that can be used to subscribe to canvas size changes.
      */
-    get sizeObservable(): Observable<GLsizei2> {
+    get size$(): Observable<GLsizei2> {
         return this._sizeSubject.asObservable();
     }
 

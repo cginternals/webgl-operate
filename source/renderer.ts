@@ -399,7 +399,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Observable that can be used to subscribe to debug texture changes.
      */
-    get debugTextureObservable(): Observable<GLint> {
+    get debugTexture$(): Observable<GLint> {
         return this._debugTextureSubject.asObservable();
     }
 

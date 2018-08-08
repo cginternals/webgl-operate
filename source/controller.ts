@@ -530,7 +530,7 @@ export class Controller {
     /**
      * Observable that can be used to subscribe to multi-frame number changes.
      */
-    get multiFrameNumberObservable(): Observable<number> {
+    get multiFrameNumber$(): Observable<number> {
         return this._multiFrameNumberSubject.asObservable();
     }
 
@@ -584,7 +584,7 @@ export class Controller {
     /**
      * Observable that can be used to subscribe to debug-frame number changes.
      */
-    get debugFrameNumberObservable(): Observable<number> {
+    get debugFrameNumber$(): Observable<number> {
         return this._debugFrameNumberSubject.asObservable();
     }
 
@@ -602,7 +602,7 @@ export class Controller {
     /**
      * Observable that can be used to subscribe to frame number changes.
      */
-    get frameNumberObservable(): Observable<number> {
+    get frameNumber$(): Observable<number> {
         return this._frameNumberSubject.asObservable();
     }
 
