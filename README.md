@@ -53,9 +53,6 @@ ToDo
 
 *webgl-operate* has currently no non-dev dependencies.
 Please note the following fixed (allowing patch only) version dependencies, that should not be updated until further review/evaluation:
-* ES6+ problems (breaks build due to the used UglifyJS only supporting ES5):
-   - `@types/gl-matrix: ~2.3.0,`
-   - `gl-matrix: ~2.3.2,`
 * Typescript problems
    - `ts-node: ~5.0.1,` (compilation errors in tests with version 6/7)
 * TypeDoc compiler issues (could be resolved by ignoring compile errors in typedocOptions, but ...):
