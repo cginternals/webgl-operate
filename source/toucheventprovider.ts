@@ -1,7 +1,7 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert } from './auxiliaries';
+import { assert, bitInBitfield } from './auxiliaries';
 
 
 export class TouchEventProvider {
@@ -32,7 +32,8 @@ export class TouchEventProvider {
      * This mask saves for which types of events, event.preventDefault should be called.
      * This is useful to disallow some kinds of standard events like scrolling or clicking on links.
      */
-    protected _preventDefaultMask: TouchEventProvider.PreventDefaultOption;
+    protected _preventDefaultMask: TouchEventProvider.Type;
+
 
     constructor(element: HTMLCanvasElement, timeframe?: number) {
         assert(element !== undefined, `expected valid canvas element on initialization, given ${element}`);
@@ -40,36 +41,41 @@ export class TouchEventProvider {
         this._timeframe = timeframe;
     }
 
-    protected handlePreventDefault(option: TouchEventProvider.PreventDefaultOption, event: TouchEvent) {
-        if (this._preventDefaultMask & option) {
+    /**
+     *
+     * @param type - Internal event type of the incoming event.
+     * @param event - Actual event to prevent default handling on (if masked).
+     */
+    protected preventDefaultOnEvent(type: TouchEventProvider.Type, event: TouchEvent) {
+        if (bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
     }
 
     /**
-     * Add one option to the mask of events for which preventDefault should be called.
-     * @param option Option to be added
+     * Prevent default event handling on specific event type (using prevenDefault on the event).
+     * @param types - Event types to prevent default handling on.
      */
-    addPreventDefaultOption(option: TouchEventProvider.PreventDefaultOption): void {
-        this._preventDefaultMask |= option;
+    preventDefault(...types: TouchEventProvider.Type[]): void {
+        for (const type of types) {
+            if (!bitInBitfield(this._preventDefaultMask, type)) {
+                this._preventDefaultMask |= type;
+            }
+        }
     }
 
     /**
-     * Remove one option to the mask of events for which preventDefault should be called.
-     * @param option Option to be removed
+     * Allow default event handling on specific event type (not calling preventDefault on the event).
+     * @param types - Event types to allow default handling on.
      */
-    removePreventDefaultOption(option: TouchEventProvider.PreventDefaultOption): void {
-        this._preventDefaultMask &= ~option;
+    allowDefault(...types: TouchEventProvider.Type[]): void {
+        for (const type of types) {
+            if (bitInBitfield(this._preventDefaultMask, type)) {
+                this._preventDefaultMask &= ~type;
+            }
+        }
     }
 
-    /**
-     * Set the whole mask, which represents for which preventDefault should be called.
-     * Overrides all previously set options.
-     * @param mask Mask of options for which preventDefault should be called
-     */
-    set preventDefaultMask(mask: TouchEventProvider.PreventDefaultOption) {
-        this._preventDefaultMask = mask;
-    }
 
     observable(type: TouchEventProvider.Type): Observable<TouchEvent> {
         /* tslint:disable-next-line:switch-default */
@@ -92,7 +98,7 @@ export class TouchEventProvider {
         if (this._startSubject === undefined) {
             this._startSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._startListener = (event: TouchEvent) => {
-                this.handlePreventDefault(TouchEventProvider.PreventDefaultOption.Start, event);
+                this.preventDefaultOnEvent(TouchEventProvider.Type.Start, event);
                 this._startSubject.next(event);
             };
             this._element.addEventListener('touchstart', this._startListener);
@@ -104,7 +110,7 @@ export class TouchEventProvider {
         if (this._endSubject === undefined) {
             this._endSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._endListener = (event: TouchEvent) => {
-                this.handlePreventDefault(TouchEventProvider.PreventDefaultOption.End, event);
+                this.preventDefaultOnEvent(TouchEventProvider.Type.End, event);
                 this._endSubject.next(event);
             };
             this._element.addEventListener('touchend', this._endListener);
@@ -116,7 +122,7 @@ export class TouchEventProvider {
         if (this._moveSubject === undefined) {
             this._moveSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._moveListener = (event: TouchEvent) => {
-                this.handlePreventDefault(TouchEventProvider.PreventDefaultOption.Move, event);
+                this.preventDefaultOnEvent(TouchEventProvider.Type.Move, event);
                 this._moveSubject.next(event);
             };
             this._element.addEventListener('touchmove', this._moveListener);
@@ -128,7 +134,7 @@ export class TouchEventProvider {
         if (this._cancelSubject === undefined) {
             this._cancelSubject = new ReplaySubject<TouchEvent>(undefined, this._timeframe);
             this._cancelListener = (event: TouchEvent) => {
-                this.handlePreventDefault(TouchEventProvider.PreventDefaultOption.Cancel, event);
+                this.preventDefaultOnEvent(TouchEventProvider.Type.Cancel, event);
                 this._cancelSubject.next(event);
             };
             this._element.addEventListener('touchcancel', this._cancelListener);
@@ -140,13 +146,11 @@ export class TouchEventProvider {
 
 export namespace TouchEventProvider {
 
-    export enum Type { Start, End, Move, Cancel }
-
-    export enum PreventDefaultOption {
-        None = 0,
+    export enum Type {
         Start = 1 << 0,
         End = 1 << 1,
         Move = 1 << 2,
         Cancel = 1 << 3,
     }
+
 }

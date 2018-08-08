@@ -42,8 +42,8 @@ export class MouseEventProvider {
     protected _pointerLockRequestPending = false;
 
     /**
-     * This mask saves for which types of events, event.preventDefault should be called.
-     * This is useful to disallow some kinds of standard events like scrolling or clicking on links.
+     * This mask saves for which types of events, event.preventDefault should be called. This is useful to disallow
+     * some kinds of standard events like scrolling or clicking on links.
      */
     protected _preventDefaultMask: MouseEventProvider.Type;
 
@@ -67,40 +67,43 @@ export class MouseEventProvider {
         }
         PointerLock.request(this._element);
     }
-    
+
+    /**
+     *
+     * @param type - Internal event type of the incoming event.
+     * @param event - Actual event to prevent default handling on (if masked).
+     */
     protected preventDefaultOnEvent(type: MouseEventProvider.Type, event: MouseEvent) {
-        if(bitInBitfield(this._preventDefaultMask, type) {
+        if (bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
     }
 
     /**
-     * Prevent default event handling on a specific event type (using prevenDefault on the event).
-     * @param type - Event type to prevent default handling on.
+     * Prevent default event handling on specific event types (using prevenDefault on the event).
+     * @param types - Event types to prevent default handling on.
      */
     preventDefault(...types: MouseEventProvider.Type[]): void {
-        for(const type of types) {
-            if(!bitInBitfield(this._preventDefaultMask, type)) {
-                this._preventDefaultMask |= type;    
+        for (const type of types) {
+            if (!bitInBitfield(this._preventDefaultMask, type)) {
+                this._preventDefaultMask |= type;
             }
         }
     }
 
     /**
-     * Allow default event handling on a specific event type (not calling preventDefault on the event).
-     * @param type - Event type to allow default handling on.
+     * Allow default event handling on specific event types (not calling preventDefault on the event).
+     * @param types - Event types to allow default handling on.
      */
     allowDefault(...types: MouseEventProvider.Type[]): void {
-        for(const type of types) {
-            if(bitInBitfield(this._preventDefaultMask, type)) {
-                this._preventDefaultMask &= ~type;    
+        for (const type of types) {
+            if (bitInBitfield(this._preventDefaultMask, type)) {
+                this._preventDefaultMask &= ~type;
             }
         }
-        this._preventDefaultMask &= ~type;
     }
 
-    observable(type: MouseEventProvider.Type): Observable<MouseEvent> | Observable<WheelEvent> {
-        /* tslint:disable-next-line:switch-default */
+    observable(type: MouseEventProvider.Type): Observable<MouseEvent> | Observable<WheelEvent> | undefined {
         switch (type) {
             case MouseEventProvider.Type.Click:
                 return this.clickObservable;
@@ -116,6 +119,8 @@ export class MouseEventProvider {
                 return this.moveObservable;
             case MouseEventProvider.Type.Wheel:
                 return this.wheelObservable;
+            default:
+                return undefined;
         }
     }
 
@@ -130,7 +135,6 @@ export class MouseEventProvider {
             PointerLock.exit();
         }
     }
-
     get pointerLock(): boolean {
         return PointerLock.active(this._element);
     }
@@ -141,7 +145,7 @@ export class MouseEventProvider {
             this._clickListener = (event: MouseEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Click, event);
                 this._clickSubject.next(event);
-            }
+            };
             this._element.addEventListener('click', this._clickListener);
         }
         return this._clickSubject.asObservable();
@@ -153,7 +157,7 @@ export class MouseEventProvider {
             this._enterListener = (event: MouseEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Enter, event);
                 this._enterSubject.next(event);
-            }
+            };
             this._element.addEventListener('mouseenter', this._enterListener);
         }
         return this._enterSubject.asObservable();
@@ -165,7 +169,7 @@ export class MouseEventProvider {
             this._leaveListener = (event: MouseEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Leave, event);
                 this._leaveSubject.next(event);
-            }
+            };
             this._element.addEventListener('mouseleave', this._leaveListener);
         }
         return this._leaveSubject.asObservable();
@@ -177,7 +181,7 @@ export class MouseEventProvider {
             this._downListener = (event: MouseEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Down, event);
                 this._downSubject.next(event);
-            }
+            };
             this._element.addEventListener('mousedown', this._downListener);
         }
         return this._downSubject.asObservable();
@@ -189,7 +193,7 @@ export class MouseEventProvider {
             this._upListener = (event: MouseEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Up, event);
                 this._upSubject.next(event);
-            }
+            };
             this._element.addEventListener('mouseup', this._upListener);
         }
         return this._upSubject.asObservable();
@@ -201,7 +205,7 @@ export class MouseEventProvider {
             this._moveListener = (event: MouseEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Move, event);
                 this._moveSubject.next(event);
-            }
+            };
             this._element.addEventListener('mousemove', this._moveListener);
         }
         return this._moveSubject.asObservable();
@@ -213,7 +217,7 @@ export class MouseEventProvider {
             this._wheelListener = (event: WheelEvent) => {
                 this.preventDefaultOnEvent(MouseEventProvider.Type.Wheel, event);
                 this._wheelSubject.next(event);
-            }
+            };
             this._element.addEventListener('wheel', this._wheelListener);
         }
         return this._wheelSubject.asObservable();
@@ -224,13 +228,13 @@ export class MouseEventProvider {
 
 export namespace MouseEventProvider {
 
-    export enum Type { 
+    export enum Type {
         Click = 1 << 0,
         Wheel = 1 << 1,
-        Enter = 1 << 2, 
+        Enter = 1 << 2,
         Leave = 1 << 3,
         Move = 1 << 4,
-        Down = 1 << 5, 
+        Down = 1 << 5,
         Up = 1 << 6,
     }
 

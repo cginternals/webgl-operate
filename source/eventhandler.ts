@@ -229,7 +229,8 @@ export class EventHandler {
 
         } else if (event instanceof TouchEvent) {
             const e = event as TouchEvent;
-            for (const touch of e.touches) {
+            for (let index = 0; index < e.touches.length; ++index) {
+                const touch = e.touches.item(index)!;
                 offsets.push(vec2.fromValues(touch.clientX, touch.clientY));
             }
         }
