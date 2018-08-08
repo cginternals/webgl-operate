@@ -7,8 +7,9 @@ import { Observable, Subscription } from 'rxjs';
 import { assert } from './auxiliaries';
 
 import { MouseEventProvider } from './mouseeventprovider';
-import { TouchEventProvider } from './toucheventprovider';
 import { Invalidate } from './renderer';
+import { TouchEventProvider } from './toucheventprovider';
+
 
 /**
  * Callback for handling mouse events, given the latest mouse events (since last update) as well as the previous.
@@ -19,6 +20,7 @@ export interface MouseEventHandler { (latests: Array<MouseEvent>, previous: Arra
  * Callback for handling touch events, given the latest touch events (since last update) as well as the previous.
  */
 export interface TouchEventHandler { (latests: Array<TouchEvent>, previous: Array<TouchEvent>): void; }
+
 
 /**
  * ... Provider and event handler are explicitly separated in order to reduce the number of observables (reuse of event
@@ -227,9 +229,7 @@ export class EventHandler {
 
         } else if (event instanceof TouchEvent) {
             const e = event as TouchEvent;
-            /* tslint:disable-next-line:prefer-for-of */
-            for (let i = 0; i < e.touches.length; ++i) {
-                const touch = e.touches[i];
+            for (const touch of e.touches) {
                 offsets.push(vec2.fromValues(touch.clientX, touch.clientY));
             }
         }
@@ -346,6 +346,7 @@ export class EventHandler {
     pushTouchCancelHandler(handler: TouchEventHandler) {
         this.pushTouchEventHandler(TouchEventProvider.Type.Cancel, handler);
     }
+
 
     requestPointerLock(): void {
         if (this._mouseEventProvider) {
