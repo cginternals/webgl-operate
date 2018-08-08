@@ -1,7 +1,7 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert } from './auxiliaries';
+import { assert, bitInBitfield } from './auxiliaries';
 
 import { PointerLock } from './pointerlock';
 
@@ -45,7 +45,7 @@ export class MouseEventProvider {
      * This mask saves for which types of events, event.preventDefault should be called.
      * This is useful to disallow some kinds of standard events like scrolling or clicking on links.
      */
-    protected _preventDefaultMask: MouseEventProvider.PreventDefaultOption;
+    protected _preventDefaultMask: MouseEventProvider.Type;
 
     constructor(element: HTMLCanvasElement, timeframe?: number) {
         assert(element !== undefined, `expected valid canvas element on initialization, given ${element}`);
@@ -67,36 +67,36 @@ export class MouseEventProvider {
         }
         PointerLock.request(this._element);
     }
-
-    /**
-     * Add one option to the mask of events for which preventDefault should be called.
-     * @param option Option to be added
-     */
-    addPreventDefaultOption(option: MouseEventProvider.PreventDefaultOption): void {
-        this._preventDefaultMask |= option;
-    }
-
-    /**
-     * Remove one option to the mask of events for which preventDefault should be called.
-     * @param option Option to be removed
-     */
-    removePreventDefaultOption(option: MouseEventProvider.PreventDefaultOption): void {
-        this._preventDefaultMask &= ~option;
-    }
-
-    /**
-     * Set the whole mask, which represents for which preventDefault should be called.
-     * Overrides all previously set options.
-     * @param mask Mask of options for which preventDefault should be called
-     */
-    set preventDefaultMask(mask: MouseEventProvider.PreventDefaultOption) {
-        this._preventDefaultMask = mask;
-    }
-
-    protected handlePreventDefault(option: MouseEventProvider.PreventDefaultOption, event: MouseEvent) {
-        if (this._preventDefaultMask & option) {
+    
+    protected preventDefaultOnEvent(type: MouseEventProvider.Type, event: MouseEvent) {
+        if(bitInBitfield(this._preventDefaultMask, type) {
             event.preventDefault();
         }
+    }
+
+    /**
+     * Prevent default event handling on a specific event type (using prevenDefault on the event).
+     * @param type - Event type to prevent default handling on.
+     */
+    preventDefault(...types: MouseEventProvider.Type[]): void {
+        for(const type of types) {
+            if(!bitInBitfield(this._preventDefaultMask, type)) {
+                this._preventDefaultMask |= type;    
+            }
+        }
+    }
+
+    /**
+     * Allow default event handling on a specific event type (not calling preventDefault on the event).
+     * @param type - Event type to allow default handling on.
+     */
+    allowDefault(...types: MouseEventProvider.Type[]): void {
+        for(const type of types) {
+            if(bitInBitfield(this._preventDefaultMask, type)) {
+                this._preventDefaultMask &= ~type;    
+            }
+        }
+        this._preventDefaultMask &= ~type;
     }
 
     observable(type: MouseEventProvider.Type): Observable<MouseEvent> | Observable<WheelEvent> {
@@ -139,7 +139,7 @@ export class MouseEventProvider {
         if (this._clickSubject === undefined) {
             this._clickSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._clickListener = (event: MouseEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.Click, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Click, event);
                 this._clickSubject.next(event);
             }
             this._element.addEventListener('click', this._clickListener);
@@ -151,7 +151,7 @@ export class MouseEventProvider {
         if (this._enterSubject === undefined) {
             this._enterSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._enterListener = (event: MouseEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.MouseEnter, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Enter, event);
                 this._enterSubject.next(event);
             }
             this._element.addEventListener('mouseenter', this._enterListener);
@@ -163,7 +163,7 @@ export class MouseEventProvider {
         if (this._leaveSubject === undefined) {
             this._leaveSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._leaveListener = (event: MouseEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.MouseLeave, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Leave, event);
                 this._leaveSubject.next(event);
             }
             this._element.addEventListener('mouseleave', this._leaveListener);
@@ -175,7 +175,7 @@ export class MouseEventProvider {
         if (this._downSubject === undefined) {
             this._downSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._downListener = (event: MouseEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.MouseDown, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Down, event);
                 this._downSubject.next(event);
             }
             this._element.addEventListener('mousedown', this._downListener);
@@ -187,7 +187,7 @@ export class MouseEventProvider {
         if (this._upSubject === undefined) {
             this._upSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._upListener = (event: MouseEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.MouseUp, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Up, event);
                 this._upSubject.next(event);
             }
             this._element.addEventListener('mouseup', this._upListener);
@@ -199,7 +199,7 @@ export class MouseEventProvider {
         if (this._moveSubject === undefined) {
             this._moveSubject = new ReplaySubject<MouseEvent>(undefined, this._timeframe);
             this._moveListener = (event: MouseEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.MouseMove, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Move, event);
                 this._moveSubject.next(event);
             }
             this._element.addEventListener('mousemove', this._moveListener);
@@ -211,7 +211,7 @@ export class MouseEventProvider {
         if (this._wheelSubject === undefined) {
             this._wheelSubject = new ReplaySubject<WheelEvent>(undefined, this._timeframe);
             this._wheelListener = (event: WheelEvent) => {
-                this.handlePreventDefault(MouseEventProvider.PreventDefaultOption.Wheel, event);
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Wheel, event);
                 this._wheelSubject.next(event);
             }
             this._element.addEventListener('wheel', this._wheelListener);
@@ -224,17 +224,14 @@ export class MouseEventProvider {
 
 export namespace MouseEventProvider {
 
-    export enum Type { Click, Enter, Leave, Down, Up, Move, Wheel }
-
-    export enum PreventDefaultOption {
-        None = 0,
+    export enum Type { 
         Click = 1 << 0,
-        MouseUp = 1 << 1,
-        MouseDown = 1 << 2,
-        MouseMove = 1 << 3,
-        MouseEnter = 1 << 4,
-        MouseLeave = 1 << 5,
-        Wheel = 1 << 6
+        Wheel = 1 << 1,
+        Enter = 1 << 2, 
+        Leave = 1 << 3,
+        Move = 1 << 4,
+        Down = 1 << 5, 
+        Up = 1 << 6,
     }
 
 }
