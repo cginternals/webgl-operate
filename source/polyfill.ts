@@ -35,7 +35,7 @@ if (String.prototype.repeat === undefined) {
             rpt += str;
         }
         return rpt;
-    }
+    };
 }
 
 
