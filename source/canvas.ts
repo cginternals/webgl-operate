@@ -104,7 +104,7 @@ export class Canvas extends Resizable {
     /** @see {@link mouseEventProvider} */
     protected _mouseEventProvider: MouseEventProvider;
 
-    /** @see {@link TouchEventProvider} */
+    /** @see {@link touchEventProvider} */
     protected _touchEventProvider: TouchEventProvider;
 
 
