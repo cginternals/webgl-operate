@@ -14,8 +14,8 @@ import { Controller } from './controller';
 import { MouseEventProvider } from './mouseeventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
-import { Wizard } from './wizard';
 import { TouchEventProvider } from './toucheventprovider';
+import { Wizard } from './wizard';
 
 
 /**
