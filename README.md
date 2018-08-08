@@ -9,10 +9,10 @@
 [![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate)](https://github.com/Aaronepower/tokei)
 [![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate?category=comments)](https://github.com/Aaronepower/tokei)
 
-*webgl-operate* encapsulates WebGL and provides various rendering capabilities such as common rendering controllers for single-frame and multi-frame rendering, raycasting, or progressive path-tracing as well as a multitude of common rendering processes and shaders. 
-In contrast to most other rendering engines, neither a specific rendering approach/pipeline or style is favored nor a specific use-case is assumed. 
+*webgl-operate* encapsulates WebGL and provides various rendering capabilities such as common rendering controllers for single-frame and multi-frame rendering, raycasting, or progressive path-tracing as well as a multitude of common rendering processes and shaders.
+In contrast to most other rendering engines, neither a specific rendering approach/pipeline or style is favored nor a specific use-case is assumed.
 Instead, it features a basis for arbitrary rendering implementations and facilitates common rendering processes in an atomic manner.
-It can be used for, e.g., complex charting, volume rendering, point-cloud rendering, product visualization, learning webgl, raymarching or pathtracing, rendering implicit or procedural geometry, as well as modern rendering of 3D models and complex scenes. 
+It can be used for, e.g., complex charting, volume rendering, point-cloud rendering, product visualization, learning webgl, raymarching or pathtracing, rendering implicit or procedural geometry, as well as modern rendering of 3D models and complex scenes.
 
 ## How to Install
 
@@ -23,14 +23,14 @@ npm install --save-dev webgl-operate
 ```
 
 ```
-<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.5/dist/webgl-operate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webgl-operate@0.3.6/dist/webgl-operate.min.js"></script>
 ```
 
 ## Features
 
 #### Implemented
 Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Professional Customer Support, Professional Integration Service
- 
+
 #### Planned
 Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Camera Controllers, 3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
 
@@ -46,14 +46,14 @@ The canvas can be integrated into HTML5 as follows:
 
 This canvas can then be setup by associating the canvas element with a single-frame or multi-frame controller and attaching a renderer using JavaScript as follows:
 ```
-ToDo 
+ToDo
 ```
 
 ## Dependencies
 
 *webgl-operate* has currently no non-dev dependencies.
 Please note the following fixed (allowing patch only) version dependencies, that should not be updated until further review/evaluation:
-* ES6+ problems (breaks build due to the used UglifyJS only supporting ES5): 
+* ES6+ problems (breaks build due to the used UglifyJS only supporting ES5):
    - `@types/gl-matrix: ~2.3.0,`
    - `gl-matrix: ~2.3.2,`
 * Typescript problems
@@ -67,17 +67,17 @@ Please note the following fixed (allowing patch only) version dependencies, that
 | directory | description |
 |-----------|-------------|
 | `source`         | most of webgl-operate's rendering and operational logic |
-| `source/data`    | contains, e.g., pre-built sampling patterns or other data | 
+| `source/data`    | contains, e.g., pre-built sampling patterns or other data |
 | `source/shaders` | on build, shaders are packed into the dist as well (and includes are resolved) |
 | `source/debug`   | optional: various tools for run-time debugging |
 | `source/viewer`  | optional: generic viewer overlay and controller for webgl-operate based rendering |
-| `website`        | website demonstrating webgl-operate features (referencing examples) | 
+| `website`        | website demonstrating webgl-operate features (referencing examples) |
 | `test`           | tests of sources located in `source` |
 
 
 ## NPM Configuration and Project Setup
 
-`package.json` specifies the following scripts that can be run by `npm run-script <command>`. 
+`package.json` specifies the following scripts that can be run by `npm run-script <command>`.
 
 | command          | description |
 |------------------|-------------|
