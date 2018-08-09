@@ -1,4 +1,6 @@
 
+export { branch, commit, version } from './version';
+
 export { Context } from './context';
 export { Canvas } from './canvas';
 export { Controller } from './controller';

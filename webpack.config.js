@@ -2,8 +2,10 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const rxjsExternals = require('webpack-rxjs-externals');
+var GitRevisionPlugin = require('git-revision-webpack-plugin')
+const gitrev = new GitRevisionPlugin();
 
+const rxjsExternals = require('webpack-rxjs-externals');
 
 module.exports = {
     context: __dirname + '/source',
@@ -12,6 +14,9 @@ module.exports = {
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
+            GIT_REV_VERSION: JSON.stringify(gitrev.version()),
+            GIT_REV_COMMIT: JSON.stringify(gitrev.commithash()),
+            GIT_REV_BRANCH: JSON.stringify(gitrev.branch()),
             DISABLE_ASSERTIONS: JSON.stringify(false),
             LOG_VERBOSITY_THRESHOLD: JSON.stringify(3),
         })
