@@ -214,7 +214,7 @@ export class AllocationRegister {
      * Observable that can be used to subscribe to bytes value changes. Yields a 2-tuple of overall allocated bytes as
      * number and pretty printed string.
      */
-    get bytesObservable(): Observable<[GLsizei, string]> {
+    get bytes$(): Observable<[GLsizei, string]> {
         return this._bytesSubject.asObservable();
     }
 }

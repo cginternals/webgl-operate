@@ -16,6 +16,7 @@ declare var LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 /** Namespace that comprises various utils (also cleans up documentation). */
 namespace auxiliaries {
 
+    /* istanbul ignore next line - LOG_VERBOSITY_THRESHOLD has to be defined by the build environment*/
     let logVerbosityThreshold = typeof LOG_VERBOSITY_THRESHOLD !== 'undefined' ? LOG_VERBOSITY_THRESHOLD : 3;
 
     /**
@@ -56,6 +57,7 @@ namespace auxiliaries {
     const assertEmpty = (expression: boolean, message: string): void => { };
 
     export let assert = assertImpl;
+    /* istanbul ignore next line - DISABLE_ASSERTIONS has to be defined by the build environment*/
     if (typeof DISABLE_ASSERTIONS !== 'undefined' && DISABLE_ASSERTIONS) {
         assert = assertEmpty;
     }
@@ -199,7 +201,7 @@ namespace auxiliaries {
     /**
      * Suffixes used for pretty printing of time values in milliseconds.
      */
-    const msSuffixes: Array<string> = ['', 'ns', 'μs', 'ms', 's'];
+    const msSuffixes: Array<string> = ['ms', 'ns', 'μs', 'ms', 's'];
     /**
      * Scales used for pretty printing of time values in milliseconds.
      */
@@ -213,11 +215,12 @@ namespace auxiliaries {
      * @param milliseconds - Number of milliseconds as floating point number.
      */
     export function prettyPrintMilliseconds(milliseconds: number): string {
-        let prefix: number = milliseconds > 0 ? Math.floor(Math.log(milliseconds * 10) / Math.log(1e+3)) + 3 : 0;
+        let prefix: number = milliseconds > 0 ?
+            Math.max(1, Math.floor(Math.log(milliseconds * 10) / Math.log(1e+3)) + 3) : 0;
         prefix = clamp(prefix, 0, 4);
 
         const value = milliseconds * msScales[prefix];
-        return `${prefix > 0 ? value.toFixed(3) : value}${msSuffixes[prefix]}`;
+        return `${value.toFixed(3)}${msSuffixes[prefix]}`;
     }
 
 
@@ -245,12 +248,12 @@ namespace auxiliaries {
      * Queries window.location.search.
      */
     export function GETsearch(): string {
-        return window.location.search;
+        return document.location.search;
     }
 
     /**
      * Queries the value of a GET parameter.
-     *  * @param parameter - Name/identifier of the parameter to query for.
+     * @param parameter - Name/identifier of the parameter to query for.
      */
     export function GETparameter(parameter: string): string | undefined {
         const re = new RegExp(`${parameter}=([^&] +)`);
