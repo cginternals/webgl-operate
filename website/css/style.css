@@ -24,10 +24,13 @@ header, footer {
     margin-top: 8rem;
 }
 
-section {
+header, footer {
     margin-bottom: 2rem;
 }
 
+section {
+    margin-bottom: 2rem;
+}
 
 nav.navbar img {
     height: 1.5rem;
