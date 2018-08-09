@@ -43,6 +43,7 @@
         "chai-spies": "~1.0.0",
         "coveralls": "~3.0.2",
         "cross-env": "~5.2.0",
+        "git-revision-webpack-plugin": "~3.0.3",
         "gl-matrix": "~2.7.1",
         "glob": "~7.1.2",
         "http-server": "~0.11.1",

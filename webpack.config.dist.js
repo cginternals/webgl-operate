@@ -18,12 +18,10 @@ module.exports = (env, options) => {
     // config.output.library = 'gloperate';
     // config.output.libraryTarget = 'umd';
 
-    config.plugins[0].definitions = {
-        // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
-        DISABLE_ASSERTIONS: JSON.stringify(false),
-        // Log verbosity levels: debug = 3, info = 2, warn = 1, error = 0
-        LOG_VERBOSITY_THRESHOLD: JSON.stringify(options.mode === 'development' ? 3 : 2),
-    };
+    // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
+    config.plugins[0].definitions.DISABLE_ASSERTIONS = JSON.stringify(false);
+    // Log verbosity levels: debug = 3, info = 2, warn = 1, error = 0
+    config.plugins[0].definitions.LOG_VERBOSITY_THRESHOLD = JSON.stringify(options.mode === 'development' ? 3 : 2);
 
     return config;
 };
