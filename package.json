@@ -36,7 +36,7 @@
     "devDependencies": {
         "@types/chai": "~4.1.4",
         "@types/chai-spies": "~0.0.1",
-        "@types/gl-matrix": "~2.3.0",
+        "@types/gl-matrix": "~2.4.1",
         "@types/mocha": "~5.2.5",
         "@types/sinon": "~4.3.3",
         "chai": "~4.1.2",
@@ -44,7 +44,7 @@
         "coveralls": "~3.0.2",
         "cross-env": "~5.2.0",
         "git-revision-webpack-plugin": "~3.0.3",
-        "gl-matrix": "~2.3.2",
+        "gl-matrix": "~2.7.1",
         "glob": "~7.1.2",
         "http-server": "~0.11.1",
         "jsonschema": "~1.2.4",
@@ -70,7 +70,7 @@
         "webpack-rxjs-externals": "~2.0.0"
     },
     "peerDependencies": {
-        "rxjs": "~6.2.1"
+        "rxjs": "~6.2.2"
     },
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",

@@ -17,16 +17,20 @@ h4, h5, h6 {
 
 pre, code {
     font-family: 'Source Code Pro';
+    font-size: 80%;
 }
 
 header, footer {
     margin-top: 8rem;
 }
 
-section {
+header, footer {
     margin-bottom: 2rem;
 }
 
+section {
+    margin-bottom: 2rem;
+}
 
 nav.navbar img {
     height: 1.5rem;
@@ -57,7 +61,7 @@ nav .dropdown-item {
 nav .dropdown-item:hover {
     color: rgba(255, 255, 255, 0.75);
     background: none;
-}  
+}
 
 nav .dropdown-item:active {
     color: rgba(255, 255, 255, 1.00);
@@ -74,14 +78,14 @@ ul.features li {
     display: inline;
     float: left;
 }
-ul.features li:after { 
-    content: "\2009\2014\2009"; 
+ul.features li:after {
+    content: "\2009\2014\2009";
 }
-ul.features li:first-child:after { 
-    content: "\2002\007C\2002"; 
+ul.features li:first-child:after {
+    content: "\2002\007C\2002";
 }
-ul.features li:last-child:after { 
-    content: none; 
+ul.features li:last-child:after {
+    content: none;
 }
 
 @media screen and (min-width: 960px) {
