@@ -79,9 +79,11 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc source/webgl-operate.ts",
-        "ci": "run-s build-dist build-lib lint test-nyc",
+        "ci": "run-p build-dist build-lib lint test-nyc",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
-        "prepack": "npm install && run-p build-dist build-lib"
+        "postversion": "git push && git push --tags",
+        "prepack": "npm run preversion",
+        "preversion": "npm install && npm run ci"
     },
     "keywords": [
         "webgl",
