@@ -80,7 +80,7 @@ export class EventHandler {
      * A callback intended to be invoked whenever the specialized event handler itself is invalid. By default only
      * optional updates (renderer decides whether or not to continue redraw) are triggered.
      */
-    protected invalidate(force: boolean = false) {
+    protected invalidate(force: boolean = false): void {
         if (this._invalidate) {
             this._invalidate(force);
         }
@@ -94,33 +94,35 @@ export class EventHandler {
      * @param type - Mouse event type the handler is to be associated with.
      * @param handler - Handler to be called on update.
      */
-    protected pushMouseEventHandler(type: MouseEventProvider.Type, handler: MouseEventHandler) {
+    protected pushMouseEventHandler(type: MouseEventProvider.Type, handler: MouseEventHandler): void {
+        if (this._mouseEventHandlerByType.has(type)) {
+            (this._mouseEventHandlerByType.get(type) as Array<MouseEventHandler>).push(handler);
+            return;
+        }
 
-        if (!this._mouseEventHandlerByType.has(type)) {
-            this._mouseEventHandlerByType.set(type, new Array<MouseEventHandler>());
+        this._mouseEventHandlerByType.set(type, new Array<MouseEventHandler>());
 
-            this._previousMouseEventsByType.set(type, new Array<MouseEvent>());
-            const latest = new Array<MouseEvent>();
-            this._latestMouseEventsByType.set(type, latest);
+        this._previousMouseEventsByType.set(type, new Array<MouseEvent>());
+        const latest = new Array<MouseEvent>();
+        this._latestMouseEventsByType.set(type, latest);
 
-            assert(this._mouseEventProvider !== undefined, `expected valid mouse event provider`);
-            const observable = (this._mouseEventProvider as MouseEventProvider).observable(type);
+        assert(this._mouseEventProvider !== undefined, `expected valid mouse event provider`);
+        const observable = (this._mouseEventProvider as MouseEventProvider).observable(type);
 
-            switch (type) {
-                case MouseEventProvider.Type.Wheel:
-                    this._subscriptions.push((observable as Observable<WheelEvent>).subscribe(
-                        (event) => { latest.push(event); this.invalidate(); }));
-                    break;
-                default:
-                    this._subscriptions.push((observable as Observable<MouseEvent>).subscribe(
-                        (event) => { latest.push(event); this.invalidate(); }));
-                    break;
-            }
+        switch (type) {
+            case MouseEventProvider.Type.Wheel:
+                this._subscriptions.push((observable as Observable<WheelEvent>).subscribe(
+                    (event) => { latest.push(event); this.invalidate(); }));
+                break;
+            default:
+                this._subscriptions.push((observable as Observable<MouseEvent>).subscribe(
+                    (event) => { latest.push(event); this.invalidate(); }));
+                break;
         }
         (this._mouseEventHandlerByType.get(type) as Array<MouseEventHandler>).push(handler);
     }
 
-    protected invokeMouseEventHandler(type: MouseEventProvider.Type) {
+    protected invokeMouseEventHandler(type: MouseEventProvider.Type): void {
         const handlers = this._mouseEventHandlerByType.get(type);
         if (handlers === undefined || handlers.length === 0) {
             return;
@@ -143,25 +145,28 @@ export class EventHandler {
      * @param type - Touch event type the handler is to be associated with.
      * @param handler - Handler to be called on update.
      */
-    protected pushTouchEventHandler(type: TouchEventProvider.Type, handler: TouchEventHandler) {
-
-        if (!this._touchEventHandlerByType.has(type)) {
-            this._touchEventHandlerByType.set(type, new Array<TouchEventHandler>());
-
-            this._previousTouchEventsByType.set(type, new Array<TouchEvent>());
-            const latest = new Array<TouchEvent>();
-            this._latestTouchEventsByType.set(type, latest);
-
-            assert(this._touchEventProvider !== undefined, `expected valid touch event provider`);
-            const observable = (this._touchEventProvider as TouchEventProvider).observable(type);
-
-            this._subscriptions.push((observable as Observable<TouchEvent>).subscribe(
-                (event) => { latest.push(event); this.invalidate(); }));
+    protected pushTouchEventHandler(type: TouchEventProvider.Type, handler: TouchEventHandler): void {
+        if (this._touchEventHandlerByType.has(type)) {
+            (this._touchEventHandlerByType.get(type) as Array<TouchEventHandler>).push(handler);
+            return;
         }
+
+        this._touchEventHandlerByType.set(type, new Array<TouchEventHandler>());
+
+        this._previousTouchEventsByType.set(type, new Array<TouchEvent>());
+        const latest = new Array<TouchEvent>();
+        this._latestTouchEventsByType.set(type, latest);
+
+        assert(this._touchEventProvider !== undefined, `expected valid touch event provider`);
+        const observable = (this._touchEventProvider as TouchEventProvider).observable(type);
+
+        this._subscriptions.push((observable as Observable<TouchEvent>).subscribe(
+            (event) => { latest.push(event); this.invalidate(); }));
+
         (this._touchEventHandlerByType.get(type) as Array<TouchEventHandler>).push(handler);
     }
 
-    protected invokeTouchEventHandler(type: TouchEventProvider.Type) {
+    protected invokeTouchEventHandler(type: TouchEventProvider.Type): void {
         const handlers = this._touchEventHandlerByType.get(type);
         if (handlers === undefined || handlers.length === 0) {
             return;
@@ -180,7 +185,7 @@ export class EventHandler {
     /**
      * Disposes all registered handlers of all event types.
      */
-    dispose() {
+    dispose(): void {
         this._latestMouseEventsByType.forEach((value) => value.length = 0);
         this._previousMouseEventsByType.forEach((value) => value.length = 0);
         this._latestTouchEventsByType.forEach((value) => value.length = 0);
@@ -194,7 +199,7 @@ export class EventHandler {
     /**
      * Triggers (by means of a helper function) invocation of all registered handler of all event types.
      */
-    update() {
+    update(): void {
         this.invokeMouseEventHandler(MouseEventProvider.Type.Click);
         this.invokeMouseEventHandler(MouseEventProvider.Type.Enter);
         this.invokeMouseEventHandler(MouseEventProvider.Type.Leave);
@@ -254,7 +259,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushClickHandler(handler: MouseEventHandler) {
+    pushClickHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Click, handler);
     }
 
@@ -263,7 +268,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushMouseEnterHandler(handler: MouseEventHandler) {
+    pushMouseEnterHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Enter, handler);
     }
 
@@ -272,7 +277,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushMouseLeaveHandler(handler: MouseEventHandler) {
+    pushMouseLeaveHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Leave, handler);
     }
 
@@ -281,7 +286,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushMouseDownHandler(handler: MouseEventHandler) {
+    pushMouseDownHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Down, handler);
     }
 
@@ -290,7 +295,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushMouseUpHandler(handler: MouseEventHandler) {
+    pushMouseUpHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Up, handler);
     }
 
@@ -299,7 +304,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushMouseMoveHandler(handler: MouseEventHandler) {
+    pushMouseMoveHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Move, handler);
     }
 
@@ -308,7 +313,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushMouseWheelHandler(handler: MouseEventHandler) {
+    pushMouseWheelHandler(handler: MouseEventHandler): void {
         this.pushMouseEventHandler(MouseEventProvider.Type.Wheel, handler);
     }
 
@@ -317,7 +322,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushTouchStartHandler(handler: TouchEventHandler) {
+    pushTouchStartHandler(handler: TouchEventHandler): void {
         this.pushTouchEventHandler(TouchEventProvider.Type.Start, handler);
     }
 
@@ -326,7 +331,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushTouchEndHandler(handler: TouchEventHandler) {
+    pushTouchEndHandler(handler: TouchEventHandler): void {
         this.pushTouchEventHandler(TouchEventProvider.Type.End, handler);
     }
 
@@ -335,7 +340,7 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushTouchMoveHandler(handler: TouchEventHandler) {
+    pushTouchMoveHandler(handler: TouchEventHandler): void {
         this.pushTouchEventHandler(TouchEventProvider.Type.Move, handler);
     }
 
@@ -344,17 +349,23 @@ export class EventHandler {
      * occurred since last update.
      * @param handler - Handler to be called on update.
      */
-    pushTouchCancelHandler(handler: TouchEventHandler) {
+    pushTouchCancelHandler(handler: TouchEventHandler): void {
         this.pushTouchEventHandler(TouchEventProvider.Type.Cancel, handler);
     }
 
 
+    /**
+     * Forward pointer lock request to the mouse event provider (if one exists).
+     */
     requestPointerLock(): void {
         if (this._mouseEventProvider) {
             this._mouseEventProvider.pointerLock = true;
         }
     }
 
+    /**
+     * Forward pointer lock release request to the mouse event provider (if one exists).
+     */
     exitPointerLock(): void {
         if (this._mouseEventProvider) {
             this._mouseEventProvider.pointerLock = false;

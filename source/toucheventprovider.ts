@@ -42,11 +42,12 @@ export class TouchEventProvider {
     }
 
     /**
-     *
+     * Checks whether or not to prevent the default handling of the given event. This depends on the internal
+     * `preventDefaultMask` which can be modified using `preventDefault` function @see{@link prevenDefault}.
      * @param type - Internal event type of the incoming event.
      * @param event - Actual event to prevent default handling on (if masked).
      */
-    protected preventDefaultOnEvent(type: TouchEventProvider.Type, event: TouchEvent) {
+    protected preventDefaultOnEvent(type: TouchEventProvider.Type, event: TouchEvent): void {
         if (bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }

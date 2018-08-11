@@ -162,7 +162,7 @@ export class AccumulatePass extends Initializable {
      * changed, and if so, resizes the accumulation buffers.
      */
     @Initializable.assert_initialized()
-    update() {
+    update(): void {
         if (!this._texture || !this._texture.valid) {
             log(LogLevel.Warning, `valid texture for accumulation update expected, given ${this._texture}`);
             return;
@@ -227,7 +227,7 @@ export class AccumulatePass extends Initializable {
      * the currently set viewport is used.
      */
     @Initializable.assert_initialized()
-    frame(frameNumber: number, viewport?: GLsizei2) {
+    frame(frameNumber: number, viewport?: GLsizei2): void {
         assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
             `valid framebuffer objects for accumulation expected (initialize or update was probably not be called`);
 

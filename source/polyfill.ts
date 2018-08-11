@@ -4,7 +4,7 @@
  */
 if (String.prototype.repeat === undefined) {
     // tslint:disable-next-line:space-before-function-paren
-    String.prototype.repeat = function (count) {
+    String.prototype.repeat = function (count): string {
         'use strict';
         if (this === null) {
             throw new TypeError('can\'t convert ' + this + ' to object');

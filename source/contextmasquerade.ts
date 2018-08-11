@@ -130,14 +130,14 @@ export class ContextMasquerade {
      * Presets for emulation of various browsers. This can be used to maintain multiple test configurations and
      * simplify cross-browser testing without actually using different browsers.
      */
-    static presets() {
+    static presets(): Array<ContextMasquerade.Preset> {
         return this.MASQUERADE_JSON;
     }
 
     /**
      * Defines the backend (currently either 'webgl1' or 'webgl2').
      */
-    get backend() {
+    get backend(): string {
         return this._backend;
     }
 
@@ -145,7 +145,7 @@ export class ContextMasquerade {
      * Extensions that the context should strive to support. The support can only go as far as the extensions are
      * actually supported.
      */
-    get extensionsStrive() {
+    get extensionsStrive(): Array<string> {
         return this._extensionsStrive;
     }
 
@@ -153,7 +153,7 @@ export class ContextMasquerade {
      * Extensions that the context should conceal support of. This only affects supported extensions, which will
      * be reported to be not supported.
      */
-    get extensionsConceal() {
+    get extensionsConceal(): Array<string> {
         return this._extensionsConceal;
     }
 
@@ -161,7 +161,7 @@ export class ContextMasquerade {
      * Functions that the context should delete during construction. Since WebGL context functions cannot be deleted
      * they are undefined instead.
      */
-    get functionsUndefine() {
+    get functionsUndefine(): Array<string> {
         return this._functionsUndefine;
     }
 }
