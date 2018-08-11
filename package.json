@@ -19,18 +19,10 @@
     "sideEffects": [
         "./source/polyfill.ts"
     ],
-    "contributors": [
+    "maintainers": [
         {
             "name": "Daniel Limberger",
             "email": "daniel.limberger@cginternals.com"
-        },
-        {
-            "name": "Philipp Otto",
-            "email": "philipp.otto@cginternals.com"
-        },
-        {
-            "name": "Willy Scheibel",
-            "email": "willy.scheibel@cginternals.com"
         }
     ],
     "devDependencies": {
