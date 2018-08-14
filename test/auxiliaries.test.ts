@@ -8,6 +8,7 @@ chai.use(spies);
 const expect = chai.expect;
 const stub = sinon.stub;
 
+
 import * as aux from '../source/auxiliaries';
 
 
@@ -24,6 +25,16 @@ describe('auxiliaries assert', () => {
         const message = 'always throw';
         expect(() => aux.assert(false, message)).to.throw();
     });
+
+    it('should be allowed to be disabled', () => {
+        expect(aux.assertions()).to.be.true;
+        aux.assertions(false);
+        expect(aux.assertions()).to.be.false;
+        expect(() => aux.assert(false, 'ignore')).to.not.throw();
+        aux.assertions(true);
+        expect(() => aux.assert(false, 'ignore')).to.throw();
+    });
+
 });
 
 
@@ -31,14 +42,14 @@ describe('auxiliaries log and logIf', () => {
 
     it('should not log on false expression', () => {
         const consoleLogStub = stub(console, 'log');
-        aux.logIf(false, aux.LogLevel.User, 'never log');
+        aux.logIf(false, aux.LogLevel.Error, 'never log');
         expect(consoleLogStub.notCalled).to.be.true;
         consoleLogStub.restore();
     });
 
     it('should log on true expression', () => {
         const consoleLogStub = stub(console, 'log');
-        aux.logIf(true, aux.LogLevel.User, 'always log');
+        aux.logIf(true, aux.LogLevel.Error, 'always log');
         expect(consoleLogStub.calledOnce).to.be.true;
 
         consoleLogStub.restore();
@@ -48,14 +59,17 @@ describe('auxiliaries log and logIf', () => {
         let output = '';
         const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
 
-        aux.log(aux.LogLevel.User, 'log level 0');
+        aux.log(aux.LogLevel.Error, 'log level 0');
         expect(output).to.string('[0]');
 
-        aux.log(aux.LogLevel.Dev, 'log level 1');
+        aux.log(aux.LogLevel.Warning, 'log level 1');
         expect(output).to.string('[1]');
 
-        aux.log(aux.LogLevel.ModuleDev, 'log level 2');
+        aux.log(aux.LogLevel.Info, 'log level 2');
         expect(output).to.string('[2]');
+
+        aux.log(aux.LogLevel.Debug, 'log level 3');
+        expect(output).to.string('[3]');
 
         consoleLogStub.restore();
     });
@@ -64,17 +78,20 @@ describe('auxiliaries log and logIf', () => {
         let output = '';
         const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
 
-        aux.log(aux.LogLevel.User, 'log level 0');
+        aux.log(aux.LogLevel.Error, 'log level 0');
         expect(output).to.string('[0]');
 
-        aux.log(aux.LogLevel.Dev, 'log level 1');
+        aux.log(aux.LogLevel.Warning, 'log level 1');
         expect(output).to.string('[1]');
 
-        aux.log(aux.LogLevel.ModuleDev, 'log level 2');
+        aux.log(aux.LogLevel.Info, 'log level 2');
         expect(output).to.string('[2]');
 
+        aux.log(aux.LogLevel.Debug, 'log level 3');
+        expect(output).to.string('[3]');
+
         aux.log(4, 'log level 4');
-        expect(output).to.string('[2]');
+        expect(output).to.string('[3]'); // uses previous output (nothing changed)
 
         const thresholdRestore = aux.logVerbosity();
         aux.logVerbosity(4);
@@ -122,6 +139,32 @@ describe('auxiliaries prettyPrintBytes', () => {
     it('should print kibi bytes for bytes between 1024, 1048575', () => {
         expect(aux.prettyPrintBytes(1024)).to.equal('1.000KiB');
         expect(aux.prettyPrintBytes(1048575)).to.equal('1023.999KiB');
+    });
+
+});
+
+
+describe('auxiliaries prettyPrintMilliseconds', () => {
+
+    it('should convert and use correct suffixes', () => {
+        expect(aux.prettyPrintMilliseconds(0.00)).to.equal('0.000ms');
+        expect(aux.prettyPrintMilliseconds(1e+0)).to.equal('1.000ms');
+
+        expect(aux.prettyPrintMilliseconds(1e+1)).to.equal('10.000ms');
+        expect(aux.prettyPrintMilliseconds(1e+2)).to.equal('0.100s');
+        expect(aux.prettyPrintMilliseconds(1e+3)).to.equal('1.000s');
+        expect(aux.prettyPrintMilliseconds(1e+4)).to.equal('10.000s');
+        expect(aux.prettyPrintMilliseconds(1e+5)).to.equal('100.000s');
+
+        expect(aux.prettyPrintMilliseconds(1e-1)).to.equal('0.100ms');
+        expect(aux.prettyPrintMilliseconds(1e-2)).to.equal('10.000μs');
+        expect(aux.prettyPrintMilliseconds(1e-3)).to.equal('1.000μs');
+        expect(aux.prettyPrintMilliseconds(1e-4)).to.equal('0.100μs');
+        expect(aux.prettyPrintMilliseconds(1e-5)).to.equal('10.000ns');
+        expect(aux.prettyPrintMilliseconds(1e-6)).to.equal('1.000ns');
+        expect(aux.prettyPrintMilliseconds(1e-7)).to.equal('0.100ns');
+        expect(aux.prettyPrintMilliseconds(1e-8)).to.equal('0.010ns');
+        expect(aux.prettyPrintMilliseconds(1e-9)).to.equal('0.001ns');
     });
 
 });

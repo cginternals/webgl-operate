@@ -67,7 +67,7 @@ export abstract class Resizable {
             /* istanbul ignore next */
             Resizable.eventSupported = document && (event in document.documentElement || event in document.body);
 
-            logIf(!Resizable.eventSupported, LogLevel.Dev, `resize event not supported`);
+            logIf(!Resizable.eventSupported, LogLevel.Warning, `resize event not supported`);
         }
         /* istanbul ignore next */
         if (Resizable.instances.length === 0 && Resizable.eventSupported) {

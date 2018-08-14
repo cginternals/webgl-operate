@@ -6,7 +6,7 @@ const expect = chai.expect;
 import { AllocationRegister } from '../source/allocationregister';
 
 
-describe('AllocationTracker', () => {
+describe('AllocationRegister', () => {
 
     it('should provide unique identifier', () => {
         const tracker = new AllocationRegister();
@@ -171,7 +171,7 @@ describe('AllocationTracker', () => {
 
         let observed: number;
         let observedString: string;
-        tracker.bytesObservable.subscribe((value) => { observed = value[0]; observedString = value[1]; });
+        tracker.bytes$.subscribe((value) => { observed = value[0]; observedString = value[1]; });
 
         expect(observed).to.equal(123);
         expect(observedString).to.equal('123B');

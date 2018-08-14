@@ -12,6 +12,12 @@ import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 
 
+/**
+ * This navigation is merely a design template/recipe for more refined, specialized navigation and provides some basic,
+ * commonly used camera modifier such as turntable, first-person, as well as trackball. This implementation is also
+ * unfinished and will be continued as soon as possible (e.g., first-person navigation is not usable for now).
+ * @todo - Refine and comment this class to be usable at least as common/most-basic navigation auxiliary.
+ */
 export class Navigation {
 
     /**
@@ -64,7 +70,7 @@ export class Navigation {
         this._invalidate = invalidate;
 
         /* Create event handler that listens to mouse events. */
-        this._eventHandler = new EventHandler(invalidate, mouseEventProvider);
+        this._eventHandler = new EventHandler(invalidate, mouseEventProvider, undefined);
 
         /* Listen to mouse events. */
         this._eventHandler.pushMouseDownHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
@@ -143,7 +149,7 @@ export class Navigation {
     }
 
 
-    protected onMouseDown(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+    protected onMouseDown(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         const event: MouseEvent = latests[latests.length - 1];
         // for (const event of latests) {
 
@@ -163,7 +169,7 @@ export class Navigation {
         }
     }
 
-    protected onMouseUp(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+    protected onMouseUp(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         const event: MouseEvent = latests[latests.length - 1];
 
         // for (const event of latests) {
@@ -174,7 +180,7 @@ export class Navigation {
         // }
     }
 
-    protected onMouseMove(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+    protected onMouseMove(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         const event: MouseEvent = latests[latests.length - 1];
         // for (const event of latests) {
 
@@ -195,7 +201,7 @@ export class Navigation {
         }
     }
 
-    protected onClick(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+    protected onClick(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         // const event: MouseEvent = latests[latests.length - 1];
     }
 

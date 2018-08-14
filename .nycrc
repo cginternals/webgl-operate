@@ -3,6 +3,9 @@
     "include": [
         "source/**/*.ts"
     ],
+    "exclude": [
+        "**/*.d.ts"
+    ],
     "extension": [
         ".ts"
     ],
@@ -18,5 +21,5 @@
     "sourceMap": true,
     "instrument": true,
     "cache": true,
-    "all": false
+    "all": true
 }

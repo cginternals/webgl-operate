@@ -141,7 +141,7 @@ export class BlitPass extends Initializable {
 
 
         if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context);
+            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Blit');
         } else {
             this._ndcTriangle = ndcTriangle;
             this._ndcTriangleShared = true;
@@ -174,9 +174,9 @@ export class BlitPass extends Initializable {
      * program based/indirect blit a viewport filling area, i.e., a screen-aligned triangle is used.
      */
     @Initializable.assert_initialized()
-    frame() {
-        logIf(!this._target || !this._target.valid, LogLevel.Dev, `valid target expected, given ${this._target}`);
-        logIf(!this._framebuffer || !this._framebuffer.valid, LogLevel.Dev,
+    frame(): void {
+        logIf(!this._target || !this._target.valid, LogLevel.Warning, `valid target expected, given ${this._target}`);
+        logIf(!this._framebuffer || !this._framebuffer.valid, LogLevel.Warning,
             `valid framebuffer for blitting from expected, given ${this._framebuffer}`);
 
         const gl = this._context.gl;

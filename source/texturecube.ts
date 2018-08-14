@@ -209,11 +209,11 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
 
                 image.onload = () => {
                     if (image.width !== image.height) {
-                        log(LogLevel.Dev, `image ignored, width and height expected to be equal (square image)`);
+                        log(LogLevel.Warning, `image ignored, width and height expected to be equal (square image)`);
                         return;
                     }
                     if (image.width !== this._size) {
-                        log(LogLevel.Dev, `image ignored, width and height expected to match ` +
+                        log(LogLevel.Warning, `image ignored, width and height expected to match ` +
                             `this texture's size ${this._size}, given ${image.width}`);
                         return;
                     }

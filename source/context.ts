@@ -4,20 +4,8 @@ import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
 import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+import { ExtensionsHash } from './extensionshash';
 import { GL2Facade } from './gl2facade';
-
-
-/**
- * Supported OpenGL backend types.
- */
-export enum BackendType { Invalid, WebGL1, WebGL2 }
-
-/**
- * The list of valid backend identifiers that can be matched to backend types.
- * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
- */
-export type BackendTypeString = 'auto' | 'webgl' | 'experimental-webgl' | 'webgl1' | 'experimental-webgl1'
-    | 'webgl2' | 'experimental-webgl2';
 
 
 /**
@@ -52,12 +40,12 @@ export class Context {
     /* tslint:disable:member-ordering variable-name */
 
     /**
-     * Context creation attribute defaults.
+     * Context creation attribute defaults. The defaults are taken directly from the spec.
      */
-    protected static readonly CONTEXT_ATTRIBUTES = {
+    protected static readonly DEFAULT_ATTRIBUTES = {
         alpha: true,
-        antialias: false,
-        depth: false,
+        antialias: false, /* Not defaulted to true, since it might interfere with manual blitting. */
+        depth: true,
         failIfMajorPerformanceCaveat: false,
         premultipliedAlpha: true,
         preserveDrawingBuffer: false,
@@ -65,7 +53,7 @@ export class Context {
     };
 
     /** @see {@link backend} */
-    protected _backend: BackendType | undefined;
+    protected _backend: Context.BackendType | undefined;
 
     /**
      * Created context. The actual type depends on the created context.
@@ -112,45 +100,49 @@ export class Context {
      * Create a WebGL context. Note: this should only be called once in constructor, because the second and subsequent
      * calls to getContext of an element will return null.
      * @param element - Canvas element to request context from.
+     * @param attributes - Overrides the internal default attributes @see{Context.DEFAULT_ATTRIBUTES}.
      * @returns - Context providing either a WebGLRenderingContext, WebGL2RenderingContext.
      */
-    static request(element: HTMLCanvasElement): Context {
+    static request(element: HTMLCanvasElement,
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES): Context {
+
         const dataset: DOMStringMap = element.dataset;
         const mask = Context.createMasqueradeFromGETorDataAttribute(dataset);
 
         /** Favor backend specification by masquerade over specification by data attribute. */
         let request = mask ? (mask.backend as string) :
-            dataset.backend ? (dataset.backend as string).toLowerCase() : '';
+            dataset.backend ? (dataset.backend as string).toLowerCase() : 'auto';
 
-        if (!(request as BackendTypeString)) {
-            log(LogLevel.Dev, `unknown backend '${dataset.backend}' changed to 'auto'`);
+        if (!(request in Context.BackendRequestType)) {
+            log(LogLevel.Warning,
+                `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
             request = 'auto';
         }
 
         switch (request) {
-            case 'webgl':
+            case Context.BackendRequestType.webgl:
                 break;
-            case 'experimental-webgl':
-            case 'experimental-webgl1':
-            case 'webgl1':
-                request = 'webgl';
+            case Context.BackendRequestType.experimental:
+            case Context.BackendRequestType.webgl1:
+            case Context.BackendRequestType.experimental1:
+                request = Context.BackendRequestType.webgl;
                 break;
-            case 'experimental-webgl2':
-            case 'webgl2':
-                request = 'webgl2';
+            case Context.BackendRequestType.webgl2:
+            case Context.BackendRequestType.experimental2:
+                request = Context.BackendRequestType.webgl2;
                 break;
             default:
-                request = 'auto';
+                request = Context.BackendRequestType.auto;
         }
 
         let context;
-        if (request !== 'webgl') {
-            context = this.requestWebGL2(element);
+        if (request !== Context.BackendRequestType.webgl) {
+            context = this.requestWebGL2(element, attributes);
         }
         if (!context) {
-            context = this.requestWebGL1(element);
-            logIf(context !== undefined && request === 'webgl2', LogLevel.Dev,
-                `backend changed to 'webgl', given '${request}'`);
+            context = this.requestWebGL1(element, attributes);
+            logIf(context !== undefined && request === Context.BackendRequestType.webgl2, LogLevel.Info,
+                `backend changed to '${Context.BackendRequestType.webgl}', given '${request}'`);
         }
 
         assert(!!context, `creating a context failed`);
@@ -160,32 +152,36 @@ export class Context {
     /**
      * Helper that tries to create a WebGL 1 context (requests to 'webgl' and 'experimental-webgl' are made).
      * @param element - Canvas element to request context from.
+     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
      * @returns {WebGLRenderingContext} - WebGL context object or null.
      */
-    protected static requestWebGL1(element: HTMLCanvasElement) {
-        let context = element.getContext('webgl', Context.CONTEXT_ATTRIBUTES);
+    protected static requestWebGL1(element: HTMLCanvasElement,
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES): WebGLRenderingContext | undefined {
+
+        let context = element.getContext(Context.BackendRequestType.webgl, attributes);
         if (context) {
             return context;
         }
-
-        context = element.getContext('experimental-webgl', Context.CONTEXT_ATTRIBUTES);
-
-        return context;
+        context = element.getContext(Context.BackendRequestType.experimental, attributes);
+        return context === null ? undefined : context;
     }
 
     /**
      * Helper that tries to create a WebGL 2 context (requests to 'webgl2' and 'experimental-webgl2' are made).
      * @param element - Canvas element to request context from.
-     * @returns {WebGL2RenderingContext} - WebGL2 context object or null.
+     * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
+     * @returns {WebGL2RenderingContext} - WebGL2 context object or undefined.
      */
-    protected static requestWebGL2(element: HTMLCanvasElement) {
-        let context = element.getContext('webgl2', Context.CONTEXT_ATTRIBUTES);
+    protected static requestWebGL2(element: HTMLCanvasElement,
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES)
+        : WebGLRenderingContext | CanvasRenderingContext2D | undefined {
+
+        let context = element.getContext(Context.BackendRequestType.webgl2, attributes);
         if (context) {
             return context;
         }
-
-        context = element.getContext('experimental-webgl2', Context.CONTEXT_ATTRIBUTES);
-        return context;
+        context = element.getContext(Context.BackendRequestType.experimental2, attributes);
+        return context === null ? undefined : context;
     }
 
 
@@ -284,11 +280,11 @@ export class Context {
         }
 
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL1`);
                 break;
 
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
                     `extension ${extension} supported by default in WebGL2`);
                 assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL2`);
@@ -311,7 +307,7 @@ export class Context {
     protected queryExtensionSupport(): void {
         this._extensions = this._context.getSupportedExtensions();
 
-        if (this._backend === BackendType.WebGL1) {
+        if (this._backend === Context.BackendType.WebGL1) {
             this.ANGLE_instanced_arrays_supported = this.supports('ANGLE_instanced_arrays');
 
             this.EXT_blend_minmax_supported = this.supports('EXT_blend_minmax');
@@ -332,7 +328,7 @@ export class Context {
             this.WEBGL_draw_buffers_supported = this.supports('WEBGL_draw_buffers');
         }
 
-        if (this._backend === BackendType.WebGL2) {
+        if (this._backend === Context.BackendType.WebGL2) {
             this.EXT_color_buffer_float_supported = this.supports('EXT_color_buffer_float');
             this.EXT_disjoint_timer_query_webgl2_supported = this.supports('EXT_disjoint_timer_query_webgl2');
         }
@@ -388,10 +384,10 @@ export class Context {
                 /CaptureContext/.test(contextString);
             const webgl2 = /WebGL2RenderingContext/.test(contextString);
 
-            this._backend = webgl1 ? BackendType.WebGL1 : webgl2 ? BackendType.WebGL2 : undefined;
+            this._backend = webgl1 ? Context.BackendType.WebGL1 : webgl2 ? Context.BackendType.WebGL2 : undefined;
         }
 
-        assert(this._backend !== undefined && this._backend.valueOf() !== BackendType.Invalid.valueOf(),
+        assert(this._backend !== undefined && this._backend.valueOf() !== Context.BackendType.Invalid.valueOf(),
             `context is neither webgl nor webgl2, given ${contextString}`);
 
         this.queryExtensionSupport();
@@ -421,10 +417,10 @@ export class Context {
 
     /**
      * The created rendering backend (webgl context type), either 'webgl' or 'webgl2' based on which one was
-     * created successfully. If no context could be created null is returned.
+     * created successfully. If no context could be created undefined is returned.
      * @returns - Backend that was created on construction.
      */
-    get backend() {
+    get backend(): Context.BackendType | undefined {
         return this._backend;
     }
 
@@ -433,9 +429,9 @@ export class Context {
      */
     get backendString(): string | undefined {
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 return 'WebGL';
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 return 'WebGL2';
             default:
                 return undefined;
@@ -445,28 +441,28 @@ export class Context {
     /**
      * Provides an array of all extensions supported by the used WebGL1/2 context.
      */
-    get extensions() {
+    get extensions(): Array<string> {
         return this._extensions;
     }
 
     /**
      * Masquerade object applied to a context instance.
      */
-    get mask() {
+    get mask(): ContextMasquerade | undefined {
         return this._mask;
     }
 
     /**
      * Access to either the WebGLRenderingContext or WebGL2RenderingContext.
      */
-    get gl() {
+    get gl(): any { // WebGLRenderingContext | WebGL2RenderingContext
         return this._context;
     }
 
     /**
      * WebGL2 facade for WebGL2 API like access to features mandatory to this engine.
      */
-    get gl2facade() {
+    get gl2facade(): GL2Facade {
         return this._gl2;
     }
 
@@ -474,14 +470,14 @@ export class Context {
      * True if the context is a WebGL1 context, otherwise false.
      */
     get isWebGL1(): boolean {
-        return this._backend === BackendType.WebGL1;
+        return this._backend === Context.BackendType.WebGL1;
     }
 
     /**
      * True if the context is a WebGL2 context, otherwise false.
      */
     get isWebGL2(): boolean {
-        return this._backend === BackendType.WebGL2;
+        return this._backend === Context.BackendType.WebGL2;
     }
 
 
@@ -655,9 +651,9 @@ export class Context {
     protected EXT_color_buffer_float_supported: boolean;
     get supportsColorBufferFloat(): boolean | undefined {
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 return this.WEBGL_color_buffer_float_supported;
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 return this.EXT_color_buffer_float_supported;
             default:
                 return undefined;
@@ -665,9 +661,9 @@ export class Context {
     }
     get colorBufferFloat(): any | undefined {
         switch (this._backend) {
-            case BackendType.WebGL1:
+            case Context.BackendType.WebGL1:
                 return this.extension(this.WEBGL_color_buffer_float, 'WEBGL_color_buffer_float');
-            case BackendType.WebGL2:
+            case Context.BackendType.WebGL2:
                 return this.extension(this.EXT_color_buffer_float, 'EXT_color_buffer_float');
             default:
                 return undefined;
@@ -808,6 +804,257 @@ export class Context {
      */
     get supportsReadBuffer(): boolean {
         return this._context.readBuffer !== undefined;
+    }
+
+    // PARAMETER QUERIES
+
+    /**
+     * Provides the context's extension hash. The hash can be used for context masquerade.
+     */
+    hash(): string {
+        return ExtensionsHash.encode(this._backend as Context.BackendType, this._extensions);
+    }
+
+    /**
+     * Queries various parameters (depending on the type of context and support of extensions) and returns them as
+     * formatted string.
+     * @returns - Array of 2-tuple containing (1) the queried enum as string and (2) the resulting parameter value.
+     */
+    about(): Array<[string, number | string]> {
+
+        const available = 'ok';
+        const unavailable = 'na';
+
+        if (this._backend === Context.BackendType.Invalid) {
+            return new Array<[string, number | string]>();
+        }
+
+        const pNamesAndValues = new Array<[string, number | string]>();
+
+        pNamesAndValues.push(['BACKEND (GLOPERATE)', this.backend as Context.BackendType]);
+        pNamesAndValues.push(['CONTEXT_HASH (GLOPERATE)', this.hash()]);
+
+        pNamesAndValues.push(['RENDERER',
+            this._context.getParameter(this._context.RENDERER)]);
+        pNamesAndValues.push(['VENDOR',
+            this._context.getParameter(this._context.VENDOR)]);
+        pNamesAndValues.push(['VERSION',
+            this._context.getParameter(this._context.VERSION)]);
+        pNamesAndValues.push(['SHADING_LANGUAGE_VERSION',
+            this._context.getParameter(this._context.SHADING_LANGUAGE_VERSION)]);
+
+        /* Debug Render Info Extension - Unmasked Vendor and Renderer. */
+        pNamesAndValues.push(['UNMASKED_VENDOR_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
+            this._context.getParameter(this.debugRendererInfo.UNMASKED_VENDOR_WEBGL)]);
+        pNamesAndValues.push(['UNMASKED_RENDERER_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
+            this._context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
+
+        /* Actual Context Attributes. */
+        pNamesAndValues.push(['ALPHA (ATTRIBUTE)', String(this.alpha)]);
+        pNamesAndValues.push(['ANTIALIAS (ATTRIBUTE)', String(this.antialias)]);
+        pNamesAndValues.push(['DEPTH (ATTRIBUTE)', String(this.depth)]);
+        pNamesAndValues.push(['FAIL_IF_MAJOR_PERFORMANCE_CAVEAT (ATTRIBUTE)',
+            String(this.failIfMajorPerformanceCaveat)]);
+        pNamesAndValues.push(['PREMULTIPLIED_ALPHA (ATTRIBUTE)', String(this.premultipliedAlpha)]);
+        pNamesAndValues.push(['PRESERVE_DRAWING_BUFFER (ATTRIBUTE)', String(this.preserveDrawingBuffer)]);
+        pNamesAndValues.push(['STENCIL (ATTRIBUTE)', String(this.stencil)]);
+
+        /* Window Info. */
+        pNamesAndValues.push(['DEVICE_PIXEL_RATIO (WINDOW)', window.devicePixelRatio]);
+
+        /* Navigator Info. */
+        pNamesAndValues.push(['APP_CODE_NAME (NAVIGATOR)', window.navigator.appCodeName]);
+        pNamesAndValues.push(['APP_NAME (NAVIGATOR)', window.navigator.appName]);
+        pNamesAndValues.push(['APP_VERSION (NAVIGATOR)', window.navigator.appVersion]);
+        pNamesAndValues.push(['PLATFORM (NAVIGATOR)', window.navigator.platform]);
+        pNamesAndValues.push(['HARDWARE_CONCURRENCY (NAVIGATOR)', window.navigator.appCodeName]);
+        pNamesAndValues.push(['VENDOR (NAVIGATOR)', window.navigator.vendor]);
+        pNamesAndValues.push(['VENDOR_SUB (NAVIGATOR)', window.navigator.vendorSub]);
+
+        /* Max and min queries - context limitations. */
+        pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+            this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
+        pNamesAndValues.push(['MAX_CUBE_MAP_TEXTURE_SIZE',
+            this._context.getParameter(this._context.MAX_CUBE_MAP_TEXTURE_SIZE)]);
+        pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_VECTORS',
+            this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_VECTORS)]);
+        pNamesAndValues.push(['MAX_RENDERBUFFER_SIZE',
+            this._context.getParameter(this._context.MAX_RENDERBUFFER_SIZE)]);
+        pNamesAndValues.push(['MAX_TEXTURE_IMAGE_UNITS',
+            this._context.getParameter(this._context.MAX_TEXTURE_IMAGE_UNITS)]);
+        pNamesAndValues.push(['MAX_TEXTURE_SIZE',
+            this._context.getParameter(this._context.MAX_TEXTURE_SIZE)]);
+        pNamesAndValues.push(['MAX_VARYING_VECTORS',
+            this._context.getParameter(this._context.MAX_VARYING_VECTORS)]);
+        pNamesAndValues.push(['MAX_VERTEX_ATTRIBS',
+            this._context.getParameter(this._context.MAX_VERTEX_ATTRIBS)]);
+        pNamesAndValues.push(['MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+            this._context.getParameter(this._context.MAX_VERTEX_TEXTURE_IMAGE_UNITS)]);
+        pNamesAndValues.push(['MAX_VERTEX_UNIFORM_VECTORS',
+            this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_VECTORS)]);
+
+        const MAX_VIEWPORT_DIMS = this._context.getParameter(this._context.MAX_VIEWPORT_DIMS);
+        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (WIDTH)', MAX_VIEWPORT_DIMS[0]]);
+        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (HEIGHT)', MAX_VIEWPORT_DIMS[1]]);
+
+
+        if (this.isWebGL2) {
+            pNamesAndValues.push(['MAX_3D_TEXTURE_SIZE',
+                this._context.getParameter(this._context.MAX_3D_TEXTURE_SIZE)]);
+            pNamesAndValues.push(['MAX_ARRAY_TEXTURE_LAYERS',
+                this._context.getParameter(this._context.MAX_ARRAY_TEXTURE_LAYERS)]);
+            pNamesAndValues.push(['MAX_CLIENT_WAIT_TIMEOUT_WEBGL',
+                this._context.getParameter(this._context.MAX_CLIENT_WAIT_TIMEOUT_WEBGL)]);
+            pNamesAndValues.push(['MAX_COLOR_ATTACHMENTS',
+                this._context.getParameter(this._context.MAX_COLOR_ATTACHMENTS)]);
+            pNamesAndValues.push(['MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_COMBINED_UNIFORM_BLOCKS',
+                this._context.getParameter(this._context.MAX_COMBINED_UNIFORM_BLOCKS)]);
+            pNamesAndValues.push(['MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_DRAW_BUFFERS',
+                this._context.getParameter(this._context.MAX_DRAW_BUFFERS)]);
+            pNamesAndValues.push(['MAX_ELEMENT_INDEX',
+                this._context.getParameter(this._context.MAX_ELEMENT_INDEX)]);
+            pNamesAndValues.push(['MAX_ELEMENTS_INDICES',
+                this._context.getParameter(this._context.MAX_ELEMENTS_INDICES)]);
+            pNamesAndValues.push(['MAX_ELEMENTS_VERTICES',
+                this._context.getParameter(this._context.MAX_ELEMENTS_VERTICES)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_INPUT_COMPONENTS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_INPUT_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_BLOCKS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_BLOCKS)]);
+            pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_PROGRAM_TEXEL_OFFSET',
+                this._context.getParameter(this._context.MAX_PROGRAM_TEXEL_OFFSET)]);
+            pNamesAndValues.push(['MAX_SAMPLES',
+                this._context.getParameter(this._context.MAX_SAMPLES)]);
+            pNamesAndValues.push(['MAX_SERVER_WAIT_TIMEOUT',
+                this._context.getParameter(this._context.MAX_SERVER_WAIT_TIMEOUT)]);
+            pNamesAndValues.push(['MAX_TEXTURE_LOD_BIAS',
+                this._context.getParameter(this._context.MAX_TEXTURE_LOD_BIAS)]);
+            pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
+                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)]);
+            pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_UNIFORM_BLOCK_SIZE',
+                this._context.getParameter(this._context.MAX_UNIFORM_BLOCK_SIZE)]);
+            pNamesAndValues.push(['MAX_UNIFORM_BUFFER_BINDINGS',
+                this._context.getParameter(this._context.MAX_UNIFORM_BUFFER_BINDINGS)]);
+            pNamesAndValues.push(['MAX_VARYING_COMPONENTS',
+                this._context.getParameter(this._context.MAX_VARYING_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_VERTEX_OUTPUT_COMPONENTS',
+                this._context.getParameter(this._context.MAX_VERTEX_OUTPUT_COMPONENTS)]);
+            pNamesAndValues.push(['MAX_VERTEX_UNIFORM_BLOCKS',
+                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_BLOCKS)]);
+            pNamesAndValues.push(['MAX_VERTEX_UNIFORM_COMPONENTS',
+                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_COMPONENTS)]);
+            pNamesAndValues.push(['MIN_PROGRAM_TEXEL_OFFSET',
+                this._context.getParameter(this._context.MIN_PROGRAM_TEXEL_OFFSET)]);
+        }
+
+        if (this.isWebGL1) {
+            for (const extension of WEBGL1_EXTENSIONS) {
+                pNamesAndValues.push([extension, this.supports(extension) ? available : unavailable]);
+            }
+        } else if (this.isWebGL2) {
+            for (const extension of WEBGL2_DEFAULT_EXTENSIONS) {
+                pNamesAndValues.push([`${extension} (default)`, available]);
+            }
+            for (const extension of WEBGL2_EXTENSIONS) {
+                pNamesAndValues.push([extension, this.supports(extension) ? available : unavailable]);
+            }
+        }
+
+        return pNamesAndValues;
+    }
+
+    /**
+     * Creates a well formated about string, e.g., for logging.
+     */
+    aboutString(): string {
+        const about = this.about();
+
+        let maxPNameLength = 0;
+        for (const tuple of about) {
+            maxPNameLength = Math.max(tuple[0].length, maxPNameLength);
+        }
+
+        let index = 0;
+        let message = ``;
+
+        const extensionSeparator = this.isWebGL2 ? 63 + WEBGL2_DEFAULT_EXTENSIONS.length : -1;
+        for (const tuple of about) {
+            /* Provide some semantic grouping: Core, Limits, Extensions, ... */
+            switch (index) {
+                case 2:  // End of Backend and Context Hash
+                case 6:  // End of Core Context Info
+                case 8:  // End of unmasked vendor and renderer
+                case 15: // End of context attributes
+                case 16: // End of window attributes
+                case 23: // End of navigator attributes
+                case 35: // End of WebGL 1 specific Limits
+                case 63: // End of WebGL 2 specific Limit, start of extensions
+                case extensionSeparator: // End of default Extensions (in case of WebGL2) or -1
+                    message += `\n`;
+                    break;
+                default:
+                    break;
+            }
+            message += `  ${tuple[0]} ${'-'.repeat(maxPNameLength - tuple[0].length)}-- ${tuple[1]}\n`;
+            ++index;
+        }
+        message += `\n`;
+
+        return message;
+    }
+
+    /**
+     * Logs a well formated list of all queried about params (names and associated values).
+     * @param verbosity - Log verbosity that is to be used for logging.
+     */
+    logAbout(verbosity: LogLevel = LogLevel.Info): void {
+        log(verbosity, `context.about\n\n` + this.aboutString());
+    }
+
+    /**
+     * Invokes `logAbout` @see{@link logAbout}) iff the given statement has resolved to true.
+     * @param statement - Result of an expression expected to be true in order to invoke logPerformanceStop.
+     * @param verbosity - Log verbosity that is to be used for logging.
+     */
+    logAboutIf(statement: boolean, verbosity: LogLevel = LogLevel.Info): void {
+        logIf(statement, verbosity, `context.about\n\n` + this.aboutString());
+    }
+
+}
+
+export namespace Context {
+
+    /**
+     * Supported OpenGL backend types.
+     */
+    export enum BackendType {
+        Invalid = 'invalid',
+        WebGL1 = 'webgl1',
+        WebGL2 = 'webgl2',
+    }
+
+    /**
+     * The list of valid backend identifiers that can be requested and matched to backend types.
+     * List adopted from https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/getContext.
+     */
+    export enum BackendRequestType {
+        auto = 'auto',
+        webgl = 'webgl',
+        experimental = 'experimental-webgl',
+        webgl1 = 'webgl1',
+        experimental1 = 'experimental-webgl1',
+        webgl2 = 'webgl2',
+        experimental2 = 'experimental-webgl2',
     }
 
 }

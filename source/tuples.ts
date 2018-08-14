@@ -99,7 +99,7 @@ namespace tuples {
      */
     export function clampf(value: GLclampf | GLfloat, semantic?: string): GLclampf | GLfloat {
         const valueV1 = clamp(value, 0.0, 1.0);
-        logIf(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.User,
+        logIf(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.Info,
             `${semantic} clamped to [${valueV1}], given [${value}]`);
         return valueV1;
     }
@@ -115,7 +115,7 @@ namespace tuples {
         const tupleV2: vec2 = vec2.fromValues(tuple[0], tuple[1]);
         if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0) {
             clamp2(tupleV2, tupleV2, vec2.fromValues(0.0, 0.0), vec2.fromValues(1.0, 1.0));
-            logIf(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV2}], given [${tuple}]`);
+            logIf(semantic !== undefined, LogLevel.Info, `${semantic} clamped to [${tupleV2}], given [${tuple}]`);
         }
         return tuple2<typeof tuple[0]>(tupleV2);
     }
@@ -131,7 +131,7 @@ namespace tuples {
         const tupleV3: vec3 = vec3.fromValues(tuple[0], tuple[1], tuple[2]);
         if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 || tuple[2] < 0.0 || tuple[2] > 1.0) {
             clamp3(tupleV3, tupleV3, vec3.fromValues(0.0, 0.0, 0.0), vec3.fromValues(1.0, 1.0, 1.0));
-            logIf(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV3}], given [${tuple}]`);
+            logIf(semantic !== undefined, LogLevel.Info, `${semantic} clamped to [${tupleV3}], given [${tuple}]`);
         }
         return tuple3<typeof tuple[0]>(tupleV3);
     }
@@ -148,7 +148,7 @@ namespace tuples {
         if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 ||
             tuple[2] < 0.0 || tuple[2] > 1.0 || tuple[3] < 0.0 || tuple[3] > 1.0) {
             clamp4(tupleV4, tupleV4, vec4.fromValues(0.0, 0.0, 0.0, 0.0), vec4.fromValues(1.0, 1.0, 1.0, 1.0));
-            logIf(semantic !== undefined, LogLevel.User, `${semantic} clamped to [${tupleV4}], given [${tuple}]`);
+            logIf(semantic !== undefined, LogLevel.Info, `${semantic} clamped to [${tupleV4}], given [${tuple}]`);
         }
         return tuple4<typeof tuple[0]>(tupleV4);
     }
@@ -208,6 +208,7 @@ namespace tuples {
     export function equals4<T extends GLclampf | GLfloat | GLsizei>(t0: [T, T, T, T], t1: [T, T, T, T]): boolean {
         return t0[0] === t1[0] && t0[1] === t1[1] && t0[2] === t1[2] && t0[3] === t1[3];
     }
+
 }
 
 export = tuples;

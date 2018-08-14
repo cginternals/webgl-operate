@@ -1,6 +1,5 @@
 
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable, ReplaySubject } from 'rxjs';
 
 import { vec2, vec4 } from 'gl-matrix';
 
@@ -12,8 +11,9 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { MouseEventProvider } from './mouseeventprovider';
+import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
-import { FramePrecisionString } from './wizard';
+import { Wizard } from './wizard';
 
 
 // export interface IdCallback { (id: number, x?: number, y?: number): void; }
@@ -87,7 +87,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * expected to take advantage of progressive rendering (e.g., multi-frame sampling) and accumulation as well as a
      * blit pass (since main intend is multi-frame based rendering).
      */
-    protected _framePrecision: FramePrecisionString = 'half';
+    protected _framePrecision: Wizard.Precision = Wizard.Precision.half;
 
     /**
      * The clear color, provided by the canvas the renderer is bound to. This is used in frame calls of inheritors.
@@ -112,6 +112,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /** @callback Invalidate
      * A callback intended to be invoked whenever the specialized renderer itself or one of its objects is invalid. This
      * callback should be passed during initialization to all objects that might handle invalidation internally as well.
+     * As a result, rendering of a new frame will be triggered and enforced.
      */
     @Initializable.assert_initialized()
     protected invalidate(force: boolean = false): void {
@@ -155,7 +156,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected abstract onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider | undefined,
         /* keyEventProvider: KeyEventProvider | undefined, */
-        /* touchEventProvider: TouchEventProvider | undefined */): boolean;
+        touchEventProvider: TouchEventProvider | undefined): boolean;
 
     /**
      * Actual uninitialize call specified by inheritor.
@@ -164,23 +165,31 @@ export abstract class Renderer extends Initializable implements Controllable {
 
 
     /**
-     * Actual update call specified by inheritor.
-     * @returns - whether to redraw
+     * Actual update call specified by inheritor. This is invoked in order to check if rendering of a frame is required
+     * by means of implementation specific evaluation (e.g., lazy non continuous rendering). Regardless of the return
+     * value a new frame (preparation, frame, swap) might be invoked anyway, e.g., when update is forced or canvas or
+     * context properties have changed or the renderer was invalidated @see{@link invalidate}.
+     * @returns - Whether to redraw
      */
     protected abstract onUpdate(): boolean;
 
     /**
-     * Actual prepare call specified by inheritor.
+     * Actual prepare call specified by inheritor. This is invoked in order to prepare rendering of one or more frames.
+     * This should be used for rendering preparation, e.g., when using multi-frame rendering this might specify uniforms
+     * that do not change for every intermediate frame.
      */
     protected abstract onPrepare(): void;
 
     /**
-     * Actual frame call specified by inheritor.
+     * Actual frame call specified by inheritor. After (1) update and (2) preparation are invoked, a frame is invoked.
+     * This should be used for actual rendering implementation.
      */
     protected abstract onFrame(frameNumber: number): void;
 
     /**
-     * Actual swap call specified by inheritor.
+     * Actual swap call specified by inheritor. After (1) update, (2) preparation, and (3) frame are invoked, a swap
+     * might be invoked. In case of experimental batch rendering when using multi-frame a swap might be withhold for
+     * multiple frames.
      */
     protected abstract onSwap(): void;
 
@@ -202,14 +211,14 @@ export abstract class Renderer extends Initializable implements Controllable {
     initialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider | undefined,
         /* keyEventProvider: KeyEventProvider | undefined, */
-        /* touchEventProvider: TouchEventProvider | undefined */): boolean {
+        touchEventProvider: TouchEventProvider | undefined): boolean {
 
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
 
-        return this.onInitialize(context, callback, mouseEventProvider);
+        return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider);
     }
 
     /**
@@ -325,7 +334,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Set the frame precision.
      * @param format - The accumulation format. Expected values are one of 'byte', 'half', 'float', or 'auto'
      */
-    set framePrecision(precision: FramePrecisionString) {
+    set framePrecision(precision: Wizard.Precision) {
         this.assertInitialized();
         if (this._framePrecision === precision) {
             return;
@@ -379,7 +388,7 @@ export abstract class Renderer extends Initializable implements Controllable {
         if (this._debugTexture === index) {
             return;
         }
-        logIf(index >= this._debugTextures.length, LogLevel.Dev, `invalid texture index, ` +
+        logIf(index >= this._debugTextures.length, LogLevel.Error, `invalid texture index, ` +
             `debug texture disabled (index set to -1) | ${index} not in [-1,+${this._debugTextures.length - 1}]`);
         this._debugTexture = index < this._debugTextures.length ?
             clamp(index, -1, this._debugTextures.length - 1) : -1;
@@ -390,7 +399,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Observable that can be used to subscribe to debug texture changes.
      */
-    get debugTextureObservable(): Observable<GLint> {
+    get debugTexture$(): Observable<GLint> {
         return this._debugTextureSubject.asObservable();
     }
 

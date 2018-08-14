@@ -37,7 +37,7 @@ export class ChangeLookup {
         property.any = true;
 
         const names = path.split('.');
-        const name = names.shift() as string;
+        const name = names.shift()!;
 
         assert(name === '' || property.hasOwnProperty(name),
             `expected object to have key '${name}' in order to capture alterations`);

@@ -1,21 +1,27 @@
 
-module.exports = require('./webpack.config');
 
-module.exports.cache = false;
-module.exports.output.path = __dirname + '/dist';
-module.exports.entry = {
-    'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'],
-    'webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
-};
+module.exports = (env, options) => {
 
-module.exports.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
-module.exports.module.rules[0].use.options.compilerOptions.declaration = false;
-module.exports.module.rules[0].use.options.compilerOptions.removeComments = true;
+    const config = require('./webpack.config');
 
-// module.exports.output.library = 'gloperate';
-// module.exports.output.libraryTarget = 'umd';
+    config.cache = false;
+    config.output.path = __dirname + '/dist';
+    config.entry = {
+        'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'],
+        'webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
+    };
 
-module.exports.plugins[0].definitions = {
-    DISABLE_ASSERTIONS: JSON.stringify(false),
-    LOG_VERBOSITY_THRESHOLD: JSON.stringify(1),
+    config.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
+    config.module.rules[0].use.options.compilerOptions.declaration = false;
+    config.module.rules[0].use.options.compilerOptions.removeComments = true;
+
+    // config.output.library = 'gloperate';
+    // config.output.libraryTarget = 'umd';
+
+    // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
+    config.plugins[0].definitions.DISABLE_ASSERTIONS = JSON.stringify(false);
+    // Log verbosity levels: debug = 3, info = 2, warn = 1, error = 0
+    config.plugins[0].definitions.LOG_VERBOSITY_THRESHOLD = JSON.stringify(options.mode === 'development' ? 3 : 2);
+
+    return config;
 };

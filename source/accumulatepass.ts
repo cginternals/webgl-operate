@@ -10,7 +10,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
-import { FramePrecisionString, Wizard } from './wizard';
+import { Wizard } from './wizard';
 
 
 /**
@@ -45,7 +45,7 @@ export class AccumulatePass extends Initializable {
     protected _texture: Texture2;
 
     /** @see {@link precision} */
-    protected _precision: FramePrecisionString = 'half';
+    protected _precision: Wizard.Precision = Wizard.Precision.half;
 
     /** @see {@link passThrough} */
     protected _passThrough: boolean;
@@ -122,7 +122,7 @@ export class AccumulatePass extends Initializable {
 
 
         if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context);
+            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Accumulate');
         } else {
             this._ndcTriangle = ndcTriangle;
             this._ndcTriangleShared = true;
@@ -162,9 +162,9 @@ export class AccumulatePass extends Initializable {
      * changed, and if so, resizes the accumulation buffers.
      */
     @Initializable.assert_initialized()
-    update() {
+    update(): void {
         if (!this._texture || !this._texture.valid) {
-            log(LogLevel.Dev, `valid texture for accumulation update expected, given ${this._texture}`);
+            log(LogLevel.Warning, `valid texture for accumulation update expected, given ${this._texture}`);
             return;
         }
 
@@ -227,14 +227,14 @@ export class AccumulatePass extends Initializable {
      * the currently set viewport is used.
      */
     @Initializable.assert_initialized()
-    frame(frameNumber: number, viewport?: GLsizei2) {
+    frame(frameNumber: number, viewport?: GLsizei2): void {
         assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
             `valid framebuffer objects for accumulation expected (initialize or update was probably not be called`);
 
         if (this._passThrough || this._texture === undefined) {
             return;
         }
-        logIf(!this._texture || !this._texture.valid, LogLevel.Dev,
+        logIf(!this._texture || !this._texture.valid, LogLevel.Warning,
             `valid texture for accumulation frame expected, given ${this._texture}`);
 
         const gl = this._context.gl;
@@ -285,7 +285,7 @@ export class AccumulatePass extends Initializable {
     /**
      * Allows to specify the accumulation precision.
      */
-    set precision(precision: FramePrecisionString) {
+    set precision(precision: Wizard.Precision) {
         this.assertInitialized();
         if (this._precision !== precision) {
             this._precision = precision;

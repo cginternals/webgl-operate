@@ -5,7 +5,8 @@
     "[json]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4,
-        "editor.autoIndent": false
+        "editor.autoIndent": false,
+        "editor.formatOnSave": false
     },
     "[pug]": {
         "editor.insertSpaces": true,
@@ -17,6 +18,7 @@
         "*.nycrc": "json"
     },
     "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
     "editor.cursorBlinking": "solid", // saves performance
     "search.exclude": {
         "**/.git": true,
@@ -55,9 +57,11 @@
         "cmyk",
         "cmyka",
         "cobertura",
+        "colorbrewer",
         "complementation",
         "contextmasquerade",
         "controllable",
+        "cornsweet",
         "deallocate",
         "deallocated",
         "deallocation",
@@ -94,6 +98,7 @@
         "laba",
         "layouting",
         "lcov",
+        "lerp",
         "limberger",
         "linearization",
         "linearized",
@@ -112,7 +117,9 @@
         "parameter",
         "passthrough",
         "philipp",
+        "postversion",
         "precedingly",
+        "preversion",
         "pugconfig",
         "pvrtc",
         "quaternion",
@@ -154,6 +161,7 @@
         "vaos",
         "vbos",
         "vertexarray",
+        "viridis",
         "webgl"
     ],
     "cSpell.flagWords": [

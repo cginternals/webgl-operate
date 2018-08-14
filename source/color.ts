@@ -1,8 +1,8 @@
 
+import { vec4 } from 'gl-matrix';
+import { clamp, mix } from './gl-matrix-extensions';
+
 import { assert, log, LogLevel } from './auxiliaries';
-
-import { clamp } from './gl-matrix-extensions';
-
 import { clampf, clampf3, clampf4, duplicate4, equals4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
 
 
@@ -27,7 +27,7 @@ export class Color {
     /**
      * Converts a hue value into an rgb value.
      */
-    protected static hue2rgb(p: GLfloat, q: GLfloat, t: GLfloat) {
+    protected static hue2rgb(p: GLfloat, q: GLfloat, t: GLfloat): GLfloat {
         assert(t >= -1.0 && t <= 2.0, `t is expected to be between -1 and 2`);
         if (t < 0.0) {
             t += 1.0;
@@ -258,7 +258,7 @@ export class Color {
         const rgba: GLclampf4 = [0.0, 0.0, 0.0, Color.DEFAULT_ALPHA];
 
         if (!Color.HEX_FORMAT_REGEX.test(hex)) {
-            log(LogLevel.User, `hexadecimal RGBA color string must conform to either \
+            log(LogLevel.Warning, `hexadecimal RGBA color string must conform to either \
 '0x0000', '#0000', '0000', '0x00000000', '#00000000', or '00000000', given '${hex}'`);
             return rgba;
         }
@@ -306,6 +306,36 @@ export class Color {
         const b = Color.to2CharHexCode(rgbaF[2]);
         const a = Color.to2CharHexCode(rgbaF[3]);
         return '#' + r + g + b + a;
+    }
+
+    /**
+     * Performs a linear interpolation between x and y using a to weight between them within the specified color space.
+     * @param x - First color stop for mix/linear interpolation.
+     * @param y - Second color stop for mix/linear interpolation.
+     * @param a - Specify the value to use to interpolate between x and y.
+     * @param space - The color space that is to be used for linear interpolation of two colors.
+     */
+    static mix(x: Color, y: Color, a: number, space: Color.Space = Color.Space.LAB): Color {
+        const result = vec4.create();
+        switch (space) {
+            case Color.Space.CMYK:
+                vec4.lerp(result, x.cmyk, y.cmyka, a);
+                const alpha = mix(x.a, y.a, a);
+                return new Color().fromCMYK(result[0], result[1], result[2], result[3], alpha);
+
+            case Color.Space.LAB:
+                vec4.lerp(result, x.laba, y.laba, a);
+                return new Color().fromLAB(result[0], result[1], result[2], result[3]);
+
+            case Color.Space.HSL:
+                vec4.lerp(result, x.hsla, y.hsla, a);
+                return new Color().fromHSL(result[0], result[1], result[2], result[3]);
+
+            case Color.Space.RGB:
+            default:
+                vec4.lerp(result, x.rgba, y.rgba, a);
+                return new Color().fromRGB(result[0], result[1], result[2], result[3]);
+        }
     }
 
     /**
@@ -374,6 +404,24 @@ export class Color {
         this._rgba[1] = clamp(green, 0, 255) / 255.0;
         this._rgba[2] = clamp(blue, 0, 255) / 255.0;
         this._rgba[3] = clamp(alpha, 0, 255) / 255.0;
+
+        this._altered = !equals4<GLclampf>(this._rgba, previous);
+        return this;
+    }
+
+    /**
+     * Specifies the internal rgba store using a color in RGB color space.
+     * @param red - Red color component in [0.0, 1.0]
+     * @param green - Green color component in [0.0, 1.0]
+     * @param blue - Blue color component in [0.0, 1.0]
+     * @param alpha - Alpha color component in [0.0, 1.0]
+     * @returns - The color instance (this).
+     */
+    fromRGB(red: GLclampf, green: GLclampf, blue: GLclampf,
+        alpha: GLclampf = Color.DEFAULT_ALPHA): Color {
+        const previous = duplicate4<GLclampf>(this._rgba);
+
+        this._rgba = clampf4([red, green, blue, alpha], 'RGBA input');
 
         this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
@@ -457,12 +505,15 @@ export class Color {
         return this;
     }
 
-
+    /**
+     * Converts the color to a gray value using the specified algorithm.
+     * @param algorithm - The algorithm used for color to gray conversion.
+     */
     gray(algorithm: Color.GrayscaleAlgorithm = Color.GrayscaleAlgorithm.LinearLuminance): GLclampf {
 
         switch (algorithm) {
 
-            /* does not represent shades of grayscale w.r.t. human perception of luminosity. */
+            /* Does not represent shades of grayscale w.r.t. human perception of luminosity. */
             case Color.GrayscaleAlgorithm.Average:
                 return (this._rgba[0] + this._rgba[1] + this._rgba[2]) / 3.0;
 
@@ -486,11 +537,35 @@ export class Color {
         }
     }
 
+    /**
+     * Enables generic color access within a specified color space.
+     * @param space - Expected color space of the requested color values.
+     * @param alpha - Whether or not alpha channel should be provided as well.
+     */
+    tuple(space: Color.Space, alpha: boolean = true): GLclampf3 | GLclampf4 | GLclampf5 {
+        switch (space) {
+            default:
+            case Color.Space.RGB:
+                return alpha ? this.rgba : this.rgb;
+            case Color.Space.LAB:
+                return alpha ? this.laba : this.lab;
+            case Color.Space.CMYK:
+                return alpha ? this.cmyka : this.cmyk;
+            case Color.Space.HSL:
+                return alpha ? this.hsla : this.hsl;
+        }
+    }
 
+    /**
+     * Read access to the RGB components as floating point 3-tuple, each value in range [0.0, 1.0].
+     */
     get rgb(): GLclampf3 {
         return [this._rgba[0], this._rgba[1], this._rgba[2]];
     }
 
+    /**
+     * Read access to the RGB components as array of three bytes (8bit unsigned int), each in range [0, 255].
+     */
     get rgbUI8(): Uint8Array {
         const ui8Array = new Uint8Array(3);
         ui8Array[0] = Math.round(this._rgba[0] * 255.0);
@@ -499,6 +574,9 @@ export class Color {
         return ui8Array;
     }
 
+    /**
+     * Read access to the RGB components as array of three 32bit floats, each in range [0.0, 1.0].
+     */
     get rgbF32(): Float32Array {
         const f32Array = new Float32Array(3);
         f32Array[0] = this._rgba[0];
@@ -507,10 +585,16 @@ export class Color {
         return f32Array;
     }
 
+    /**
+     * Read access to the RGBA components as floating point 4-tuple, each value in range [0.0, 1.0].
+     */
     get rgba(): GLclampf4 {
         return this._rgba;
     }
 
+    /**
+     * Read access to the RGBA components as array of four bytes (8bit unsigned int), each in range [0, 255].
+     */
     get rgbaUI8(): Uint8Array {
         const ui8Array = new Uint8Array(4);
         ui8Array[0] = Math.round(this._rgba[0] * 255.0);
@@ -520,60 +604,95 @@ export class Color {
         return ui8Array;
     }
 
+    /**
+     * Read access to the RGBA components as array of four 32bit floats, each in range [0.0, 1.0].
+     */
     get rgbaF32(): Float32Array {
         return new Float32Array(this._rgba);
     }
 
+    /**
+     * Read access to the Red component as float value in range [0.0, 1.0].
+     */
     get r(): GLclampf {
         return this._rgba[0];
     }
 
+    /**
+     * Read access to the Green component as float value in range [0.0, 1.0].
+     */
     get g(): GLclampf {
         return this._rgba[1];
     }
 
+    /**
+     * Read access to the Blue component as float value in range [0.0, 1.0].
+     */
     get b(): GLclampf {
         return this._rgba[2];
     }
 
+    /**
+     * Read access to the Alpha component as float value in range [0.0, 1.0].
+     */
     get a(): GLclampf {
         return this._rgba[3];
     }
 
-
+    /**
+     * Read access to the RGB components as hexadecimal string.
+     */
     get hexRGB(): string {
         return Color.rgb2hex(this.rgb);
     }
 
+    /**
+     * Read access to the RGBA components as hexadecimal string.
+     */
     get hexRGBA(): string {
         return Color.rgba2hex(this._rgba);
     }
 
-
+    /**
+     * Read access to the HSL components as floating point 3-tuple, each value in range [0.0, 1.0].
+     */
     get hsl(): GLclampf3 {
         return Color.rgb2hsl(this.rgb);
     }
 
+    /**
+     * Read access to the HSLA components as floating point 4-tuple, each value in range [0.0, 1.0].
+     */
     get hsla(): GLclampf4 {
         const hsl = Color.rgb2hsl(this.rgb);
         return [hsl[0], hsl[1], hsl[2], this._rgba[3]];
     }
 
-
+    /**
+     * Read access to the LAB components as floating point 3-tuple, each value in range [0.0, 1.0].
+     */
     get lab(): GLclampf3 {
         return Color.rgb2lab(this.rgb);
     }
 
+    /**
+     * Read access to the LABA components as floating point 4-tuple, each value in range [0.0, 1.0].
+     */
     get laba(): GLclampf4 {
         const lab = Color.rgb2lab(this.rgb);
         return [lab[0], lab[1], lab[2], this._rgba[3]];
     }
 
-
+    /**
+     * Read access to the CMYK components as floating point 4-tuple, each value in range [0.0, 1.0].
+     */
     get cmyk(): GLclampf4 {
         return Color.rgb2cmyk(this.rgb);
     }
 
+    /**
+     * Read access to the CMYKA components as floating point 5-tuple, each value in range [0.0, 1.0].
+     */
     get cmyka(): GLclampf5 {
         const cmyk = Color.rgb2cmyk(this.rgb);
         return [cmyk[0], cmyk[1], cmyk[2], cmyk[3], this._rgba[3]];
@@ -599,10 +718,21 @@ export class Color {
 export namespace Color {
 
     export enum GrayscaleAlgorithm {
-        Average,
-        LinearLuminance, /* CIE1931 */
-        LeastSaturatedVariant,
-        MinimumDecomposition,
-        MaximumDecomposition,
+        Average = 'average',
+        LinearLuminance = 'linear-luminance', /* CIE1931 */
+        LeastSaturatedVariant = 'least-saturated-variant',
+        MinimumDecomposition = 'minimum-decomposition',
+        MaximumDecomposition = 'maximum-decomposition',
     }
+
+    /**
+     * Color spaces covered by this class.
+     */
+    export enum Space {
+        RGB = 'rgb',
+        HSL = 'hsl',
+        LAB = 'lab',
+        CMYK = 'cmyk',
+    }
+
 }
