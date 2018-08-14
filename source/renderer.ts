@@ -11,6 +11,7 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { MouseEventProvider } from './mouseeventprovider';
+import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
 
@@ -155,7 +156,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected abstract onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider | undefined,
         /* keyEventProvider: KeyEventProvider | undefined, */
-        /* touchEventProvider: TouchEventProvider | undefined */): boolean;
+        touchEventProvider: TouchEventProvider | undefined): boolean;
 
     /**
      * Actual uninitialize call specified by inheritor.
@@ -210,14 +211,14 @@ export abstract class Renderer extends Initializable implements Controllable {
     initialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider | undefined,
         /* keyEventProvider: KeyEventProvider | undefined, */
-        /* touchEventProvider: TouchEventProvider | undefined */): boolean {
+        touchEventProvider: TouchEventProvider | undefined): boolean {
 
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
 
-        return this.onInitialize(context, callback, mouseEventProvider);
+        return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider);
     }
 
     /**
@@ -398,7 +399,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Observable that can be used to subscribe to debug texture changes.
      */
-    get debugTextureObservable(): Observable<GLint> {
+    get debugTexture$(): Observable<GLint> {
         return this._debugTextureSubject.asObservable();
     }
 

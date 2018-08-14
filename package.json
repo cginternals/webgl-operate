@@ -1,6 +1,6 @@
 {
     "name": "webgl-operate",
-    "version": "0.3.4",
+    "version": "0.3.8",
     "license": "MIT",
     "description": "A TypeScript based WebGL rendering framework.",
     "author": "CG Internals",
@@ -19,31 +19,24 @@
     "sideEffects": [
         "./source/polyfill.ts"
     ],
-    "contributors": [
+    "maintainers": [
         {
             "name": "Daniel Limberger",
             "email": "daniel.limberger@cginternals.com"
-        },
-        {
-            "name": "Philipp Otto",
-            "email": "philipp.otto@cginternals.com"
-        },
-        {
-            "name": "Willy Scheibel",
-            "email": "willy.scheibel@cginternals.com"
         }
     ],
     "devDependencies": {
         "@types/chai": "~4.1.4",
         "@types/chai-spies": "~0.0.1",
-        "@types/gl-matrix": "~2.3.0",
-        "@types/mocha": "~5.2.4",
+        "@types/gl-matrix": "~2.4.1",
+        "@types/mocha": "~5.2.5",
         "@types/sinon": "~4.3.3",
         "chai": "~4.1.2",
         "chai-spies": "~1.0.0",
         "coveralls": "~3.0.2",
         "cross-env": "~5.2.0",
-        "gl-matrix": "~2.3.2",
+        "git-revision-webpack-plugin": "~3.0.3",
+        "gl-matrix": "~2.7.1",
         "glob": "~7.1.2",
         "http-server": "~0.11.1",
         "jsonschema": "~1.2.4",
@@ -54,22 +47,22 @@
         "nyc": "~12.0.2",
         "pug": "~2.0.3",
         "rimraf": "~2.6.2",
-        "rxjs": "~6.2.1",
+        "rxjs": "~6.2.2",
         "sinon": "~4.5.0",
         "source-map-support": "~0.5.6",
         "ts-loader": "~4.4.1",
         "ts-node": "~5.0.1",
-        "tslint": "~5.10.0",
+        "tslint": "~5.11.0",
         "typedoc": "~0.11.1",
-        "typescript": "~2.9.2",
-        "webpack": "~4.12.2",
+        "typescript": "~3.0.1",
+        "webpack": "~4.16.5",
         "webpack-bundle-analyzer": "~2.13.1",
-        "webpack-cli": "~3.0.8",
+        "webpack-cli": "~3.1.0",
         "webpack-glsl-loader": "~1.0.1",
         "webpack-rxjs-externals": "~2.0.0"
     },
     "peerDependencies": {
-        "rxjs": "~6.2.1"
+        "rxjs": "~6.2.2"
     },
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
@@ -86,9 +79,11 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc source/webgl-operate.ts",
-        "ci": "run-s build-dist build-lib lint test-nyc",
+        "ci": "run-p build-dist build-lib lint test-nyc",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
-        "prepack": "npm install && run-p build-dist build-lib"
+        "postversion": "git push && git push --tags",
+        "prepack": "npm run preversion",
+        "preversion": "npm install && npm run ci"
     },
     "keywords": [
         "webgl",

@@ -325,7 +325,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
     /**
      * Sets the clear color used for clearing a draw buffer. In order to have transparency working, the canvas needs
-     * to have the alpha  attribute enabled. This stage also supports premultiplied alpha, which is applied
+     * to have the alpha attribute enabled. This stage also supports premultiplied alpha, which is applied
      * automatically when the context's `premultipliedAlpha` attribute is set.
      * @param color - RGBA clear color.
      * @param drawBuffer - The draw buffer index. If no index is provided, the color will be applied to all buffers.
@@ -347,7 +347,8 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             color2[2] *= color2[3];
         }
 
-        if (drawBuffer) {
+        /* Note that draw buffer index null is allowed, thus explicit check for undefined is required. */
+        if (drawBuffer !== undefined) {
             this._clearColors[drawBuffer] = color2;
         } else {
             for (let i = 0; i < this._clearColors.length; ++i) {

@@ -126,7 +126,7 @@ export class VertexArray extends AbstractObject<any> implements Bindable {
     /**
      * Can be used to enforce rebinding all buffers, e.g., when data has changed.
      */
-    invalidate() {
+    invalidate(): void {
         this._buffersBound = false;
     }
 

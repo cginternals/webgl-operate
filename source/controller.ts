@@ -228,7 +228,7 @@ export class Controller {
         this._pendingRequest = 0;
     }
 
-    protected invoke(type: Controller.RequestType) {
+    protected invoke(type: Controller.RequestType): void {
         assert(this._pendingRequest !== 0, `manual/explicit invocation not anticipated`);
         assert(this._controllable !== undefined, `expected valid controllable for invocation`);
 
@@ -414,7 +414,7 @@ export class Controller {
 
     /**
      * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
-     * If updates where blocked using ```block```, block updates is disabled.
+     * If updates where blocked using `block`, block updates is disabled.
      */
     update(force: boolean = false): void {
         if (this.reset()) {
@@ -433,7 +433,7 @@ export class Controller {
 
     /**
      * Block implicit updates, e.g., caused by various setters. This can be used to reconfigure the controller without
-     * triggering to multiple intermediate updates. The block updates mode can be exited using ``unblock```.
+     * triggering to multiple intermediate updates. The block updates mode can be exited using `unblock`.
      */
     block(): void {
         logIf(this._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
@@ -530,7 +530,7 @@ export class Controller {
     /**
      * Observable that can be used to subscribe to multi-frame number changes.
      */
-    get multiFrameNumberObservable(): Observable<number> {
+    get multiFrameNumber$(): Observable<number> {
         return this._multiFrameNumberSubject.asObservable();
     }
 
@@ -584,7 +584,7 @@ export class Controller {
     /**
      * Observable that can be used to subscribe to debug-frame number changes.
      */
-    get debugFrameNumberObservable(): Observable<number> {
+    get debugFrameNumber$(): Observable<number> {
         return this._debugFrameNumberSubject.asObservable();
     }
 
@@ -602,7 +602,7 @@ export class Controller {
     /**
      * Observable that can be used to subscribe to frame number changes.
      */
-    get frameNumberObservable(): Observable<number> {
+    get frameNumber$(): Observable<number> {
         return this._frameNumberSubject.asObservable();
     }
 

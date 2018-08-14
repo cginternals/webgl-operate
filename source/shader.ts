@@ -93,7 +93,7 @@ export class Shader extends AbstractObject<WebGLShader> {
     /**
      * Either VERTEX_SHADER or FRAGMENT_SHADER.
      */
-    get type() {
+    get type(): GLenum {
         this.assertInitialized();
         return this._type;
     }

@@ -1,4 +1,6 @@
 
+export { branch, commit, version } from './version';
+
 export { Context } from './context';
 export { Canvas } from './canvas';
 export { Controller } from './controller';
@@ -9,6 +11,7 @@ export { ContextMasquerade } from './contextmasquerade';
 export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
+export { TouchEventProvider } from './toucheventprovider';
 export { EventHandler } from './eventhandler';
 
 export { Buffer } from './buffer';

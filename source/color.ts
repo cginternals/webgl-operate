@@ -27,7 +27,7 @@ export class Color {
     /**
      * Converts a hue value into an rgb value.
      */
-    protected static hue2rgb(p: GLfloat, q: GLfloat, t: GLfloat) {
+    protected static hue2rgb(p: GLfloat, q: GLfloat, t: GLfloat): GLfloat {
         assert(t >= -1.0 && t <= 2.0, `t is expected to be between -1 and 2`);
         if (t < 0.0) {
             t += 1.0;

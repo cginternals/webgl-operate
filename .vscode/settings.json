@@ -18,6 +18,7 @@
         "*.nycrc": "json"
     },
     "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
     "editor.cursorBlinking": "solid", // saves performance
     "search.exclude": {
         "**/.git": true,
@@ -116,7 +117,9 @@
         "parameter",
         "passthrough",
         "philipp",
+        "postversion",
         "precedingly",
+        "preversion",
         "pugconfig",
         "pvrtc",
         "quaternion",
