@@ -30,7 +30,7 @@ export class Label {
     protected _lineWidth = 0.0;
 
     /** @see {@link fontSize} */
-    protected _fontSize = 50.0;
+    protected _fontSize = 20.0;
 
 
     /** @see {@link fontFace} */
@@ -300,7 +300,7 @@ export class Label {
     /**
      * Intended for resetting alteration status.
      */
-    reset() {
+    reset(): void {
         this._altered.reset();
     }
 

@@ -11,6 +11,7 @@ import { Context } from './context';
 import { DefaultFramebuffer } from './defaultframebuffer';
 import { Framebuffer } from './framebuffer';
 import { MouseEventProvider } from './mouseeventprovider';
+import { Navigation } from './navigation';
 import { Program } from './program';
 import { Renderbuffer } from './renderbuffer';
 import { Invalidate, Renderer } from './renderer';
@@ -54,6 +55,7 @@ export class LabelRenderer extends Renderer {
     protected _intermediateFBO: Framebuffer;
 
     protected _testNavigation: TestNavigation;
+    protected _navigation: Navigation;
 
     protected _fontFace: FontFace;
     protected _labelGeometry: LabelGeometry;
@@ -141,7 +143,9 @@ export class LabelRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 8.0;
 
-        this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
+        // Initialize navigation
+        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation.camera = this._camera;
 
         return true;
     }
@@ -164,16 +168,12 @@ export class LabelRenderer extends Renderer {
 
 
     protected onUpdate(): boolean {
-        this._testNavigation.update();
 
-        const redraw = this._testNavigation.altered;
-        this._testNavigation.reset();
+        this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
-        if (!redraw && !this._altered.any) {
-            return false;
-        }
+        this._navigation.update();
 
-        return redraw;
+        return this._altered.any || this._camera.altered;
     }
 
     protected onPrepare(): void {
@@ -201,6 +201,11 @@ export class LabelRenderer extends Renderer {
              */
             // this.setupScene();
         }
+
+        if (this._altered.canvasSize) {
+            this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+        }
+
         if (this._altered.multiFrameNumber) {
             this._ndcOffsetKernel.width = this._multiFrameNumber;
         }
@@ -215,13 +220,21 @@ export class LabelRenderer extends Renderer {
 
         this._accumulate.update();
 
+        if (this._camera.altered) {
+            this._program.bind();
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+            this._program.unbind();
+        }
+
         this._altered.reset();
+        this._camera.altered = false;
     }
 
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+        this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 
         let wasBlendEnabled = false;
         const oldBlendSRC: any = gl.getParameter(gl.BLEND_SRC_RGB);
@@ -292,13 +305,10 @@ export class LabelRenderer extends Renderer {
 
         // create Label with Text and
         // tell the Typesetter to typeset that Label with the loaded FontFace
-
         const userTransform = mat4.create();
         mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
-        mat4.rotateX(userTransform, userTransform, Math.PI * -0.4);
-        mat4.rotateY(userTransform, userTransform, Math.PI * 0.2);
         mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
-        mat4.translate(userTransform, userTransform, vec3.fromValues(-1, 0.0, 0));
+        mat4.translate(userTransform, userTransform, vec3.fromValues(-0.1, 0.0, 0.3));
         let glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
 
         glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
@@ -325,7 +335,7 @@ export class LabelRenderer extends Renderer {
 
     protected prepareLabel(str: string, userTransform?: mat4): GlyphVertices {
 
-        const testLabel: Label = new Label(new Text(str), this._fontFace);
+        const label: Label = new Label(new Text(str), this._fontFace);
 
         // TODO meaningful margins from label.margins or config.margins ?
         const margins: vec4 = vec4.create();
@@ -336,8 +346,8 @@ export class LabelRenderer extends Renderer {
         const transform = mat4.create();
 
         // translate to lower left in NDC
+        mat4.scale(transform, transform, vec3.fromValues(1.0, this._frameSize[1] / this._frameSize[0], 1.0));
         mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
-
         // scale glyphs to NDC size
         // this._frameSize should be the viewport size
         mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
@@ -356,10 +366,10 @@ export class LabelRenderer extends Renderer {
         vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
         mat4.translate(transform, transform, v3);
 
-        testLabel.transform = mat4.mul(testLabel.transform,
+        label.transform = mat4.mul(label.transform,
             userTransform !== undefined ? userTransform : mat4.create(), transform);
 
-        const numGlyphs = testLabel.length;
+        const numGlyphs = label.length;
 
         // prepare vertex storage (values will be overridden by typesetter)
         const vertices = new GlyphVertices();
@@ -375,7 +385,7 @@ export class LabelRenderer extends Renderer {
             vertices.push(vertex);
         }
 
-        Typesetter.typeset(testLabel, vertices, 0);
+        Typesetter.typeset(label, vertices, 0);
 
         return vertices;
     }
