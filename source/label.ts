@@ -45,10 +45,13 @@ export class Label {
     /** @see {@link transform} */
     protected _transform: mat4;
 
+    /** @see {@link userTransform} */
+    protected _userTransform: mat4;
 
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, color: false, resources: false, text: false, typesetting: false, transform: false,
+        any: false, color: false, resources: false, text: false, typesetting: false,
+        transform: false, userTransform: false,
     });
 
     /**
@@ -60,6 +63,7 @@ export class Label {
         this._text = text;
         this._fontFace = fontFace;
         this._transform = mat4.create();
+        this._userTransform = mat4.create();
     }
 
 
@@ -196,7 +200,7 @@ export class Label {
 
     /**
      * Width of a single line (in pt or w.r.t. font face scaling in world space respectively). The width of the line
-     * is not intended to be set explicitly, but implicitly vie transformations/label placement.
+     * is not intended to be set explicitly, but implicitly via transformations/label placement.
      */
     get lineWidth(): number {
         return this._lineWidth;
@@ -276,11 +280,25 @@ export class Label {
     get transform(): mat4 {
 
         const s = this._fontSize / this._fontFace.size;
-        mat4.scale(this._transform, this._transform, vec3.fromValues(s, s, s));
 
-        return this._transform;
+        const t: mat4 = mat4.create();
+        mat4.scale(t, this._transform, vec3.fromValues(s, s, s));
+
+        return t;
     }
 
+    /**
+     * This just stores a transform for the user. The user takes care of using this appropriately
+     * (e.g., for calculations to the final transform).
+     */
+    set userTransform(t: mat4) {
+        this._altered.alter('userTransform');
+        this._userTransform = t;
+    }
+
+    get userTransform(): mat4 {
+        return this._userTransform;
+    }
 
     toString(): string {
         if (this._text instanceof Text) {
