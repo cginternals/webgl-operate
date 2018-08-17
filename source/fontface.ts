@@ -234,7 +234,7 @@ export class FontFace {
      * Add a glyph to the font face's set of glyphs. If the glyph already exists, the existing glyph remains.
      * @param glyph - The glyph to add to the set of glyphs.
      */
-    addGlyph(glyph: Glyph) {
+    addGlyph(glyph: Glyph): void {
         assert(!(this._glyphs.get(glyph.index)), 'expected glyph to not already exist');
         this._glyphs.set(glyph.index, glyph);
     }

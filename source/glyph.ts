@@ -68,7 +68,7 @@ export class Glyph {
      * negative value but is not enforced to be in terms of assertion or clamping. If kerning data for the subsequent
      * glyph is already available it will be updated to the provided value.
      */
-    setKerning(subsequentIndex: GLsizei, kerning: GLfloat) {
+    setKerning(subsequentIndex: GLsizei, kerning: GLfloat): void {
         this._kernings.set(subsequentIndex, kerning);
     }
 
@@ -134,7 +134,7 @@ export class Glyph {
      * @param yOffset - The glyphs vertical offset w.r.t. the font's topmost descendends, without the font's top
      * padding in pt.
      */
-    setBearing(fontBase: GLfloat, xOffset: GLfloat, yOffset: GLfloat) {
+    setBearing(fontBase: GLfloat, xOffset: GLfloat, yOffset: GLfloat): void {
         this._bearing[0] = xOffset;
         this._bearing[1] = fontBase - yOffset;
     }
