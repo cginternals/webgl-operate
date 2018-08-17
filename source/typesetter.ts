@@ -72,7 +72,7 @@ export class Typesetter {
      * @param pen - In/out parameter: pen (typesetting position) to be used and adjusted.
      * @param extent - In/out parameter: extent to be adjusted.
      */
-    protected static backward(label: Label, index: number, begin: number, pen: vec2, extent: vec2) {
+    protected static backward(label: Label, index: number, begin: number, pen: vec2, extent: vec2): void {
         while (index > begin) {
             const precedingGlyph = label.fontFace.glyph(label.charCodeAt(index));
             if (precedingGlyph.depictable()) {
@@ -95,7 +95,7 @@ export class Typesetter {
      * @param end - Vertex index to stop alignment at.
      */
     protected static transformAlignment(pen: vec2, alignment: Label.Alignment,
-        vertices: GlyphVertices | undefined, begin: number, end: number) {
+        vertices: GlyphVertices | undefined, begin: number, end: number): void {
         if (vertices === undefined || alignment === Label.Alignment.Left) {
             return;
         }
@@ -121,7 +121,7 @@ export class Typesetter {
      * @todo Apply once at the beginning! Initial offset!
      */
     protected static transformLineAnchor(label: Label,
-        vertices: GlyphVertices | undefined, begin: number, end: number) {
+        vertices: GlyphVertices | undefined, begin: number, end: number): void {
         if (vertices === undefined) {
             return;
         }
@@ -148,7 +148,7 @@ export class Typesetter {
                 return;
         }
 
-        for (let i = begin; i < end; ++i) {
+        for (let i = begin; i <= end; ++i) {
             vertices[i].origin[1] -= offset;
         }
     }
@@ -161,7 +161,9 @@ export class Typesetter {
      * @param glyph - Glyph that is to be rendered/configured.
      * @param vertex - Associated vertex to store data required for rendering.
      */
-    protected static transformGlyph(fontFace: FontFace, pen: vec2, glyph: Glyph, vertex: GlyphVertex | undefined) {
+    protected static transformGlyph(fontFace: FontFace, pen: vec2, glyph: Glyph,
+        vertex: GlyphVertex | undefined): void {
+
         if (vertex === undefined || glyph.depictable() === false) {
             return;
         }
