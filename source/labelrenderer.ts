@@ -337,37 +337,42 @@ export class LabelRenderer extends Renderer {
 
         const label: Label = new Label(new Text(str), this._fontFace);
 
-        // TODO meaningful margins from label.margins or config.margins ?
-        const margins: vec4 = vec4.create();
-        // TODO meaningful ppiScale from label.ppiScale or config.ppiScale ?
-        const ppiScale = 1;
+        const uT = userTransform !== undefined ? userTransform : mat4.create();
 
-        // compute transform matrix
-        const transform = mat4.create();
+        label.transform = uT;
 
-        // translate to lower left in NDC
-        mat4.scale(transform, transform, vec3.fromValues(1.0, this._frameSize[1] / this._frameSize[0], 1.0));
-        mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
-        // scale glyphs to NDC size
-        // this._frameSize should be the viewport size
-        mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
+        if (label.fontSizeUnit === Label.SpaceUnit.Px) {
+            // TODO meaningful margins from label.margins or config.margins ?
+            const margins: vec4 = vec4.create();
+            // TODO meaningful ppiScale from label.ppiScale or config.ppiScale ?
+            const ppiScale = 1;
 
-        // scale glyphs to pixel size with respect to the displays ppi
-        mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
+            // compute transform matrix
+            const transform = mat4.create();
 
-        // translate to origin in point space - scale origin within
-        // margined extend (i.e., viewport with margined areas removed)
-        const marginedExtent: vec2 = vec2.create();
-        vec2.sub(marginedExtent, vec2.fromValues(
-            this._frameSize[0] / ppiScale, this._frameSize[1] / ppiScale),
-            vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
+            // translate to lower left in NDC
+            mat4.scale(transform, transform, vec3.fromValues(1.0, this._frameSize[1] / this._frameSize[0], 1.0));
+            mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
+            // scale glyphs to NDC size
+            // this._frameSize should be the viewport size
+            mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
 
-        const v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
-        vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
-        mat4.translate(transform, transform, v3);
+            // scale glyphs to pixel size with respect to the displays ppi
+            mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
 
-        label.transform = mat4.mul(label.transform,
-            userTransform !== undefined ? userTransform : mat4.create(), transform);
+            // translate to origin in point space - scale origin within
+            // margined extend (i.e., viewport with margined areas removed)
+            const marginedExtent: vec2 = vec2.create();
+            vec2.sub(marginedExtent, vec2.fromValues(
+                this._frameSize[0] / ppiScale, this._frameSize[1] / ppiScale),
+                vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
+
+            const v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
+            vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
+            mat4.translate(transform, transform, v3);
+
+            label.transform = mat4.mul(label.transform, uT, transform);
+        }
 
         const numGlyphs = label.length;
 

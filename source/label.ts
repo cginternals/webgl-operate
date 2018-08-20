@@ -30,8 +30,10 @@ export class Label {
     protected _lineWidth = 0.0;
 
     /** @see {@link fontSize} */
-    protected _fontSize = 20.0;
+    protected _fontSize = 0.05;
 
+    /** @see {@link fontSizeUnit} */
+    protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
 
     /** @see {@link fontFace} */
     protected _fontFace: FontFace;
@@ -207,7 +209,8 @@ export class Label {
     }
 
     /**
-     * Font Size in pt or px // TODO unit??
+     * The currently used font size.
+     * (@see {@link fontSizeUnit})
      */
     set fontSize(newSize: number) {
         if (this._fontSize === newSize) {
@@ -219,6 +222,22 @@ export class Label {
     }
     get fontSize(): number {
         return this._fontSize;
+    }
+
+    /**
+     * This unit is used for the font size.
+     * (@see {@link fontSize})
+     */
+    set fontSizeUnit(newUnit: Label.SpaceUnit) {
+        if (this._fontSizeUnit === newUnit) {
+            return;
+        }
+        this._altered.alter('typesetting');
+        this._altered.alter('transform');
+        this._fontSizeUnit = newUnit;
+    }
+    get fontSizeUnit(): Label.SpaceUnit {
+        return this._fontSizeUnit;
     }
 
     /**
@@ -279,7 +298,7 @@ export class Label {
     }
     get transform(): mat4 {
 
-        const s = this._fontSize / this._fontFace.size;
+        const s = this.fontSize / this._fontFace.size;
 
         const t: mat4 = mat4.create();
         mat4.scale(t, this._transform, vec3.fromValues(s, s, s));
@@ -339,6 +358,14 @@ export namespace Label {
         Baseline = 'baseline',
         Descent = 'descent',
         Bottom = 'bottom',
+    }
+
+    /**
+     * This unit is used for the font size.
+     */
+    export enum SpaceUnit {
+        World = 'world', //abstract world unit
+        Px = 'px', // screen pixel
     }
 
 }
