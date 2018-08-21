@@ -282,7 +282,11 @@ export class Typesetter {
         Typesetter.transformLineAnchor(label, vertices, iBegin, iEnd - 1);
 
         Typesetter.transformVertex(label.transform, vertices, iBegin, vertexIndex);
-        return Typesetter.transformExtent(label.transform, extent);
+
+        const labelExtent = Typesetter.transformExtent(label.transform, extent);
+        label.extent = labelExtent;
+        return labelExtent;
+
     }
 
 }

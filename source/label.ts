@@ -50,6 +50,9 @@ export class Label {
     /** @see {@link userTransform} */
     protected _userTransform: mat4;
 
+    /** @see {@link extent} */
+    protected _extent: [number, number];
+
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, color: false, resources: false, text: false, typesetting: false,
@@ -66,6 +69,7 @@ export class Label {
         this._fontFace = fontFace;
         this._transform = mat4.create();
         this._userTransform = mat4.create();
+        this._extent = [0, 0];
     }
 
 
@@ -319,6 +323,19 @@ export class Label {
         return this._userTransform;
     }
 
+    /**
+     * The typesetter sets this extent after typesetting and applying the transform.
+     */
+    set extent(e: [number, number]) {
+        this._extent = e;
+    }
+    /**
+     * Returns the width and height of the typset label. Both are zero if not typeset yet.
+     */
+    get extent(): [number, number] {
+        return this._extent;
+    }
+
     toString(): string {
         if (this._text instanceof Text) {
             return this._text.text;
@@ -364,7 +381,7 @@ export namespace Label {
      * This unit is used for the font size.
      */
     export enum SpaceUnit {
-        World = 'world', //abstract world unit
+        World = 'world', // abstract world unit
         Px = 'px', // screen pixel
     }
 
