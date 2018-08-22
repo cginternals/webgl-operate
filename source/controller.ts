@@ -175,14 +175,14 @@ export class Controller {
          * actual first frame is triggered.
          */
         if (this._pendingRequest !== 0) {
-            logIf(this._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
+            logIf(Controller._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
             return;
         }
         if (this._pause || !this._controllable) {
-            logIf(this._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
+            logIf(Controller._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
             return;
         }
-        logIf(this._debug, LogLevel.Debug, `c request           | intermediates: #${this._frameNumber}`);
+        logIf(Controller._debug, LogLevel.Debug, `c request           | intermediates: #${this._frameNumber}`);
 
         const dfnum = this._debugFrameNumber;
         const mfnum = this._multiFrameNumber;
@@ -207,7 +207,7 @@ export class Controller {
 
     protected reset(): boolean {
         const block = this._block || (this._frameNumber === 0 && this._pendingRequest);
-        logIf(this._debug, LogLevel.Debug, `c update  ${block ? '(blocked) ' : '          '}| ` +
+        logIf(Controller._debug, LogLevel.Debug, `c update  ${block ? '(blocked) ' : '          '}| ` +
             `pending: '${this._pendingRequest}', intermediates: #${this._frameNumber}`);
 
         if (block) {
@@ -223,10 +223,10 @@ export class Controller {
      */
     protected cancel(): void {
         if (this._pendingRequest === 0) {
-            logIf(this._debug, LogLevel.Debug, `c cancel  (ignored) |`);
+            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
             return;
         }
-        logIf(this._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
+        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
 
         window.cancelAnimationFrame(this._pendingRequest);
         this._pendingRequest = 0;
@@ -256,7 +256,7 @@ export class Controller {
     }
 
     protected invokeUpdate(force: boolean = false): void {
-        logIf(this._debug, LogLevel.Debug, `c invoke update     | ` +
+        logIf(Controller._debug, LogLevel.Debug, `c invoke update     | ` +
             `pending: '${this._pendingRequest}', mfnum: ${this._multiFrameNumber}`);
 
         this.unblock();
@@ -274,7 +274,7 @@ export class Controller {
      * Actual invocation of the controllable's prepare method
      */
     protected invokePrepare(): void {
-        logIf(this._debug, LogLevel.Debug, `c invoke prepare    |`);
+        logIf(Controller._debug, LogLevel.Debug, `c invoke prepare    |`);
 
         this._frameNumber = 0;
 
@@ -304,7 +304,7 @@ export class Controller {
      */
     protected invokeFrame(): void {
         assert(!this._pause, `frames should not be invoked when paused`);
-        logIf(this._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._pendingRequest}'`);
+        logIf(Controller._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._pendingRequest}'`);
 
         const dfnum = this._debugFrameNumber;
         const mfnum = this._multiFrameNumber;
@@ -330,11 +330,11 @@ export class Controller {
         }
 
         for (; this._frameNumber < batchEnd; ++this._frameNumber) {
-            logIf(this._debug, LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
+            logIf(Controller._debug, LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
             (this._controllable as Controllable).frame(this._frameNumber);
             ++this._intermediateFrameCount;
         }
-        logIf(this._debug, LogLevel.Debug, `c -> swap           |`);
+        logIf(Controller._debug, LogLevel.Debug, `c -> swap           |`);
 
         (this._controllable as Controllable).swap();
         this._multiTime[1] = performance.now();
@@ -382,7 +382,7 @@ export class Controller {
      */
     pause(): void {
         const ignore = this._pause;
-        logIf(this._debug, LogLevel.Debug, `c pause   ${ignore ? '(ignored)' : ''}`);
+        logIf(Controller._debug, LogLevel.Debug, `c pause   ${ignore ? '(ignored)' : ''}`);
 
         if (this._pause) {
             return;
@@ -398,7 +398,7 @@ export class Controller {
      */
     unpause(): void {
         const ignore = !this._pause;
-        logIf(this._debug, LogLevel.Debug, `c unpause ${ignore ? '(ignored)' : ''}`);
+        logIf(Controller._debug, LogLevel.Debug, `c unpause ${ignore ? '(ignored)' : ''}`);
 
         if (ignore) {
             return;
@@ -440,7 +440,7 @@ export class Controller {
      * triggering to multiple intermediate updates. The block updates mode can be exited using `unblock`.
      */
     block(): void {
-        logIf(this._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
+        logIf(Controller._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
 
         if (this._block) {
             return;
@@ -452,7 +452,7 @@ export class Controller {
      * Unblock updates. If there was at least one blocked update request, an immediate update is invoked.
      */
     unblock(): void {
-        logIf(this._debug, LogLevel.Debug, `c unblock ${!this._block ? '(ignored) ' : '          '}` +
+        logIf(Controller._debug, LogLevel.Debug, `c unblock ${!this._block ? '(ignored) ' : '          '}` +
             `| blocked: #${this._blockedUpdates}`);
 
         if (!this._block) {
