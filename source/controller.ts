@@ -1,7 +1,7 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel, logVerbosity } from './auxiliaries';
 import { clamp } from './gl-matrix-extensions';
 
 /**
@@ -51,21 +51,25 @@ export interface Controllable {
 export class Controller {
 
     /**
+     * Toggle for debug outputs; if true control flow will be logged.
+     */
+    protected static _debug = false;
+    set debug(value: boolean) {
+        if (value && logVerbosity() < LogLevel.Debug) {
+            logVerbosity(LogLevel.Debug);
+            log(LogLevel.Debug,
+                `changed log verbosity to ${LogLevel.Debug} (debug)`);
+        }
+        Controller._debug = value;
+    }
+
+    /**
      * Number of intermediate frames that are rendered during one browser frame
      */
     protected _batchSize = 1;
     set batch(size: number) {
         log(LogLevel.Warning, `(adaptive) batch multi-frame rendering is experimental for now`);
         this._batchSize = Math.max(1, size);
-    }
-
-
-    /**
-     * Toggle for debug outputs; if true control flow will be logged.
-     */
-    protected _debug = false;
-    set debug(value: boolean) {
-        this._debug = value;
     }
 
 
