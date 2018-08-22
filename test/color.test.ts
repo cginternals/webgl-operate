@@ -348,7 +348,7 @@ describe('Color', () => {
     });
 
 
-    it('should support check for equality ', () => {
+    it('should support check for equality', () => {
         const color0 = new Color();
         color0.fromUI8(48, 96, 192);
 
@@ -362,6 +362,79 @@ describe('Color', () => {
         expect(color0.equals(color1)).to.be.false;
         color1.fromUI8(48, 96, 192, 1);
         expect(color0.equals(color1)).to.be.false;
+    });
+
+
+    it('should mix two colors in supported color spaces', () => {
+        const color0 = new Color();
+        color0.fromUI8(10, 20, 40, 80);
+
+        const color1 = new Color();
+        color1.fromUI8(20, 40, 80, 160);
+
+        let color2;
+
+        expect(Color.mix(color0, color1, 0.0, Color.Space.RGB).equals(color0)).to.be.true;
+        expect(Color.mix(color0, color1, 1.0, Color.Space.RGB).equals(color1)).to.be.true;
+        color2 = Color.mix(color0, color1, 0.2, Color.Space.RGB);
+        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([12, 24, 48, 96]);
+
+        expect(Color.mix(color0, color1, 0.0, Color.Space.LAB).equals(color0)).to.be.true;
+        expect(Color.mix(color0, color1, 1.0, Color.Space.LAB).equals(color1)).to.be.true;
+        color2 = Color.mix(color0, color1, 0.4, Color.Space.LAB);
+        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([33, 27, 29, 112]);
+
+        expect(Color.mix(color0, color1, 0.0, Color.Space.HSL).equals(color0)).to.be.true;
+        expect(Color.mix(color0, color1, 1.0, Color.Space.HSL).equals(color1)).to.be.true;
+        color2 = Color.mix(color0, color1, 0.6, Color.Space.HSL);
+        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([16, 32, 64, 128]);
+
+        expect(Color.mix(color0, color1, 0.0, Color.Space.CMYK).equals(color0)).to.be.true;
+        expect(Color.mix(color0, color1, 1.0, Color.Space.CMYK).equals(color1)).to.be.true;
+        color2 = Color.mix(color0, color1, 0.8, Color.Space.CMYK);
+        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([18, 36, 72, 144]);
+    });
+
+
+    it('should support tuple conversion for supported color spaces', () => {
+        const color = new Color();
+
+        const cmyk = color.fromUI8(138, 122, 107).tuple(Color.Space.CMYK, false);
+        expect(cmyk.length).to.be.equal(4);
+        expect(cmyk[0]).to.be.closeTo(0.0000, 1e-4);
+        expect(cmyk[1]).to.be.closeTo(0.1159, 1e-4);
+        expect(cmyk[2]).to.be.closeTo(0.2246, 1e-4);
+        expect(cmyk[3]).to.be.closeTo(0.4588, 1e-4);
+        const cmyka = color.fromUI8(134, 116, 39).tuple(Color.Space.CMYK);
+        expect(cmyka.length).to.be.equal(5);
+        expect(cmyka[4]).to.be.equal(1.0);
+
+        const hsl = color.fromUI8(48, 56, 64).tuple(Color.Space.HSL, false);
+        expect(hsl.length).to.be.equal(3);
+        expect(hsl[0]).to.be.closeTo(0.5833, 1e-4);
+        expect(hsl[1]).to.be.closeTo(0.1429, 1e-4);
+        expect(hsl[2]).to.be.closeTo(0.2196, 1e-4);
+        const hsla = color.fromUI8(134, 116, 39).tuple(Color.Space.HSL);
+        expect(hsla.length).to.be.equal(4);
+        expect(hsla[3]).to.be.equal(1.0);
+
+        const lab = color.fromUI8(134, 116, 39).tuple(Color.Space.LAB, false);
+        expect(lab.length).to.be.equal(3);
+        expect(lab[0]).to.be.closeTo(0.5003, 1e-4);
+        expect(lab[1]).to.be.closeTo(0.0036, 1e-4);
+        expect(lab[2]).to.be.closeTo(0.5023, 1e-4);
+        const laba = color.fromUI8(134, 116, 39).tuple(Color.Space.LAB);
+        expect(laba.length).to.be.equal(4);
+        expect(laba[3]).to.be.equal(1.0);
+
+        const rgb = color.fromUI8(26, 51, 77).tuple(Color.Space.RGB, false);
+        expect(rgb.length).to.be.equal(3);
+        expect(rgb[0]).to.be.closeTo(0.1020, 1e-4);
+        expect(rgb[1]).to.be.closeTo(0.2000, 1e-4);
+        expect(rgb[2]).to.be.closeTo(0.3020, 1e-4);
+        const rgba = color.fromUI8(134, 116, 39).tuple(Color.Space.RGB);
+        expect(rgba.length).to.be.equal(4);
+        expect(rgba[3]).to.be.equal(1.0);
     });
 
 });

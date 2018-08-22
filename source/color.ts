@@ -316,7 +316,14 @@ export class Color {
      * @param space - The color space that is to be used for linear interpolation of two colors.
      */
     static mix(x: Color, y: Color, a: number, space: Color.Space = Color.Space.LAB): Color {
+        if (a === 0.0) {
+            return new Color(x.rgba);
+        } else if (a === 1.0) {
+            return new Color(y.rgba);
+        }
+
         const result = vec4.create();
+        /* tslint:disable-next-line:switch-default */
         switch (space) {
             case Color.Space.CMYK:
                 vec4.lerp(result, x.cmyk, y.cmyka, a);
@@ -332,7 +339,6 @@ export class Color {
                 return new Color().fromHSL(result[0], result[1], result[2], result[3]);
 
             case Color.Space.RGB:
-            default:
                 vec4.lerp(result, x.rgba, y.rgba, a);
                 return new Color().fromRGB(result[0], result[1], result[2], result[3]);
         }
@@ -511,6 +517,7 @@ export class Color {
      */
     gray(algorithm: Color.GrayscaleAlgorithm = Color.GrayscaleAlgorithm.LinearLuminance): GLclampf {
 
+        /* tslint:disable-next-line:switch-default */
         switch (algorithm) {
 
             /* Does not represent shades of grayscale w.r.t. human perception of luminosity. */
@@ -531,8 +538,6 @@ export class Color {
                 return Math.max(this._rgba[0], this._rgba[1], this._rgba[2]);
 
             case Color.GrayscaleAlgorithm.LinearLuminance:
-            /* falls through */
-            default:
                 return this._rgba[0] * 0.2126 + this._rgba[1] * 0.7152 + this._rgba[2] * 0.0722;
         }
     }
@@ -543,8 +548,8 @@ export class Color {
      * @param alpha - Whether or not alpha channel should be provided as well.
      */
     tuple(space: Color.Space, alpha: boolean = true): GLclampf3 | GLclampf4 | GLclampf5 {
+        /* tslint:disable-next-line:switch-default */
         switch (space) {
-            default:
             case Color.Space.RGB:
                 return alpha ? this.rgba : this.rgb;
             case Color.Space.LAB:

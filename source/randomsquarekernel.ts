@@ -1,6 +1,6 @@
 
 
-import { rand } from './auxiliaries';
+import { rand, assert } from './auxiliaries';
 import { KernelF32 } from './kernel';
 
 
@@ -31,9 +31,8 @@ export class RandomSquareKernel extends KernelF32 {
      * Generates for each sample random components in [-1.0, +1.0] except for the first.
      */
     protected generate(): void {
-        if (this.width > 0) {
-            this.set([0.0, 0.0], 0);
-        }
+        assert(this.width > 0, `expected every kernel to comprise at least one element`);
+        this.set([0.0, 0.0], 0);
         for (let i = 1; i < this.width; ++i) {
             this.set([rand(-0.5, +0.5), rand(-0.5, +0.5)], i);
         }

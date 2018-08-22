@@ -8,6 +8,14 @@ import { RandomSquareKernel } from './randomsquarekernel';
 export class AntiAliasingKernel extends RandomSquareKernel {
 
     /**
+     * AntiAliasingKernel is fixed to one-dimension (x-axis) and 2-components per sample.
+     * @param width - Width of the kernel along its x-axis.
+     */
+    constructor(width: GLsizei) {
+        super(width);
+    }
+
+    /**
      * Invokes regeneration of all values. If width is either 8 or 64 pre-built kernels will be loaded (golden set). In
      * any other case, a random square kernel will be created.
      */
