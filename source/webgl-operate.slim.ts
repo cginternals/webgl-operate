@@ -42,6 +42,7 @@ export { ZoomModifier } from './zoommodifier';
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';
 
+export { AbstractKernel } from './kernel';
 export { AntiAliasingKernel } from './antialiasingkernel';
 export { RandomSquareKernel } from './randomsquarekernel';
 export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';

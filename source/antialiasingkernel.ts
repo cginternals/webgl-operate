@@ -8,22 +8,10 @@ import { RandomSquareKernel } from './randomsquarekernel';
 export class AntiAliasingKernel extends RandomSquareKernel {
 
     /**
-     * @override
-     * Seems to only work if the getter of this kernels width setter is redefined here.
+     * Invokes regeneration of all values. If width is either 8 or 64 pre-built kernels will be loaded (golden set). In
+     * any other case, a random square kernel will be created.
      */
-    get width(): GLsizei {
-        return this._width;
-    }
-
-    /**
-     * Changes the size of the kernel and triggers regeneration of all values. If width is either 8 or 64 pre-built
-     * kernels will be loaded (golden set). In any other case, a random square kernel will be created.
-     */
-    set width(width: GLsizei) {
-        if (this._width === width) {
-            return;
-        }
-        this._width = width;
+    protected generate(): void {
         switch (this._width) {
             case 8:
                 this.fromJSON(require('./data/goldenset08.json'));
@@ -34,8 +22,7 @@ export class AntiAliasingKernel extends RandomSquareKernel {
                 break;
 
             default:
-                this.resize();
-                this.generate();
+                super.generate();
         }
     }
 
