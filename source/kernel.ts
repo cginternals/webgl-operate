@@ -249,7 +249,8 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
      * Returns the number of samples.
      */
     get elements(): GLsizei {
-        return this._width * this._height * this._depth;
+        const elementCount = this._width * this._height * this._depth;
+        return isNaN(elementCount) ? 0 : elementCount;
     }
 
     /**
