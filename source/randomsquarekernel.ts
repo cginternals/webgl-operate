@@ -1,6 +1,6 @@
 
 
-import { rand, assert } from './auxiliaries';
+import { assert, rand } from './auxiliaries';
 import { KernelF32 } from './kernel';
 
 
