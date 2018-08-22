@@ -190,6 +190,10 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
      * @param approach - Sorting approach that is to be used.
      */
     sort(approach: AbstractKernel.SortApproach): void {
+        if (this.elements < 2) {
+            return;
+        }
+
         /* Create index structure for sorting (handling the stride). */
         const tuples = Array<[GLsizei, number]>(this.elements);
         for (let i = 0; i < this.elements; ++i) {
