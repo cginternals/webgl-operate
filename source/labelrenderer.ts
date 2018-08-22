@@ -244,9 +244,6 @@ export class LabelRenderer extends Renderer {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        // gl.enable(gl.POLYGON_OFFSET_FILL);
-        // gl.polygonOffset(-1, 1); // avoid z-fighting with other geometry
-
         this._program.bind();
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
@@ -275,8 +272,6 @@ export class LabelRenderer extends Renderer {
         if (!wasBlendEnabled) {
             gl.disable(gl.BLEND);
         }
-
-        // gl.disable(gl.POLYGON_OFFSET_FILL);
     }
 
     protected onSwap(): void {
