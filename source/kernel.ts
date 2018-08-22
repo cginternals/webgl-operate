@@ -41,7 +41,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
 
     constructor(components: 1 | 2 | 3 | 4, width: GLsizei, height: GLsizei = 1, depth: GLsizei = 1) {
         this._components = components;
-        this._width = Math.max(1, width);
+        this._width = isNaN(width) ? 1 : Math.max(1, width);
         this._height = Math.max(1, height);
         this._depth = Math.max(1, depth);
 
