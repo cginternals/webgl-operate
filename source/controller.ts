@@ -232,7 +232,7 @@ export class Controller {
         this._pendingRequest = 0;
     }
 
-    protected invoke(type: Controller.RequestType) {
+    protected invoke(type: Controller.RequestType): void {
         assert(this._pendingRequest !== 0, `manual/explicit invocation not anticipated`);
         assert(this._controllable !== undefined, `expected valid controllable for invocation`);
 

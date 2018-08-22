@@ -2,6 +2,9 @@
 import { assert } from './auxiliaries';
 
 
+interface MethodDecorator { (target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor; }
+
+
 /**
  * Mixin that incorporates basic (un-)initialization workflow. The inheritor should specialize initialize and
  * uninitialize and decorate them with @initialize and @uninitialize respectively. When the object gets constructed it
@@ -54,18 +57,18 @@ export abstract class Initializable {
      * In order to encourage the use of `assertInitialized` and `assertUninitialized` they are dynamically
      * bound to either a static, always-failing assert or an empty/undefined function.
      */
-    static initialize() {
-        return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    static initialize(): MethodDecorator {
+        return (target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
 
             const initialize = descriptor.value;
             /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
             descriptor.value = function (): boolean {
                 assert(this._initialized === false, `re-initialization of initialized object not anticipated`);
 
-                /* call actual initialization and set initialization status */
+                /* Call actual initialization and set initialization status. */
                 this._initialized = initialize.apply(this, arguments);
 
-                /* assign assert functions for better performance when initialized */
+                /* Assign assert functions for better performance when initialized. */
                 if (this._initialized) {
                     this.assertInitialized = () => undefined;
                     this.assertUninitialized = () => Initializable.assertUninitializedFalse(this);
@@ -85,7 +88,7 @@ export abstract class Initializable {
      * initialization status. In order to encourage the use of `assertInitialized` and `assertUninitialized` they are
      * dynamically bound to a static, always-failing assert and an empty/undefined function respectively.
      */
-    static uninitialize() {
+    static uninitialize(): MethodDecorator {
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
             const uninitialize = descriptor.value;
@@ -109,7 +112,7 @@ export abstract class Initializable {
      * Method decorator for asserting the initialization status of an initializable to be true.
      * @see {@link assertInitialized}
      */
-    static assert_initialized() {
+    static assert_initialized(): MethodDecorator {
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
             const initialize = descriptor.value;
@@ -127,14 +130,14 @@ export abstract class Initializable {
      * Method decorator for asserting the initialization status of an initializable to be false.
      * @see {@link assertUninitialized}
      */
-    static assert_uninitialized() {
+    static assert_uninitialized(): MethodDecorator {
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
             const initialize = descriptor.value;
             /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
-            descriptor.value = function () {
+            descriptor.value = function (): void {
                 this.assertUninitialized();
-                /* call actual initialization and set initialization status */
+                /* Call actual initialization and set initialization status. */
                 initialize.apply(this, arguments);
             };
             return descriptor;
@@ -171,7 +174,7 @@ export abstract class Initializable {
     /**
      * Property getter for readonly access to the initialization status of an initializable instance.
      */
-    get initialized() {
+    get initialized(): boolean {
         return this._initialized;
     }
 

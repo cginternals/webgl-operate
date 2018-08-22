@@ -40,21 +40,21 @@ namespace auxiliaries {
     export enum LogLevel { Debug = 3, Info = 2, Warning = 1, Error = 0 }
 
     /**
-     * Evaluates the provided expression and throws an evaluation error if false.
+     * Evaluates the provided statement and throws an evaluation error if false.
      * ```
      * assert(foo <= threshold, `value of foo ${foo} exceeds threshold of ${threshold}`);
      * ```
-     * @param expression - Result of an expression expected to be true.
+     * @param statement - Result of an statement expected to be true.
      * @param message - Message to be passed to the error (if thrown).
      */
-    const assertImpl = (expression: boolean, message: string): void => {
-        if (expression) {
+    const assertImpl = (statement: boolean, message: string): void => {
+        if (statement) {
             return;
         }
         /* The parameters are intentionally not forwarded to console.assert since it does not interrupt execution. */
         throw new EvalError(message);
     };
-    const assertEmpty = (expression: boolean, message: string): void => { };
+    const assertEmpty = (statement: boolean, message: string): void => { };
 
     export let assert = assertImpl;
     /* istanbul ignore next line - DISABLE_ASSERTIONS has to be defined by the build environment*/
@@ -74,11 +74,11 @@ namespace auxiliaries {
     }
 
     /**
-     * Writes a warning to the console when the evaluated expression is false.
+     * Writes a warning to the console when the evaluated statement is false.
      * ```
      * log(,`scale changed to ${scale}, given ${this._scale}`);
      * ```
-     * @param expression - Result of an expression expected to be true.
+     * @param statement - Result of an statement expected to be true.
      * @param verbosity - Verbosity of log level: user, developer, or module developer.
      * @param message - Message to be passed to the error (if thrown).
      */
@@ -90,16 +90,16 @@ namespace auxiliaries {
     }
 
     /**
-     * Writes a lo message to the console when the evaluated expression is false.
+     * Writes a lo message to the console when the evaluated statement is false.
      * ```
      * logIf(!vec2.equals(this._scale, scale), LogLevel.Info, `scale changed to ${scale}, given ${this._scale}`);
      * ```
-     * @param expression - Result of an expression expected to be true.
+     * @param statement - Result of an statement expected to be true.
      * @param verbosity - Verbosity of log level: debug, info, warning, or error.
      * @param message - Message to be passed to the error (if thrown).
      */
-    export function logIf(expression: boolean, verbosity: LogLevel, message: string): void {
-        if (!expression) {
+    export function logIf(statement: boolean, verbosity: LogLevel, message: string): void {
+        if (!statement) {
             return;
         }
         log(verbosity, message);
@@ -118,7 +118,7 @@ namespace auxiliaries {
      * The example above should output something like: `[3] initialization | 5.635s`.
      * @param mark - Name for the performance measure and base name for the start mark (`<mark>-start`).
      */
-    export function logPerformanceStart(mark: string) {
+    export function logPerformanceStart(mark: string): void {
         const start = `${mark}-start`;
         assert(performance.getEntriesByName(mark).length === 0,
             `expected mark identifier to not already exists, given ${mark}`);
@@ -126,6 +126,18 @@ namespace auxiliaries {
             `expected mark identifier to not already exists, given ${start}`);
 
         performance.mark(start);
+    }
+
+    /**
+     * Invokes `logPerformanceStart` iff the statement resolves successfully.
+     * @param statement - Result of an statement expected to be true in order to invoke logPerformanceStart.
+     * @param mark - Name for the performance measure mark ... @see {@link logPerformanceStart}.
+     */
+    export function logPerformanceStartIf(statement: boolean, mark: string): void {
+        if (!statement) {
+            return;
+        }
+        logPerformanceStart(mark);
     }
 
     /**
@@ -142,7 +154,7 @@ namespace auxiliaries {
      * @param message - Optional message to provide to the debug-log output.
      * @param measureIndent - Optional indentation of the measure (useful if multiple measurements shall be aligned).
      */
-    export function logPerformanceStop(mark: string, message: string | undefined, measureIndent: number = 0) {
+    export function logPerformanceStop(mark: string, message: string | undefined, measureIndent: number = 0): void {
         const start = `${mark}-start`;
         const end = `${mark}-end`;
         assert(performance.getEntriesByName(mark).length === 0,
@@ -165,6 +177,21 @@ namespace auxiliaries {
 
         const prettyMeasure = prettyPrintMilliseconds(measure.duration);
         log(LogLevel.Debug, `${mark}${' '.repeat(indent)}${message ? message : ''} | ${prettyMeasure}`);
+    }
+
+    /**
+     * Invokes `logPerformanceStop` under the condition that the statement is true.
+     * @param statement - Result of an expression expected to be true in order to invoke logPerformanceStop.
+     * @param mark - Name for the performance measure mark ... @see {@link logPerformanceStart}.
+     * @param message - Optional message to provide to the debug-log output ... @see {@link logPerformanceStart}.
+     * @param measureIndent - Optional indentation of the measure ... @see {@link logPerformanceStart}.
+     */
+    export function logPerformanceStopIf(statement: boolean,
+        mark: string, message: string | undefined, measureIndent: number = 0): void {
+        if (!statement) {
+            return;
+        }
+        logPerformanceStop(mark, message, measureIndent);
     }
 
 

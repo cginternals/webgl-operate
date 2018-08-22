@@ -156,31 +156,32 @@ export class Context {
      * @returns {WebGLRenderingContext} - WebGL context object or null.
      */
     protected static requestWebGL1(element: HTMLCanvasElement,
-        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES) {
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES): WebGLRenderingContext | undefined {
 
         let context = element.getContext(Context.BackendRequestType.webgl, attributes);
         if (context) {
             return context;
         }
         context = element.getContext(Context.BackendRequestType.experimental, attributes);
-        return context;
+        return context === null ? undefined : context;
     }
 
     /**
      * Helper that tries to create a WebGL 2 context (requests to 'webgl2' and 'experimental-webgl2' are made).
      * @param element - Canvas element to request context from.
      * @param attributes - Overrides the internal default attributes @see{Context.CONTEXT_ATTRIBUTES}.
-     * @returns {WebGL2RenderingContext} - WebGL2 context object or null.
+     * @returns {WebGL2RenderingContext} - WebGL2 context object or undefined.
      */
     protected static requestWebGL2(element: HTMLCanvasElement,
-        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES) {
+        attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES)
+        : WebGLRenderingContext | CanvasRenderingContext2D | undefined {
 
         let context = element.getContext(Context.BackendRequestType.webgl2, attributes);
         if (context) {
             return context;
         }
         context = element.getContext(Context.BackendRequestType.experimental2, attributes);
-        return context;
+        return context === null ? undefined : context;
     }
 
 
@@ -416,10 +417,10 @@ export class Context {
 
     /**
      * The created rendering backend (webgl context type), either 'webgl' or 'webgl2' based on which one was
-     * created successfully. If no context could be created null is returned.
+     * created successfully. If no context could be created undefined is returned.
      * @returns - Backend that was created on construction.
      */
-    get backend() {
+    get backend(): Context.BackendType | undefined {
         return this._backend;
     }
 
@@ -440,28 +441,28 @@ export class Context {
     /**
      * Provides an array of all extensions supported by the used WebGL1/2 context.
      */
-    get extensions() {
+    get extensions(): Array<string> {
         return this._extensions;
     }
 
     /**
      * Masquerade object applied to a context instance.
      */
-    get mask() {
+    get mask(): ContextMasquerade | undefined {
         return this._mask;
     }
 
     /**
      * Access to either the WebGLRenderingContext or WebGL2RenderingContext.
      */
-    get gl() {
+    get gl(): any { // WebGLRenderingContext | WebGL2RenderingContext
         return this._context;
     }
 
     /**
      * WebGL2 facade for WebGL2 API like access to features mandatory to this engine.
      */
-    get gl2facade() {
+    get gl2facade(): GL2Facade {
         return this._gl2;
     }
 
@@ -1016,8 +1017,17 @@ export class Context {
      * Logs a well formated list of all queried about params (names and associated values).
      * @param verbosity - Log verbosity that is to be used for logging.
      */
-    logAbout(verbosity: LogLevel = LogLevel.Info) {
+    logAbout(verbosity: LogLevel = LogLevel.Info): void {
         log(verbosity, `context.about\n\n` + this.aboutString());
+    }
+
+    /**
+     * Invokes `logAbout` @see{@link logAbout}) iff the given statement has resolved to true.
+     * @param statement - Result of an expression expected to be true in order to invoke logPerformanceStop.
+     * @param verbosity - Log verbosity that is to be used for logging.
+     */
+    logAboutIf(statement: boolean, verbosity: LogLevel = LogLevel.Info): void {
+        logIf(statement, verbosity, `context.about\n\n` + this.aboutString());
     }
 
 }

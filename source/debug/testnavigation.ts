@@ -19,19 +19,19 @@ export class TestNavigation {
             this.onMouseLeave(latests, previous));
     }
 
-    protected onMouseEnter(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+    protected onMouseEnter(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         this._altered = false;
     }
 
-    protected onMouseLeave(latests: Array<MouseEvent>, previous: Array<MouseEvent>) {
+    protected onMouseLeave(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         this._altered = true;
     }
 
-    update() {
+    update(): void {
         this._eventHandler.update();
     }
 
-    reset() {
+    reset(): void {
         this._altered = false;
     }
 

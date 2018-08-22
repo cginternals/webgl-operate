@@ -97,6 +97,11 @@
         "no-namespace": false,
         "no-null-keyword": true,
         "triple-equals": true,
-        "switch-default": true
+        "switch-default": true,
+        "typedef": [
+            true,
+            "call-signature",
+            "property-declaration"
+        ]
     }
 }

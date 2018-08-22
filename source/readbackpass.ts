@@ -109,7 +109,7 @@ export class ReadbackPass extends Initializable {
      * points), the requested and found IDs and depths are cached by position. Hence, these cached values have to be
      * cleared whenever the framebuffers are written/rendered to.
      */
-    protected onFrame() {
+    protected onFrame(): void {
         this._cachedDepths.clear();
         this._cachedIDs.clear();
     }
@@ -358,7 +358,10 @@ export class ReadbackPass extends Initializable {
     }
 
 
-    frame() {
+    /**
+     * Invokes the frame implementation @see{@link onFrame}.
+     */
+    frame(): void {
         this.onFrame();
     }
 

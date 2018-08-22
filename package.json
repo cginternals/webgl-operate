@@ -1,6 +1,6 @@
 {
     "name": "webgl-operate",
-    "version": "0.3.7",
+    "version": "0.3.8",
     "license": "MIT",
     "description": "A TypeScript based WebGL rendering framework.",
     "author": "CG Internals",
@@ -19,18 +19,10 @@
     "sideEffects": [
         "./source/polyfill.ts"
     ],
-    "contributors": [
+    "maintainers": [
         {
             "name": "Daniel Limberger",
             "email": "daniel.limberger@cginternals.com"
-        },
-        {
-            "name": "Philipp Otto",
-            "email": "philipp.otto@cginternals.com"
-        },
-        {
-            "name": "Willy Scheibel",
-            "email": "willy.scheibel@cginternals.com"
         }
     ],
     "devDependencies": {
@@ -87,9 +79,11 @@
         "test-watch": "mocha --watch",
         "coverage": "nyc report --reporter=text-lcov | coveralls",
         "doc": "typedoc source/webgl-operate.ts",
-        "ci": "run-s build-dist build-lib lint test-nyc",
+        "ci": "run-p build-dist build-lib lint test-nyc",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
-        "prepack": "npm install && run-p build-dist build-lib"
+        "postversion": "git push && git push --tags",
+        "prepack": "npm run preversion",
+        "preversion": "npm install && npm run ci"
     },
     "keywords": [
         "webgl",

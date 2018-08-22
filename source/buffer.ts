@@ -140,7 +140,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     /**
      * Returns the number of bytes this object approximately allocates on the GPU.
      */
-    get bytes() {
+    get bytes(): number {
         this.assertInitialized();
         return this.context.allocationRegister.allocated(this._identifier);
     }
