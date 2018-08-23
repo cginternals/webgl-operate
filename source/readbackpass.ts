@@ -11,6 +11,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2 } from './texture2';
+import { GLsizei2 } from './tuples';
 
 
 /**
@@ -71,6 +72,12 @@ export class ReadbackPass extends Initializable {
      */
     protected _texture: Texture2;
     protected _framebuffer: Framebuffer;
+
+    /**
+     * Coordinate reference size @see {@link coordinateReferenceSize}.
+     */
+    protected _referenceSize: GLsizei2 | undefined;
+
 
     /**
      * Geometry used to draw on. This is not provided by default to allow for geometry sharing. If no triangle is given,
@@ -318,7 +325,11 @@ export class ReadbackPass extends Initializable {
     @Initializable.assert_initialized()
     coordsAt(x: GLsizei, y: GLsizei, zInNDC: number | undefined, viewProjectionInverse: mat4): vec3 | undefined {
         const size = (this._depthFBO.texture(this._depthAttachment) as Texture2).size;
-        const depth = zInNDC === undefined ? this.depthAt(x, y) : zInNDC;
+
+        const scale = this._referenceSize === undefined ? [1.0, 1.0] :
+            [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];
+
+        const depth = zInNDC === undefined ? this.depthAt(x * scale[0], y * scale[1]) : zInNDC;
         if (depth === undefined) {
             return undefined;
         }
@@ -342,11 +353,14 @@ export class ReadbackPass extends Initializable {
         const gl = this._context.gl;
         const size = (this._idFBO.texture(this._idAttachment) as Texture2).size;
 
+        const scale = this._referenceSize === undefined ? [1.0, 1.0] :
+            [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];
+
         this._idFBO.bind();
         if ((this._context.isWebGL2 || this._context.supportsDrawBuffers) && gl.readBuffer) {
             gl.readBuffer(this._idAttachment);
         }
-        gl.readPixels(x, size[1] - (y + 0.5), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
+        gl.readPixels(x * scale[0], size[1] - (y * scale[1] + 0.5), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
 
         const id = decode_uint32_from_rgba8(
             vec4.fromValues(this._buffer[0], this._buffer[1], this._buffer[2], this._buffer[3]));
@@ -404,6 +418,14 @@ export class ReadbackPass extends Initializable {
      */
     set idAttachment(attachment: GLenum) {
         this._idAttachment = attachment;
+    }
+
+    /**
+     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
+     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
+     */
+    set coordinateReferenceSize(size: GLsizei2 | undefined) {
+        this._referenceSize = size;
     }
 
 }
