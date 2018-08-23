@@ -154,10 +154,13 @@ export class ReadbackPass extends Initializable {
 
         this._depthFBO.bind();
 
+        const scale = this._referenceSize === undefined ? [1.0, 1.0] :
+            [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];
+
         if (this._context.isWebGL2 || this._context.supportsDrawBuffers) {
             gl.readBuffer(this._depthAttachment);
         }
-        gl.readPixels(x, size[1] - (y + 0.5), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
+        gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
 
         let depth: GLfloat | undefined = decode_float24x1_from_uint8x3(
             vec3.fromValues(this._buffer[0], this._buffer[1], this._buffer[2]));
@@ -190,11 +193,14 @@ export class ReadbackPass extends Initializable {
         const gl = this._context.gl;
         const size = texture.size;
 
+        const scale = this._referenceSize === undefined ? [1.0, 1.0] :
+            [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];
+
         /* Render a single fragment, thereby encoding the depth render texture data of the requested position. */
         gl.viewport(0, 0, 1, 1);
 
         this._program.bind();
-        gl.uniform2f(this._uOffset, x / size[0], (size[1] - y) / size[1]);
+        gl.uniform2f(this._uOffset, x * scale[0] / size[0], (size[1] - y * scale[1]) / size[1]);
         gl.uniform2f(this._uScale, 1.0 / size[0], 1.0 / size[1]);
 
         texture.bind(gl.TEXTURE0);
@@ -222,7 +228,7 @@ export class ReadbackPass extends Initializable {
         let depth: GLfloat | undefined = decode_float24x1_from_uint8x3(
             vec3.fromValues(this._buffer[0], this._buffer[1], this._buffer[2]));
         /** @todo fix far plane depth to be at 1.0 */
-        depth = depth > 0.996 ? undefined : depth;
+        depth = depth >= 1.0 ? undefined : depth;
 
         if (this._cache) {
             this._cachedDepths.set(hash, depth);
@@ -325,15 +331,17 @@ export class ReadbackPass extends Initializable {
     @Initializable.assert_initialized()
     coordsAt(x: GLsizei, y: GLsizei, zInNDC: number | undefined, viewProjectionInverse: mat4): vec3 | undefined {
         const size = (this._depthFBO.texture(this._depthAttachment) as Texture2).size;
+        const depth = zInNDC === undefined ? this.depthAt(x, y) : zInNDC;
+        if (depth === undefined) {
+            return undefined;
+        }
 
         const scale = this._referenceSize === undefined ? [1.0, 1.0] :
             [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];
 
-        const depth = zInNDC === undefined ? this.depthAt(x * scale[0], y * scale[1]) : zInNDC;
-        if (depth === undefined) {
-            return undefined;
-        }
-        const p = vec3.fromValues(x * 2.0 / size[0] - 1.0, 1.0 - y * 2.0 / size[1], depth * 2.0 - 1.0);
+        const p = vec3.fromValues(
+            x * scale[0] * 2.0 / size[0] - 1.0, 1.0 - y * scale[1] * 2.0 / size[1], depth * 2.0 - 1.0);
+
         return vec3.transformMat4(vec3.create(), p, viewProjectionInverse);
     }
 
@@ -360,7 +368,7 @@ export class ReadbackPass extends Initializable {
         if ((this._context.isWebGL2 || this._context.supportsDrawBuffers) && gl.readBuffer) {
             gl.readBuffer(this._idAttachment);
         }
-        gl.readPixels(x * scale[0], size[1] - (y * scale[1] + 0.5), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
+        gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
 
         const id = decode_uint32_from_rgba8(
             vec4.fromValues(this._buffer[0], this._buffer[1], this._buffer[2], this._buffer[3]));

@@ -236,7 +236,7 @@ export class EventHandler {
 
             chromeWorkaround = (e.offsetX !== 0 && e.offsetY !== 0);
             offsets.push(chromeWorkaround ?
-                vec2.fromValues(e.offsetX, e.offsetX) :
+                vec2.fromValues(e.offsetX, e.offsetY) :
                 vec2.fromValues(e.clientX, e.clientY));
 
         } else if (event instanceof WheelEvent) {
@@ -244,7 +244,7 @@ export class EventHandler {
 
             chromeWorkaround = (e.offsetX !== 0 && e.offsetY !== 0);
             offsets.push(chromeWorkaround ?
-                vec2.fromValues(e.offsetX, e.offsetX) :
+                vec2.fromValues(e.offsetX, e.offsetY) :
                 vec2.fromValues(e.clientX, e.clientY));
 
         } else if (event instanceof TouchEvent) {
