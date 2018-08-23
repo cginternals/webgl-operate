@@ -84,7 +84,7 @@ if (Number.EPSILON === undefined) {
     (Number as NumberPolyfill).EPSILON = Math.pow(2, -52);
 }
 
-/*
+/**
  * IE11 polyfill for Array.prototype.slice
  */
 [Float32Array, Float64Array, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array]
