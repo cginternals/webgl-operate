@@ -224,20 +224,45 @@ export class EventHandler {
     offsets(event: MouseEvent | WheelEvent | TouchEvent, normalize: boolean = true): Array<vec2> {
         const offsets = new Array<vec2>();
 
+        /*
+         * Workaround for Chrome based on solution of Benjamin Wasty: EventHandler.offsets() uses
+         * event.target.getBoundingClientRect() which often triggers a reflow/layout that might take ~20ms and slow
+         * down, e.g., navigation a lot. Firefox on the other hand doesn't properly support offsetX/offsetY (set to 0).
+         */
+        let chromeWorkaround = false;
+
         if (event instanceof MouseEvent) {
             const e = event as MouseEvent;
-            offsets.push(vec2.fromValues(e.clientX, e.clientY));
+
+            chromeWorkaround = (e.offsetX !== 0 && e.offsetY !== 0);
+            offsets.push(chromeWorkaround ?
+                vec2.fromValues(e.offsetX, e.offsetX) :
+                vec2.fromValues(e.clientX, e.clientY));
 
         } else if (event instanceof WheelEvent) {
             const e = event as WheelEvent;
-            offsets.push(vec2.fromValues(e.clientX, e.clientY));
+
+            chromeWorkaround = (e.offsetX !== 0 && e.offsetY !== 0);
+            offsets.push(chromeWorkaround ?
+                vec2.fromValues(e.offsetX, e.offsetX) :
+                vec2.fromValues(e.clientX, e.clientY));
 
         } else if (event instanceof TouchEvent) {
             const e = event as TouchEvent;
+
             for (let index = 0; index < e.touches.length; ++index) {
                 const touch = e.touches.item(index)!;
                 offsets.push(vec2.fromValues(touch.clientX, touch.clientY));
             }
+        }
+
+        if (chromeWorkaround) {
+            if (normalize) {
+                for (const offset of offsets) {
+                    vec2.scale(offset, offset, window.devicePixelRatio);
+                }
+            }
+            return offsets;
         }
 
         const target = event.target || event.currentTarget || event.srcElement;

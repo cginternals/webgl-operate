@@ -96,9 +96,9 @@ export class Controller {
     protected _frameNumberSubject = new ReplaySubject<number>(1);
 
 
-    /** @see {@link multiFrameDelay} */
-    protected _multiFrameDelay = 0;
-    protected _delayedRequestTimeout: number | undefined;
+    // /** @see {@link multiFrameDelay} */
+    // protected _multiFrameDelay = 0;
+    // protected _delayedRequestTimeout: number | undefined;
 
 
     /**
@@ -212,16 +212,16 @@ export class Controller {
     }
 
 
-    protected requestDelayed(type?: Controller.RequestType): void {
-        if (this._multiFrameDelay === 0 || this._frameNumber !== 1) {
-            return this.request(type);
-        }
+    // protected requestDelayed(type?: Controller.RequestType): void {
+    //     if (this._multiFrameDelay === 0 || this._frameNumber !== 1) {
+    //         return this.request(type);
+    //     }
 
-        if (this._delayedRequestTimeout !== undefined) {
-            clearTimeout(this._delayedRequestTimeout);
-        }
-        this._delayedRequestTimeout = window.setTimeout(() => this.request(type), this._multiFrameDelay);
-    }
+    //     if (this._delayedRequestTimeout !== undefined) {
+    //         clearTimeout(this._delayedRequestTimeout);
+    //     }
+    //     this._delayedRequestTimeout = window.setTimeout(() => this.request(type), this._multiFrameDelay);
+    // }
 
 
     protected reset(): boolean {
@@ -370,8 +370,7 @@ export class Controller {
 
         this.frameNumberNext();
 
-        // this.request();
-        this.requestDelayed();
+        this.request();
     }
 
 
@@ -433,8 +432,7 @@ export class Controller {
             /* Note: this is just in case the fps is gathered while a request is pending. */
             this._multiTime[1] += pauseDelay;
         }
-        // this.request();
-        this.requestDelayed();
+        this.request();
     }
 
     /**
@@ -445,16 +443,14 @@ export class Controller {
         if (this.reset()) {
             return;
         }
-        // this.request(force ? Controller.RequestType.NonOptionalUpdate : Controller.RequestType.Update);
-        this.requestDelayed(force ? Controller.RequestType.NonOptionalUpdate : Controller.RequestType.Update);
+        this.request(force ? Controller.RequestType.NonOptionalUpdate : Controller.RequestType.Update);
     }
 
     prepare(): void {
         if (this.reset()) {
             return;
         }
-        // this.request(Controller.RequestType.Prepare);
-        this.requestDelayed(Controller.RequestType.Prepare);
+        this.request(Controller.RequestType.Prepare);
     }
 
 
@@ -604,8 +600,7 @@ export class Controller {
             this.prepare();
         } else if (!this._pendingRequest) {
             this.unpause();
-            // this.request();
-            this.requestDelayed();
+            this.request();
         }
     }
 
@@ -617,27 +612,27 @@ export class Controller {
     }
 
 
-    /**
-     * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
-     * after an update.
-     * @param multiFrameDelay - A multi-frame delay in milliseconds.
-     */
+    // /**
+    //  * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
+    //  * after an update.
+    //  * @param multiFrameDelay - A multi-frame delay in milliseconds.
+    //  */
 
-    set multiFrameDelay(multiFrameDelay: number) {
-        const value: number = Math.max(0, multiFrameDelay);
-        if (value === this._multiFrameDelay) {
-            return;
-        }
-        this._multiFrameDelay = value;
-    }
+    // set multiFrameDelay(multiFrameDelay: number) {
+    //     const value: number = Math.max(0, multiFrameDelay);
+    //     if (value === this._multiFrameDelay) {
+    //         return;
+    //     }
+    //     this._multiFrameDelay = value;
+    // }
 
-    /**
-     * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
-     * @returns - The current multi-frame delay in milliseconds.
-     */
-    get multiFrameDelay(): number {
-        return this._multiFrameDelay;
-    }
+    // /**
+    //  * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
+    //  * @returns - The current multi-frame delay in milliseconds.
+    //  */
+    // get multiFrameDelay(): number {
+    //     return this._multiFrameDelay;
+    // }
 
 
     /**
