@@ -269,6 +269,7 @@ export class Canvas extends Resizable {
 
         if (this._renderer) {
             this._controller.unblock();
+            this._renderer.swap();
         }
     }
 
