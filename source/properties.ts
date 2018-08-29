@@ -79,7 +79,10 @@ namespace properties {
 
                     } else if (!isDefined && hasDefault) {
                         /* Default value for not yet defined property. */
-                        Object.defineProperty(instance, key, { value: propertySchema['default'] });
+                        Object.defineProperty(instance, key, {
+                            value: propertySchema['default'],
+                            writable: true,
+                        });
                     }
                     // Don't complement non-existent objects on target tree
                 }
