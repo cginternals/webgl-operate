@@ -250,9 +250,10 @@ export class Canvas extends Resizable {
     protected onResize(): void {
         this.retrieveSize();
 
-        // If the canvas does not have a size, block rendering
-        // This can happen if the canvas is hidden and DOM layouting leads to width == 0
+        /* If the canvas does not have a size, block rendering. This can happen if the canvas is, e.g., hidden and 
+        DOM layouting leads to width of zero. */
         if (this._size[0] === 0 || this._size[1] === 0) {
+            log(LogLevel.Warning, `canvas width or height is 0, thus, not visible, resize discarded`);
             return;
         }
 
