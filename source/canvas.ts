@@ -269,6 +269,7 @@ export class Canvas extends Resizable {
 
         if (this._renderer) {
             this._controller.unblock();
+            /* Swapping here fixes flickering while resizing the canvas for safari. */
             this._renderer.swap();
         }
     }
