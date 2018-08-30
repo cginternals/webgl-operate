@@ -433,13 +433,13 @@ export class Canvas extends Resizable {
             return;
         }
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
-        logIf(frameScale[0] < 0.0 || frameScale[0] > 1.0, LogLevel.Info,
-            `frame width scale clamped to [0.0,1.0], given ${frameScale[0]}`);
-        logIf(frameScale[1] < 0.0 || frameScale[1] > 1.0, LogLevel.Info,
-            `frame height scale clamped to [0.0,1.0], given ${frameScale[0]}`);
+        logIf(frameScale[0] < 0.0 || frameScale[0] > 2.0, LogLevel.Info,
+            `frame width scale clamped to [0.0,2.0], given ${frameScale[0]}`);
+        logIf(frameScale[1] < 0.0 || frameScale[1] > 2.0, LogLevel.Info,
+            `frame height scale clamped to [0.0,2.0], given ${frameScale[0]}`);
 
         const scale = vec2.create();
-        clamp2(scale, frameScale, [0.0, 0.0], [1.0, 1.0]);
+        clamp2(scale, frameScale, [0.0, 0.0], [2.0, 2.0]);
 
         const size = vec2.create();
         vec2.mul(size, this._size, scale);
