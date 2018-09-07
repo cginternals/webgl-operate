@@ -402,8 +402,8 @@ export class Canvas extends Resizable {
      * Single controller that is managing the rendering control flow of a bound renderer.
      * @returns - The controller used by the canvas.
      */
-    get controller(): Controller {
-        return this._controller as Controller; // TODO!
+    get controller(): Controller | XRController {
+        return this._controller;
     }
 
     /**

@@ -139,7 +139,7 @@ export class XRController {
         await this.session!.end();
     }
 
-    onEndSession() {
+    onEndSession(): void {
         this.session = undefined;
         this.canvas = undefined;
         this.gl = undefined;
@@ -147,7 +147,7 @@ export class XRController {
         this.frameData = new FrameData();
     }
 
-    onXRFrame(time: number, frame: XRFrame) {
+    onXRFrame(time: number, frame: XRFrame): void {
         if (!this.session) { return; } // TODO!: cancelAnimationFrame in onEndSession instead?
         const session = frame.session;
         session.requestAnimationFrame(this.onXRFrameCallback);
@@ -160,26 +160,27 @@ export class XRController {
         this.renderer.xrframe(this.frameData);
     }
 
-    // TODO!!: the block/unblock-methods don't make much sense for WebXR I think,
-    // but they need to be present and 'work' (otherwise some assertions fail).
-    // They are ignored for in the render loop however.
-
-    // tslint:disable-next-line:member-ordering
-    _block = false;
-    block() {
-        this._block = true;
-    }
-    get blocked() {
-        return this._block;
-    }
-    unblock() {
-        this._block = false;
-    }
     set controllable(c: Controllable) {
         assert(c instanceof XRRenderer, 'Controllable must be an `XRRenderer`');
         this.renderer = c as XRRenderer;
     }
+
+    // NOTE: the block/unblock/update methods don't make much sense for WebXR,
+    // but they need to be present and 'work' (otherwise some assertions fail).
+    // They are ignored in the render loop however.
+
+    // tslint:disable-next-line:member-ordering
+    _block = false;
+    block(): void {
+        this._block = true;
+    }
+    get blocked(): boolean {
+        return this._block;
+    }
+    unblock(): void {
+        this._block = false;
+    }
+
     update(force: boolean = false): void {
-        // TODO:!?
     }
 }

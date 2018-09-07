@@ -1,8 +1,6 @@
 // tslint:disable:member-ordering
 // tslint:disable:max-classes-per-file
 
-// TODO!: publish interfaces derived from spec on npm (@types)?
-
 /// All types are derived from the WebXR WebIDL:
 /// https://immersive-web.github.io/webxr/#idl-index
 /// Last sync with the spec: 2018-08-03
@@ -250,7 +248,7 @@ export type XRWebGLRenderingContext = WebGLRenderingContext | WebGL2RenderingCon
 export interface XRWebGLLayerInit {
     /** Default: true */
     antialias: boolean;
-    /** Default: false */
+    /** Default: true */
     depth: boolean;
     /** Default: false */
     stencil: boolean;

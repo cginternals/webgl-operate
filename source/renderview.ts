@@ -12,22 +12,22 @@ export class RenderView {
     private _inverseViewMatrix: mat4;
 
     private _projectionMatrix: mat4;
-    get projectionMatrix() {
+    get projectionMatrix(): mat4 {
         return this._projectionMatrix;
     }
     private _viewMatrix: mat4;
-    get viewMatrix() {
+    get viewMatrix(): mat4 {
         return this._viewMatrix;
     }
     private _viewProjectionMatrix: mat4;
     private _viewProjectionMatrixValid = false; // use extra flag to avoid allocations during render loop
 
     private _viewport: XRViewport;
-    get viewport() {
+    get viewport(): XRViewport {
         return this._viewport;
     }
 
-    set(projectionMatrix: Float32Array, viewMatrix: Float32Array, viewport: XRViewport) {
+    set(projectionMatrix: Float32Array, viewMatrix: Float32Array, viewport: XRViewport): void {
         this._projectionMatrix = projectionMatrix as mat4;
         this._viewMatrix = viewMatrix as mat4;
         this._viewport = viewport;
