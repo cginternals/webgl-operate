@@ -806,6 +806,14 @@ export class Context {
         return this._context.readBuffer !== undefined;
     }
 
+    /**
+     * True if WebGL2 texImage3D draft is supported, false otherwise. This is experimental technology.
+     */
+    get supportsTexImage3D(): boolean {
+        return this._context.texImage3D !== undefined;
+    }
+
+
     // PARAMETER QUERIES
 
     /**
