@@ -131,7 +131,7 @@ export class Glyph {
      * The horizontal bearing equals the xOffset: bearingX = xOffset - left padding:
      * @param fontBase - The font face's (FontFace) base-to-top distance in pt.
      * @param xOffset - The glyphs horizontal offset without left padding.
-     * @param yOffset - The glyphs vertical offset w.r.t. the font's topmost descendends, without the font's top
+     * @param yOffset - The glyphs vertical offset w.r.t. the font's topmost ascenders, without the font's top
      * padding in pt.
      */
     setBearing(fontBase: GLfloat, xOffset: GLfloat, yOffset: GLfloat): void {
