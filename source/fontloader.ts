@@ -171,6 +171,7 @@ export class FontLoader {
         }
 
         if (!valid) {
+            console.warn('Not all required keys are provided! Mandatory keys: ' + mandatoryKeys);
             return new Map<string, string>(); // typescript does not allow writing `new StringPairs()`
         } else {
             return pairs;
