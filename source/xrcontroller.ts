@@ -183,4 +183,10 @@ export class XRController {
 
     update(force: boolean = false): void {
     }
+
+    get multiFrameNumber(): number {
+        return 0;
+    }
+    set multiFrameNumber(multiFrameNumber: number) {
+    }
 }
