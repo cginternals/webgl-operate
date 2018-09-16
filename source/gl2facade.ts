@@ -1,6 +1,6 @@
 
 
-import { assert } from './auxiliaries';
+import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 
@@ -30,6 +30,7 @@ export class GL2Facade {
         this.queryDrawBuffersSupport(context);
         this.queryVertexArrayObjectSupport(context);
         this.queryMaxUniformVec3Components(context);
+        this.queryBufferSubDataInterface(context);
         this.queryTexImageInterface(context);
     }
 
@@ -330,8 +331,35 @@ export class GL2Facade {
     }
 
 
-    // TEX IMAGE INTERFACE
+    // BUFFER INTERFACE
 
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferSubData
+     */
+    bufferSubData: (target: GLenum, dstByteOffset: GLintptr,
+        srcData: ArrayBufferView | ArrayBuffer, srcOffset: GLuint, length: GLuint) => void;
+
+    protected queryBufferSubDataInterface(context: Context): void {
+        const gl = context.gl;
+
+        if (context.isWebGL2) {
+            this.bufferSubData = (target: GLenum, dstByteOffset: GLintptr,
+                srcData: ArrayBufferView | ArrayBuffer, srcOffset: GLuint, length: GLuint = 0) => {
+
+                return gl.bufferSubData(target, dstByteOffset, srcData, srcOffset, length);
+            };
+        } else {
+            this.bufferSubData = (target: GLenum, dstByteOffset: GLintptr,
+                srcData: ArrayBufferView | ArrayBuffer, srcOffset: GLuint = 0, length: GLuint = 0) => {
+
+                logIf(srcOffset !== 0, LogLevel.Warning, `srcOffset ignored (not supported in WebGL)`);
+                logIf(length !== 0, LogLevel.Warning, `length ignored (not supported in WebGL)`);
+                return gl.bufferSubData(target, dstByteOffset, srcData);
+            };
+        }
+    }
+
+    // TEX IMAGE INTERFACE
 
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
@@ -365,16 +393,16 @@ export class GL2Facade {
                     /* tslint:disable-next-line:no-null-keyword */
                     return gl.texImage2D(target, level, internalformat, width, height, border, format, type, null);
                 }
-                if (source instanceof Int8Array
-                    || source instanceof Uint8Array
-                    || source instanceof Uint8ClampedArray
-                    || source instanceof Int16Array
-                    || source instanceof Uint16Array
-                    || source instanceof Int32Array
-                    || source instanceof Uint32Array
-                    || source instanceof Float32Array
-                    || source instanceof Float64Array
-                    || source instanceof DataView) {
+                if (source instanceof Int8Array ||
+                    source instanceof Uint8Array ||
+                    source instanceof Uint8ClampedArray ||
+                    source instanceof Int16Array ||
+                    source instanceof Uint16Array ||
+                    source instanceof Int32Array ||
+                    source instanceof Uint32Array ||
+                    source instanceof Float32Array ||
+                    source instanceof Float64Array ||
+                    source instanceof DataView) {
                     return gl.texImage2D(target, level, internalformat, width, height, border, format, type, source);
                 }
                 return gl.texImage2D(target, level, internalformat, format, type, source);
