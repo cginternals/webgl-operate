@@ -23,6 +23,7 @@ import { FontLoader } from './fontloader';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
+import { Position2DLabel } from './position2Dlabel';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
 
@@ -298,6 +299,16 @@ export class LabelRenderer extends Renderer {
 
     protected setupScene(): void {
 
+        /** New scene; as OpenLL */
+
+        const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), this._fontFace);
+        pos2Dlabel.fontSizeUnit = Label.SpaceUnit.Px;
+
+        pos2Dlabel.setPosition(0, 0);
+        pos2Dlabel.setDirection(1, 1); // expected: from ll to ur
+
+        /** Old scene; */
+
         // create Label with Text and
         // tell the Typesetter to typeset that Label with the loaded FontFace
         const userTransform = mat4.create();
@@ -327,6 +338,7 @@ export class LabelRenderer extends Renderer {
         this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
         this._labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
     }
+
 
     protected prepareLabel(str: string, userTransform?: mat4): GlyphVertices {
 

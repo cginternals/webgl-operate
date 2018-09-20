@@ -17,6 +17,7 @@ export { FontFace } from './fontface';
 export { FontLoader } from './fontloader';
 export { GlyphVertex, GlyphVertices } from './glyphvertices';
 export { Label } from './label';
+export { Position2DLabel } from './position2dlabel';
 export { LabelGeometry } from './labelgeometry';
 export { Text } from './text';
 export { Typesetter } from './typesetter';
