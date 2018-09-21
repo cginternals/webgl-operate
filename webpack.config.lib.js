@@ -6,7 +6,7 @@ module.exports = (env, options) => {
     config.cache = false;
     config.output.path = __dirname + '/lib';
     config.entry = {
-        'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts']
+        'webgl-operate': ['require.ts', 'webgl-operate.ts']
     };
 
     config.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
