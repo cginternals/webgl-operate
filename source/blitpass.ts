@@ -20,6 +20,10 @@ import { Texture2 } from './texture2';
  * this.blit.framebuffer = this.intermediateFBO;
  * this.blit.frame(this.defaultFBO, null, null);
  * ```
+ *
+ * This pass also provides some basic debugging facilities, such as blitting the input as linearized depth (packed or
+ * not packed) etc. An additional WebGL program will be initialized when a debug mode is specified for the first time.
+ * The default program blit remains untouched in order to keep it as minimal as possible.
  */
 export class BlitPass extends Initializable {
 
@@ -56,8 +60,17 @@ export class BlitPass extends Initializable {
     protected _program: Program;
     protected _debugProgram: Program | undefined = undefined;
 
+    /** @see {@link debug} */
     protected _debug: BlitPass.Debug = BlitPass.Debug.None;
+
+    /**
+     * Uniform for passing the debug mode to the specialized blit program.
+     */
     protected _uDebugMode: WebGLUniformLocation | undefined;
+
+    /**
+     * Uniform used to pass near and far data to the specialized blit program for linearization.
+     */
     protected _uLinearize: WebGLUniformLocation | undefined;
 
     /**
@@ -260,7 +273,8 @@ export class BlitPass extends Initializable {
     }
 
     /**
-     * Specify a debug mode for blitting @see {@link Blitpass.Debug}.
+     * Specify a debug mode for blitting @see {@link Blitpass.Debug}. If the debug mode is set to anything except
+     * `Debug.None` for the first time, a specialized debug program will be created, initialized, and used for blit.
      */
     set debug(mode: BlitPass.Debug) {
         this.assertInitialized();
