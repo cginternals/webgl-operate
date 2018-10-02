@@ -15,10 +15,6 @@ import { Typesetter } from './typesetter';
  */
 export class Position2DLabel extends Label {
 
-    /** @see {@link fontSizeUnit} */
-    /** @todo allow only px or pt, not World  */
-    // protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
-
     protected _position: vec2;
     protected _direction: vec2;
 
@@ -31,6 +27,8 @@ export class Position2DLabel extends Label {
         super(text, fontFace);
         this._position = vec2.fromValues(0, 0);
         this._direction = vec2.fromValues(1, 0);
+
+        this._fontSizeUnit = Label.SpaceUnit.Px;
     }
 
     typeset(frameSize: [number, number]): GlyphVertices {
@@ -67,11 +65,16 @@ export class Position2DLabel extends Label {
 
 
         // apply user tranformations (position, direction)
-
-        // TODO only returns positive angle!
-        const angle = vec2.angle(vec2.fromValues(1, 0), this._direction);
-
         mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
+
+        const n: vec2 = vec2.fromValues(1, 0);
+        let angle = vec2.angle(n, this._direction);
+
+        // perp dot product for signed angle
+        if (n[0] * this._direction[1] - n[1] * this._direction[0] < 0) {
+            angle = -angle;
+        }
+
         mat4.rotateZ(transform, transform, angle);
 
         this.transform = transform;
@@ -95,7 +98,7 @@ export class Position2DLabel extends Label {
 
     /** position parameters as specified in OpenLL */
     setPosition(x: number, y: number, unit?: Label.SpaceUnit): void {
-        // todo: assert that SpaceUnit is px or pt; transform to NDC
+        // todo: assert that SpaceUnit is px or pt; transform to NDC?
         this._position = vec2.fromValues(x, y);
     }
 
@@ -109,6 +112,15 @@ export class Position2DLabel extends Label {
 
     setDirection(x: number, y: number): void {
         this._direction = vec2.fromValues(x, y);
+    }
+
+    /**
+     * This unit is used for the font size.
+     * This method overrides the super.fontSizeUnit, since a position2dlabel only allows px, not World.
+     * (@see {@link fontSize})
+     */
+    set fontSizeUnit(newUnit: Label.SpaceUnit) {
+        console.warn('New SpaceUnit not set; only allowed SpaceUnit is Px for this label.');
     }
 }
 
