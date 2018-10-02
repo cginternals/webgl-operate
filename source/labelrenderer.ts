@@ -23,7 +23,7 @@ import { FontLoader } from './fontloader';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
-import { Position2DLabel } from './position2Dlabel';
+import { Position2DLabel } from './position2dlabel';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
 
@@ -59,7 +59,8 @@ export class LabelRenderer extends Renderer {
     protected _navigation: Navigation;
 
     protected _fontFace: FontFace;
-    protected _labelGeometry: LabelGeometry;
+    protected _2DLabelGeometry: LabelGeometry;
+    protected _3DLabelGeometry: LabelGeometry;
     protected _uGlyphAtlas: WebGLUniformLocation;
 
     protected onInitialize(context: Context, callback: Invalidate,
@@ -98,14 +99,16 @@ export class LabelRenderer extends Renderer {
 
         this._uGlyphAtlas = this._program.uniform('u_glyphs');
 
-        this._labelGeometry = new LabelGeometry(this._context);
+        this._2DLabelGeometry = new LabelGeometry(this._context);
+        this._3DLabelGeometry = new LabelGeometry(this._context);
         const aVertex = this._program.attribute('a_quadVertex', 0);
         const aTexCoord = this._program.attribute('a_texCoord', 1);
         const aOrigin = this._program.attribute('a_origin', 2);
         const aTan = this._program.attribute('a_tan', 3);
         const aUp = this._program.attribute('a_up', 4);
 
-        this._labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
+        this._2DLabelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
+        this._3DLabelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
 
         this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
@@ -158,6 +161,9 @@ export class LabelRenderer extends Renderer {
         this._uFrameNumber = -1;
         this._uGlyphAtlas = -1;
         this._program.uninitialize();
+
+        this._2DLabelGeometry.uninitialize();
+        this._3DLabelGeometry.uninitialize();
 
         this._intermediateFBO.uninitialize();
         this._defaultFBO.uninitialize();
@@ -260,9 +266,15 @@ export class LabelRenderer extends Renderer {
 
         this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
 
-        this._labelGeometry.bind();
-        this._labelGeometry.draw();
-        this._labelGeometry.unbind();
+        this._3DLabelGeometry.bind();
+        this._3DLabelGeometry.draw();
+        this._3DLabelGeometry.unbind();
+
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, mat4.create());
+
+        this._2DLabelGeometry.bind();
+        this._2DLabelGeometry.draw();
+        this._2DLabelGeometry.unbind();
 
         this._intermediateFBO.unbind();
 
@@ -303,28 +315,20 @@ export class LabelRenderer extends Renderer {
 
         const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), this._fontFace);
         pos2Dlabel.fontSizeUnit = Label.SpaceUnit.Px;
+        pos2Dlabel.fontSize = 50;
 
-        pos2Dlabel.setPosition(0, 0);
-        pos2Dlabel.setDirection(1, 1); // expected: from ll to ur
+        pos2Dlabel.setPosition(0, 0.5);
+        pos2Dlabel.setDirection(1, 0); // expected: from ll to lr
 
-        /** Old scene; */
+        let glyphVertices = pos2Dlabel.typeset(this._frameSize);
 
-        // create Label with Text and
-        // tell the Typesetter to typeset that Label with the loaded FontFace
-        const userTransform = mat4.create();
-        mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
-        mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
-        mat4.translate(userTransform, userTransform, vec3.fromValues(-0.1, 0.0, 0.3));
-        let glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
+        // fill buffers
+        let origins: Array<number> = [];
+        let tans: Array<number> = [];
+        let ups: Array<number> = [];
+        let texCoords: Array<number> = [];
 
-        glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
-
-        const origins: Array<number> = [];
-        const tans: Array<number> = [];
-        const ups: Array<number> = [];
-        const texCoords: Array<number> = [];
-
-        const l = glyphVertices.length;
+        let l = glyphVertices.length;
 
         for (let i = 0; i < l; i++) {
             const v = glyphVertices[i];
@@ -335,8 +339,42 @@ export class LabelRenderer extends Renderer {
             texCoords.push.apply(texCoords, v.uvRect);
         }
 
-        this._labelGeometry.setTexCoords(Float32Array.from(texCoords));
-        this._labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
+        this._2DLabelGeometry.setTexCoords(Float32Array.from(texCoords));
+        this._2DLabelGeometry.setGlyphCoords(
+            Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
+
+
+        /** Old scene; soon to be "position3DLabel" */
+
+        // create Label with Text and
+        // tell the Typesetter to typeset that Label with the loaded FontFace
+        const userTransform = mat4.create();
+        mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
+        mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
+        mat4.translate(userTransform, userTransform, vec3.fromValues(-0.1, 0.0, 0.3));
+
+        glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
+        glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
+
+        origins = [];
+        tans = [];
+        ups = [];
+        texCoords = [];
+
+        l = glyphVertices.length;
+
+        for (let i = 0; i < l; i++) {
+            const v = glyphVertices[i];
+
+            origins.push.apply(origins, v.origin);
+            tans.push.apply(tans, v.tangent);
+            ups.push.apply(ups, v.up);
+            texCoords.push.apply(texCoords, v.uvRect);
+        }
+
+        this._3DLabelGeometry.setTexCoords(Float32Array.from(texCoords));
+        this._3DLabelGeometry.setGlyphCoords(
+            Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
     }
 
 

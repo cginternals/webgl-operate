@@ -4,14 +4,14 @@ precision lowp int;
 @import ./facade.vert;
 
 #if __VERSION__ == 100
-#extension GL_EXT_draw_buffers : enable 
-attribute vec2 a_quadVertex; 
+#extension GL_EXT_draw_buffers : enable
+attribute vec2 a_quadVertex;
 attribute vec4 a_texCoord; // [ texture ll: vec2, ur: vec2 ]
 attribute vec3 a_origin;
 attribute vec3 a_tan;
 attribute vec3 a_up;
 #else
-layout(location = 0) in vec2 a_quadVertex; 
+layout(location = 0) in vec2 a_quadVertex;
 layout(location = 1) in vec4 a_texCoord; // [ texture ll: vec2, ur: vec2 ]
 layout(location = 2) in vec3 a_origin;
 layout(location = 3) in vec3 a_tan;

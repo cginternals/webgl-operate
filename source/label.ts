@@ -1,9 +1,10 @@
 
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import { ChangeLookup } from './changelookup';
 import { Color } from './color';
 import { FontFace } from './fontface';
+import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Text } from './text';
 
 
@@ -72,6 +73,22 @@ export class Label {
         this._extent = [0, 0];
     }
 
+    protected prepareVertexStorage(): GlyphVertices {
+        const vertices = new GlyphVertices();
+        const numGlyphs = this.length;
+        for (let i = 0; i < numGlyphs; ++i) {
+
+            const vertex: GlyphVertex = {
+                origin: vec3.create(),
+                tangent: vec3.create(),
+                up: vec3.create(),
+                // vec2 lowerLeft and vec2 upperRight in glyph texture (uv)
+                uvRect: vec4.create(),
+            };
+            vertices.push(vertex);
+        }
+        return vertices;
+    }
 
     /**
      * Returns the character at the specified index.
