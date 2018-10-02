@@ -317,8 +317,8 @@ export class LabelRenderer extends Renderer {
         pos2Dlabel.fontSizeUnit = Label.SpaceUnit.Px;
         pos2Dlabel.fontSize = 50;
 
-        pos2Dlabel.setPosition(0, 0.5);
-        pos2Dlabel.setDirection(1, 0); // expected: from ll to lr
+        pos2Dlabel.setPosition(100, 0); // position values in px, since fontSizeUnit is set to SpaceUni.Px
+        pos2Dlabel.setDirection(1, 0.5);
 
         let glyphVertices = pos2Dlabel.typeset(this._frameSize);
 

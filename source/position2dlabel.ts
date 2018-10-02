@@ -33,20 +33,7 @@ export class Position2DLabel extends Label {
         this._direction = vec2.fromValues(1, 0);
     }
 
-    protected updateTransform(): void {
-
-        const newTransform = mat4.create();
-
-        const angle = vec2.angle(vec2.fromValues(1, 0), this._direction);
-        mat4.rotateZ(newTransform, newTransform, angle);
-        mat4.translate(newTransform, newTransform, vec3.fromValues(this._position[0], this._position[1], 0));
-
-        this.transform = newTransform;
-    }
-
     typeset(frameSize: [number, number]): GlyphVertices {
-        // label.transform is set through .position and .direction
-
         // TODO assert: this.fontSizeUnit === Label.SpaceUnit.Px
 
         // TODO meaningful margins from label.margins or config.margins ?
@@ -78,7 +65,16 @@ export class Position2DLabel extends Label {
         vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
         mat4.translate(transform, transform, v3);
 
-        this.transform = mat4.mul(this.transform, this.transform, transform);
+
+        // apply user tranformations (position, direction)
+
+        // TODO only returns positive angle!
+        const angle = vec2.angle(vec2.fromValues(1, 0), this._direction);
+
+        mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
+        mat4.rotateZ(transform, transform, angle);
+
+        this.transform = transform;
 
         const vertices = this.prepareVertexStorage();
         Typesetter.typeset(this, vertices, 0);
@@ -91,7 +87,6 @@ export class Position2DLabel extends Label {
      */
     set position(xy: vec2) {
         this._position = vec2.clone(xy);
-        this.updateTransform();
     }
 
     get position(): vec2 {
@@ -102,12 +97,10 @@ export class Position2DLabel extends Label {
     setPosition(x: number, y: number, unit?: Label.SpaceUnit): void {
         // todo: assert that SpaceUnit is px or pt; transform to NDC
         this._position = vec2.fromValues(x, y);
-        this.updateTransform();
     }
 
     set direction(xy: vec2) {
         this._direction = vec2.clone(xy);
-        this.updateTransform();
     }
 
     get direction(): vec2 {
@@ -116,7 +109,6 @@ export class Position2DLabel extends Label {
 
     setDirection(x: number, y: number): void {
         this._direction = vec2.fromValues(x, y);
-        this.updateTransform();
     }
 }
 
