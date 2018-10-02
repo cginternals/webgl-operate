@@ -8,6 +8,8 @@ import { Context } from './context';
 export type TexImage2DData = GLintptr | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
     ImageBitmap | ImageData | ArrayBufferView | undefined;
 
+export type TexImage3DData = GLintptr | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
+    ImageBitmap | ImageData | ArrayBufferView | undefined;
 
 /**
  * A WebGL 2 facade, simplifying the access to gl functions that are either not available, exposed via extension or
@@ -367,12 +369,19 @@ export class GL2Facade {
     texImage2D: (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
         border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => void;
 
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/texImage3D
+     */
+    texImage3D: (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei, depth: GLsizei,
+        border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => void;
+
     protected queryTexImageInterface(context: Context): void {
         const gl = context.gl;
 
         if (context.isWebGL2) {
-            this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
-                border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
+            this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum,
+                width: GLsizei, height: GLsizei, border: GLint,
+                format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
                 /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
                 if (source instanceof ArrayBuffer) {
                     return gl.texImage2D(target, level, internalformat, width, height, border
@@ -386,8 +395,9 @@ export class GL2Facade {
             };
 
         } else {
-            this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei,
-                border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
+            this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum,
+                width: GLsizei, height: GLsizei, border: GLint,
+                format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
 
                 if (source === undefined) {
                     /* tslint:disable-next-line:no-null-keyword */
@@ -407,6 +417,28 @@ export class GL2Facade {
                 }
                 return gl.texImage2D(target, level, internalformat, format, type, source);
             };
+        }
+
+        if (context.supportsTexImage3D) {
+            this.texImage3D = (target: GLenum, level: GLint, internalformat: GLenum,
+                width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint,
+                format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
+                /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
+                if (source instanceof ArrayBuffer) {
+                    return gl.texImage3D(target, level, internalformat, width, height, depth, border
+                        /* tslint:disable-next-line:no-null-keyword */
+                        , format, type, source === undefined ? null : source, offset);
+                }
+                assert(offset === undefined, `offset expected to be undefined for non ArrayBuffer source`);
+                return gl.texImage3D(target, level, internalformat, width, height, depth, border
+                    /* tslint:disable-next-line:no-null-keyword */
+                    , format, type, source === undefined ? null : source);
+            };
+        } else {
+            this.texImage3D = (target: GLenum, level: GLint, internalformat: GLenum,
+                width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint,
+                format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) =>
+                assert(false, 'texImage3D not supported on this context');
         }
     }
 

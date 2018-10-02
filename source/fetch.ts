@@ -12,14 +12,17 @@ namespace fetch {
      * Creates a promise for an asynchronous xml/http request on a given URL. If an URL is fetched successfully, the
      * promise is resolved with a parsed JSON object. An error code and message can be caught otherwise.
      * @param url - Uniform resource locator string referencing a JSON file.
+     * @param type - Request response type.
      * @param transform - Callback to a function that transforms the fetched data into an instance of targeted type.
      * @returns - A promise that resolves on a parsed JSON object if successful.
      */
-    export function fetchAsync<T>(url: string, transform: { (data: any): T }): Promise<T> {
+    export function fetchAsync<T>(url: string, type: XMLHttpRequestResponseType,
+        transform: { (data: any): T }): Promise<T> {
 
         const response = new Promise<T>((resolve, reject) => {
             const request = new XMLHttpRequest();
             request.open('GET', url, true);
+            request.responseType = type;
 
             request.onload = () => {
                 if (request.status < 200 || request.status >= 300) {
@@ -27,7 +30,7 @@ namespace fetch {
                     return;
                 }
 
-                const data = request.responseText;
+                const data = request.response;
                 const object: T = transform(data);
                 resolve(object);
             };
