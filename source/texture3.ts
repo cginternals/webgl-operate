@@ -161,50 +161,52 @@ export class Texture3 extends AbstractObject<WebGLTexture> implements Bindable {
      */
     @Initializable.assert_initialized()
     load(uri: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const image = new Image();
-            image.onerror = () => reject();
+        assert(false, `not implemented`);
+        return new Promise<void>(() => true);
+        // return new Promise((resolve, reject) => {
+        //     const image = new Image();
+        //     image.onerror = () => reject();
 
-            image.onload = () => {
-                /* Use an auxiliary canvas to extract slices by drawing and extracting each slice. */
-                const auxiliaryCanvas: HTMLCanvasElement =
-                    document.createElementNS('http://www.w3.org/1999/xhtml', 'aux-canvas') as HTMLCanvasElement;
-                const auxiliaryContext = auxiliaryCanvas.getContext('2d');
+        //     image.onload = () => {
+        //         /* Use an auxiliary canvas to extract slices by drawing and extracting each slice. */
+        //         const auxiliaryCanvas: HTMLCanvasElement =
+        //             document.createElementNS('http://www.w3.org/1999/xhtml', 'aux-canvas') as HTMLCanvasElement;
+        //         const auxiliaryContext = auxiliaryCanvas.getContext('2d');
 
-                assert(auxiliaryContext !== undefined, `expected auxiliary 2D context for temporary slicing`);
-                assert(image.height % slices === 0 && image.height / slices >= 1.0,
-                    `expected height to be a multitude of number of slices`);
+        //         assert(auxiliaryContext !== undefined, `expected auxiliary 2D context for temporary slicing`);
+        //         assert(image.height % slices === 0 && image.height / slices >= 1.0,
+        //             `expected height to be a multitude of number of slices`);
 
-                const width = image.width;
-                const height = Math.floor(image.height / slices);
-                const depth = height * slices;
+        //         const width = image.width;
+        //         const height = Math.floor(image.height / slices);
+        //         const depth = height * slices;
 
-                auxiliaryCanvas.width = width;
-                auxiliaryCanvas.height = height;
+        //         auxiliaryCanvas.width = width;
+        //         auxiliaryCanvas.height = height;
 
-                const data = new Uint8Array(width * height * depth);
-                const subImageSize = width * height;
+        //         const data = new Uint8Array(width * height * depth);
+        //         const subImageSize = width * height;
 
-                for (let slice = 0; slice < slices; ++slice) {
-                    auxiliaryContext!.drawImage(image, 0, height * slice, width, height, 0, 0, width, height);
-                    const subImageData = auxiliaryContext!.getImageData(0, 0, width, height).data;
+        //         for (let slice = 0; slice < slices; ++slice) {
+        //             auxiliaryContext!.drawImage(image, 0, height * slice, width, height, 0, 0, width, height);
+        //             const subImageData = auxiliaryContext!.getImageData(0, 0, width, height).data;
 
-                    for (let i = 0; i < subImageSize; ++i) {
-                        data[subImageSize * slice + i] = subImageData[4 * i];
-                    }
-                }
+        //             for (let i = 0; i < subImageSize; ++i) {
+        //                 data[subImageSize * slice + i] = subImageData[4 * i];
+        //             }
+        //         }
 
-                this.resize(width, height, depth);
-                this.data(image);
+        //         this.resize(width, height, depth);
+        //         this.data(image);
 
-                resolve();
-            };
+        //         resolve();
+        //     };
 
-            if (crossOrigin) {
-                image.crossOrigin = 'anonymous';
-            }
-            image.src = uri;
-        });
+        //     if (crossOrigin) {
+        //         image.crossOrigin = 'anonymous';
+        //     }
+        //     image.src = uri;
+        // });
     }
 
     /**
