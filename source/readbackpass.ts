@@ -164,8 +164,7 @@ export class ReadbackPass extends Initializable {
 
         let depth: GLfloat | undefined = decode_float24x1_from_uint8x3(
             vec3.fromValues(this._buffer[0], this._buffer[1], this._buffer[2]));
-        /** @todo fix far plane depth to be at 1.0 */
-        depth = depth > 0.996 ? undefined : depth;
+        depth = depth >= 1.0 ? undefined : depth;
 
         if (this._cache) {
             this._cachedDepths.set(hash, depth);
@@ -227,7 +226,6 @@ export class ReadbackPass extends Initializable {
 
         let depth: GLfloat | undefined = decode_float24x1_from_uint8x3(
             vec3.fromValues(this._buffer[0], this._buffer[1], this._buffer[2]));
-        /** @todo fix far plane depth to be at 1.0 */
         depth = depth >= 1.0 ? undefined : depth;
 
         if (this._cache) {

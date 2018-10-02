@@ -77,7 +77,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: ArrayBufferView | ArrayBuffer, usage: GLenum, bind: boolean = true, unbind: boolean = true): void {
+    data(data: ArrayBufferView | ArrayBuffer | GLsizeiptr, usage: GLenum,
+        bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
@@ -89,8 +90,36 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         }
 
         this._valid = gl.isBuffer(this._object) && gl.getError() === gl.NO_ERROR;
-        const bytes: GLsizei = this._valid ? data.byteLength : 0;
+
+        const byteLength = typeof data === `number` ? data : data.byteLength;
+        const bytes: GLsizei = this._valid ? byteLength : 0;
+
         this.context.allocationRegister.reallocate(this._identifier, bytes);
+    }
+
+    /**
+     * Updates a subset of a buffer object's data store.
+     * @param dstByteOffset - Offset in bytes where the data replacement will start.
+     * @param srcData - Data that will be copied into the data store.
+     * @param srcOffset - Element index offset where to start reading the buffer.
+     * @param length - Length of the data to copy into the data store.
+     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
+     */
+    subData(dstByteOffset: GLintptr, srcData: ArrayBufferView | ArrayBuffer,
+        srcOffset: GLuint = 0, length: GLuint = 0, bind: boolean = true, unbind: boolean = true): void {
+
+        const gl = this.context.gl;
+
+        if (bind) {
+            this.bind();
+        }
+        this.context.gl2facade.bufferSubData(this._target!, dstByteOffset, srcData, srcOffset, length);
+        if (unbind) {
+            this.unbind();
+        }
+
+        this._valid = gl.getError() === gl.NO_ERROR;
     }
 
     /**
