@@ -2,7 +2,10 @@
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import { assert } from './auxiliaries';
-import { decode_float24x1_from_uint8x3, decode_uint32_from_rgba8 } from './gl-matrix-extensions';
+import {
+    decode_float24x1_from_uint8x3,
+    decode_uint32_from_rgba8,
+} from './gl-matrix-extensions';
 
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
@@ -21,6 +24,55 @@ import { GLsizei2 } from './tuples';
  * back the value from this texture. Note that depth and ID values are cached as long as no redraw (frame) was invoked.
  */
 export class ReadbackPass extends Initializable {
+
+
+    /**
+     * Whether or not caching of requested depths and ids should be used to reduce performance impact.
+     */
+    set cache(value: boolean) {
+        this._cache = value;
+    }
+
+
+    /**
+     * Sets the framebuffer object that is to be used for depth readback.
+     * @param framebuffer - Framebuffer that is to be used for depth readback.
+     */
+    set depthFBO(framebuffer: Framebuffer) {
+        this._depthFBO = framebuffer;
+    }
+
+    /**
+     * Sets the framebuffer's {@link depthFBO} depth attachment that is to be used for depth readback.
+     * @param attachment - Depth attachment that is to be used for depth readback.
+     */
+    set depthAttachment(attachment: GLenum) {
+        this._depthAttachment = attachment;
+    }
+
+    /**
+     * Sets the framebuffer object that is to be used for id readback.
+     * @param framebuffer - Framebuffer that is to be used for id readback.
+     */
+    set idFBO(framebuffer: Framebuffer) {
+        this._idFBO = framebuffer;
+    }
+
+    /**
+     * Sets the framebuffer's {@link idFBO} id attachment that is to be used for id readback.
+     * @param attachment - ID attachment that is to be used for id readback.
+     */
+    set idAttachment(attachment: GLenum) {
+        this._idAttachment = attachment;
+    }
+
+    /**
+     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
+     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
+     */
+    set coordinateReferenceSize(size: GLsizei2 | undefined) {
+        this._referenceSize = size;
+    }
 
     /**
      * Read-only access to the objects context, used to get context information and WebGL API access.
@@ -97,12 +149,20 @@ export class ReadbackPass extends Initializable {
 
 
     /**
-     * Retrieve the depth of a fragment in normalized device coordinates. The implementation of this function is
+     * Read the the depth of a fragment in normalized device coordinates. The implementation of this function is
      * assigned at initialization based on the available WebGL features.
      * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
      * @param y - Vertical coordinate for the upper left corner of the viewport origin.
      */
-    depthAt: (x: GLsizei, y: GLsizei) => GLfloat | undefined;
+    readDepthAt: (x: GLsizei, y: GLsizei) => Uint8Array;
+
+
+    /**
+     * Returns the maximal depth value that can be encoded when using a uint8[3] - @see{@link depthAt}.
+     */
+    static maxClearDepth(): GLfloat {
+        return decode_float24x1_from_uint8x3(vec3.fromValues(255, 255, 255));
+    }
 
 
     constructor(context: Context) {
@@ -133,19 +193,14 @@ export class ReadbackPass extends Initializable {
     }
 
     /**
-     * Retrieve the depth of a fragment in normalized device coordinates. This function implements the direct readback
-     * of uint8x3 encoded depth values from a given framebuffer (see depthFBO and depthAttachment).
+     * Implements the direct readback of uint8x3 encoded depth values from a given framebuffer (see depthFBO and
+     * depthAttachment).
      * @param x - Horizontal coordinate from the upper left corner of the viewport origin.
      * @param y - Vertical coordinate from the upper left corner of the viewport origin.
-     * @returns - Either the depth at location x, y or undefined, if the far plane was hit.
+     * @returns - An array with 4 uint8 entries, the first three of which encode the depth.
      */
     @Initializable.assert_initialized()
-    protected directReadDepthAt(x: GLsizei, y: GLsizei): GLfloat | undefined {
-        const hash = this.hash(x, y);
-        if (this._cache && this._cachedDepths.has(hash)) {
-            return this._cachedDepths.get(hash);
-        }
-
+    protected directReadDepthAt(x: GLsizei, y: GLsizei): Uint8Array {
         assert(this._depthFBO !== undefined && this._depthFBO.valid, `valid depth FBO expected for reading back depth`);
         const texture = this._depthFBO.texture(this._depthAttachment) as Texture2;
 
@@ -160,31 +215,22 @@ export class ReadbackPass extends Initializable {
         if (this._context.isWebGL2 || this._context.supportsDrawBuffers) {
             gl.readBuffer(this._depthAttachment);
         }
-        gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
 
-        let depth: GLfloat | undefined = decode_float24x1_from_uint8x3(
-            vec3.fromValues(this._buffer[0], this._buffer[1], this._buffer[2]));
-        depth = depth >= 1.0 ? undefined : depth;
-
-        if (this._cache) {
-            this._cachedDepths.set(hash, depth);
-        }
-        return depth;
+        gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE, this._buffer);
+        return this._buffer;
     }
 
 
     /**
-     * Retrieve the depth of a fragment in normalized device coordinates.
+     * Implements the indirect readback of uint8x3 encoded depth values from a given framebuffer (see depthFBO and
+     * depthAttachment). This renders a single pixel (1x1 pixel viewport) with the depth fbo as texture and reads this
+     * afterwards. This is a fallback required when direct pixel read from depth attachments is not supported.
      * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
      * @param y - Vertical coordinate for the upper left corner of the viewport origin.
-     * @returns - Either the depth at location x, y or undefined, if the far plane was hit.
+     * @returns - An array with 4 uint8 entries, the first three of which encode the depth.
      */
     @Initializable.assert_initialized()
-    renderThenReadDepthAt(x: GLsizei, y: GLsizei): GLfloat | undefined {
-        const hash = this.hash(x, y);
-        if (this._cache && this._cachedDepths.has(hash)) {
-            return this._cachedDepths.get(hash);
-        }
+    renderThenReadDepthAt(x: GLsizei, y: GLsizei): Uint8Array {
 
         assert(this._depthFBO !== undefined && this._depthFBO.valid, `valid depth FBO expected for reading back depth`);
         const texture = this._depthFBO.texture(this._depthAttachment) as Texture2;
@@ -213,25 +259,16 @@ export class ReadbackPass extends Initializable {
         texture.unbind();
 
         /** Every stage is expected to bind its own program when drawing, thus, unbinding is not necessary. */
-        // this.program.unbind();
-
-
-        /* Bind the framebuffer and read back the requested pixel. */
+        // this._program.unbind();
 
         if ((this._context.isWebGL2 || this._context.supportsDrawBuffers) && gl.readBuffer) {
             gl.readBuffer(gl.COLOR_ATTACHMENT0);
         }
+
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
         this._framebuffer.unbind();
 
-        let depth: GLfloat | undefined = decode_float24x1_from_uint8x3(
-            vec3.fromValues(this._buffer[0], this._buffer[1], this._buffer[2]));
-        depth = depth >= 1.0 ? undefined : depth;
-
-        if (this._cache) {
-            this._cachedDepths.set(hash, depth);
-        }
-        return depth;
+        return this._buffer;
     }
 
 
@@ -248,12 +285,12 @@ export class ReadbackPass extends Initializable {
 
         /* If depth is already uint8x3 encoded into a rgb/rgba target no readback workaround is required. */
         if (this._context.isWebGL1 && !this._context.supportsDepthTexture) {
-            this.depthAt = this.directReadDepthAt;
+            this.readDepthAt = this.directReadDepthAt;
             return true;
         }
 
         /* Configure read back for depth data. */
-        this.depthAt = this.renderThenReadDepthAt;
+        this.readDepthAt = this.renderThenReadDepthAt;
 
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (readback)');
@@ -317,6 +354,38 @@ export class ReadbackPass extends Initializable {
         this._framebuffer.uninitialize();
     }
 
+    /**
+     * Retrieve the depth of a fragment in normalized device coordinates. The implementation of this function is
+     * assigned at initialization based on the available WebGL features. Please note that in order to get the far plane
+     * depth at just below 1.0, the clear depth should be set to:
+     *     float24x1_from_uint8x3([255,255, 255]) = 0.9999999403953552
+     * This will result in a readback of [255, 255, 255] and is the deepest depth value representable using a uint8x3.
+     * Using 1.0 should result in [256, 0, 0] and would be easy to detect, however, it is somehow clamped to [255, 0, 0]
+     * which is highly misleading and actual not nearly the far plane's depth. Thus, if [255, 255, 255] is read back,
+     * undefined will be returned by this query and thereby reduce the effective depth range by 1 over 255^3 - sorry.
+     * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
+     * @param y - Vertical coordinate for the upper left corner of the viewport origin.
+     */
+    @Initializable.assert_initialized()
+    depthAt(x: GLsizei, y: GLsizei): GLfloat | undefined {
+
+        const hash = this.hash(x, y);
+        if (this._cache && this._cachedDepths.has(hash)) {
+            return this._cachedDepths.get(hash);
+        }
+
+        const buffer: Uint8Array = this.readDepthAt(x, y);
+
+        /* See notes above for more info on this weird convention. */
+        const depth: GLfloat | undefined = buffer[0] === 255 && buffer[1] === 255 && buffer[2] === 255 ?
+            undefined : decode_float24x1_from_uint8x3(vec3.fromValues(buffer[0], buffer[1], buffer[2]));
+
+        if (this._cache) {
+            this._cachedDepths.set(hash, depth);
+        }
+
+        return depth;
+    }
 
     /**
      * Retrieving the world space coordinate of a fragment.
@@ -383,55 +452,6 @@ export class ReadbackPass extends Initializable {
      */
     frame(): void {
         this.onFrame();
-    }
-
-
-    /**
-     * Whether or not caching of requested depths and ids should be used to reduce performance impact.
-     */
-    set cache(value: boolean) {
-        this._cache = value;
-    }
-
-
-    /**
-     * Sets the framebuffer object that is to be used for depth readback.
-     * @param framebuffer - Framebuffer that is to be used for depth readback.
-     */
-    set depthFBO(framebuffer: Framebuffer) {
-        this._depthFBO = framebuffer;
-    }
-
-    /**
-     * Sets the framebuffer's {@link depthFBO} depth attachment that is to be used for depth readback.
-     * @param attachment - Depth attachment that is to be used for depth readback.
-     */
-    set depthAttachment(attachment: GLenum) {
-        this._depthAttachment = attachment;
-    }
-
-    /**
-     * Sets the framebuffer object that is to be used for id readback.
-     * @param framebuffer - Framebuffer that is to be used for id readback.
-     */
-    set idFBO(framebuffer: Framebuffer) {
-        this._idFBO = framebuffer;
-    }
-
-    /**
-     * Sets the framebuffer's {@link idFBO} id attachment that is to be used for id readback.
-     * @param attachment - ID attachment that is to be used for id readback.
-     */
-    set idAttachment(attachment: GLenum) {
-        this._idAttachment = attachment;
-    }
-
-    /**
-     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
-     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
-     */
-    set coordinateReferenceSize(size: GLsizei2 | undefined) {
-        this._referenceSize = size;
     }
 
 }
