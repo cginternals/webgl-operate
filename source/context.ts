@@ -274,7 +274,7 @@ export class Context {
      * @param extension - Extension identifier to query support for.
      * @returns - True if the extension is supported, false otherwise.
      */
-    protected supports(extension: string): boolean {
+    supports(extension: string): boolean {
         if (this._mask && this._mask.extensionsConceal.indexOf(extension) > -1) {
             return false;
         }

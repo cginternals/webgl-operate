@@ -215,8 +215,7 @@ export class ReadbackPass extends Initializable {
         if (this._context.isWebGL2 || this._context.supportsDrawBuffers) {
             gl.readBuffer(this._depthAttachment);
         }
-
-        gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE, this._buffer);
+        gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
         return this._buffer;
     }
 
@@ -277,14 +276,14 @@ export class ReadbackPass extends Initializable {
      * are created. All attribute and dynamic uniform locations are cached.
      * @param ndcTriangle - If specified, assumed to be used as shared geometry. If none is specified, a ndc-filling
      * triangle will be created internally.
+     * @param direct - If depth is already uint8x3 encoded into a rgb/rgba target no readback workaround is required.
      */
     @Initializable.initialize()
-    initialize(ndcTriangle: NdcFillingTriangle | undefined): boolean {
+    initialize(ndcTriangle: NdcFillingTriangle | undefined, direct: boolean): boolean {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
-        /* If depth is already uint8x3 encoded into a rgb/rgba target no readback workaround is required. */
-        if (this._context.isWebGL1 && !this._context.supportsDepthTexture) {
+        if (direct) {
             this.readDepthAt = this.directReadDepthAt;
             return true;
         }
@@ -432,7 +431,7 @@ export class ReadbackPass extends Initializable {
             [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];
 
         this._idFBO.bind();
-        if ((this._context.isWebGL2 || this._context.supportsDrawBuffers) && gl.readBuffer) {
+        if (this._context.isWebGL2) {
             gl.readBuffer(this._idAttachment);
         }
         gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
