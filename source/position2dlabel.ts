@@ -19,7 +19,7 @@ export class Position2DLabel extends Label {
     protected _direction: vec2;
 
     /**
-     * Constructs an unconfigured, empty label.
+     * Constructs a pre-configured 2D-label with given text
      * @param text - Valid context to create the object for.
      * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
      */
@@ -32,7 +32,7 @@ export class Position2DLabel extends Label {
     }
 
     typeset(frameSize: [number, number]): GlyphVertices {
-        // TODO assert: this.fontSizeUnit === Label.SpaceUnit.Px
+        // TODO assert: this.fontSizeUnit === Label.SpaceUnit.Px or, later, === Label.SpaceUnit.Pt
 
         // TODO meaningful margins from label.margins or config.margins ?
         const margins: vec4 = vec4.create();
@@ -103,7 +103,7 @@ export class Position2DLabel extends Label {
     }
 
     set direction(xy: vec2) {
-        this._direction = vec2.clone(xy);
+        this._direction = vec2.normalize(this._direction, xy);
     }
 
     get direction(): vec2 {
@@ -111,7 +111,7 @@ export class Position2DLabel extends Label {
     }
 
     setDirection(x: number, y: number): void {
-        this._direction = vec2.fromValues(x, y);
+        this.direction = vec2.fromValues(x, y);
     }
 
     /**

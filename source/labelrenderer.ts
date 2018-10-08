@@ -24,6 +24,7 @@ import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
+import { Position3DLabel } from './position3dlabel';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
 
@@ -311,7 +312,7 @@ export class LabelRenderer extends Renderer {
 
     protected setupScene(): void {
 
-        /** New scene; as OpenLL */
+        /** OpenLL 2D Labels */
 
         const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), this._fontFace);
         pos2Dlabel.fontSize = 40;
@@ -343,18 +344,46 @@ export class LabelRenderer extends Renderer {
             Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
 
 
-        /** Old scene; soon to be "position3DLabel" */
+        /** This is de deprecated way */
 
-        // create Label with Text and
-        // tell the Typesetter to typeset that Label with the loaded FontFace
-        const userTransform = mat4.create();
-        mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
-        mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
-        mat4.translate(userTransform, userTransform, vec3.fromValues(-0.1, 0.0, 0.3));
+        // // create Label with Text and
+        // // tell the Typesetter to typeset that Label with the loaded FontFace
+        // const userTransform = mat4.create();
+        // mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
+        // mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
+        // mat4.translate(userTransform, userTransform, vec3.fromValues(-0.1, 0.0, 0.3));
 
-        glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
-        glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
+        // glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
+        // glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
 
+
+        /** OpenLL 3D Labels */
+        const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'), this._fontFace);
+        pos3Dlabel.fontSize = 0.1;
+
+        // position values in world, since fontSizeUnit is set to SpaceUnit.World
+        pos3Dlabel.setPosition(0, 0.1, -0.5);
+        pos3Dlabel.setDirection(0, 1, 0);
+        pos3Dlabel.setUp(-1, 0, 0);
+
+        glyphVertices = pos3Dlabel.typeset();
+
+        const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'), this._fontFace);
+        shadowPos3Dlabel.setPosition(0, 0.1, -0.5);
+        shadowPos3Dlabel.fontSize = 0.1;
+        shadowPos3Dlabel.setDirection(0, 1, 0);
+        shadowPos3Dlabel.setUp(0, 0, -1);
+
+        glyphVertices = glyphVertices.concat(shadowPos3Dlabel.typeset());
+
+        const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'), this._fontFace);
+        anotherPos3Dlabel.setPosition(0.2, -0.1, 0);
+        anotherPos3Dlabel.setDirection(-1, 0, 0);
+        anotherPos3Dlabel.setUp(0, -1, 0);
+        glyphVertices = glyphVertices.concat(anotherPos3Dlabel.typeset());
+
+
+        // fill buffers
         origins = [];
         tans = [];
         ups = [];
@@ -377,6 +406,7 @@ export class LabelRenderer extends Renderer {
     }
 
 
+    /** THIS WILL BE DEPRECATED SOON: use subclasses of Label instead. */
     protected prepareLabel(str: string, userTransform?: mat4): GlyphVertices {
 
         const label: Label = new Label(new Text(str), this._fontFace);
