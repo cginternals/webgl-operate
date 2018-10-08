@@ -316,7 +316,7 @@ export class LabelRenderer extends Renderer {
         const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), this._fontFace);
         pos2Dlabel.fontSize = 40;
 
-        pos2Dlabel.setPosition(-100, 0); // position values in px, since fontSizeUnit is set to SpaceUni.Px
+        pos2Dlabel.setPosition(-100, 0); // position values in px, since fontSizeUnit is set to SpaceUnit.Px
         pos2Dlabel.setDirection(0.5, -0.5);
 
         let glyphVertices = pos2Dlabel.typeset(this._frameSize);
