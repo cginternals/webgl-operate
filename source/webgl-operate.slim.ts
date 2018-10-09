@@ -25,6 +25,7 @@ export { Renderbuffer } from './renderbuffer';
 export { Renderer, Invalidate } from './renderer';
 export { Shader } from './shader';
 export { Texture2 } from './texture2';
+export { Texture3 } from './texture3';
 export { TextureCube } from './texturecube';
 export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
