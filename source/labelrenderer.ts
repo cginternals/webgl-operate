@@ -1,7 +1,7 @@
 
 import { assert } from './auxiliaries';
 
-import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 import { AccumulatePass } from './accumulatepass';
 import { AntiAliasingKernel } from './antialiasingkernel';
@@ -20,13 +20,10 @@ import { Texture2 } from './texture2';
 
 import { FontFace } from './fontface';
 import { FontLoader } from './fontloader';
-import { GlyphVertex, GlyphVertices } from './glyphvertices';
-import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
 import { Text } from './text';
-import { Typesetter } from './typesetter';
 
 import { TestNavigation } from './debug/testnavigation';
 
@@ -343,20 +340,6 @@ export class LabelRenderer extends Renderer {
         this._2DLabelGeometry.setGlyphCoords(
             Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
 
-
-        /** This is de deprecated way */
-
-        // // create Label with Text and
-        // // tell the Typesetter to typeset that Label with the loaded FontFace
-        // const userTransform = mat4.create();
-        // mat4.scale(userTransform, userTransform, vec3.fromValues(1.2, 1.2, 1.2));
-        // mat4.rotateZ(userTransform, userTransform, Math.PI * 0.5);
-        // mat4.translate(userTransform, userTransform, vec3.fromValues(-0.1, 0.0, 0.3));
-
-        // glyphVertices = this.prepareLabel('Hello Transform!', userTransform);
-        // glyphVertices = glyphVertices.concat(this.prepareLabel('Hello World!'));
-
-
         /** OpenLL 3D Labels */
         const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'), this._fontFace);
         pos3Dlabel.fontSize = 0.1;
@@ -403,69 +386,5 @@ export class LabelRenderer extends Renderer {
         this._3DLabelGeometry.setTexCoords(Float32Array.from(texCoords));
         this._3DLabelGeometry.setGlyphCoords(
             Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
-    }
-
-
-    /** THIS WILL BE DEPRECATED SOON: use subclasses of Label instead. */
-    protected prepareLabel(str: string, userTransform?: mat4): GlyphVertices {
-
-        const label: Label = new Label(new Text(str), this._fontFace);
-
-        const uT = userTransform !== undefined ? userTransform : mat4.create();
-
-        label.transform = uT;
-
-        if (label.fontSizeUnit === Label.SpaceUnit.Px) {
-            // TODO meaningful margins from label.margins or config.margins ?
-            const margins: vec4 = vec4.create();
-            // TODO meaningful ppiScale from label.ppiScale or config.ppiScale ?
-            const ppiScale = 1;
-
-            // compute transform matrix
-            const transform = mat4.create();
-
-            // translate to lower left in NDC
-            mat4.scale(transform, transform, vec3.fromValues(1.0, this._frameSize[1] / this._frameSize[0], 1.0));
-            mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
-            // scale glyphs to NDC size
-            // this._frameSize should be the viewport size
-            mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
-
-            // scale glyphs to pixel size with respect to the displays ppi
-            mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
-
-            // translate to origin in point space - scale origin within
-            // margined extend (i.e., viewport with margined areas removed)
-            const marginedExtent: vec2 = vec2.create();
-            vec2.sub(marginedExtent, vec2.fromValues(
-                this._frameSize[0] / ppiScale, this._frameSize[1] / ppiScale),
-                vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
-
-            const v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
-            vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
-            mat4.translate(transform, transform, v3);
-
-            label.transform = mat4.mul(label.transform, uT, transform);
-        }
-
-        const numGlyphs = label.length;
-
-        // prepare vertex storage (values will be overridden by typesetter)
-        const vertices = new GlyphVertices();
-        for (let i = 0; i < numGlyphs; ++i) {
-
-            const vertex: GlyphVertex = {
-                origin: vec3.create(),
-                tangent: vec3.create(),
-                up: vec3.create(),
-                // vec2 lowerLeft and vec2 upperRight in glyph texture (uv)
-                uvRect: vec4.create(),
-            };
-            vertices.push(vertex);
-        }
-
-        Typesetter.typeset(label, vertices, 0);
-
-        return vertices;
     }
 }

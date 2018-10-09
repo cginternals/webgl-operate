@@ -1,8 +1,6 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { ChangeLookup } from './changelookup';
-import { Color } from './color';
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
@@ -11,7 +9,8 @@ import { Typesetter } from './typesetter';
 
 
 /**
- * @todo
+ * A Label that can be positioned in 2D space.
+ * The unit for positions, size and transformations, is pixel (px).
  */
 export class Position2DLabel extends Label {
 
@@ -86,7 +85,7 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * Sets the 2D position of the label's reference point (i.e. lower left corner for horizontal alignment)
+     * Sets the 2D position of the label's reference point (i.e. lower left corner for horizontal alignment).
      */
     set position(xy: vec2) {
         this._position = vec2.clone(xy);
@@ -102,6 +101,9 @@ export class Position2DLabel extends Label {
         this._position = vec2.fromValues(x, y);
     }
 
+    /**
+     * Sets the 2D direction of the label, i.e., the direction of the baseline.
+     */
     set direction(xy: vec2) {
         this._direction = vec2.normalize(this._direction, xy);
     }
