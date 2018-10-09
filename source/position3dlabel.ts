@@ -40,7 +40,8 @@ export class Position3DLabel extends Label {
 
         // apply user tranformations (position, direction)
 
-        mat4.translate(transform, mat4.create(), vec3.fromValues(this._position[0], this._position[1], 0));
+        mat4.translate(transform, mat4.create(),
+            vec3.fromValues(this._position[0], this._position[1], this._position[2]));
 
         vec3.cross(normal, this._direction, this._up);
 
