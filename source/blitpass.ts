@@ -20,6 +20,10 @@ import { Texture2 } from './texture2';
  * this.blit.framebuffer = this.intermediateFBO;
  * this.blit.frame(this.defaultFBO, null, null);
  * ```
+ *
+ * This pass also provides some basic debugging facilities, such as blitting the input as linearized depth (packed or
+ * not packed) etc. An additional WebGL program will be initialized when a debug mode is specified for the first time.
+ * The default program blit remains untouched in order to keep it as minimal as possible.
  */
 export class BlitPass extends Initializable {
 
@@ -54,6 +58,26 @@ export class BlitPass extends Initializable {
     protected _ndcTriangleShared = false;
 
     protected _program: Program;
+    protected _debugProgram: Program | undefined = undefined;
+
+    /** @see {@link debug} */
+    protected _debug: BlitPass.Debug = BlitPass.Debug.None;
+
+    /**
+     * Uniform for passing the debug mode to the specialized blit program.
+     */
+    protected _uDebugMode: WebGLUniformLocation | undefined;
+
+    /**
+     * Uniform used to pass near and far data to the specialized blit program for linearization.
+     */
+    protected _uLinearize: WebGLUniformLocation | undefined;
+
+    /**
+     * If provided, depth will be linearized when depth data is blitted.
+     */
+    protected _near: GLfloat = 0.0;
+    protected _far: GLfloat = 0.0;
 
 
     constructor(context: Context) {
@@ -90,14 +114,15 @@ export class BlitPass extends Initializable {
 
     /**
      * Uses indirect blit by drawing a textured, screen-aligned triangle into the given target framebuffer.
+     * @param program - The program the is used for blitting, either the minimal blit or debug blit.
      */
-    private programBlit(): void {
+    private programBlit(program: Program): void {
         assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
         const gl = this._context.gl;
 
         gl.viewport(0, 0, this._target.width, this._target.height);
 
-        this._program.bind();
+        program.bind();
 
         const texture = this._framebuffer.texture(this._readBuffer) as Texture2;
         texture.bind(gl.TEXTURE0);
@@ -114,6 +139,7 @@ export class BlitPass extends Initializable {
         /* Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
     }
+
 
     /**
      * Specializes this pass's initialization. This pass either requires blitFramebuffer support or creates screen-
@@ -167,6 +193,12 @@ export class BlitPass extends Initializable {
             this._ndcTriangle.uninitialize();
         }
         this._program.uninitialize();
+
+        if (this._debugProgram) {
+            this._debugProgram.uninitialize();
+            this._uDebugMode = undefined;
+            this._uLinearize = undefined;
+        }
     }
 
     /**
@@ -179,14 +211,17 @@ export class BlitPass extends Initializable {
         logIf(!this._framebuffer || !this._framebuffer.valid, LogLevel.Warning,
             `valid framebuffer for blitting from expected, given ${this._framebuffer}`);
 
-        const gl = this._context.gl;
+        if (this._debug !== BlitPass.Debug.None) {
+            return this.programBlit(this._debugProgram!);
+        }
 
+        const gl = this._context.gl;
         switch (this._readBuffer) {
             /* falls through */
             case gl.DEPTH_ATTACHMENT:
             case gl.STENCIL_ATTACHMENT:
             case gl.DEPTH_STENCIL_ATTACHMENT:
-                return this.programBlit();
+                return this.programBlit(this._program);
             default:
                 break;
         }
@@ -195,8 +230,9 @@ export class BlitPass extends Initializable {
         if (this._context.supportsBlitFramebuffer) {
             return this.functionBlit();
         }
-        this.programBlit();
+        this.programBlit(this._program);
     }
+
 
     /**
      * Sets the framebuffer that is to be blitted.
@@ -234,6 +270,76 @@ export class BlitPass extends Initializable {
     set target(target: Framebuffer) {
         this.assertInitialized();
         this._target = target;
+    }
+
+    /**
+     * Specify a debug mode for blitting @see {@link Blitpass.Debug}. If the debug mode is set to anything except
+     * `Debug.None` for the first time, a specialized debug program will be created, initialized, and used for blit.
+     */
+    set debug(mode: BlitPass.Debug) {
+        this.assertInitialized();
+        const gl = this._context.gl;
+
+        this._debug = mode;
+        if (this._debug === BlitPass.Debug.None) {
+            return;
+        }
+        if (this._debugProgram !== undefined) {
+            this._debugProgram!.bind();
+            gl.uniform1i(this._uDebugMode, this._debug);
+            return;
+        }
+
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
+        vert.initialize(require('./shaders/ndcvertices.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit_debug.frag (blit)');
+        frag.initialize(require('./shaders/blit_debug.frag'));
+
+        this._debugProgram = new Program(this._context, 'BlitProgramDebug');
+        this._debugProgram.initialize([vert, frag]);
+
+        this._uDebugMode = this._debugProgram.uniform('u_mode');
+        this._uLinearize = this._debugProgram.uniform('u_linearize');
+
+        this._debugProgram.bind();
+        gl.uniform1i(this._debugProgram.uniform('u_texture'), 0);
+        gl.uniform1i(this._uDebugMode, this._debug);
+        gl.uniform2f(this._uLinearize, this._near, this._far);
+    }
+
+    /**
+     * Debug-feature: if linearized is enabled, depth buffer blitting will use this near value for linearization.
+     */
+    set near(near: GLfloat | undefined) {
+        this._near = near ? near : 0.0;
+        if (this._debugProgram) {
+            this._debugProgram.bind();
+            this._context.gl.uniform2f(this._uLinearize, this._near, this._far);
+        }
+    }
+
+    /**
+     * Debug-feature: if linearized is enabled, depth buffer blitting will use this far value for linearization.
+     */
+    set far(far: GLfloat | undefined) {
+        this._far = far ? far : 0.0;
+
+        if (this._debugProgram) {
+            this._debugProgram.bind();
+            this._context.gl.uniform2f(this._uLinearize, this._near, this._far);
+        }
+    }
+
+}
+
+export namespace BlitPass {
+
+    export enum Debug {
+        None,
+        Depth = 1,
+        DepthLinear = 2,
+        DepthPacked = 3,
+        DepthLinearPacked = 4,
     }
 
 }

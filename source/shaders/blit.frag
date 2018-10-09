@@ -1,12 +1,12 @@
 
-precision lowp float;
+precision highp float;
 
 @import ./facade.frag;
 
 
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
-#else 
+#else
     layout(location = 0) out vec4 fragColor;
 #endif
 

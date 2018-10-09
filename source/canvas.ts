@@ -250,6 +250,13 @@ export class Canvas extends Resizable {
     protected onResize(): void {
         this.retrieveSize();
 
+        /* If the canvas does not have a size, block rendering. This can happen if the canvas is, e.g., hidden and
+        DOM layouting leads to width of zero. */
+        if (this._size[0] === 0 || this._size[1] === 0) {
+            log(LogLevel.Warning, `canvas width or height is 0, thus, not visible, resize discarded`);
+            return;
+        }
+
         /**
          * Set canvas rendering size to pixel size of the canvas. This assures a 1 to 1 mapping of native pixels to
          * fragments and thus should prevent upscaling.
@@ -269,6 +276,8 @@ export class Canvas extends Resizable {
 
         if (this._renderer) {
             this._controller.unblock();
+            /* Swapping here fixes flickering while resizing the canvas for safari. */
+            this._renderer.swap();
         }
     }
 
@@ -431,13 +440,13 @@ export class Canvas extends Resizable {
             return;
         }
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
-        logIf(frameScale[0] < 0.0 || frameScale[0] > 1.0, LogLevel.Info,
-            `frame width scale clamped to [0.0,1.0], given ${frameScale[0]}`);
-        logIf(frameScale[1] < 0.0 || frameScale[1] > 1.0, LogLevel.Info,
-            `frame height scale clamped to [0.0,1.0], given ${frameScale[0]}`);
+        logIf(frameScale[0] < 0.0 || frameScale[0] > 2.0, LogLevel.Info,
+            `frame width scale clamped to [0.0,2.0], given ${frameScale[0]}`);
+        logIf(frameScale[1] < 0.0 || frameScale[1] > 2.0, LogLevel.Info,
+            `frame height scale clamped to [0.0,2.0], given ${frameScale[0]}`);
 
         const scale = vec2.create();
-        clamp2(scale, frameScale, [0.0, 0.0], [1.0, 1.0]);
+        clamp2(scale, frameScale, [0.0, 0.0], [2.0, 2.0]);
 
         const size = vec2.create();
         vec2.mul(size, this._size, scale);

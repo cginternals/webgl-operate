@@ -27,7 +27,7 @@
     },
     "files.exclude": {
         "**/.git": true, // this is a default value
-        "**/node_modules": true, // this excludes all folders 
+        "**/node_modules": true, // this excludes all folders
         "node_modules": true
     },
     "cSpell.language": "en",
@@ -37,6 +37,7 @@
         "alphaf",
         "alterables",
         "anisotropic",
+        "arraybuffer",
         "astc",
         "backend",
         "backends",
@@ -70,6 +71,7 @@
         "defaultexts",
         "defaultframebuffer",
         "devtool",
+        "dicom",
         "discretized",
         "drawable",
         "drawable's",
@@ -101,6 +103,7 @@
         "lerp",
         "limberger",
         "linearization",
+        "linearize",
         "linearized",
         "minification",
         "minmax",

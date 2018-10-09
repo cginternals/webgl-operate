@@ -283,7 +283,7 @@ namespace auxiliaries {
      * @param parameter - Name/identifier of the parameter to query for.
      */
     export function GETparameter(parameter: string): string | undefined {
-        const re = new RegExp(`${parameter}=([^&] +)`);
+        const re = new RegExp(`${parameter}=([^&]+)`);
         const match = document.location.search.match(re);
         if (!match) {
             return undefined;

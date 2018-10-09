@@ -1,10 +1,10 @@
 
 import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
-import { GLsizei2 } from './tuples';
+import { GLsizei3 } from './tuples';
 
 import { Bindable } from './bindable';
-import { TexImage2DData } from './gl2facade';
+import { TexImage3DData } from './gl2facade';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
@@ -14,12 +14,12 @@ import { AbstractObject } from './object';
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
  * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
  * ```
- * const texture = new Texture2(context, 'Texture');
- * texture.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
+ * const texture = new Texture3(context, 'Texture');
+ * texture.initialize(1, 1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
  * texture.load('/img/webgl-operate-logo.png', true)
  * ```
  */
-export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
+export class Texture3 extends AbstractObject<WebGLTexture> implements Bindable {
 
     /**
      * Default texture, e.g., used for unbind.
@@ -31,6 +31,10 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
     /** @see {@link height} */
     protected _height: GLsizei = 0;
+
+    /** @see {@link depth} */
+    protected _depth: GLsizei = 0;
+
 
     /** @see {@link internalFormat} */
     protected _internalFormat: GLenum = 0;
@@ -46,14 +50,17 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Create a texture object on the GPU.
      * @param width - Initial width of the texture in px.
      * @param height - Initial height of the texture in px.
+     * @param depth - Initial depth of the texture in px.
      * @param internalFormat - Internal format of the texture object.
      * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
      */
-    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum,
+    protected create(width: GLsizei, height: GLsizei, depth: GLsizei, internalFormat: GLenum,
         format: GLenum, type: GLenum): WebGLTexture | undefined {
+        assert(this._context.supportsTexImage3D, `expected texImage3D to be supported`);
 
-        assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
+        assert(width > 0 && height > 0 && depth > 0,
+            `texture requires valid width, height, and depth of greater than zero`);
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -61,20 +68,22 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
         this._width = width;
         this._height = height;
+        this._depth = depth;
         this._internalFormat = internalFormat;
         this._format = format;
         this._type = type;
 
-        gl.bindTexture(gl.TEXTURE_2D, this._object);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_3D, this._object);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
 
-        gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,
-            this._width, this._height, 0, this._format, this._type);
+        gl2facade.texImage3D(gl.TEXTURE_3D, 0, this._internalFormat,
+            this._width, this._height, this._depth, 0, this._format, this._type);
 
-        gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.TEXTURE_3D, Texture3.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);
 
@@ -98,13 +107,15 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
 
         this._width = 0;
         this._height = 0;
+        this._depth = 0;
     }
 
     protected reallocate(): void {
         const gl = this.context.gl;
         const gl2facade = this._context.gl2facade;
 
-        let bytes: GLsizei = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat);
+        let bytes: GLsizei = this._width * this._height * this._depth
+            * byteSizeOfFormat(this.context, this._internalFormat);
         // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
         if (this._type === gl2facade.HALF_FLOAT && this._internalFormat !== gl.RGBA16F) {
             bytes *= 2;
@@ -123,7 +134,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.TEXTURE_2D, this._object);
+        gl.bindTexture(gl.TEXTURE_3D, this._object);
     }
 
     /**
@@ -135,32 +146,67 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.TEXTURE_2D, Texture2.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.TEXTURE_3D, Texture3.DEFAULT_TEXTURE);
     }
 
     /**
-     * Asynchronous load of an image via URI or data URI.
-     * @param uri - URI linking the image that should be loaded. Data URI is also supported.
+     * Asynchronous load of an image comprising a column of slices via URI or data URI. Please note that due to the lack
+     * of sub-data access on images, the slices are loaded using a auxiliary canvas and context (temporarily). The sub
+     * images (slices) are drawn using the canvas and the image data is then captured.
+     * @todo perhaps also support horizontal slicing.
+     * @param uri - URI linking the image slices that should be loaded. Data URI is also supported.
+     * @param slices - Number of slices (resulting in the 3D texture's depth) vertically aligned within the image.
      * @param crossOrigin - Enable cross origin data loading.
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    load(uri: string, crossOrigin: boolean = false): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const image = new Image();
-            image.onerror = () => reject();
+    load(uri: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
+        assert(false, `not implemented`);
+        return new Promise<void>(() => true);
+        // return new Promise((resolve, reject) => {
+        //     const image = new Image();
+        //     image.onerror = () => reject();
 
-            image.onload = () => {
-                this.resize(image.width, image.height);
-                this.data(image);
-                resolve();
-            };
+        //     image.onload = () => {
+        //         /* Use an auxiliary canvas to extract slices by drawing and extracting each slice. */
+        //         const auxiliaryCanvas: HTMLCanvasElement =
+        //             document.createElementNS('http://www.w3.org/1999/xhtml', 'aux-canvas') as HTMLCanvasElement;
+        //         const auxiliaryContext = auxiliaryCanvas.getContext('2d');
 
-            if (crossOrigin) {
-                image.crossOrigin = 'anonymous';
-            }
-            image.src = uri;
-        });
+        //         assert(auxiliaryContext !== undefined, `expected auxiliary 2D context for temporary slicing`);
+        //         assert(image.height % slices === 0 && image.height / slices >= 1.0,
+        //             `expected height to be a multitude of number of slices`);
+
+        //         const width = image.width;
+        //         const height = Math.floor(image.height / slices);
+        //         const depth = height * slices;
+
+        //         auxiliaryCanvas.width = width;
+        //         auxiliaryCanvas.height = height;
+
+        //         const data = new Uint8Array(width * height * depth);
+        //         const subImageSize = width * height;
+
+        //         for (let slice = 0; slice < slices; ++slice) {
+        //             auxiliaryContext!.drawImage(image, 0, height * slice, width, height, 0, 0, width, height);
+        //             const subImageData = auxiliaryContext!.getImageData(0, 0, width, height).data;
+
+        //             for (let i = 0; i < subImageSize; ++i) {
+        //                 data[subImageSize * slice + i] = subImageData[4 * i];
+        //             }
+        //         }
+
+        //         this.resize(width, height, depth);
+        //         this.data(image);
+
+        //         resolve();
+        //     };
+
+        //     if (crossOrigin) {
+        //         image.crossOrigin = 'anonymous';
+        //     }
+        //     image.src = uri;
+        // });
     }
 
     /**
@@ -170,7 +216,7 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: TexImage2DData, bind: boolean = true, unbind: boolean = true): void {
+    data(data: TexImage3DData, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -178,8 +224,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
             this.bind();
         }
 
-        gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,
-            this._width, this._height, 0, this._format, this._type, data);
+        gl2facade.texImage3D(gl.TEXTURE_3D, 0, this._internalFormat,
+            this._width, this._height, this._depth, 0, this._format, this._type, data);
 
         if (unbind) {
             this.unbind();
@@ -201,8 +247,8 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
         if (bind) {
             this.bind();
         }
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mag);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, min);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, mag);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, min);
         if (unbind) {
             this.unbind();
         }
@@ -212,19 +258,21 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * Sets the texture object's wrapping function for s and t coordinates.
      * @param wrap_s - Value for the TEXTURE_WRAP_S parameter, defaulted to CLAMP_TO_EDGE.
      * @param wrap_t - Value for the TEXTURE_WRAP_T parameter, defaulted to CLAMP_TO_EDGE.
+     * @param wrap_r - Value for the TEXTURE_WRAP_R parameter, defaulted to CLAMP_TO_EDGE.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
     /* tslint:disable-next-line:variable-name */
-    wrap(wrap_s: GLenum, wrap_t: GLenum, bind: boolean = true, unbind: boolean = true): void {
+    wrap(wrap_s: GLenum, wrap_t: GLenum, wrap_r: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
             this.bind();
         }
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap_s);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap_t);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, wrap_s);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, wrap_t);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, wrap_r);
         if (unbind) {
             this.unbind();
         }
@@ -265,16 +313,18 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
      * This should be used to implement efficient resize the texture.
      * @param width - Targeted/new width of the texture in px.
      * @param height - Targeted/new height of the texture in px.
+     * @param depth - Targeted/new depth of the texture in px.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    resize(width: GLsizei, height: GLsizei, bind: boolean = true, unbind: boolean = true): void {
-        if (width === this._width && height === this._height) {
+    resize(width: GLsizei, height: GLsizei, depth: GLsizei, bind: boolean = true, unbind: boolean = true): void {
+        if (width === this._width && height === this._height && depth === this._depth) {
             return;
         }
         this._width = width;
         this._height = height;
+        this._depth = depth;
 
         this.data(undefined, bind, unbind);
     }
@@ -331,13 +381,22 @@ export class Texture2 extends AbstractObject<WebGLTexture> implements Bindable {
     }
 
     /**
-     * Convenience getter for the 2-tuple containing width and height.
+     * The depth of the texture object in px.
+     */
+    get depth(): GLsizei {
+        this.assertInitialized();
+        return this._depth;
+    }
+
+    /**
+     * Convenience getter for the 3-tuple containing width and height.
      * @see {@link width}
      * @see {@link heigth}
+     * @see {@link depth}
      */
-    get size(): GLsizei2 {
+    get size(): GLsizei3 {
         this.assertInitialized();
-        return [this._width, this._height];
+        return [this._width, this._height, this._depth];
     }
 
 }

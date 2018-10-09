@@ -1,8 +1,9 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel, logVerbosity } from './auxiliaries';
 import { clamp } from './gl-matrix-extensions';
+
 
 /**
  * This internal interface is not intended for module export and should not be used as generic rendering/controller
@@ -51,21 +52,25 @@ export interface Controllable {
 export class Controller {
 
     /**
+     * Toggle for debug outputs; if true control flow will be logged.
+     */
+    protected static _debug = false;
+    set debug(value: boolean) {
+        if (value && logVerbosity() < LogLevel.Debug) {
+            logVerbosity(LogLevel.Debug);
+            log(LogLevel.Debug,
+                `changed log verbosity to ${LogLevel.Debug} (debug)`);
+        }
+        Controller._debug = value;
+    }
+
+    /**
      * Number of intermediate frames that are rendered during one browser frame
      */
     protected _batchSize = 1;
     set batch(size: number) {
         log(LogLevel.Warning, `(adaptive) batch multi-frame rendering is experimental for now`);
         this._batchSize = Math.max(1, size);
-    }
-
-
-    /**
-     * Toggle for debug outputs; if true control flow will be logged.
-     */
-    protected _debug = false;
-    set debug(value: boolean) {
-        this._debug = value;
     }
 
 
@@ -89,6 +94,11 @@ export class Controller {
      */
     protected _frameNumber = 0;
     protected _frameNumberSubject = new ReplaySubject<number>(1);
+
+
+    // /** @see {@link multiFrameDelay} */
+    // protected _multiFrameDelay = 0;
+    // protected _delayedRequestTimeout: number | undefined;
 
 
     /**
@@ -171,14 +181,14 @@ export class Controller {
          * actual first frame is triggered.
          */
         if (this._pendingRequest !== 0) {
-            logIf(this._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
+            logIf(Controller._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
             return;
         }
         if (this._pause || !this._controllable) {
-            logIf(this._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
+            logIf(Controller._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
             return;
         }
-        logIf(this._debug, LogLevel.Debug, `c request           | intermediates: #${this._frameNumber}`);
+        logIf(Controller._debug, LogLevel.Debug, `c request           | intermediates: #${this._frameNumber}`);
 
         const dfnum = this._debugFrameNumber;
         const mfnum = this._multiFrameNumber;
@@ -201,9 +211,22 @@ export class Controller {
         }
     }
 
+
+    // protected requestDelayed(type?: Controller.RequestType): void {
+    //     if (this._multiFrameDelay === 0 || this._frameNumber !== 1) {
+    //         return this.request(type);
+    //     }
+
+    //     if (this._delayedRequestTimeout !== undefined) {
+    //         clearTimeout(this._delayedRequestTimeout);
+    //     }
+    //     this._delayedRequestTimeout = window.setTimeout(() => this.request(type), this._multiFrameDelay);
+    // }
+
+
     protected reset(): boolean {
         const block = this._block || (this._frameNumber === 0 && this._pendingRequest);
-        logIf(this._debug, LogLevel.Debug, `c update  ${block ? '(blocked) ' : '          '}| ` +
+        logIf(Controller._debug, LogLevel.Debug, `c update  ${block ? '(blocked) ' : '          '}| ` +
             `pending: '${this._pendingRequest}', intermediates: #${this._frameNumber}`);
 
         if (block) {
@@ -219,10 +242,10 @@ export class Controller {
      */
     protected cancel(): void {
         if (this._pendingRequest === 0) {
-            logIf(this._debug, LogLevel.Debug, `c cancel  (ignored) |`);
+            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
             return;
         }
-        logIf(this._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
+        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
 
         window.cancelAnimationFrame(this._pendingRequest);
         this._pendingRequest = 0;
@@ -252,7 +275,7 @@ export class Controller {
     }
 
     protected invokeUpdate(force: boolean = false): void {
-        logIf(this._debug, LogLevel.Debug, `c invoke update     | ` +
+        logIf(Controller._debug, LogLevel.Debug, `c invoke update     | ` +
             `pending: '${this._pendingRequest}', mfnum: ${this._multiFrameNumber}`);
 
         this.unblock();
@@ -267,10 +290,10 @@ export class Controller {
     }
 
     /**
-     * Actual invocation of the controllable's prepare method
+     * Actual invocation of the controllable's prepare method.
      */
     protected invokePrepare(): void {
-        logIf(this._debug, LogLevel.Debug, `c invoke prepare    |`);
+        logIf(Controller._debug, LogLevel.Debug, `c invoke prepare    |`);
 
         this._frameNumber = 0;
 
@@ -300,7 +323,7 @@ export class Controller {
      */
     protected invokeFrame(): void {
         assert(!this._pause, `frames should not be invoked when paused`);
-        logIf(this._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._pendingRequest}'`);
+        logIf(Controller._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._pendingRequest}'`);
 
         const dfnum = this._debugFrameNumber;
         const mfnum = this._multiFrameNumber;
@@ -326,11 +349,11 @@ export class Controller {
         }
 
         for (; this._frameNumber < batchEnd; ++this._frameNumber) {
-            logIf(this._debug, LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
+            logIf(Controller._debug, LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
             (this._controllable as Controllable).frame(this._frameNumber);
             ++this._intermediateFrameCount;
         }
-        logIf(this._debug, LogLevel.Debug, `c -> swap           |`);
+        logIf(Controller._debug, LogLevel.Debug, `c -> swap           |`);
 
         (this._controllable as Controllable).swap();
         this._multiTime[1] = performance.now();
@@ -378,7 +401,7 @@ export class Controller {
      */
     pause(): void {
         const ignore = this._pause;
-        logIf(this._debug, LogLevel.Debug, `c pause   ${ignore ? '(ignored)' : ''}`);
+        logIf(Controller._debug, LogLevel.Debug, `c pause   ${ignore ? '(ignored)' : ''}`);
 
         if (this._pause) {
             return;
@@ -394,7 +417,7 @@ export class Controller {
      */
     unpause(): void {
         const ignore = !this._pause;
-        logIf(this._debug, LogLevel.Debug, `c unpause ${ignore ? '(ignored)' : ''}`);
+        logIf(Controller._debug, LogLevel.Debug, `c unpause ${ignore ? '(ignored)' : ''}`);
 
         if (ignore) {
             return;
@@ -436,7 +459,7 @@ export class Controller {
      * triggering to multiple intermediate updates. The block updates mode can be exited using `unblock`.
      */
     block(): void {
-        logIf(this._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
+        logIf(Controller._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
 
         if (this._block) {
             return;
@@ -448,7 +471,7 @@ export class Controller {
      * Unblock updates. If there was at least one blocked update request, an immediate update is invoked.
      */
     unblock(): void {
-        logIf(this._debug, LogLevel.Debug, `c unblock ${!this._block ? '(ignored) ' : '          '}` +
+        logIf(Controller._debug, LogLevel.Debug, `c unblock ${!this._block ? '(ignored) ' : '          '}` +
             `| blocked: #${this._blockedUpdates}`);
 
         if (!this._block) {
@@ -587,6 +610,29 @@ export class Controller {
     get debugFrameNumber$(): Observable<number> {
         return this._debugFrameNumberSubject.asObservable();
     }
+
+
+    // /**
+    //  * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
+    //  * after an update.
+    //  * @param multiFrameDelay - A multi-frame delay in milliseconds.
+    //  */
+
+    // set multiFrameDelay(multiFrameDelay: number) {
+    //     const value: number = Math.max(0, multiFrameDelay);
+    //     if (value === this._multiFrameDelay) {
+    //         return;
+    //     }
+    //     this._multiFrameDelay = value;
+    // }
+
+    // /**
+    //  * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
+    //  * @returns - The current multi-frame delay in milliseconds.
+    //  */
+    // get multiFrameDelay(): number {
+    //     return this._multiFrameDelay;
+    // }
 
 
     /**

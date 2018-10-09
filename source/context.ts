@@ -274,7 +274,7 @@ export class Context {
      * @param extension - Extension identifier to query support for.
      * @returns - True if the extension is supported, false otherwise.
      */
-    protected supports(extension: string): boolean {
+    supports(extension: string): boolean {
         if (this._mask && this._mask.extensionsConceal.indexOf(extension) > -1) {
             return false;
         }
@@ -805,6 +805,14 @@ export class Context {
     get supportsReadBuffer(): boolean {
         return this._context.readBuffer !== undefined;
     }
+
+    /**
+     * True if WebGL2 texImage3D draft is supported, false otherwise. This is experimental technology.
+     */
+    get supportsTexImage3D(): boolean {
+        return this._context.texImage3D !== undefined;
+    }
+
 
     // PARAMETER QUERIES
 

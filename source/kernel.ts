@@ -41,7 +41,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
 
     constructor(components: 1 | 2 | 3 | 4, width: GLsizei, height: GLsizei = 1, depth: GLsizei = 1) {
         this._components = components;
-        this._width = Math.max(1, width);
+        this._width = isNaN(width) ? 1 : Math.max(1, width);
         this._height = Math.max(1, height);
         this._depth = Math.max(1, depth);
 
@@ -184,6 +184,54 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
 
 
     /**
+     * Sorts all samples based on the given sorting approach, e.g., by length of a sample. In order to sort an array
+     * of samples comprising a number of components an sort-auxiliary array is created, sorted, and, finally, mapped to
+     * the sample array.
+     * @param approach - Sorting approach that is to be used.
+     */
+    sort(approach: AbstractKernel.SortApproach): void {
+        if (this.elements < 2) {
+            return;
+        }
+
+        /* Create index structure for sorting (handling the stride). */
+        const tuples = Array<[GLsizei, number]>(this.elements);
+        for (let i = 0; i < this.elements; ++i) {
+            let value = 0.0;
+            switch (approach) {
+                default:
+                case AbstractKernel.SortApproach.BySquaredLength:
+                    for (let c = 0; c < this._components; ++c) {
+                        const v = this._samples[i * this._components + c];
+                        value += v * v;
+                    }
+                    break;
+            }
+            tuples[i] = [i, value];
+        }
+
+        /* Invoke the actual sorting approaches. Since the samples are always dense, the index structure can later be
+        used directly for restructuring/applying the new order to the samples. */
+        switch (approach) {
+            default:
+            case AbstractKernel.SortApproach.BySquaredLength:
+                tuples.sort((a: [number, number], b: [number, number]) => a[1] - b[1]);
+                break;
+        }
+
+        /* Apply the new, sorted order/sequences to the samples array. */
+        const source = this._samples.slice();
+        for (let i = 0; i < tuples.length; ++i) {
+            for (let c = 0; c < this._components; ++c) {
+                const iSource = tuples[i][0] * this._components + c;
+                const iTarget = i * this._components + c;
+                this._samples[iTarget] = source[iSource];
+            }
+        }
+    }
+
+
+    /**
      * All elements/samples of the kernel as array buffer.
      */
     get samples(): T {
@@ -201,7 +249,8 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
      * Returns the number of samples.
      */
     get elements(): GLsizei {
-        return this._width * this._height * this._depth;
+        const elementCount = this._width * this._height * this._depth;
+        return isNaN(elementCount) ? 0 : elementCount;
     }
 
     /**
@@ -264,6 +313,14 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
      * Size of a sample's component in bytes.
      */
     abstract get bytesPerComponent(): GLsizei;
+
+}
+
+export namespace AbstractKernel {
+
+    export enum SortApproach {
+        BySquaredLength,
+    }
 
 }
 

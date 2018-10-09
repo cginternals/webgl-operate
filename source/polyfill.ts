@@ -75,7 +75,7 @@ if (Math.log10 === undefined) {
 }
 
 /**
- * IE polyfill for Number.EPSILON.
+ * IE11 polyfill for Number.EPSILON.
  */
 interface NumberPolyfill {
     EPSILON: number;
@@ -83,3 +83,13 @@ interface NumberPolyfill {
 if (Number.EPSILON === undefined) {
     (Number as NumberPolyfill).EPSILON = Math.pow(2, -52);
 }
+
+/**
+ * IE11 polyfill for Array.prototype.slice
+ */
+[Float32Array, Float64Array, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array]
+    .forEach((type) => {
+        if (type.prototype.slice === undefined) {
+            (type.prototype.slice as any) = Array.prototype.slice;
+        }
+    });

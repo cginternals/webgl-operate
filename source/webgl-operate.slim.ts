@@ -25,6 +25,7 @@ export { Renderbuffer } from './renderbuffer';
 export { Renderer, Invalidate } from './renderer';
 export { Shader } from './shader';
 export { Texture2 } from './texture2';
+export { Texture3 } from './texture3';
 export { TextureCube } from './texturecube';
 export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
@@ -42,6 +43,7 @@ export { ZoomModifier } from './zoommodifier';
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';
 
+export { AbstractKernel } from './kernel';
 export { AntiAliasingKernel } from './antialiasingkernel';
 export { RandomSquareKernel } from './randomsquarekernel';
 export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel';
