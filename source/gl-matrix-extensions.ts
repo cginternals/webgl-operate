@@ -217,7 +217,8 @@ namespace gl_matrix_extensions {
     }
 
     /**
-     * Constructs a vec3 from a vec4 with division by the w component applied.
+     * Constructs a vec3 from a vec4 with division by the w component applied. If the w component is zero, division
+     * skipped.
      * ```
      * const v4: vec4 = vec4.fromValues(2, 4, 6, 2);
      * const v3: vec3 = fromVec4(v4); // v3 is [1, 2, 3]
@@ -227,10 +228,8 @@ namespace gl_matrix_extensions {
      */
     export function fromVec4(x: vec4): vec3 {
         if (x[3] === 0) {
-            // avoid division by 0
             return vec3.fromValues(x[0], x[1], x[2]);
         }
-
         return vec3.fromValues(x[0] / x[3], x[1] / x[3], x[2] / x[3]);
     }
 
