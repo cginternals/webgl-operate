@@ -33,6 +33,7 @@ import { TestNavigation } from './debug/testnavigation';
  * Later, we want to have a labelrenderpass and a labelpositionpass.
  * The first one bakes the geometry, the second one adapts the placement regarding dynamic placement algorithms.
  * For now, we will have both as a labelrenderer, and split it up later.
+ * @todo implement label render pass
  */
 export class LabelRenderer extends Renderer {
 
