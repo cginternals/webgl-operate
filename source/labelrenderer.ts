@@ -292,12 +292,11 @@ export class LabelRenderer extends Renderer {
     }
 
     protected loadFont(context: Context): void {
-        const loader = new FontLoader();
 
         // This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader
         const fontFace: FontFace = new FontFace(context);
 
-        loader.load(context, './data/opensansr144/opensansr144.fnt', false).then(
+        FontLoader.load(context, './data/opensansr144/opensansr144.fnt', false).then(
             (fontFace) => {
                 this._fontFace = fontFace;
                 this.setupScene();
