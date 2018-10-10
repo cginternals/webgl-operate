@@ -95,12 +95,17 @@ export class Position2DLabel extends Label {
     set position(xy: vec2) {
         this._position = vec2.clone(xy);
     }
-
     get position(): vec2 {
         return this._position;
     }
 
-    /** position parameters as specified in OpenLL */
+    /**
+     * Sets 2D position parameters as specified in OpenLL.
+     * Position is the label's reference point (i.e. lower left corner for horizontal alignment).
+     * @param x x coordinate of the 2D position
+     * @param y y coordinate of the 2D position
+     * @param unit the unit to interpret the coordinates
+     */
     setPosition(x: number, y: number, unit?: Label.SpaceUnit): void {
         /** @todo assert that SpaceUnit is px or pt; transform to NDC? */
         this._position = vec2.fromValues(x, y);
@@ -112,11 +117,16 @@ export class Position2DLabel extends Label {
     set direction(xy: vec2) {
         this._direction = vec2.normalize(this._direction, xy);
     }
-
     get direction(): vec2 {
         return this._direction;
     }
 
+    /**
+     * Sets the 2D direction parameters as specified in OpenLL.
+     * The labels's direction is the direction of its baseline.
+     * @param x x coordinate of the 2D direction vector.
+     * @param y y coordinate of the 2D direction vector.
+     */
     setDirection(x: number, y: number): void {
         this.direction = vec2.fromValues(x, y);
     }
@@ -125,6 +135,7 @@ export class Position2DLabel extends Label {
      * This unit is used for the font size.
      * This method overrides the super.fontSizeUnit, since a position2dlabel only allows px, not World.
      * (@see {@link fontSize})
+     * @param newUnit unused, since there is only one allowed unit (Px) for this kind of label
      */
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         console.warn('New SpaceUnit not set; only allowed SpaceUnit is Px for this label.');

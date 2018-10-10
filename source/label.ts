@@ -335,7 +335,6 @@ export class Label {
         this._altered.alter('userTransform');
         this._userTransform = t;
     }
-
     get userTransform(): mat4 {
         return this._userTransform;
     }
