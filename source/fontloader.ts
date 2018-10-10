@@ -1,5 +1,5 @@
 
-import { logIf, LogLevel } from './auxiliaries';
+import { log, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { fetchAsync } from './fetch';
@@ -213,7 +213,7 @@ export class FontLoader {
         }
 
         if (!valid) {
-            console.warn('Not all required keys are provided! Mandatory keys: ' + mandatoryKeys);
+            log(LogLevel.Warning, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
             /* typescript does not allow writing `new StringPairs()` */
             return new Map<string, string>();
         } else {
@@ -275,7 +275,7 @@ export class FontLoader {
 
         } catch (e) {
             /* promise rejected */
-            console.error('ERROR: Could not load font file. filename is: ' + filename);
+            log(LogLevel.Error, `Could not load font file. filename is: ${filename}`);
         }
 
         // TODO: assert? throw exception?
