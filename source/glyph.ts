@@ -134,7 +134,7 @@ export class Glyph {
      * @param yOffset - The glyphs vertical offset w.r.t. the font's topmost ascenders, without the font's top
      * padding in pt.
      */
-    setBearing(fontBase: GLfloat, xOffset: GLfloat, yOffset: GLfloat): void {
+    bearingFromFontBaseAndOffset(fontBase: GLfloat, xOffset: GLfloat, yOffset: GLfloat): void {
         this._bearing[0] = xOffset;
         this._bearing[1] = fontBase - yOffset;
     }

@@ -155,7 +155,7 @@ export class FontLoader {
         glyph.subTextureExtent[0] = extent[0] * extentScale[0];
         glyph.subTextureExtent[1] = extent[1] * extentScale[1];
 
-        glyph.setBearing(fontFace.base,
+        glyph.bearingFromFontBaseAndOffset(fontFace.base,
             parseFloat(pairs.get('xoffset')!),
             parseFloat(pairs.get('yoffset')!),
         );
