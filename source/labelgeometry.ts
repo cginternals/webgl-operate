@@ -6,6 +6,7 @@ import { Context } from './context';
 import { Geometry } from './geometry';
 import { Initializable } from './initializable';
 
+
 /**
  * Gathers vertices and other data needed for drawing all labels.
  */
@@ -28,15 +29,15 @@ export class LabelGeometry extends Geometry {
         /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
-        const vertexVBO = new Buffer(context, identifier + 'VBO');
+        const vertexVBO = new Buffer(context, `${identifier}VBO`);
         this._buffers.push(vertexVBO);
-        const texCoordBuffer = new Buffer(context, identifier + 'TexCoordBuffer');
+        const texCoordBuffer = new Buffer(context, `${identifier}TexCoordBuffer`);
         this._buffers.push(texCoordBuffer);
-        const originBuffer = new Buffer(context, identifier + 'OriginBuffer');
+        const originBuffer = new Buffer(context, `${identifier}OriginBuffer`);
         this._buffers.push(originBuffer);
-        const tanBuffer = new Buffer(context, identifier + 'TanBuffer');
+        const tanBuffer = new Buffer(context, `${identifier}TangentBuffer`);
         this._buffers.push(tanBuffer);
-        const upBuffer = new Buffer(context, identifier + 'UpBuffer');
+        const upBuffer = new Buffer(context, `${identifier}UpBuffer`);
         this._buffers.push(upBuffer);
     }
 

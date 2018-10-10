@@ -27,6 +27,7 @@ import { Text } from './text';
 
 import { TestNavigation } from './debug/testnavigation';
 
+
 /**
  * This is ugly, but it should do the trick for now:
  * Later, we want to have a labelrenderpass and a labelpositionpass.

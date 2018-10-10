@@ -48,7 +48,7 @@ export class NdcFillingRectangle extends Geometry {
         /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
-        const vertexVBO = new Buffer(context, identifier + 'VBO');
+        const vertexVBO = new Buffer(context, `${identifier}VBO`);
 
         this._buffers.push(vertexVBO);
     }
