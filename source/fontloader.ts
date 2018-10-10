@@ -86,7 +86,7 @@ export class FontLoader {
         fontFace.ascent = parseFloat(pairs.get('ascent')!);
         fontFace.descent = parseFloat(pairs.get('descent')!);
 
-        logIf(fontFace.size > 0.0, LogLevel.Error,
+        logIf(fontFace.size <= 0.0, LogLevel.Error,
             `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
 
         fontFace.lineHeight = parseFloat(pairs.get('lineHeight')!);
@@ -129,7 +129,7 @@ export class FontLoader {
             ['id', 'x', 'y', 'width', 'height', 'xoffset', 'yoffset', 'xadvance']);
 
         const index: number = parseInt(pairs.get('id')!, 10);
-        logIf(index > 0.0, LogLevel.Error,
+        logIf(index <= 0.0, LogLevel.Error,
             `expected glyph index to be greater than 0, given ${index}`);
 
         const glyph = new Glyph();
@@ -174,11 +174,11 @@ export class FontLoader {
         const pairs = this.readKeyValuePairs(stream, ['first', 'second', 'amount']);
 
         const first: number = parseInt(pairs.get('first')!, 10);
-        logIf(first > 0.0, LogLevel.Error,
+        logIf(first < 0.0, LogLevel.Error,
             `expected kerning's first to be greater than 0, given ${first}`);
 
         const second: number = parseInt(pairs.get('second')!, 10);
-        logIf(second > 0.0, LogLevel.Error,
+        logIf(second < 0.0, LogLevel.Error,
             `expected kerning's first to be greater than 0, given ${second}`);
 
         const kerning: number = parseFloat(pairs.get('amount')!);
