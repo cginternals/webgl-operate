@@ -112,6 +112,11 @@ export class FontLoader {
         const path = directoryPath(filename);
         const file = stripped(pairs.get('file')!, ['"', '\r']);
 
+        /** For multiple pages, the filename should be different.
+         * Idea: Provide a name for the font file, and a template for the page file name
+         * where the page number is replaced, e.g.:
+         * `foo/bar/<fontname>-<page-number>.png`
+         */
         const pngPath: string = path + file.split('.')[0] + '.png';
 
         return fontFace.glyphTexture.load(pngPath);
