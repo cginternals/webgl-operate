@@ -144,14 +144,14 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Use this method to set (or update) the texture coordinates for every glyph, e.g. after typesetting.
-     * @param data The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y
+     * @param texCoords The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y
      */
-    setTexCoords(data: Float32Array): void {
+    setTexCoords(texCoords: Float32Array): void {
 
         assert(this._buffers[1] !== undefined && this._buffers[1].object instanceof WebGLBuffer,
             `expected valid WebGLBuffer`);
 
-        this._texCoords = data;
+        this._texCoords = texCoords;
 
         const gl = this.context.gl;
         /** @todo is DYNAMIC_DRAW more appropriate? */
