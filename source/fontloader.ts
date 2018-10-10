@@ -206,13 +206,9 @@ export class FontLoader {
         let valid = true;
         mandatoryKeys.forEach((key) => valid = valid && pairs.has(key));
 
-        if (!valid) {
-            log(LogLevel.Warning, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
-            /* typescript does not allow writing `new StringPairs()` */
-            return new Map<string, string>();
-        } else {
-            return pairs;
-        }
+        logIf(!valid, LogLevel.Error, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
+
+        return pairs;
     }
 
     /**
