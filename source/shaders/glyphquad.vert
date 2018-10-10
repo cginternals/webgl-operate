@@ -9,14 +9,14 @@ attribute vec2 a_quadVertex;
 /* [ texture ll: vec2, ur: vec2 ] */
 attribute vec4 a_texCoord;
 attribute vec3 a_origin;
-attribute vec3 a_tan;
+attribute vec3 a_tangent;
 attribute vec3 a_up;
 #else
 layout(location = 0) in vec2 a_quadVertex;
 /* [ texture ll: vec2, ur: vec2 ]*/
 layout(location = 1) in vec4 a_texCoord;
 layout(location = 2) in vec3 a_origin;
-layout(location = 3) in vec3 a_tan;
+layout(location = 3) in vec3 a_tangent;
 layout(location = 4) in vec3 a_up;
 #endif
 
@@ -45,7 +45,7 @@ void main(void)
     /* POSITIONING*/
     /* quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex) */
 
-    vec4 vertex = vec4(a_origin + a_quadVertex.x*a_tan + a_quadVertex.y*a_up, 1.0);
+    vec4 vertex = vec4(a_origin + a_quadVertex.x*a_tangent + a_quadVertex.y*a_up, 1.0);
 
     vertex = u_viewProjection * vertex;
 

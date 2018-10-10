@@ -15,7 +15,7 @@ export class LabelGeometry extends Geometry {
     protected _vertices: Float32Array = new Float32Array(0);
     protected _texCoords: Float32Array = new Float32Array(0);
     protected _origins: Float32Array = new Float32Array(0);
-    protected _tans: Float32Array = new Float32Array(0);
+    protected _tangents: Float32Array = new Float32Array(0);
     protected _ups: Float32Array = new Float32Array(0);
 
     /**
@@ -35,8 +35,8 @@ export class LabelGeometry extends Geometry {
         this._buffers.push(texCoordBuffer);
         const originBuffer = new Buffer(context, `${identifier}OriginBuffer`);
         this._buffers.push(originBuffer);
-        const tanBuffer = new Buffer(context, `${identifier}TangentBuffer`);
-        this._buffers.push(tanBuffer);
+        const tangentBuffer = new Buffer(context, `${identifier}TangentBuffer`);
+        this._buffers.push(tangentBuffer);
         const upBuffer = new Buffer(context, `${identifier}UpBuffer`);
         this._buffers.push(upBuffer);
     }
@@ -59,7 +59,7 @@ export class LabelGeometry extends Geometry {
         /* origin */
         this._buffers[2].attribEnable(indices[2], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[2], 1);
-        /* tan */
+        /* tangent */
         this._buffers[3].attribEnable(indices[3], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[3], 1);
         /* up */
@@ -94,20 +94,20 @@ export class LabelGeometry extends Geometry {
      * @param aQuadVertex - Attribute binding point for vertices.
      * @param aTexCoord - Attribute binding point for texture coordinates.
      * @param aOrigin - Attribute binding point for glyph origin coordinates
-     * @param aTan - Attribute binding point for glyph tangent coordinates.
+     * @param aTangent - Attribute binding point for glyph tangent coordinates.
      * @param aUp - Attribute binding point for glyph up-vector coordinates.
      */
-    initialize(aQuadVertex: GLuint, aTexCoord: GLuint, aOrigin: GLuint, aTan: GLuint, aUp: GLuint): boolean {
+    initialize(aQuadVertex: GLuint, aTexCoord: GLuint, aOrigin: GLuint, aTangent: GLuint, aUp: GLuint): boolean {
 
         const gl = this.context.gl;
 
         const valid = super.initialize(
             [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER]
-            , [aQuadVertex, aTexCoord, aOrigin, aTan, aUp]);
+            , [aQuadVertex, aTexCoord, aOrigin, aTangent, aUp]);
 
         /**
          * These vertices are equal for all quads. There actual position will be changed using
-         * origin, tan(gent) and up(-vector).
+         * origin, tangent and up(-vector).
          */
         this._vertices = Float32Array.from([0, 0, 0, 1, 1, 0, 1, 1]);
         this._buffers[0].data(this._vertices, gl.STATIC_DRAW);
@@ -118,11 +118,11 @@ export class LabelGeometry extends Geometry {
     /**
      * Use this method to set (or update) the glyph coordinates, e.g. after typesetting or after the calculations
      * of a placement algorithm.
-     * @param dataOrigin xyz-coordinates of the lower left corner of every glyph
-     * @param dataTan tangent vector for every glyph (direction along base line)
-     * @param dataUp up vector for every glyph (orthogonal to its tangent vector)
+     * @param origins xyz-coordinates of the lower left corner of every glyph
+     * @param tangents tangent vector for every glyph (direction along base line)
+     * @param ups up vector for every glyph (orthogonal to its tangent vector)
      */
-    setGlyphCoords(dataOrigin: Float32Array, dataTan: Float32Array, dataUp: Float32Array): void {
+    setGlyphCoords(origins: Float32Array, tangents: Float32Array, ups: Float32Array): void {
 
         assert(this._buffers[2] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
             `expected valid WebGLBuffer`);
@@ -131,15 +131,14 @@ export class LabelGeometry extends Geometry {
         assert(this._buffers[4] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
             `expected valid WebGLBuffer`);
 
-
-        this._origins = dataOrigin;
-        this._tans = dataTan;
-        this._ups = dataUp;
+        this._origins = origins;
+        this._tangents = tangents;
+        this._ups = ups;
 
         const gl = this.context.gl;
         /** @todo is DYNAMIC_DRAW more appropriate? */
         this._buffers[2].data(this._origins, gl.STATIC_DRAW);
-        this._buffers[3].data(this._tans, gl.STATIC_DRAW);
+        this._buffers[3].data(this._tangents, gl.STATIC_DRAW);
         this._buffers[4].data(this._ups, gl.STATIC_DRAW);
     }
 

@@ -103,11 +103,11 @@ export class LabelRenderer extends Renderer {
         const aVertex = this._program.attribute('a_quadVertex', 0);
         const aTexCoord = this._program.attribute('a_texCoord', 1);
         const aOrigin = this._program.attribute('a_origin', 2);
-        const aTan = this._program.attribute('a_tan', 3);
+        const aTangent = this._program.attribute('a_tangent', 3);
         const aUp = this._program.attribute('a_up', 4);
 
-        this._2DLabelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
-        this._3DLabelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
+        this._2DLabelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+        this._3DLabelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
 
         this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
@@ -322,7 +322,7 @@ export class LabelRenderer extends Renderer {
 
         /* fill buffers */
         let origins: Array<number> = [];
-        let tans: Array<number> = [];
+        let tangents: Array<number> = [];
         let ups: Array<number> = [];
         let texCoords: Array<number> = [];
 
@@ -332,14 +332,14 @@ export class LabelRenderer extends Renderer {
             const v = glyphVertices[i];
 
             origins.push.apply(origins, v.origin);
-            tans.push.apply(tans, v.tangent);
+            tangents.push.apply(tangents, v.tangent);
             ups.push.apply(ups, v.up);
             texCoords.push.apply(texCoords, v.uvRect);
         }
 
         this._2DLabelGeometry.setTexCoords(Float32Array.from(texCoords));
         this._2DLabelGeometry.setGlyphCoords(
-            Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
+            Float32Array.from(origins), Float32Array.from(tangents), Float32Array.from(ups));
 
         /** OpenLL 3D Labels */
         const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'), this._fontFace);
@@ -368,7 +368,7 @@ export class LabelRenderer extends Renderer {
 
         /* fill buffers */
         origins = [];
-        tans = [];
+        tangents = [];
         ups = [];
         texCoords = [];
 
@@ -378,13 +378,13 @@ export class LabelRenderer extends Renderer {
             const v = glyphVertices[i];
 
             origins.push.apply(origins, v.origin);
-            tans.push.apply(tans, v.tangent);
+            tangents.push.apply(tangents, v.tangent);
             ups.push.apply(ups, v.up);
             texCoords.push.apply(texCoords, v.uvRect);
         }
 
         this._3DLabelGeometry.setTexCoords(Float32Array.from(texCoords));
         this._3DLabelGeometry.setGlyphCoords(
-            Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
+            Float32Array.from(origins), Float32Array.from(tangents), Float32Array.from(ups));
     }
 }
