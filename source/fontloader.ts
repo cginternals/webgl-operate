@@ -7,19 +7,10 @@ import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GLfloat2, GLfloat4 } from './tuples';
 
+import Path = require('path');
+
 
 type StringPairs = Map<string, string>;
-
-function directoryPath(path: string): string {
-    const pos = path.lastIndexOf('/');
-
-    if (pos < 0) {
-        return '';
-    }
-
-    /* Add trailing slash */
-    return path.substr(0, pos + 1);
-}
 
 function stripped(input: string, blacklist: Array<string>): string {
     let result: string = input;
@@ -108,9 +99,9 @@ export class FontLoader {
         stream: Array<string>, fontFace: FontFace, filename: string): Promise<void> {
 
         const pairs = this.readKeyValuePairs(stream, ['file']);
-
-        const path = directoryPath(filename);
         const file = stripped(pairs.get('file')!, ['"', '\r']);
+
+        const path = Path.dirname(filename) + `/`;
 
         /** For multiple pages, the filename should be different.
          * Idea: Provide a name for the font file, and a template for the page file name
