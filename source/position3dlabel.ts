@@ -32,13 +32,18 @@ export class Position3DLabel extends Label {
         this._fontSizeUnit = Label.SpaceUnit.World;
     }
 
+    /**
+     * Applies its position, direction and up-vector, then prepares the vertex storage so that
+     * the Typesetter can typeset this label.
+     * @returns The transformed glyph vertices.
+     */
     typeset(): GlyphVertices {
-        // TODO assert: this.fontSizeUnit === Label.SpaceUnit.World
+        /** @todo assert: this.fontSizeUnit === Label.SpaceUnit.World */
 
         const transform = mat4.create();
         const normal = vec3.create();
 
-        // apply user tranformations (position, direction)
+        /* apply user tranformations (position, direction) */
 
         mat4.translate(transform, mat4.create(),
             vec3.fromValues(this._position[0], this._position[1], this._position[2]));

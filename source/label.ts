@@ -82,7 +82,7 @@ export class Label {
                 origin: vec3.create(),
                 tangent: vec3.create(),
                 up: vec3.create(),
-                // vec2 lowerLeft and vec2 upperRight in glyph texture (uv)
+                /* vec2 lowerLeft and vec2 upperRight in glyph texture (uv) */
                 uvRect: vec4.create(),
             };
             vertices.push(vertex);
@@ -398,8 +398,11 @@ export namespace Label {
      * This unit is used for the font size.
      */
     export enum SpaceUnit {
-        World = 'world', // abstract world unit
-        Px = 'px', // screen pixel
+        /* abstract world unit */
+        World = 'world',
+        /* screen pixel */
+        Px = 'px',
+        /** @todo Pt for point unit */
     }
 
 }

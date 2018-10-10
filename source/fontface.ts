@@ -76,7 +76,7 @@ export class FontFace {
      * @return - The font size in pt (ascent + descent).
      */
     get size(): number {
-        // Note: this._descent is usually negative.
+        /* Note: this._descent is usually negative. */
         return this._ascent - this._descent;
     }
 

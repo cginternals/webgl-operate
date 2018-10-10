@@ -145,7 +145,7 @@ export class LabelRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 8.0;
 
-        // Initialize navigation
+        /* Initialize navigation */
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
 
@@ -199,7 +199,7 @@ export class LabelRenderer extends Renderer {
             this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
             this._camera.aspect = this._frameSize[0] / this._frameSize[1];
-            /* TODO
+            /** @todo
              * update the geometry of the labels that use pt sizes (e.g. labels in screen space)
              * and/or update: labels that get too small (to be readable) should not be rendered anymore
              * (a.k.a. threshold for readability)
@@ -293,7 +293,7 @@ export class LabelRenderer extends Renderer {
 
     protected loadFont(context: Context): void {
 
-        // This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader
+        /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
         const fontFace: FontFace = new FontFace(context);
 
         FontLoader.load(context, './data/opensansr144/opensansr144.fnt', false).then(
@@ -313,12 +313,13 @@ export class LabelRenderer extends Renderer {
         const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), this._fontFace);
         pos2Dlabel.fontSize = 40;
 
-        pos2Dlabel.setPosition(-100, 0); // position values in px, since fontSizeUnit is set to SpaceUnit.Px
+        /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */
+        pos2Dlabel.setPosition(-100, 0);
         pos2Dlabel.setDirection(0.5, -0.5);
 
         let glyphVertices = pos2Dlabel.typeset(this._frameSize);
 
-        // fill buffers
+        /* fill buffers */
         let origins: Array<number> = [];
         let tans: Array<number> = [];
         let ups: Array<number> = [];
@@ -343,7 +344,7 @@ export class LabelRenderer extends Renderer {
         const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'), this._fontFace);
         pos3Dlabel.fontSize = 0.1;
 
-        // position values in world, since fontSizeUnit is set to SpaceUnit.World
+        /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
         pos3Dlabel.setPosition(0, 0.1, -0.5);
         pos3Dlabel.setDirection(0, 1, 0);
         pos3Dlabel.setUp(-1, 0, 0);
@@ -364,8 +365,7 @@ export class LabelRenderer extends Renderer {
         anotherPos3Dlabel.setUp(0, -1, 0);
         glyphVertices = glyphVertices.concat(anotherPos3Dlabel.typeset());
 
-
-        // fill buffers
+        /* fill buffers */
         origins = [];
         tans = [];
         ups = [];

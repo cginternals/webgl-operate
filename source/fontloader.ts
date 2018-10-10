@@ -246,6 +246,7 @@ export class FontLoader {
                 const identifier = line[0];
                 line = line.slice(1);
 
+                /* tslint:disable-next-line:switch-default */
                 switch (identifier) {
                     case 'info': {
                         this.processInfo(line, fontFace);
@@ -267,9 +268,6 @@ export class FontLoader {
                     }
                     case 'kerning': {
                         this.processKerning(line, fontFace);
-                        break;
-                    }
-                    default: {
                         break;
                     }
                 }

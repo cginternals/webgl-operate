@@ -30,29 +30,34 @@ export class Position2DLabel extends Label {
         this._fontSizeUnit = Label.SpaceUnit.Px;
     }
 
+    /**
+     * Applies its position and direction, then prepares the vertex storage so that
+     * the Typesetter can typeset this label.
+     * @param frameSize The width and height of the frame, so that sizes can be calculated to use pixel units.
+     * @returns The transformed glyph vertices.
+     */
     typeset(frameSize: [number, number]): GlyphVertices {
-        // TODO assert: this.fontSizeUnit === Label.SpaceUnit.Px or, later, === Label.SpaceUnit.Pt
+        /** @todo assert: this.fontSizeUnit === Label.SpaceUnit.Px or, later, === Label.SpaceUnit.Pt */
 
-        // TODO meaningful margins from label.margins or config.margins ?
+        /** @todo meaningful margins from label.margins or config.margins ? */
         const margins: vec4 = vec4.create();
-        // TODO meaningful ppiScale from label.ppiScale or config.ppiScale ?
+        /** @todo meaningful ppiScale from label.ppiScale or config.ppiScale ? */
         const ppiScale = 1;
 
-        // compute transform matrix
+        /* compute transform matrix */
         const transform = mat4.create();
 
-        // translate to lower left in NDC
-        // mat4.scale(transform, transform, vec3.fromValues(1.0, frameSize[1] / frameSize[0], 1.0));
+        /* translate to lower left in NDC */
         mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
-        // scale glyphs to NDC size
-        // this._frameSize should be the viewport size
+        /* scale glyphs to NDC size, this._frameSize should be the viewport size */
         mat4.scale(transform, transform, vec3.fromValues(2.0 / frameSize[0], 2.0 / frameSize[1], 1.0));
 
-        // scale glyphs to pixel size with respect to the displays ppi
+        /* scale glyphs to pixel size with respect to the displays ppi */
         mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
 
-        // translate to origin in point space - scale origin within
-        // margined extend (i.e., viewport with margined areas removed)
+        /* translate to origin in point space - scale origin within margined extend
+         * (i.e., viewport with margined areas removed)
+         */
         const marginedExtent: vec2 = vec2.create();
         vec2.sub(marginedExtent, vec2.fromValues(
             frameSize[0] / ppiScale, frameSize[1] / ppiScale),
@@ -63,13 +68,13 @@ export class Position2DLabel extends Label {
         mat4.translate(transform, transform, v3);
 
 
-        // apply user tranformations (position, direction)
+        /* apply user tranformations (position, direction) */
         mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
 
         const n: vec2 = vec2.fromValues(1, 0);
         let angle = vec2.angle(n, this._direction);
 
-        // perp dot product for signed angle
+        /* perp dot product for signed angle */
         if (n[0] * this._direction[1] - n[1] * this._direction[0] < 0) {
             angle = -angle;
         }
@@ -97,7 +102,7 @@ export class Position2DLabel extends Label {
 
     /** position parameters as specified in OpenLL */
     setPosition(x: number, y: number, unit?: Label.SpaceUnit): void {
-        // todo: assert that SpaceUnit is px or pt; transform to NDC?
+        /** @todo assert that SpaceUnit is px or pt; transform to NDC? */
         this._position = vec2.fromValues(x, y);
     }
 

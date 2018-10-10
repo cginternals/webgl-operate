@@ -48,19 +48,20 @@ export class LabelGeometry extends Geometry {
         const gl2facade = this.context.gl2facade;
 
         /* Please note the implicit bind in attribEnable */
-        // quadVertex
+
+        /* quadVertex */
         this._buffers[0].attribEnable(indices[0], 2, gl.FLOAT, false, 0, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[0], 0);
-        // texCoords
+        /* texCoords */
         this._buffers[1].attribEnable(indices[1], 4, gl.FLOAT, false, 4 * 4, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[1], 1);
-        // origin
+        /* origin */
         this._buffers[2].attribEnable(indices[2], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[2], 1);
-        // tan
+        /* tan */
         this._buffers[3].attribEnable(indices[3], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[3], 1);
-        // up
+        /* up */
         this._buffers[4].attribEnable(indices[4], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
         gl2facade.vertexAttribDivisor(indices[4], 1);
     }
@@ -103,8 +104,10 @@ export class LabelGeometry extends Geometry {
             [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER]
             , [aQuadVertex, aTexCoord, aOrigin, aTan, aUp]);
 
-        // These vertices are equal for all quads. There actual position will be changed using
-        // origin, tan(gent) and up(-vector).
+        /**
+         * These vertices are equal for all quads. There actual position will be changed using
+         * origin, tan(gent) and up(-vector).
+         */
         this._vertices = Float32Array.from([0, 0, 0, 1, 1, 0, 1, 1]);
         this._buffers[0].data(this._vertices, gl.STATIC_DRAW);
 
@@ -133,7 +136,7 @@ export class LabelGeometry extends Geometry {
         this._ups = dataUp;
 
         const gl = this.context.gl;
-        // TODO: is DYNAMIC_DRAW more appropriate?
+        /** @todo is DYNAMIC_DRAW more appropriate? */
         this._buffers[2].data(this._origins, gl.STATIC_DRAW);
         this._buffers[3].data(this._tans, gl.STATIC_DRAW);
         this._buffers[4].data(this._ups, gl.STATIC_DRAW);
@@ -151,7 +154,7 @@ export class LabelGeometry extends Geometry {
         this._texCoords = data;
 
         const gl = this.context.gl;
-        // TODO: is DYNAMIC_DRAW more appropriate?
+        /** @todo is DYNAMIC_DRAW more appropriate? */
         this._buffers[1].data(this._texCoords, gl.STATIC_DRAW);
     }
 

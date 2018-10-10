@@ -31,7 +31,7 @@ export class Typesetter {
         if (index < safeForwardIndex) {
             return false;
         }
-        // tslint:disable-next-line:prefer-const
+        /* tslint:disable-next-line:prefer-const */
         let forwardWidth = 0.0;
         safeForwardIndex = Typesetter.forward(label, index, forwardWidth);
         return forwardWidth <= lineWidth && (pen[0] + forwardWidth) > lineWidth;
@@ -242,7 +242,7 @@ export class Typesetter {
         const iEnd: number = label.length;
 
         /* Index used to reduce the number of wordwrap forward passes. */
-        // tslint:disable-next-line:prefer-const
+        /* tslint:disable-next-line:prefer-const */
         let safeForwardIndex = iBegin;
         let feedVertexIndex: number = vertexIndex;
 
