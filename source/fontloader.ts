@@ -208,9 +208,7 @@ export class FontLoader {
 
         /* check if all required keys are provided */
         let valid = true;
-        for (const mandatoryKey of mandatoryKeys) {
-            valid = valid && pairs.has(mandatoryKey);
-        }
+        mandatoryKeys.forEach((key) => valid = valid && pairs.has(key));
 
         if (!valid) {
             log(LogLevel.Warning, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
