@@ -73,20 +73,11 @@ export class Label {
         this._extent = [0, 0];
     }
 
+    /**
+     * Creates an Array of glyph vertices with given length, ready to be used in the Typesetter.
+     */
     protected prepareVertexStorage(): GlyphVertices {
-        const vertices = new GlyphVertices();
-        const numGlyphs = this.length;
-        for (let i = 0; i < numGlyphs; ++i) {
-
-            const vertex: GlyphVertex = {
-                origin: vec3.create(),
-                tangent: vec3.create(),
-                up: vec3.create(),
-                /* vec2 lowerLeft and vec2 upperRight in glyph texture (uv) */
-                uvRect: vec4.create(),
-            };
-            vertices.push(vertex);
-        }
+        const vertices = new GlyphVertices(this.length);
         return vertices;
     }
 

@@ -35,6 +35,22 @@ export interface GlyphVertex {
  */
 export class GlyphVertices extends Array<GlyphVertex> {
 
+    constructor(numGlyphs: number) {
+        super();
+
+        for (let i = 0; i < numGlyphs; ++i) {
+
+            const vertex: GlyphVertex = {
+                origin: vec3.create(),
+                tangent: vec3.create(),
+                up: vec3.create(),
+                /* vec2 lowerLeft and vec2 upperRight in glyph texture (uv) */
+                uvRect: vec4.create(),
+            };
+            this.push(vertex);
+        }
+    }
+
     // optimize() {
 
     // }
