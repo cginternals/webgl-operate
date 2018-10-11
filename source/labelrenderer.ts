@@ -63,6 +63,13 @@ export class LabelRenderer extends Renderer {
     protected _3DLabelGeometry: LabelGeometry;
     protected _uGlyphAtlas: WebGLUniformLocation;
 
+    /**
+     * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
+     * @param context valid context to create the object for.
+     * @param identifier meaningful name for identification of this instance.
+     * @param mouseEventProvider required for mouse interaction
+     * @returns whether initialization was successful
+     */
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
@@ -154,6 +161,9 @@ export class LabelRenderer extends Renderer {
         return true;
     }
 
+    /**
+     * Uninitializes Buffers, Textures and and Programm.
+     */
     protected onUninitialize(): void {
         super.uninitialize();
 
@@ -173,7 +183,14 @@ export class LabelRenderer extends Renderer {
         this._blit.uninitialize();
     }
 
-
+    /**
+     * This is invoked in order to check if rendering of a frame is required by means of implementation specific
+     * evaluation (e.g., lazy non continuous rendering). Regardless of the return value a new frame (preparation,
+     * frame, swap) might be invoked anyway, e.g., when update is forced or canvas or context properties have changed
+     * or the renderer was invalidated @see{@link invalidate}.
+     * Updates the navigaten and the AntiAliasingKernel.
+     * @returns whether to redraw
+     */
     protected onUpdate(): boolean {
 
         this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
@@ -183,6 +200,10 @@ export class LabelRenderer extends Renderer {
         return this._altered.any || this._camera.altered;
     }
 
+    /**
+     * This is invoked in order to prepare rendering of one or more frames, regarding multi-frame rendering and
+     * camera-updates.
+     */
     protected onPrepare(): void {
 
         const gl = this._context.gl;
@@ -237,6 +258,10 @@ export class LabelRenderer extends Renderer {
         this._camera.altered = false;
     }
 
+    /**
+     * After (1) update and (2) preparation are invoked, a frame is invoked. Renders both 2D and 3D labels.
+     * @param frameNumber for intermediate frames in accumulation rendering
+     */
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
 
@@ -287,12 +312,19 @@ export class LabelRenderer extends Renderer {
         }
     }
 
+    /**
+     * After (1) update, (2) preparation, and (3) frame are invoked, a swap is invoked for multi-frame rendering.
+     */
     protected onSwap(): void {
         this._blit.framebuffer = this._accumulate.framebuffer ?
             this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
         this._blit.frame();
     }
 
+    /**
+     * Loads font files and creates a fontface.
+     * @param context valid context to create the FontFace for.
+     */
     protected loadFont(context: Context): void {
 
         /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
@@ -308,6 +340,9 @@ export class LabelRenderer extends Renderer {
         this._fontFace = fontFace;
     }
 
+    /**
+     * Sets up an example scene with 2D and 3D labels and sets the corresponding data on LabelGeometries.
+     */
     protected setupScene(): void {
 
         /** OpenLL 2D Labels */
