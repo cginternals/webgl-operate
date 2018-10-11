@@ -37,9 +37,16 @@ void main(void)
     v_texture_coord = a_quadVertex * texExt + vec2(a_texCoord[0], 1.0 - a_texCoord[1]);
 
     /* POSITIONING*/
-    /* quad data: [0, 0, 0, 1, 1, 0, 1, 1] (a_quadVertex) */
-
-    vec4 vertex = vec4(a_origin + a_quadVertex.x*a_tangent + a_quadVertex.y*a_up, 1.0);
+    /* quad data as flat array: [0, 0,  0, 1,  1, 0,  1, 1] (a_quadVertex), which translates to ll, lr, ul, ur corners.
+     * 2-------4
+     * |  \    |
+     * |    \  |
+     * 1-------3
+     * The current vertex is calculated based on the current quad corners and the tangent / up attributes.
+     * The following lines are optimized for MAD optimization.
+     */
+    vec3 tangentDirection = a_origin + a_quadVertex.x * a_tangent;
+    vec4 vertex = vec4(tangentDirection + a_quadVertex.y * a_up, 1.0);
 
     vertex = u_viewProjection * vertex;
 
