@@ -24,8 +24,8 @@ export class Position2DLabel extends Label {
      */
     constructor(text: Text, fontFace: FontFace) {
         super(text, fontFace);
-        this._position = vec2.fromValues(0, 0);
-        this._direction = vec2.fromValues(1, 0);
+        this._position = vec2.fromValues(0.0, 0.0);
+        this._direction = vec2.fromValues(1.0, 0.0);
 
         this._fontSizeUnit = Label.SpaceUnit.Px;
     }
@@ -71,11 +71,11 @@ export class Position2DLabel extends Label {
         /* apply user tranformations (position, direction) */
         mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
 
-        const n: vec2 = vec2.fromValues(1, 0);
+        const n: vec2 = vec2.fromValues(1.0, 0.0);
         let angle = vec2.angle(n, this._direction);
 
         /* perp dot product for signed angle */
-        if (n[0] * this._direction[1] - n[1] * this._direction[0] < 0) {
+        if (n[0] * this._direction[1] - n[1] * this._direction[0] < 0.0) {
             angle = -angle;
         }
 

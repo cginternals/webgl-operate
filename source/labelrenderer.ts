@@ -382,24 +382,24 @@ export class LabelRenderer extends Renderer {
         pos3Dlabel.fontSize = 0.1;
 
         /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
-        pos3Dlabel.setPosition(0, 0.1, -0.5);
-        pos3Dlabel.setDirection(0, 1, 0);
-        pos3Dlabel.setUp(-1, 0, 0);
+        pos3Dlabel.setPosition(0.0, 0.1, -0.5);
+        pos3Dlabel.setDirection(0.0, 1.0, 0.0);
+        pos3Dlabel.setUp(-1.0, 0.0, 0.0);
 
         glyphVertices = pos3Dlabel.typeset();
 
         const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'), this._fontFace);
-        shadowPos3Dlabel.setPosition(0, 0.1, -0.5);
+        shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
         shadowPos3Dlabel.fontSize = 0.1;
-        shadowPos3Dlabel.setDirection(0, 1, 0);
-        shadowPos3Dlabel.setUp(0, 0, -1);
+        shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
+        shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
 
         glyphVertices = glyphVertices.concat(shadowPos3Dlabel.typeset());
 
         const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'), this._fontFace);
-        anotherPos3Dlabel.setPosition(0.2, -0.1, 0);
-        anotherPos3Dlabel.setDirection(-1, 0, 0);
-        anotherPos3Dlabel.setUp(0, -1, 0);
+        anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
+        anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
+        anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
         glyphVertices = glyphVertices.concat(anotherPos3Dlabel.typeset());
 
         /* fill buffers */

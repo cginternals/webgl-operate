@@ -26,9 +26,9 @@ export class Position3DLabel extends Label {
      */
     constructor(text: Text, fontFace: FontFace) {
         super(text, fontFace);
-        this._position = vec3.fromValues(0, 0, 0);
-        this._direction = vec3.fromValues(1, 0, 0);
-        this._up = vec3.fromValues(0, 1, 0);
+        this._position = vec3.fromValues(0.0, 0.0, 0.0);
+        this._direction = vec3.fromValues(1.0, 0.0, 0.0);
+        this._up = vec3.fromValues(0.0, 1.0, 0.0);
 
         this._fontSizeUnit = Label.SpaceUnit.World;
     }
@@ -54,7 +54,7 @@ export class Position3DLabel extends Label {
         const rotation = mat4.fromValues(this.direction[0], this.direction[1], this.direction[2], 0,
             this.up[0], this.up[1], this.up[2], 0,
             normal[0], normal[1], normal[2], 0,
-            0, 0, 0, 1);
+            0.0, 0.0, 0.0, 1.0);
 
         this.transform = mat4.mul(this.transform, transform, rotation);
 
