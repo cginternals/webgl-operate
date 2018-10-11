@@ -12,19 +12,6 @@ import Path = require('path');
 
 type StringPairs = Map<string, string>;
 
-function stripped(input: string, blacklist: Array<string>): string {
-    let result: string = input;
-
-    /* first param for erase: */
-    blacklist.forEach((element) => {
-        if (result.includes(element)) {
-            result = result.replace(RegExp(element, 'g'), '');
-        }
-    });
-    return result;
-}
-
-
 /**
  * Loads the png image that displays the glyph atlas, that was prepared using a Distance Field Transform. It also
  * loads all needed data to use that image from a fnt-file with the same name as the png image. It thus creates
@@ -38,25 +25,31 @@ function stripped(input: string, blacklist: Array<string>): string {
 export class FontLoader {
 
     /**
+     * False when the current loading process gets invalid.
+     */
+    protected static _valid: boolean;
+
+    /**
      * Parses the info fields for padding values and stores them in the font face
      * @param stream The stream of the 'info' identifier.
      * @param fontFace The font face in which the padding is stored.
-     * @returns success
      */
-    protected static processInfo(stream: Array<string>, fontFace: FontFace): boolean {
+    protected static processInfo(stream: Array<string>, fontFace: FontFace): void {
 
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream, ['padding'], pairs);
 
         if (!success) {
-            return false;
+            this._valid = false;
+            return;
         }
 
         const values = pairs.get('padding')!.split(',');
 
         if (values.length !== 4) {
-            log(LogLevel.Error, `expected 4 values for padding, given ${values} (${values.length})`);
-            return false;
+            log(LogLevel.Warning, `expected 4 values for padding, given ${values} (${values.length})`);
+            this._valid = false;
+            return;
         }
 
         const padding: GLfloat4 = [
@@ -71,8 +64,6 @@ export class FontLoader {
         ];
 
         fontFace.glyphTexturePadding = padding;
-
-        return true;
     }
 
     /**
@@ -80,16 +71,16 @@ export class FontLoader {
      * in the font face.
      * @param stream The stream of the 'common' identifier.
      * @param fontFace The font face in which the parsed values are stored.
-     * @returns success
      */
-    protected static processCommon(stream: Array<string>, fontFace: FontFace): boolean {
+    protected static processCommon(stream: Array<string>, fontFace: FontFace): void {
 
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream,
             ['lineHeight', 'base', 'ascent', 'descent', 'scaleW', 'scaleH'], pairs);
 
         if (!success) {
-            return false;
+            this._valid = false;
+            return;
         }
 
         fontFace.base = parseFloat(pairs.get('base')!);
@@ -97,8 +88,9 @@ export class FontLoader {
         fontFace.descent = parseFloat(pairs.get('descent')!);
 
         if (fontFace.size <= 0.0) {
-            log(LogLevel.Error, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
-            return false;
+            log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
+            this._valid = false;
+            return;
         }
 
         fontFace.lineHeight = parseFloat(pairs.get('lineHeight')!);
@@ -107,8 +99,6 @@ export class FontLoader {
             parseFloat(pairs.get('scaleW')!),
             parseFloat(pairs.get('scaleH')!),
         ];
-
-        return true;
     }
 
     /**
@@ -119,27 +109,25 @@ export class FontLoader {
      * @returns Promise for handling image load status.
      */
     protected static processPage(
-        stream: Array<string>, fontFace: FontFace, filename: string): Promise<void> {
+        stream: Array<string>, fontFace: FontFace, filepath: string): Promise<void> {
 
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream, ['file'], pairs);
 
         if (!success) {
-            log(LogLevel.Error, `Could not read texture filename from fnt file.`);
+            log(LogLevel.Warning, `Could not read texture filename from fnt file.`);
+            this._valid = false;
         }
 
-        const file = stripped(pairs.get('file')!, ['"', '\r']);
+        const path = Path.dirname(filepath) + `/`;
+        const filename = Path.basename(filepath, `.fnt`);
 
-        const path = Path.dirname(filename) + `/`;
+        const pngPath: string = path + filename + `.png`;
 
-        /** For multiple pages, the filename should be different.
-         * Idea: Provide a name for the font file, and a template for the page file name
-         * where the page number is replaced, e.g.:
-         * `foo/bar/<fontname>-<page-number>.png`
-         */
-        const pngPath: string = path + file.split('.')[0] + '.png';
-
-        return fontFace.glyphTexture.load(pngPath);
+        return fontFace.glyphTexture.load(pngPath).catch((error) => {
+            log(LogLevel.Warning, `${error}. Could not load glyphTexture: ${pngPath}`);
+            this._valid = false;
+        });
     }
 
     /**
@@ -148,19 +136,19 @@ export class FontLoader {
      * execute processCommon() first.
      * @param stream The stream of the 'char' identifier.
      * @param fontFace The font face in which the loaded glyph texture is stored.
-     * @returns success
      */
-    protected static processChar(stream: Array<string>, fontFace: FontFace): boolean {
+    protected static processChar(stream: Array<string>, fontFace: FontFace): void {
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream,
             ['id', 'x', 'y', 'width', 'height', 'xoffset', 'yoffset', 'xadvance'], pairs);
 
         if (!success) {
-            return false;
+            this._valid = false;
+            return;
         }
 
         const index: number = parseInt(pairs.get('id')!, 10);
-        logIf(index <= 0.0, LogLevel.Error,
+        logIf(index <= 0.0, LogLevel.Warning,
             `expected glyph index to be greater than 0, given ${index}`);
 
         const glyph = new Glyph();
@@ -194,41 +182,41 @@ export class FontLoader {
         glyph.advance = parseFloat(pairs.get('xadvance')!);
 
         fontFace.addGlyph(glyph);
-
-        return true;
     }
 
     /**
      * Parses the kerning fields for first and second character and the amount, to store them in the font face.
      * @param stream The stream of the 'kerning' identifier.
      * @param fontFace The font face in which the kerning tuples are stored.
-     * @returns success
      */
-    protected static processKerning(stream: Array<string>, fontFace: FontFace): boolean {
+    protected static processKerning(stream: Array<string>, fontFace: FontFace): void {
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream, ['first', 'second', 'amount'], pairs);
 
         if (!success) {
-            return false;
+            this._valid = false;
+            return;
         }
 
         const first: number = parseInt(pairs.get('first')!, 10);
         if (first <= 0.0) {
-            log(LogLevel.Error, `expected kerning's first to be greater than 0, given ${first}`);
-            return false;
+            log(LogLevel.Warning, `expected kerning's first to be greater than 0, given ${first}`);
+            this._valid = false;
+            return;
         }
 
         const second: number = parseInt(pairs.get('second')!, 10);
         if (second <= 0.0) {
-            log(LogLevel.Error, `expected kerning's second to be greater than 0, given ${second}`);
-            return false;
+            log(LogLevel.Warning, `expected kerning's second to be greater than 0, given ${second}`);
+            this._valid = false;
+            return;
         }
 
         const kerning: number = parseFloat(pairs.get('amount')!);
 
         fontFace.setKerning(first, second, kerning);
 
-        return true;
+        return;
     }
 
     /**
@@ -255,7 +243,9 @@ export class FontLoader {
         let valid = true;
         mandatoryKeys.forEach((key) => valid = valid && resultPairs.has(key));
 
-        logIf(!valid, LogLevel.Error, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
+        if (!valid) {
+            log(LogLevel.Warning, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
+        }
 
         return valid;
     }
@@ -270,21 +260,23 @@ export class FontLoader {
     static async load(context: Context, filename: string, headless: boolean): Promise<FontFace> {
         const fontFace = new FontFace(context);
 
+        this._valid = true;
+
         let text;
         try {
             text = await fetchAsync(filename, '', (text) => text);
         } catch (e) {
             /* promise rejected */
-            log(LogLevel.Error, `Could not load font file. filename is: ${filename}`);
+            log(LogLevel.Warning, `Could not load font file. filename is: ${filename}`);
+            this._valid = false;
         }
 
         /* promise fulfilled */
         const lines = text.split('\n');
 
         const promises = [];
-        let valid = true;
         for (const l of lines) {
-            if (!valid) {
+            if (!this._valid) {
                 break;
             }
             let line = l.split(' ');
@@ -294,10 +286,10 @@ export class FontLoader {
             /* tslint:disable-next-line:switch-default */
             switch (identifier) {
                 case 'info':
-                    valid = this.processInfo(line, fontFace);
+                    this.processInfo(line, fontFace);
                     break;
                 case 'common':
-                    valid = this.processCommon(line, fontFace);
+                    this.processCommon(line, fontFace);
                     break;
                 case 'page':
                     if (!headless) {
@@ -305,19 +297,20 @@ export class FontLoader {
                     }
                     break;
                 case 'char':
-                    valid = this.processChar(line, fontFace);
+                    this.processChar(line, fontFace);
                     break;
                 case 'kerning':
-                    valid = this.processKerning(line, fontFace);
+                    this.processKerning(line, fontFace);
                     break;
             }
         }
+
         await Promise.all(promises);
 
-
-        if (valid) {
+        if (this._valid) {
             return fontFace;
         } else {
+            log(LogLevel.Warning, `No valid FontFace created.`);
             return new FontFace(context, `invalid`);
         }
     }
