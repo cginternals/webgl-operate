@@ -83,7 +83,8 @@ export class Label {
 
     /**
      * Returns the character at the specified index.
-     * @param pos - The zero-based index of the desired character.
+     * @param index - The zero-based index of the desired character.
+     * @returns character at the specified index
      */
     charAt(index: number): string {
         if (this._text instanceof Text) {
@@ -93,9 +94,10 @@ export class Label {
     }
 
     /**
-     * Returns the Unicode value of the character at the specified location.
+     * Returns the Unicode value (codepoint) of the character at the specified location.
      * @param index - The zero-based index of the desired character. If there is no character at the specified index,
      * NaN is returned.
+     * @returns codepoint of the char at given index or NaN
      */
     charCodeAt(index: number): number {
         if (this._text instanceof Text) {
@@ -108,6 +110,7 @@ export class Label {
      * Returns, whether or not the character at a given index is equal to the default or the text's line feed character.
      * @param index - The zero-based index of the desired character. If there is no character at the specified index,
      * NaN is returned.
+     * @returns true if char at given index equals the text's line feed character
      */
     lineFeedAt(index: number): boolean {
         return this.charAt(index) === this.lineFeed;
@@ -117,6 +120,7 @@ export class Label {
     /**
      * Gets the kerning value before (i.e., left in left-to-right writing systems) the given glyph index.
      * @param index index of the glyph in this label
+     * @returns kerning value before glyph at given index
      */
     kerningBefore(index: number): number {
         if (index < 1 || index > this.length) {
@@ -128,6 +132,7 @@ export class Label {
     /**
      * Gets the kerning value after (i.e., right in left-to-right writing systems) the given glyph index.
      * @param index index of the glyph in this label
+     * @returns kerning value after glyph at given index
      */
     kerningAfter(index: number): number {
         if (index < 0 || index > this.length - 1) {
@@ -137,9 +142,10 @@ export class Label {
     }
 
     /**
-     * Returns the advancement of a specified glyph.
+     * Returns the advancement of the glyph at given index.
      * @param index - The zero-based index of the desired character. If there is no character at the specified index,
      * NaN is returned.
+     * @returns advancement of the glyph at given index or NaN
      */
     advance(index: number): number {
         if (index < 0 || index > this.length) {
@@ -351,6 +357,10 @@ export class Label {
         return this._extent;
     }
 
+    /**
+     * Convenience getter to the label's text as string.
+     * @returns the label's text as string
+     */
     toString(): string {
         if (this._text instanceof Text) {
             return this._text.text;
