@@ -10,8 +10,8 @@ import { Typesetter } from './typesetter';
 
 
 /**
- * A Label that can be positioned in 3D space.
- * The unit for positions, size and transformations, is the abstract World Unit.
+ * A Label that can be positioned in 3D space. The unit for positions, size and transformations, is the abstract World
+ * Unit.
  */
 export class Position3DLabel extends Label {
 
@@ -34,8 +34,8 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * Applies its position, direction and up-vector, then prepares the vertex storage so that
-     * the Typesetter can typeset this label.
+     * Applies its position, direction and up-vector, then prepares the vertex storage so that the Typesetter can
+     * typeset this label.
      * @returns The transformed glyph vertices.
      */
     typeset(): GlyphVertices {
@@ -75,8 +75,8 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * Sets 3D position parameters as specified in OpenLL.
-     * Position is the label's reference point (i.e. lower left corner for horizontal alignment).
+     * Sets 3D position parameters as specified in OpenLL. Position is the label's reference point (i.e. lower left
+     * corner for horizontal alignment).
      * @param x x coordinate of 3D position
      * @param y y coordinate of 3D position
      * @param z z coordinate of 3D position
@@ -96,8 +96,7 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * Sets the 3D direction parameters as specified in OpenLL.
-     * The labels's direction is the direction of its baseline.
+     * Sets the 3D direction parameters as specified in OpenLL. The labels's direction is the direction of its baseline.
      * @param x x coordinate of the 3D direction vector.
      * @param y y coordinate of the 3D direction vector.
      * @param z z coordinate of the 3D direction vector.
@@ -107,8 +106,7 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * Sets the up-vector of the label.
-     * It should be orthogonal to the direction to ensure that the label is not skewed.
+     * Sets the up-vector of the label. It should be orthogonal to the direction to ensure that the label is not skewed.
      */
     set up(xyz: vec3) {
         this._up = vec3.normalize(this._up, xyz);
@@ -118,8 +116,8 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * Sets the 3D up-vector parameters as specified in OpenLL.
-     * It should be orthogonal to the direction to ensure that the label is not skewed.
+     * Sets the 3D up-vector parameters as specified in OpenLL. It should be orthogonal to the direction to ensure that
+     * the label is not skewed.
      * @param x x coordinate of the 3D up vector.
      * @param y y coordinate of the 3D up vector.
      * @param z z coordinate of the 3D up vector.
@@ -129,8 +127,8 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * This unit is used for the font size.
-     * This method overrides the super.fontSizeUnit, since a position3dlabel only allows World, not Px nor Pt.
+     * This unit is used for the font size. This method overrides the super.fontSizeUnit, since a position3dlabel only
+     * allows World, not Px nor Pt.
      * (@see {@link fontSize})
      * @param newUnit unused, since there is only one allowed unit (World) for this kind of label
      */

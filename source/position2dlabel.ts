@@ -10,8 +10,7 @@ import { Typesetter } from './typesetter';
 
 
 /**
- * A Label that can be positioned in 2D space.
- * The unit for positions, size and transformations, is pixel (px).
+ * A Label that can be positioned in 2D space. The unit for positions, size and transformations, is pixel (px).
  */
 export class Position2DLabel extends Label {
 
@@ -32,8 +31,8 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * Applies its position and direction, then prepares the vertex storage so that
-     * the Typesetter can typeset this label.
+     * Applies its position and direction, then prepares the vertex storage so that the Typesetter can typeset this
+     * label.
      * @param frameSize The width and height of the frame, so that sizes can be calculated to use pixel units.
      * @returns The transformed glyph vertices.
      */
@@ -101,8 +100,8 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * Sets 2D position parameters as specified in OpenLL.
-     * Position is the label's reference point (i.e. lower left corner for horizontal alignment).
+     * Sets 2D position parameters as specified in OpenLL. Position is the label's reference point (i.e. lower left
+     * corner for horizontal alignment).
      * @param x x coordinate of the 2D position
      * @param y y coordinate of the 2D position
      * @param unit the unit to interpret the coordinates
@@ -123,8 +122,7 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * Sets the 2D direction parameters as specified in OpenLL.
-     * The labels's direction is the direction of its baseline.
+     * Sets the 2D direction parameters as specified in OpenLL. The labels's direction is the direction of its baseline.
      * @param x x coordinate of the 2D direction vector.
      * @param y y coordinate of the 2D direction vector.
      */
@@ -133,8 +131,8 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * This unit is used for the font size.
-     * This method overrides the super.fontSizeUnit, since a position2dlabel only allows px, not World.
+     * This unit is used for the font size. This method overrides the super.fontSizeUnit, since a position2dlabel only
+     * allows px, not World.
      * (@see {@link fontSize})
      * @param newUnit unused, since there is only one allowed unit (Px) for this kind of label
      */
