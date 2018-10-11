@@ -8,14 +8,61 @@ import { Initializable } from './initializable';
 
 
 /**
- * Gathers vertices and other data needed for drawing all labels.
+ * Gathers vertices and other data needed for drawing all labels using the glyphquad-shaders.
+ *
+ * Example usage:
+ *
+ * const labelGeometry = new LabelGeometry(this._context);
+ * labelGeometry = new LabelGeometry(this._context);
+ * const aVertex = this._program.attribute('a_quadVertex', 0);
+ * const aTexCoord = this._program.attribute('a_texCoord', 1);
+ * const aOrigin = this._program.attribute('a_origin', 2);
+ * const aTangent = this._program.attribute('a_tangent', 3);
+ * const aUp = this._program.attribute('a_up', 4);
+ *
+ * labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+ * labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+ *
+ * ....
+ *
+ * labelGeometry.setTexCoords(Float32Array.from(texCoords));
+ * labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tangents), Float32Array.from(ups));
+ *
+ * ....
+ *
+ * labelGeometry.bind();
+ * labelGeometry.draw();
+ * labelGeometry.unbind();
  */
 export class LabelGeometry extends Geometry {
 
+    /**
+     * These 2D vertices are equal for all quads, used for instanced rendering. Their actual position will be changed
+     * in the vertex shader, based on origins, tangents and up-vector attributes.
+     * 2-------4
+     * |  \    |
+     * |    \  |
+     * 1-------3
+     */
     protected _vertices: Float32Array = new Float32Array(0);
+    /**
+     * Texture coordinates (uv) for every glyph, format: ll.x, ll.y, ur.x, ur.y
+     */
     protected _texCoords: Float32Array = new Float32Array(0);
+    /**
+     * The coordinates of the lower left corner of every glyph. Its interpretation depends on the shader,
+     * usually it's a 3-component vector in world space.
+     */
     protected _origins: Float32Array = new Float32Array(0);
+    /**
+     * The tangent vector for every glyph (direction along base line). Its interpretation depends on the shader,
+     * usually it's a 3-component vector in world space.
+     */
     protected _tangents: Float32Array = new Float32Array(0);
+    /**
+     * The up vector for every glyph (orthogonal to its tangent vector). Its interpretation depends on the shader,
+     * usually it's a 3-component vector in world space.
+     */
     protected _ups: Float32Array = new Float32Array(0);
 
     /**
@@ -43,6 +90,7 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Binds the vertex buffer object (VBO) to an attribute binding point of a given, pre-defined index.
+     * @param indices indices of buffers to bind
      */
     protected bindBuffers(indices: Array<GLuint>): void {
         const gl = this.context.gl;
@@ -69,6 +117,7 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Unbinds the vertex buffer object (VBO) and disables the binding point.
+     * @param indices indices of buffers to unbind
      */
     protected unbindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit unbind in attribEnable is skipped */
@@ -117,8 +166,9 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Use this method to set (or update) the glyph coordinates, e.g. after typesetting or after the calculations
-     * of a placement algorithm.
-     * @param origins xyz-coordinates of the lower left corner of every glyph
+     * of a placement algorithm. The actuall interpretation of those buffers depends on the shader,
+     * usually they are 3-component vector in world space (provided as flat array.)
+     * @param origins coordinates of the lower left corner of every glyph
      * @param tangents tangent vector for every glyph (direction along base line)
      * @param ups up vector for every glyph (orthogonal to its tangent vector)
      */
@@ -157,5 +207,4 @@ export class LabelGeometry extends Geometry {
         /** @todo is DYNAMIC_DRAW more appropriate? */
         this._buffers[1].data(this._texCoords, gl.STATIC_DRAW);
     }
-
 }
