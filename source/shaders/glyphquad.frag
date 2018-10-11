@@ -21,16 +21,17 @@ void main(void)
     float d = texture(u_glyphs, v_texture_coord).r;
 
     /**
-     * using if-statement and discard can slow down performance:
+     * Don't discard fragments, as we might need them for an id-buffer for clicking-interaction.
+     * Furthermore, using if-statement and discard can slow down performance:
      * it's bad for IMR, TBR, TBDR and early-Z optimization
      * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
-     * But it is necessary: overlapping glyphs (like in 'ft') should not fight each other
+     *
      */
-    if(d < 0.45)
-        discard;
+    // if(d < 0.45)
+    //     discard;
 
     /** black. @todo font color as vertex attrib or uniform */
-    vec4 fc = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 fc = vec4(1.0, 0.0, 0.0, 1.0);
 
     /** @todo mipmap access? */
     /* simplest aastep; when using multiframe sampling, smoothstep is not necessary and will add too much blur */
