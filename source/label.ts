@@ -1,10 +1,10 @@
 
-import { mat4, vec3, vec4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from './changelookup';
 import { Color } from './color';
 import { FontFace } from './fontface';
-import { GlyphVertex, GlyphVertices } from './glyphvertices';
+import { GlyphVertices } from './glyphvertices';
 import { Text } from './text';
 
 

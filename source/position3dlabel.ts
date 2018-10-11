@@ -89,7 +89,7 @@ export class Position3DLabel extends Label {
      * Sets the 3D direction of the label, i.e., the direction of the baseline.
      */
     set direction(xyz: vec3) {
-        this._direction = vec3.normalize(this._direction, xyz);
+        vec3.normalize(this._direction, xyz);
     }
     get direction(): vec3 {
         return this._direction;

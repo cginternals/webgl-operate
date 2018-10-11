@@ -115,7 +115,7 @@ export class Position2DLabel extends Label {
      * Sets the 2D direction of the label, i.e., the direction of the baseline.
      */
     set direction(xy: vec2) {
-        this._direction = vec2.normalize(this._direction, xy);
+        vec2.normalize(this._direction, xy);
     }
     get direction(): vec2 {
         return this._direction;
