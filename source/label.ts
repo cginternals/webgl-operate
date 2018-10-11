@@ -114,6 +114,10 @@ export class Label {
     }
 
 
+    /**
+     * Gets the kerning value before (i.e., left in left-to-right writing systems) the given glyph index.
+     * @param index index of the glyph in this label
+     */
     kerningBefore(index: number): number {
         if (index < 1 || index > this.length) {
             return NaN;
@@ -121,6 +125,10 @@ export class Label {
         return this._fontFace.kerning(this.charCodeAt(index - 1), this.charCodeAt(index));
     }
 
+    /**
+     * Gets the kerning value after (i.e., right in left-to-right writing systems) the given glyph index.
+     * @param index index of the glyph in this label
+     */
     kerningAfter(index: number): number {
         if (index < 0 || index > this.length - 1) {
             return NaN;
