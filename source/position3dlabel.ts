@@ -1,6 +1,7 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
+import { log, LogLevel } from './auxiliaries';
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
@@ -134,7 +135,7 @@ export class Position3DLabel extends Label {
      * @param newUnit unused, since there is only one allowed unit (World) for this kind of label
      */
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
-        console.warn('New SpaceUnit not set; only allowed SpaceUnit is World for this label.');
+        log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is World for this label.`);
     }
 }
 
