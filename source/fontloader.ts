@@ -131,9 +131,9 @@ export class FontLoader {
     }
 
     /**
-     * Parses the char fields for character id, x, y, width, height, xoffset, yoffset, xadvance to
-     * store them in the font face. Relies on fontFace.base and fontFace.glyphTextureExtent, so
-     * execute processCommon() first.
+     * Parses the char fields for character id (codepoint), x, y, width, height, xoffset, yoffset, xadvance to
+     * store them in the font face as instances of Glyph.
+     * This relies on fontFace.base and fontFace.glyphTextureExtent, so execute processCommon() first.
      * @param stream The stream of the 'char' identifier.
      * @param fontFace The font face in which the loaded glyph texture is stored.
      */
