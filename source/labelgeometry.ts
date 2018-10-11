@@ -73,6 +73,8 @@ export class LabelGeometry extends Geometry {
     constructor(context: Context, identifier?: string) {
         super(context, identifier);
 
+        assert(context.isWebGL2 || context.supportsInstancedArrays, `Support for Instanced Arrays is required.`);
+
         /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
