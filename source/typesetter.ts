@@ -20,6 +20,15 @@ export class Typesetter {
 
     protected static readonly DELIMITERS: string = '\x0A ,.-/()[]<>';
 
+    /**
+     * Returns if newline should be applied for next word (or next glyph if word exceeds the line width)
+     * @param label the label that has wordWrap enabled
+     * @param pen horizontal and vertical position at which typesetting takes place/arrived.
+     * @param glyph current glyph
+     * @param index current index for char in this label
+     * @param safeForwardIndex used to reduce the number of wordwrap forward passes
+     * @returns whether or not typesetting should go on a new line
+     */
     protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, safeForwardIndex: number): boolean {
         assert(label.wordWrap, `expected wordWrap to be enabled for label, given ${label}`);
         const lineWidth = label.lineWidth;
@@ -231,6 +240,12 @@ export class Typesetter {
     }
 
 
+    /**
+     * Typesets the given label, transforming the vertices in-world, ready to be rendered.
+     * @param label the label that shall be typeset
+     * @param vertices the glyphvertices, a prepared (optionally empty) vertex storage
+     * @param begin vertex index to start the typesetting (usually 0)
+     */
     static typeset(label: Label, vertices?: GlyphVertices, begin?: number): GLfloat2 {
         /* Horizontal and vertical position at which typesetting takes place/arrived. */
         const pen = vec2.create();
@@ -286,7 +301,5 @@ export class Typesetter {
         const labelExtent = Typesetter.transformExtent(label.transform, extent);
         label.extent = labelExtent;
         return labelExtent;
-
     }
-
 }
