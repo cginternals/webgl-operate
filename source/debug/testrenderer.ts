@@ -13,7 +13,7 @@ import { Program } from '../program';
 import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
-import { Texture2 } from '../texture2';
+import { Texture2D } from '../texture2d';
 import { TestNavigation } from './testnavigation';
 
 
@@ -33,7 +33,7 @@ namespace debug {
         protected _blit: BlitPass;
 
         protected _defaultFBO: DefaultFramebuffer;
-        protected _colorRenderTexture: Texture2;
+        protected _colorRenderTexture: Texture2D;
         protected _depthRenderbuffer: Renderbuffer;
         protected _intermediateFBO: Framebuffer;
 
@@ -81,7 +81,7 @@ namespace debug {
             this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
             this._defaultFBO.initialize();
 
-            this._colorRenderTexture = new Texture2(this._context, 'ColorRenderTexture');
+            this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
             this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
 
             this._intermediateFBO = new Framebuffer(this._context, 'IntermediateFBO');

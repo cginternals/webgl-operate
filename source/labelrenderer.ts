@@ -16,7 +16,7 @@ import { Program } from './program';
 import { Renderbuffer } from './renderbuffer';
 import { Invalidate, Renderer } from './renderer';
 import { Shader } from './shader';
-import { Texture2 } from './texture2';
+import { Texture2D } from './texture2d';
 
 import { FontFace } from './fontface';
 import { FontLoader } from './fontloader';
@@ -51,7 +51,7 @@ export class LabelRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
-    protected _colorRenderTexture: Texture2;
+    protected _colorRenderTexture: Texture2D;
     protected _depthRenderbuffer: Renderbuffer;
     protected _intermediateFBO: Framebuffer;
 
@@ -124,7 +124,7 @@ export class LabelRenderer extends Renderer {
         this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._defaultFBO.initialize();
 
-        this._colorRenderTexture = new Texture2(this._context, 'ColorRenderTexture');
+        this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
         this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
 
         this._intermediateFBO = new Framebuffer(this._context, 'IntermediateFBO');

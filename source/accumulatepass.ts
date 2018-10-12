@@ -9,7 +9,7 @@ import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
-import { Texture2 } from './texture2';
+import { Texture2D } from './texture2d';
 import { Wizard } from './wizard';
 
 
@@ -42,7 +42,7 @@ export class AccumulatePass extends Initializable {
 
 
     /** @see {@link texture} */
-    protected _texture: Texture2;
+    protected _texture: Texture2D;
 
     /** @see {@link precision} */
     protected _precision: Wizard.Precision = Wizard.Precision.half;
@@ -55,7 +55,7 @@ export class AccumulatePass extends Initializable {
      * and write access due to a limitation in WebGL).
      */
     protected _accumulationFBOs: [Framebuffer, Framebuffer];
-    protected _accumulationTextures: [Texture2, Texture2];
+    protected _accumulationTextures: [Texture2D, Texture2D];
 
 
     /**
@@ -100,8 +100,8 @@ export class AccumulatePass extends Initializable {
             new Framebuffer(this._context, 'AccumPongFBO')];
 
         this._accumulationTextures = [
-            new Texture2(this._context, 'AccumPingTexture'),
-            new Texture2(this._context, 'AccumPongTexture')];
+            new Texture2D(this._context, 'AccumPingTexture'),
+            new Texture2D(this._context, 'AccumPongTexture')];
 
         /* Configure program-based accumulate. */
 
@@ -274,7 +274,7 @@ export class AccumulatePass extends Initializable {
      * automatically if the texture size changed.
      * @param texture - Framebuffer that is to be accumulated.
      */
-    set texture(texture: Texture2) {
+    set texture(texture: Texture2D) {
         this.assertInitialized();
         if (this._texture !== texture) {
             this._texture = texture;
