@@ -7,7 +7,7 @@ import { Context } from './context';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 import { Renderbuffer } from './renderbuffer';
-import { Texture2 } from './texture2';
+import { Texture2D } from './texture2d';
 
 
 /**
@@ -33,7 +33,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
     /**
      * Access to all attached texture objects.
      */
-    protected _texturesByAttachment = new Map<GLenum, Texture2>();
+    protected _texturesByAttachment = new Map<GLenum, Texture2D>();
 
     /**
      * RGBA color, depth value, or stencil value used for clearing the
@@ -105,7 +105,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      * @param attachments - tuples that associate an attachment to its actual render object, either a renderbuffer or
      * texture, e.g., `[ gl.COLOR_ATTACHMENT0, someTexture ]`.
      */
-    protected create(attachments: Array<[GLenum, Renderbuffer | Texture2]>): WebGLFramebuffer | undefined {
+    protected create(attachments: Array<[GLenum, Renderbuffer | Texture2D]>): WebGLFramebuffer | undefined {
         const gl = this._context.gl;
         const gl2facade = this.context.gl2facade;
 
@@ -127,8 +127,8 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
             if (bufferOrTexture instanceof Renderbuffer) {
                 this._buffersByAttachment.set(attachment, bufferOrTexture as Renderbuffer);
-            } else if (bufferOrTexture instanceof Texture2) {
-                this._texturesByAttachment.set(attachment, bufferOrTexture as Texture2);
+            } else if (bufferOrTexture instanceof Texture2D) {
+                this._texturesByAttachment.set(attachment, bufferOrTexture as Texture2D);
             }
 
             if (attachment < gl2facade.COLOR_ATTACHMENT_MIN || attachment > gl2facade.COLOR_ATTACHMENT_MAX) {
@@ -155,7 +155,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, attachment, gl.RENDERBUFFER, buffer.object);
 
         });
-        this._texturesByAttachment.forEach((texture: Texture2, attachment: GLenum) => {
+        this._texturesByAttachment.forEach((texture: Texture2D, attachment: GLenum) => {
             gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.object, 0);
         });
 
@@ -374,7 +374,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      * @returns - A texture object if one exists for the given attachment, otherwise undefined.
      */
     @Initializable.assert_initialized()
-    texture(attachment: GLenum): Texture2 | undefined {
+    texture(attachment: GLenum): Texture2D | undefined {
         return this._texturesByAttachment.get(attachment);
     }
 
@@ -390,7 +390,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         this._buffersByAttachment.forEach((buffer: Renderbuffer) => {
             buffer.resize(width, height, bind, unbind);
         });
-        this._texturesByAttachment.forEach((texture: Texture2) => {
+        this._texturesByAttachment.forEach((texture: Texture2D) => {
             texture.resize(width, height, bind, unbind);
         });
     }
@@ -409,7 +409,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
                 width = buffer.width;
             }
         });
-        this._texturesByAttachment.forEach((texture: Texture2) => {
+        this._texturesByAttachment.forEach((texture: Texture2D) => {
             if (isNaN(width) || texture.width < width) {
                 width = texture.width;
             }
@@ -431,7 +431,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
                 height = buffer.height;
             }
         });
-        this._texturesByAttachment.forEach((texture: Texture2) => {
+        this._texturesByAttachment.forEach((texture: Texture2D) => {
             if (isNaN(height) || texture.height < height) {
                 height = texture.height;
             }

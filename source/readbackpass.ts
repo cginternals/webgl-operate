@@ -13,7 +13,7 @@ import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
-import { Texture2 } from './texture2';
+import { Texture2D } from './texture2d';
 import { GLsizei2 } from './tuples';
 
 
@@ -122,7 +122,7 @@ export class ReadbackPass extends Initializable {
      * is not required (i.e., in IE11), since the depth texture is already rendered explicitly in a previous render
      * pass.
      */
-    protected _texture: Texture2;
+    protected _texture: Texture2D;
     protected _framebuffer: Framebuffer;
 
     /**
@@ -202,7 +202,7 @@ export class ReadbackPass extends Initializable {
     @Initializable.assert_initialized()
     protected directReadDepthAt(x: GLsizei, y: GLsizei): Uint8Array {
         assert(this._depthFBO !== undefined && this._depthFBO.valid, `valid depth FBO expected for reading back depth`);
-        const texture = this._depthFBO.texture(this._depthAttachment) as Texture2;
+        const texture = this._depthFBO.texture(this._depthAttachment) as Texture2D;
 
         const gl = this._context.gl;
         const size = texture.size;
@@ -232,7 +232,7 @@ export class ReadbackPass extends Initializable {
     renderThenReadDepthAt(x: GLsizei, y: GLsizei): Uint8Array {
 
         assert(this._depthFBO !== undefined && this._depthFBO.valid, `valid depth FBO expected for reading back depth`);
-        const texture = this._depthFBO.texture(this._depthAttachment) as Texture2;
+        const texture = this._depthFBO.texture(this._depthAttachment) as Texture2D;
 
         const gl = this._context.gl;
         const size = texture.size;
@@ -308,7 +308,7 @@ export class ReadbackPass extends Initializable {
 
         /* Configure read back framebuffer and color attachment. */
 
-        this._texture = new Texture2(this._context, 'ReadbackRenderTexture');
+        this._texture = new Texture2D(this._context, 'ReadbackRenderTexture');
         this._texture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
 
         this._framebuffer = new Framebuffer(this._context, 'ReadbackFBO');
@@ -396,7 +396,7 @@ export class ReadbackPass extends Initializable {
      */
     @Initializable.assert_initialized()
     coordsAt(x: GLsizei, y: GLsizei, zInNDC: number | undefined, viewProjectionInverse: mat4): vec3 | undefined {
-        const size = (this._depthFBO.texture(this._depthAttachment) as Texture2).size;
+        const size = (this._depthFBO.texture(this._depthAttachment) as Texture2D).size;
         const depth = zInNDC === undefined ? this.depthAt(x, y) : zInNDC;
         if (depth === undefined) {
             return undefined;
@@ -425,7 +425,7 @@ export class ReadbackPass extends Initializable {
         }
 
         const gl = this._context.gl;
-        const size = (this._idFBO.texture(this._idAttachment) as Texture2).size;
+        const size = (this._idFBO.texture(this._idAttachment) as Texture2D).size;
 
         const scale = this._referenceSize === undefined ? [1.0, 1.0] :
             [size[0] / this._referenceSize[0], size[1] / this._referenceSize[1]];

@@ -7,7 +7,7 @@ import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
-import { Texture2 } from './texture2';
+import { Texture2D } from './texture2d';
 
 
 /**
@@ -124,7 +124,7 @@ export class BlitPass extends Initializable {
 
         program.bind();
 
-        const texture = this._framebuffer.texture(this._readBuffer) as Texture2;
+        const texture = this._framebuffer.texture(this._readBuffer) as Texture2D;
         texture.bind(gl.TEXTURE0);
 
         const target = this._context.isWebGL2 ? gl.DRAW_FRAMEBUFFER : gl.FRAMEBUFFER;

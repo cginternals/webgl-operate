@@ -3,7 +3,7 @@ import { assert } from './auxiliaries';
 
 import { Context } from './context';
 import { Glyph } from './glyph';
-import { Texture2 } from './texture2';
+import { Texture2D } from './texture2d';
 import { GLfloat2, GLfloat4, GLsizei2 } from './tuples';
 import { Wizard } from './wizard';
 
@@ -43,7 +43,7 @@ export class FontFace {
     protected _glyphTexturePadding: GLfloat4 = [0.0, 0.0, 0.0, 0.0];
 
     /** @see {@link glyphTexturePadding} */
-    protected _glyphTexture: Texture2;
+    protected _glyphTexture: Texture2D;
 
     /**
      * Map associating a glyph index to a glyph (sub image of a texture).
@@ -65,7 +65,7 @@ export class FontFace {
         const gl = context.gl;
 
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
-        this._glyphTexture = new Texture2(context, `${identifier}GlyphAtlas`);
+        this._glyphTexture = new Texture2D(context, `${identifier}GlyphAtlas`);
         const internalFormat = Wizard.queryInternalTextureFormat(context, gl.RGBA, Wizard.Precision.byte);
         this._glyphTexture.initialize(1, 1, internalFormat[0], gl.RGBA, internalFormat[1]);
     }
@@ -199,10 +199,10 @@ export class FontFace {
      * The font face's associated glyph atlas. All glyph data is associated to this texture atlas.
      * @param texture - The new texture atlas for all glyphs
      */
-    set glyphTexture(texture: Texture2) {
+    set glyphTexture(texture: Texture2D) {
         this._glyphTexture = texture;
     }
-    get glyphTexture(): Texture2 {
+    get glyphTexture(): Texture2D {
         return this._glyphTexture;
     }
 
