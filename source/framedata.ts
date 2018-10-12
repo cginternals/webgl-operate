@@ -1,7 +1,7 @@
 import { RenderView } from './renderview';
 import { XRFrame, XRFrameOfReference, XRInputPose, XRInputSource } from './webxr';
 
-interface XRInputData {
+export interface XRInputData {
     source: XRInputSource;
     /** When tracking is lost, the pose might be `null` */
     pose: XRInputPose | null;
