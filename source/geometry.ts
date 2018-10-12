@@ -34,7 +34,7 @@ export abstract class Geometry extends Initializable implements Bindable {
         super();
 
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
-        this._vertexArray = new VertexArray(context, identifier + 'VAO');
+        this._vertexArray = new VertexArray(context, `${identifier}VAO`);
     }
 
 
