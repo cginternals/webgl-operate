@@ -25,10 +25,12 @@ export { Typesetter } from './typesetter';
 
 // /* DEBUG facilities */
 
+import * as debug_LabelRenderer from './debug/labelrenderer';
 import * as debug_TestNavigation from './debug/testnavigation';
 import * as debug_TestRenderer from './debug/testrenderer';
 
 export namespace debug {
+    export import LabelRenderer = debug_LabelRenderer.LabelRenderer;
     export import TestRenderer = debug_TestRenderer.TestRenderer;
     export import TestNavigation = debug_TestNavigation.TestNavigation;
 }

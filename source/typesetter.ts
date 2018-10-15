@@ -14,7 +14,7 @@ import { GLfloat2 } from './tuples';
  * The typesetter is responsible for layouting text on the screen or in a virtual space. It takes a label,
  * which defines where it wants to appear (@see {@link Label}), and a font face that is used to display the
  * text, and computes the actual position for each glyph. Its output is a vertex array, which describes the glyphs
- * position and appearance on the screen/in the scene and which can be rendered using a LabelRenderer.
+ * position and appearance on the screen/in the scene and which can be rendered using a LabelRenderPass.
  */
 export class Typesetter {
 

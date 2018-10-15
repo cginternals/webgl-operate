@@ -51,6 +51,33 @@ export class GlyphVertices extends Array<GlyphVertex> {
         }
     }
 
+    constructBuffers(originsOut: Float32Array, tangentsOut: Float32Array,
+        upsOut: Float32Array, texCoordsOut: Float32Array): void {
+
+        console.log('construct!!');
+
+        const origins: Array<number> = [];
+        const tangents: Array<number> = [];
+        const ups: Array<number> = [];
+        const texCoords: Array<number> = [];
+
+        const l = this.length;
+
+        for (let i = 0; i < l; i++) {
+            const v = this[i];
+
+            origins.push.apply(origins, v.origin);
+            tangents.push.apply(tangents, v.tangent);
+            ups.push.apply(ups, v.up);
+            texCoords.push.apply(texCoords, v.uvRect);
+        }
+
+        originsOut = Float32Array.from(origins);
+        tangentsOut = Float32Array.from(tangents);
+        upsOut = Float32Array.from(ups);
+        texCoordsOut = Float32Array.from(texCoords);
+    }
+
     // optimize() {
 
     // }
