@@ -22,7 +22,7 @@ export class Position3DLabel extends Label {
     /**
      * Constructs a pre-configured 3D-label with given text.
      * @param text - Valid context to create the object for.
-     * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
+     * @param fontFace - The font face that should be used for that label.
      */
     constructor(text: Text, fontFace: FontFace) {
         super(text, fontFace);
