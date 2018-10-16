@@ -15,14 +15,17 @@ import { Typesetter } from './typesetter';
  */
 export class Position3DLabel extends Label {
 
+    /** @see {@link position} */
     protected _position: vec3;
+    /** @see {@link direction} */
     protected _direction: vec3;
+    /** @see {@link up} */
     protected _up: vec3;
 
     /**
      * Constructs a pre-configured 3D-label with given text.
-     * @param text - Valid context to create the object for.
-     * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
+     * @param text - The text that is displayed by this label.
+     * @param fontFace - The font face that should be used for that label.
      */
     constructor(text: Text, fontFace: FontFace) {
         super(text, fontFace);
@@ -36,7 +39,7 @@ export class Position3DLabel extends Label {
     /**
      * Applies its position, direction and up-vector, then prepares the vertex storage so that the Typesetter can
      * typeset this label.
-     * @returns The transformed glyph vertices.
+     * @returns - The transformed glyph vertices.
      */
     typeset(): GlyphVertices {
         /** @todo assert: this.fontSizeUnit === Label.SpaceUnit.World */
@@ -77,9 +80,9 @@ export class Position3DLabel extends Label {
     /**
      * Sets 3D position parameters as specified in OpenLL. Position is the label's reference point (i.e. lower left
      * corner for horizontal alignment).
-     * @param x x coordinate of 3D position
-     * @param y y coordinate of 3D position
-     * @param z z coordinate of 3D position
+     * @param x - x coordinate of 3D position
+     * @param y - y coordinate of 3D position
+     * @param z - z coordinate of 3D position
      */
     setPosition(x: number, y: number, z: number): void {
         this._position = vec3.fromValues(x, y, z);
@@ -97,9 +100,9 @@ export class Position3DLabel extends Label {
 
     /**
      * Sets the 3D direction parameters as specified in OpenLL. The labels's direction is the direction of its baseline.
-     * @param x x coordinate of the 3D direction vector.
-     * @param y y coordinate of the 3D direction vector.
-     * @param z z coordinate of the 3D direction vector.
+     * @param x - x coordinate of the 3D direction vector.
+     * @param y - y coordinate of the 3D direction vector.
+     * @param z - z coordinate of the 3D direction vector.
      */
     setDirection(x: number, y: number, z: number): void {
         this.direction = vec3.fromValues(x, y, z);
@@ -118,9 +121,9 @@ export class Position3DLabel extends Label {
     /**
      * Sets the 3D up-vector parameters as specified in OpenLL. It should be orthogonal to the direction to ensure that
      * the label is not skewed.
-     * @param x x coordinate of the 3D up vector.
-     * @param y y coordinate of the 3D up vector.
-     * @param z z coordinate of the 3D up vector.
+     * @param x - x coordinate of the 3D up vector.
+     * @param y - y coordinate of the 3D up vector.
+     * @param z - z coordinate of the 3D up vector.
      */
     setUp(x: number, y: number, z: number): void {
         this.up = vec3.fromValues(x, y, z);
@@ -130,7 +133,7 @@ export class Position3DLabel extends Label {
      * This unit is used for the font size. This method overrides the super.fontSizeUnit, since a position3dlabel only
      * allows World, not Px nor Pt.
      * (@see {@link fontSize})
-     * @param newUnit unused, since there is only one allowed unit (World) for this kind of label
+     * @param newUnit - unused, since there is only one allowed unit (World) for this kind of label
      */
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is World for this label.`);

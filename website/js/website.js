@@ -15,6 +15,6 @@ window.onload = function () {
 
     canvas.controller.multiFrameNumber = 1024;
     canvas.frameScale = [1.0, 1.0];
-    renderer = new gloperate.LabelRenderer();
+    renderer = new gloperate.debug.LabelRenderer();
     canvas.renderer = renderer;
 };

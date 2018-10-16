@@ -31,8 +31,8 @@ export class FontLoader {
 
     /**
      * Parses the info fields for padding values and stores them in the font face
-     * @param stream The stream of the 'info' identifier.
-     * @param fontFace The font face in which the padding is stored.
+     * @param stream - The stream of the 'info' identifier.
+     * @param fontFace - The font face in which the padding is stored.
      */
     protected static processInfo(stream: Array<string>, fontFace: FontFace): void {
 
@@ -69,8 +69,8 @@ export class FontLoader {
     /**
      * Parses the common fields for lineHeight, base, ascent, descent, scaleW and scaleH to store them
      * in the font face.
-     * @param stream The stream of the 'common' identifier.
-     * @param fontFace The font face in which the parsed values are stored.
+     * @param stream - The stream of the 'common' identifier.
+     * @param fontFace - The font face in which the parsed values are stored.
      */
     protected static processCommon(stream: Array<string>, fontFace: FontFace): void {
 
@@ -103,10 +103,10 @@ export class FontLoader {
 
     /**
      * Parses a page to load the associated png-file, i.e., the glyph atlas.
-     * @param stream The stream of the 'page' identifier.
-     * @param fontFace The font face in which the loaded glyph texture is stored.
-     * @param filename The file name to find the png-file.
-     * @returns Promise for handling image load status.
+     * @param stream - The stream of the 'page' identifier.
+     * @param fontFace - The font face in which the loaded glyph texture is stored.
+     * @param filename - The file name to find the png-file.
+     * @returns - Promise for handling image load status.
      */
     protected static processPage(
         stream: Array<string>, fontFace: FontFace, filepath: string): Promise<void> {
@@ -134,8 +134,8 @@ export class FontLoader {
      * Parses the char fields for character id (codepoint), x, y, width, height, xoffset, yoffset, xadvance to
      * store them in the font face as instances of Glyph.
      * This relies on fontFace.base and fontFace.glyphTextureExtent, so execute processCommon() first.
-     * @param stream The stream of the 'char' identifier.
-     * @param fontFace The font face in which the loaded glyph texture is stored.
+     * @param stream - The stream of the 'char' identifier.
+     * @param fontFace - The font face in which the loaded glyph texture is stored.
      */
     protected static processChar(stream: Array<string>, fontFace: FontFace): void {
         const pairs: StringPairs = new Map<string, string>();
@@ -221,10 +221,10 @@ export class FontLoader {
 
     /**
      * Parses to find key-value pairs for given mandatory keys.
-     * @param stream The stream from which the pairs should be read.
-     * @param mandatoryKeys The found pairs are only valid if the mandatory keys are found.
-     * @param result key-value pairs, or undefined if not all mandatory keys are found.
-     * @returns success
+     * @param stream - The stream from which the pairs should be read.
+     * @param mandatoryKeys - The found pairs are only valid if the mandatory keys are found.
+     * @param result - key-value pairs, or undefined if not all mandatory keys are found.
+     * @returns - success
      */
     protected static readKeyValuePairs(stream: Array<string>, mandatoryKeys: Array<string>,
         resultPairs: StringPairs): boolean {
@@ -252,10 +252,10 @@ export class FontLoader {
 
     /**
      * Asynchronously loads a fnt-file and a png-file of the same name, to create a font face from them.
-     * @param context The WebGL rendering context.
-     * @param filename The path to the fnt-file.
-     * @param headless Boolean for headless mode.
-     * @param onImageLoad Callback is called when the glyph atlas is loaded.
+     * @param context - Valid context to create the object for.
+     * @param filename - The path to the fnt-file.
+     * @param headless - Boolean for headless mode.
+     * @param onImageLoad - Callback is called when the glyph atlas is loaded.
      */
     static async load(context: Context, filename: string, headless: boolean): Promise<FontFace> {
         const fontFace = new FontFace(context);

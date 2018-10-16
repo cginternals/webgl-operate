@@ -35,8 +35,26 @@ export interface GlyphVertex {
  */
 export class GlyphVertices extends Array<GlyphVertex> {
 
+    /** @see {@link origins} */
+    protected _origins: Float32Array;
+    /** @see {@link tangents} */
+    protected _tangents: Float32Array;
+    /** @see {@link ups} */
+    protected _ups: Float32Array;
+    /** @see {@link texCoords} */
+    protected _texCoords: Float32Array;
+
+    /**
+     * Constructs a specialized array containing GlyphVertex objects.
+     * @param numGlyphs - the number of GlyphVertex objects.
+     */
     constructor(numGlyphs: number) {
         super();
+
+        /* Set the prototype explicitly:
+         * https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work
+         */
+        Object.setPrototypeOf(this, GlyphVertices.prototype);
 
         for (let i = 0; i < numGlyphs; ++i) {
 
@@ -49,6 +67,66 @@ export class GlyphVertices extends Array<GlyphVertex> {
             };
             this.push(vertex);
         }
+
+        this._origins = new Float32Array(numGlyphs);
+        this._tangents = new Float32Array(numGlyphs);
+        this._ups = new Float32Array(numGlyphs);
+        this._texCoords = new Float32Array(numGlyphs);
+    }
+
+    /**
+     * Updates its buffers origins, tangents, ups and texCoords. Call this to get buffers suitable for LabelGeometry.
+     */
+    updateBuffers(): void {
+
+        const origins: Array<number> = [];
+        const tangents: Array<number> = [];
+        const ups: Array<number> = [];
+        const texCoords: Array<number> = [];
+
+        const l = this.length;
+
+        for (let i = 0; i < l; i++) {
+            const v = this[i];
+
+            origins.push.apply(origins, v.origin);
+            tangents.push.apply(tangents, v.tangent);
+            ups.push.apply(ups, v.up);
+            texCoords.push.apply(texCoords, v.uvRect);
+        }
+
+        this._origins = Float32Array.from(origins);
+        this._tangents = Float32Array.from(tangents);
+        this._ups = Float32Array.from(ups);
+        this._texCoords = Float32Array.from(texCoords);
+    }
+
+    /**
+     * All GlyphVertex origins gathered in one buffer. Call fillBuffers() to update it.
+     */
+    get origins(): Float32Array {
+        return this._origins;
+    }
+
+    /**
+     * All GlyphVertex tangent vectors gathered in one buffer. Call fillBuffers() to update it.
+     */
+    get tangents(): Float32Array {
+        return this._tangents;
+    }
+
+    /**
+     * All GlyphVertex up vectors gathered in one buffer. Call fillBuffers() to update it.
+     */
+    get ups(): Float32Array {
+        return this._ups;
+    }
+
+    /**
+     * All GlyphVertex texture coordinates gathered in one buffer. Call fillBuffers() to update it.
+     */
+    get texCoords(): Float32Array {
+        return this._texCoords;
     }
 
     // optimize() {
