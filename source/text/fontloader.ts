@@ -1,5 +1,5 @@
 
-import { log, logIf, LogLevel } from '../auxiliaries';
+import { log, logIf, LogLevel, assert } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { Context } from '../context';
@@ -108,27 +108,25 @@ export class FontLoader {
      * Parses a page to load the associated png-file, i.e., the glyph atlas.
      * @param stream - The stream of the 'page' identifier.
      * @param fontFace - The font face in which the loaded glyph texture is stored.
-     * @param filename - The file name to find the png-file.
      * @returns - Promise for handling image load status.
      */
-    protected static processPage(
-        stream: Array<string>, fontFace: FontFace, filePath: string): Promise<void> {
-
+    protected static processPage(stream: Array<string>, fontFace: FontFace, uri: string): Promise<void> {
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream, ['file'], pairs);
 
         if (!success) {
-            log(LogLevel.Warning, `Could not read texture filename from fnt file.`);
+            log(LogLevel.Warning, `reading page uri from fnt file failed`);
             this._valid = false;
         }
 
-        const path = Path.dirname(filePath) + `/`;
-        const filename = Path.basename(filePath, `.fnt`);
+        const path = Path.dirname(uri);
+        let page = pairs.get('file')!;
+        page = page.replace(/['"]+/g, ''); /* remove quotes */
 
-        const pngPath: string = path + filename + `.png`;
+        const pageUri = `${path}/${page}`;
 
-        return fontFace.glyphTexture.load(pngPath).catch((error) => {
-            log(LogLevel.Warning, `${error}. Could not load glyphTexture: ${pngPath}`);
+        return fontFace.glyphTexture.load(pageUri).catch((error) => {
+            log(LogLevel.Warning, `loading glyph page from '${pageUri}' failed: ${error}`);
             this._valid = false;
         });
     }
