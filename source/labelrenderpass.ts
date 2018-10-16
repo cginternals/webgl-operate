@@ -1,6 +1,4 @@
 
-// import { auxiliaries, mat4, tuples, vec2, vec3, vec4 } from 'gl-matrix';
-
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 import { assert, log, LogLevel } from './auxiliaries';
 
@@ -52,8 +50,6 @@ export class LabelRenderPass extends Initializable {
     /** @see {@link attachment} */
     protected _attachment: number | undefined;
 
-    // protected _config: LabelConfig;
-
     protected _drawRestricted: boolean;
 
     protected _program: Program;
@@ -61,8 +57,6 @@ export class LabelRenderPass extends Initializable {
     protected _uViewProjection: WebGLUniformLocation | undefined;
     protected _uNdcOffset: WebGLUniformLocation | undefined;
     protected _uGlyphAtlas: WebGLUniformLocation | undefined;
-
-    // protected _frameSize: [number, number];
 
     protected _fontFace: FontFace;
     protected _labels3D: Array<Position3DLabel>;
@@ -87,8 +81,6 @@ export class LabelRenderPass extends Initializable {
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
         this._vertices3D = new GlyphVertices(0);
         this._vertices2D = new GlyphVertices(0);
-
-        // this._frameSize = frameSize;
     }
 
     protected loadFont(context: Context): void {
@@ -185,7 +177,7 @@ export class LabelRenderPass extends Initializable {
     }
 
     /**
-     * This is deprecated. It can be generically used for all kinds of labels
+     * This is deprecated and currently kept for compatibility. It can be generically used for all kinds of labels.
      */
     prepareLabel(label: Label, is3D: boolean): void {
         label.fontFace = this._fontFace;
@@ -200,12 +192,12 @@ export class LabelRenderPass extends Initializable {
             // TODO meaningful ppiScale from label.ppiScale or config.ppiScale ?
             const ppiScale = 1;
 
-            // compute transform matrix
+            /* compute transform matrix */
             const transform = mat4.create();
 
             if (is3D) {
-                // even though px as font size unit doesn't make sense in 3D space, the current
-                // architecture doesn't forbid it. We have to pre-scale using aspect ratio.
+                /* even though px as font size unit doesn't make sense in 3D space, the current architecture doesn't
+                forbid it. We have to pre-scale using aspect ratio. */
                 mat4.scale(transform, transform, vec3.fromValues(1.0,
                     frameSize[1] / frameSize[0],
                     1.0));
@@ -236,7 +228,7 @@ export class LabelRenderPass extends Initializable {
             label.transform = mat4.mul(label.transform, label.userTransform, transform);
         }
 
-        // prepare vertex storage (values will be overridden by typesetter)
+        /* prepare vertex storage (values will be overridden by typesetter) */
         const vertices = new GlyphVertices(label.length);
 
         Typesetter.typeset(label, vertices, 0);
@@ -378,8 +370,6 @@ export class LabelRenderPass extends Initializable {
             gl.depthFunc(gl.LESS);
         }
 
-        // gl.depthFunc(gl.LESS);
-
         this._program.bind();
 
         if (this._drawRestricted) {
@@ -397,19 +387,14 @@ export class LabelRenderPass extends Initializable {
         necessary. */
         this._target.bind();
 
-        // if (this._geometry3D.valid) {
         this._geometry3D.bind();
         this._geometry3D.draw();
-        // }
 
-        // if (this._geometry2D.valid) {
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, mat4.create());
 
         this._geometry2D.bind();
         this._geometry2D.draw();
-        // }
 
-        // this._target.unbind();
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */
         // this._geometry.unbind();
@@ -460,14 +445,6 @@ export class LabelRenderPass extends Initializable {
         this._camera = camera;
         this._altered.alter('camera');
     }
-
-    // /**
-    //  * Update the frame size, which is needed to calculate the 2D label sizes.
-    //  */
-    // set frameSize(frameSize: [number, number]) {
-    //     this.assertInitialized();
-    //     this._frameSize = frameSize;
-    // }
 
     /**
      * Sets the attachment which should be rendered to when multiple render targets are not available.

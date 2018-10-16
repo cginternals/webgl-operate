@@ -213,7 +213,6 @@ namespace debug {
                  * and/or update: labels that get too small (to be readable) should not be rendered anymore
                  * (a.k.a. threshold for readability)
                  */
-                // this.setupScene();
             }
 
             if (this._altered.canvasSize) {
