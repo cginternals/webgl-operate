@@ -1,7 +1,7 @@
 
 import { assert } from '../auxiliaries';
 
-import { mat4, vec3 } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 
 import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
@@ -10,9 +10,7 @@ import { Camera } from '../camera';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { FontFace } from '../fontface';
-import { FontLoader } from '../fontloader';
 import { Framebuffer } from '../framebuffer';
-import { LabelGeometry } from '../labelgeometry';
 import { LabelRenderPass } from '../labelrenderpass';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { Navigation } from '../navigation';
