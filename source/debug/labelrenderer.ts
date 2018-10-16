@@ -311,7 +311,7 @@ namespace debug {
             anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
             anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            this._labelPass.renderThese3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
+            this._labelPass.render3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
 
 
             /** OpenLL 2D Labels */
@@ -323,7 +323,7 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.renderThese2DLabels([pos2Dlabel]);
+            this._labelPass.render2DLabels([pos2Dlabel]);
         }
     }
 }

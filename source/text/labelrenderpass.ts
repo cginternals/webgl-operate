@@ -96,8 +96,8 @@ export class LabelRenderPass extends Initializable {
         FontLoader.load(context, './data/opensansr144.fnt', false).then(
             (fontFace) => {
                 this._fontFace = fontFace;
-                this.renderThese3DLabels(this._labels3D);
-                this.renderThese2DLabels(this._labels2D);
+                this.render3DLabels(this._labels3D);
+                this.render2DLabels(this._labels2D);
             },
         );
     }
@@ -107,7 +107,7 @@ export class LabelRenderPass extends Initializable {
      * font face is loaded.
      * @param labels - all 2D labels
      */
-    renderThese2DLabels(labels: Array<Position2DLabel>): void {
+    render2DLabels(labels: Array<Position2DLabel>): void {
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 2D labels to render!`);
             return;
@@ -136,7 +136,7 @@ export class LabelRenderPass extends Initializable {
      * font face is loaded.
      * @param labels - all 3D labels
      */
-    renderThese3DLabels(labels: Array<Position3DLabel>): void {
+    render3DLabels(labels: Array<Position3DLabel>): void {
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 3D labels to render!`);
             return;
