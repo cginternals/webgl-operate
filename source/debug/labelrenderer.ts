@@ -9,19 +9,20 @@ import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
-import { FontFace } from '../fontface';
 import { Framebuffer } from '../framebuffer';
-import { LabelRenderPass } from '../labelrenderpass';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { Navigation } from '../navigation';
-import { Position2DLabel } from '../position2dlabel';
-import { Position3DLabel } from '../position3dlabel';
 import { Program } from '../program';
 import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
-import { Text } from '../text';
 import { Texture2D } from '../texture2d';
+
+import { FontFace } from '../text/fontface';
+import { LabelRenderPass } from '../text/labelrenderpass';
+import { Position2DLabel } from '../text/position2dlabel';
+import { Position3DLabel } from '../text/position3dlabel';
+import { Text } from '../text/text';
 
 import { TestNavigation } from './testnavigation';
 
@@ -81,11 +82,11 @@ namespace debug {
 
             /* Create and configure program and geometry. */
 
-            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
-            vert.initialize(require('../shaders/glyphquad.vert'));
+            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
+            vert.initialize(require('../text/glyph.vert'));
 
-            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
-            frag.initialize(require('../shaders/glyphquad.frag'));
+            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
+            frag.initialize(require('../text/glyph.frag'));
 
             this._program = new Program(this._context);
             this._program.initialize([vert, frag]);
@@ -238,6 +239,8 @@ namespace debug {
                 this._program.unbind();
             }
 
+            this._labelPass.update();
+
             this._altered.reset();
             this._camera.altered = false;
         }
@@ -308,7 +311,7 @@ namespace debug {
             anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
             anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            this._labelPass.renderThese3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
+            this._labelPass.render3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
 
 
             /** OpenLL 2D Labels */
@@ -320,7 +323,7 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.renderThese2DLabels([pos2Dlabel]);
+            this._labelPass.render2DLabels([pos2Dlabel]);
         }
     }
 }

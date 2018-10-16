@@ -1,38 +1,38 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
-import { assert, log, LogLevel } from './auxiliaries';
 
-import { Camera } from './camera';
-import { ChangeLookup } from './changelookup';
-import { Context } from './context';
+import { assert, log, LogLevel } from '../auxiliaries';
+import { GLfloat2 } from '../tuples';
+
+import { Camera } from '../camera';
+import { ChangeLookup } from '../changelookup';
+import { Color } from '../color';
+import { Context } from '../context';
+import { Framebuffer } from '../framebuffer';
+import { Initializable } from '../initializable';
+import { Program } from '../program';
+import { Shader } from '../shader';
 import { FontFace } from './fontface';
-import { FontLoader } from './fontloader';
-import { Framebuffer } from './framebuffer';
 import { GlyphVertices } from './glyphvertices';
-import { Initializable } from './initializable';
+
+import { FontLoader } from './fontloader';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
-import { Program } from './program';
-import { Shader } from './shader';
 import { Typesetter } from './typesetter';
 
-import tuples = require('./tuples');
 
 /**
  * The LabelRenderPass @todo
  */
 export class LabelRenderPass extends Initializable {
 
-    private _standardDerivatives: any = undefined;
-
-
     /**
      * Alterable auxiliary object for tracking changes on render pass inputs and lazy updates.
      */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, camera: false, geometry: false,
+        any: false, camera: false, geometry: false, color: false,
     });
 
     /**
@@ -47,26 +47,24 @@ export class LabelRenderPass extends Initializable {
     protected _camera: Camera;
 
     /** @see {@link ndcOffset} */
-    protected _ndcOffset: tuples.GLfloat2;
+    protected _ndcOffset: GLfloat2;
 
-    /** @see {@link attachment} */
-    protected _attachment: number | undefined;
+    /** @see {@link color} */
+    protected _color: Color;
 
-    protected _drawRestricted: boolean;
 
     protected _program: Program;
-    protected _uAttachment: WebGLUniformLocation | undefined;
     protected _uViewProjection: WebGLUniformLocation | undefined;
     protected _uNdcOffset: WebGLUniformLocation | undefined;
-    protected _uGlyphAtlas: WebGLUniformLocation | undefined;
+    protected _uColor: WebGLUniformLocation | undefined;
 
     protected _fontFace: FontFace;
     protected _labels3D: Array<Position3DLabel>;
     protected _labels2D: Array<Position2DLabel>;
     protected _geometry3D: LabelGeometry;
     protected _geometry2D: LabelGeometry;
-    protected _vertices3D: GlyphVertices;
-    protected _vertices2D: GlyphVertices;
+    protected _glyphs3D: GlyphVertices;
+    protected _glyphs2D: GlyphVertices;
 
     /**
      * Creates a render pass for labels.
@@ -76,13 +74,13 @@ export class LabelRenderPass extends Initializable {
         super();
         this._context = context;
 
-        this._drawRestricted = !this._context.isWebGL2 && !this._context.supportsDrawBuffers;
-
         this._program = new Program(context, 'LabelRenderProgram');
         this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
-        this._vertices3D = new GlyphVertices(0);
-        this._vertices2D = new GlyphVertices(0);
+        this._glyphs3D = new GlyphVertices(0);
+        this._glyphs2D = new GlyphVertices(0);
+
+        this._color = new Color([0.5, 0.5, 0.5], 1.0);
     }
 
     /**
@@ -95,11 +93,11 @@ export class LabelRenderPass extends Initializable {
         const fontFace: FontFace = new FontFace(context);
         this._fontFace = fontFace;
 
-        FontLoader.load(context, './data/opensansr144/opensansr144.fnt', false).then(
+        FontLoader.load(context, './data/opensansr144.fnt', false).then(
             (fontFace) => {
                 this._fontFace = fontFace;
-                this.renderThese3DLabels(this._labels3D);
-                this.renderThese2DLabels(this._labels2D);
+                this.render3DLabels(this._labels3D);
+                this.render2DLabels(this._labels2D);
             },
         );
     }
@@ -109,7 +107,7 @@ export class LabelRenderPass extends Initializable {
      * font face is loaded.
      * @param labels - all 2D labels
      */
-    renderThese2DLabels(labels: Array<Position2DLabel>): void {
+    render2DLabels(labels: Array<Position2DLabel>): void {
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 2D labels to render!`);
             return;
@@ -138,7 +136,7 @@ export class LabelRenderPass extends Initializable {
      * font face is loaded.
      * @param labels - all 3D labels
      */
-    renderThese3DLabels(labels: Array<Position3DLabel>): void {
+    render3DLabels(labels: Array<Position3DLabel>): void {
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 3D labels to render!`);
             return;
@@ -166,14 +164,14 @@ export class LabelRenderPass extends Initializable {
      * Removes all calculated vertices for 2D labels.
      */
     clear2DLabels(): void {
-        this._vertices2D = new GlyphVertices(0);
+        this._glyphs2D = new GlyphVertices(0);
     }
 
     /**
      * Removes all calculated vertices for 3D labels.
      */
     clear3DLabels(): void {
-        this._vertices3D = new GlyphVertices(0);
+        this._glyphs3D = new GlyphVertices(0);
     }
 
     /**
@@ -185,11 +183,10 @@ export class LabelRenderPass extends Initializable {
 
         const frameSize = this._camera.viewport;
 
-        this._vertices2D = this._vertices2D.concat(label.typeset(frameSize)) as GlyphVertices;
-        this._vertices2D.updateBuffers();
+        this._glyphs2D.concat(label.typeset(frameSize));
 
-        this._geometry2D.setGlyphCoords(this._vertices2D.origins, this._vertices2D.tangents, this._vertices2D.ups);
-        this._geometry2D.setTexCoords(this._vertices2D.texCoords);
+        this._geometry2D.setGlyphCoords(this._glyphs2D.origins, this._glyphs2D.tangents, this._glyphs2D.ups);
+        this._geometry2D.setTexCoords(this._glyphs2D.texCoords);
     }
 
     /**
@@ -199,11 +196,10 @@ export class LabelRenderPass extends Initializable {
     render3DLabel(label: Position3DLabel): void {
         label.fontFace = this._fontFace;
 
-        this._vertices3D = this._vertices3D.concat(label.typeset()) as GlyphVertices;
-        this._vertices3D.updateBuffers();
+        this._glyphs3D.concat(label.typeset());
 
-        this._geometry3D.setGlyphCoords(this._vertices3D.origins, this._vertices3D.tangents, this._vertices3D.ups);
-        this._geometry3D.setTexCoords(this._vertices3D.texCoords);
+        this._geometry3D.setGlyphCoords(this._glyphs3D.origins, this._glyphs3D.tangents, this._glyphs3D.ups);
+        this._geometry3D.setTexCoords(this._glyphs3D.texCoords);
     }
 
     /**
@@ -259,21 +255,21 @@ export class LabelRenderPass extends Initializable {
         }
 
         /* prepare vertex storage (values will be overridden by typesetter) */
-        const vertices = new GlyphVertices(label.length);
+        const glyphs = new GlyphVertices(label.length);
 
-        Typesetter.typeset(label, vertices, 0);
+        Typesetter.typeset(label, glyphs, 0);
 
-        this._vertices2D = this._vertices2D.concat(vertices) as GlyphVertices;
+        this._glyphs2D.concat(glyphs);
 
         const origins: Array<number> = [];
         const tans: Array<number> = [];
         const ups: Array<number> = [];
         const texCoords: Array<number> = [];
 
-        const l = this._vertices2D.length;
+        const l = this._glyphs2D.length;
 
         for (let i = 0; i < l; i++) {
-            const v = this._vertices2D[i];
+            const v = this._glyphs2D.vertices[i];
 
             origins.push.apply(origins, v.origin);
             tans.push.apply(tans, v.tangent);
@@ -296,41 +292,36 @@ export class LabelRenderPass extends Initializable {
     initialize(): boolean {
         const gl = this._context.gl;
 
-        /* Note that storing the extension has no use except preventing the compiler to remove the
-        context call in TPE. */
-        if (this._context.isWebGL1 && this._standardDerivatives === undefined) {
-            assert(this._context.supportsStandardDerivatives,
-                'OES_standard_derivatives is required by QuadRenderPass');
-            this._standardDerivatives = this._context.standardDerivatives;
-        }
-
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
-        vert.initialize(require('./shaders/glyphquad.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
-        frag.initialize(require('./shaders/glyphquad.frag'));
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
+        vert.initialize(require('./glyph.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
+        frag.initialize(require('./glyph.frag'));
 
         this._program.initialize([vert, frag]);
 
-        if (this._drawRestricted) {
-            this._uAttachment = this._program.uniform('u_attachment');
-        }
-
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
-        this._uGlyphAtlas = this._program.uniform('u_glyphs');
+        this._uColor = this._program.uniform('u_color');
 
-        const aVertex = this._program.attribute('a_quadVertex', 0);
+        this._program.bind();
+        gl.uniform1i(this._program.uniform('u_glyphs'), 0);
+        gl.uniform4fv(this._uColor, this._color.rgbaF32);
+        this._program.unbind();
+
+
+        const aVertex = this._program.attribute('a_vertex', 0);
         const aTexCoord = this._program.attribute('a_texCoord', 1);
         const aOrigin = this._program.attribute('a_origin', 2);
-        const aTan = this._program.attribute('a_tan', 3);
+        const aTangent = this._program.attribute('a_tangent', 3);
         const aUp = this._program.attribute('a_up', 4);
 
+
         if (!this._geometry2D.initialized) {
-            this._geometry2D.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
+            this._geometry2D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
 
         if (!this._geometry3D.initialized) {
-            this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTan, aUp);
+            this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
 
         this.loadFont(this._context);
@@ -344,10 +335,9 @@ export class LabelRenderPass extends Initializable {
         this._geometry2D.uninitialize();
         this._program.uninitialize();
 
-        this._uAttachment = undefined;
         this._uViewProjection = undefined;
         this._uNdcOffset = undefined;
-        this._uGlyphAtlas = undefined;
+        this._uColor = undefined;
     }
 
 
@@ -359,12 +349,10 @@ export class LabelRenderPass extends Initializable {
         if (this._altered.camera || this._camera.altered) {
             gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         }
-        /*
-        if (this._altered.geometry && this._geometry2D.valid && this._geometry3D.valid) {
-            this._geometry2D.update();
-            this._geometry3D.update();
+
+        if (this._altered.color) {
+            gl.uniform4fv(this._uColor, this._color.rgbaF32);
         }
-        */
 
         this._altered.reset();
     }
@@ -378,40 +366,22 @@ export class LabelRenderPass extends Initializable {
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
 
-        gl.disable(gl.CULL_FACE);
         gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
 
-        let wasBlendEnabled = false;
-        const oldBlendSRC: any = gl.getParameter(gl.BLEND_SRC_RGB);
-        const oldBlendDST: any = gl.getParameter(gl.BLEND_DST_RGB);
-
-        wasBlendEnabled = gl.isEnabled(gl.BLEND);
         gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-        /**
-         * If rendering is restricted to any attachment > 0 the depth attachment or actual depth buffer
-         * is used as is and no depth is written to the buffer.
-         */
-        if (this._attachment !== undefined && this._attachment > 0) {
-            gl.depthFunc(gl.LEQUAL);
-            gl.depthMask(false);
-        } else {
-            gl.depthFunc(gl.LESS);
-        }
+        /* Note that WebGL supports separate blend by default. */
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        /* Use the following plain blend mode when relying on premultiplied colors. */
+        // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
         this._program.bind();
 
-        if (this._drawRestricted) {
-            gl.uniform1i(this._uAttachment, this._attachment);
-        }
-
         gl.uniform2fv(this._uNdcOffset, this._ndcOffset);
-
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
         this._fontFace.glyphTexture.bind(gl.TEXTURE0);
-        gl.uniform1i(this._uGlyphAtlas, 0);
+
 
         /* Controlling renderer is expected to bind the appropriate target, thus, unbinding is not
         necessary. */
@@ -433,16 +403,8 @@ export class LabelRenderPass extends Initializable {
 
         this._fontFace.glyphTexture.unbind(gl.TEXTURE0);
 
-        gl.blendFunc(oldBlendSRC, oldBlendDST);
-        if (!wasBlendEnabled) {
-            gl.disable(gl.BLEND);
-        }
-
-        gl.depthFunc(gl.LESS);
-        gl.depthMask(true);
-
-        gl.disable(gl.STENCIL_TEST);
         gl.disable(gl.DEPTH_TEST);
+        gl.disable(gl.BLEND);
     }
 
     /**
@@ -459,7 +421,7 @@ export class LabelRenderPass extends Initializable {
      * multiple intermediate frames (multi-frame sampling).
      * @param offset - Subpixel offset used for vertex displacement (multi-frame anti-aliasing).
      */
-    set ndcOffset(offset: tuples.GLfloat2) {
+    set ndcOffset(offset: GLfloat2) {
         this.assertInitialized();
         this._ndcOffset = offset;
     }
@@ -477,12 +439,19 @@ export class LabelRenderPass extends Initializable {
     }
 
     /**
-     * Sets the attachment which should be rendered to when multiple render targets are not available.
+     * Color to be applied when rendering glyphs. Note that color will only change on update in order to reduce number
+     * of uniform value changes.
      */
-    set attachment(id: number | undefined) {
-        assert(id === undefined || (id !== undefined && this._drawRestricted),
-            `expected draw buffers to be unsupported`);
-        this._attachment = id;
+    set color(color: Color) {
+        if (this._color.equals(color)) {
+            return;
+        }
+        this._color = color;
+        this._altered.alter('color');
     }
-}
+    get color(): Color {
+        this._altered.alter('color'); /* just assume it will be altered on access. */
+        return this._color;
+    }
 
+}

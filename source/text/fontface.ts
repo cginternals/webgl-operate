@@ -1,11 +1,12 @@
 
-import { assert } from './auxiliaries';
+import { assert } from '../auxiliaries';
+import { GLfloat2, GLfloat4, GLsizei2 } from '../tuples';
 
-import { Context } from './context';
+import { Context } from '../context';
+import { Texture2D } from '../texture2d';
+import { Wizard } from '../wizard';
+
 import { Glyph } from './glyph';
-import { Texture2D } from './texture2d';
-import { GLfloat2, GLfloat4, GLsizei2 } from './tuples';
-import { Wizard } from './wizard';
 
 
 /**
@@ -13,12 +14,12 @@ import { Wizard } from './wizard';
  * line spacing, a glyph catalogue, as well as kerning information. The glyph catalogue is based on a set of glyphs
  * referring to a texture atlas (@see {@link Glyph}). All measures are provided in float even though most
  * glyph-textures and associated font data is encoded via integer values. A font face explicitly relies on floating
- * values to reduce the need of casting as well as to simplify the use for dpi aware text rendering. Most measures can
- * be interpreted as points (by means of the unit pt), again, easing the use for arbitrary dpi.
+ * values to reduce the need of casting as well as to simplify the use for dpi aware text rendering. Most measures
+ * can be interpreted as points (by means of the unit pt), again, easing the use for arbitrary dpi.
  * The font face interface is designed to access most basic font settings ascent, descent, and line gap (leading).
  * Additional font settings are provided via interface but are derived from or mapped to the above mentioned three
- * settings, e.g., font size is the sum of descent and ascent. This is to provide as much convenience measures for type
- * setting/font rendering as possible.
+ * settings, e.g., font size is the sum of descent and ascent. This is to provide as much convenience measures for
+ * type setting/font rendering as possible.
  * Note: This class does not provide dpi awareness, which has to be handled outside of this class, e.g., during
  * layouting and rendering.
  */
@@ -54,9 +55,9 @@ export class FontFace {
     protected _context: Context;
 
     /**
-     * Constructs an unconfigured, empty font face specification. The appropriate setters should be used for configuring
-     * the font face. Alternatively, the font importer (@see {@link FontImporter}) provides the import of bitmap-font
-     * base configuration file ({@link http://www.angelcode.com/products/bmfont/}).
+     * Constructs an unconfigured, empty font face specification. The appropriate setters should be used for
+     * configuring the font face. Alternatively, the font importer (@see {@link FontImporter}) provides the import
+     * of bitmap-font base configuration file ({@link http://www.angelcode.com/products/bmfont/}).
      * @param context - Valid context to create the object for.
      * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
      */
@@ -71,8 +72,8 @@ export class FontFace {
     }
 
     /**
-     * The size of the font in pt. The font size is the measure from the tops of the tallest glyphs (ascenders) to the
-     * bottom of the lowest descenders in pt. It is derived via the sum of ascent and descent.
+     * The size of the font in pt. The font size is the measure from the tops of the tallest glyphs (ascenders) to
+     * the bottom of the lowest descenders in pt. It is derived via the sum of ascent and descent.
      * @return - The font size in pt (ascent + descent).
      */
     get size(): number {
@@ -132,8 +133,9 @@ export class FontFace {
     }
 
     /**
-     * Set the baseline-to-baseline distance in pt. Negative values will result in negative linegap. The line height is
-     * derived as follows: line_height = size + line_gap, or alternatively: line_height = size * line_space
+     * Set the baseline-to-baseline distance in pt. Negative values will result in negative linegap. The line
+     * height is derived as follows: line_height = size + line_gap, or alternatively:
+     * line_height = size * line_space
      * @param lineHeight - The line height (baseline-to-baseline distance) in pt.
      */
     set lineHeight(lineHeight: number) {
@@ -144,16 +146,16 @@ export class FontFace {
     }
 
     /**
-     * Set the relative baseline-to-baseline distance w.r.t. the font's size. The line space is mapped to line gap as
-     * follows: line_gap = size * (line_space - 1). A space < 1.0 will result in a negative line gap.
+     * Set the relative baseline-to-baseline distance w.r.t. the font's size. The line space is mapped to line gap
+     * as follows: line_gap = size * (line_space - 1). A space < 1.0 will result in a negative line gap.
      * @param lineSpace - The relative baseline-to-baseline distance w.r.t. the font's size.
      */
     set lineSpace(lineSpace: number) {
         this._lineGap = this.size * (lineSpace - 1);
     }
     /**
-     * The relative baseline-to-baseline distance w.r.t. the font's size. The relative line space is derived as follows:
-     * line_space = size / line_height; Note that the descent is usually a negative value.
+     * The relative baseline-to-baseline distance w.r.t. the font's size. The relative line space is derived as
+     * follows: line_space = size / line_height; Note that the descent is usually a negative value.
      * @return - The relative baseline-to-baseline distance w.r.t. the font's size.
      */
     get lineSpace(): number {
@@ -182,7 +184,8 @@ export class FontFace {
 
     /**
      * The padding applied to every glyph in px. This can only be set via setGlyphTexture.
-     * @param padding - CSS style (top, right, bottom, left) padding applied to every glyph within the texture in px.
+     * @param padding - CSS style (top, right, bottom, left) padding applied to every glyph within the texture in
+     * px.
      */
     set glyphTexturePadding(padding: GLfloat4) {
         assert(padding[0] >= 0.0, 'expected padding[0] to be larger than zero.');
@@ -215,8 +218,9 @@ export class FontFace {
     }
 
     /**
-     * Direct access to an indexed glyph. If the glyph does not exist, an empty glyph is returned without adding it to
-     * glyphs. The glyph atlas might be loaded asynchronously, thus, new glyphs are expected to be added via addGlyph.
+     * Direct access to an indexed glyph. If the glyph does not exist, an empty glyph is returned without adding it
+     * to glyphs. The glyph atlas might be loaded asynchronously, thus, new glyphs are expected to be added via
+     * addGlyph.
      * @param index - Index of the glyph to access.
      * @return - Glyph with the matching index or an empty glyph, if index has not match
      */
@@ -248,9 +252,9 @@ export class FontFace {
     }
 
     /**
-     * Check if a glyph is depictable/renderable. If the glyph's sub-texture vertical or horizontal extent is zero the
-     * glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well as
-     * unknown glyphs do not need to be processed for rendering.
+     * Check if a glyph is depictable/renderable. If the glyph's sub-texture vertical or horizontal extent is zero
+     * the glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well
+     * as unknown glyphs do not need to be processed for rendering.
      * @param index - Index of the glyph to access.
      * @return - Returns true if the glyph needs to be depicted/rendered.
      */
@@ -259,12 +263,12 @@ export class FontFace {
     }
 
     /**
-     * Kerning for a glyph and a subsequent glyph in pt. If the glyph or the subsequent glyph are unknown to this font
-     * face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph class.
+     * Kerning for a glyph and a subsequent glyph in pt. If the glyph or the subsequent glyph are unknown to this
+     * font face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph class.
      * @param index - The current glyph index (e.g., of the current pen-position).
      * @param subsequentIndex - The glyph index of the subsequent/next glyph.
-     * @return - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown to
-     * this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
+     * @return - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown
+     * to this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
      */
     kerning(index: GLsizei, subsequentIndex: GLsizei): number {
         const glyph = this._glyphs.get(index);

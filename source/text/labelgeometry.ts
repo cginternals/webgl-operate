@@ -1,10 +1,10 @@
 
-import { assert } from './auxiliaries';
+import { assert } from '../auxiliaries';
 
-import { Buffer } from './buffer';
-import { Context } from './context';
-import { Geometry } from './geometry';
-import { Initializable } from './initializable';
+import { Buffer } from '../buffer';
+import { Context } from '../context';
+import { Geometry } from '../geometry';
+import { Initializable } from '../initializable';
 
 
 /**
@@ -160,7 +160,7 @@ export class LabelGeometry extends Geometry {
          * These vertices are equal for all quads. There actual position will be changed using
          * origin, tangent and up(-vector).
          */
-        this._vertices = Float32Array.from([0, 0, 0, 1, 1, 0, 1, 1]);
+        this._vertices = new Float32Array([0, 0, 0, 1, 1, 0, 1, 1]);
         this._buffers[0].data(this._vertices, gl.STATIC_DRAW);
 
         return valid;

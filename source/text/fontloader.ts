@@ -1,12 +1,15 @@
 
-import { log, logIf, LogLevel } from './auxiliaries';
+import { log, logIf, LogLevel } from '../auxiliaries';
+import { GLfloat2, GLfloat4 } from '../tuples';
 
-import { Context } from './context';
-import { fetchAsync } from './fetch';
+import { Context } from '../context';
+import { fetchAsync } from '../fetch';
+
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
-import { GLfloat2, GLfloat4 } from './tuples';
 
+
+/** @todo replace path */
 import Path = require('path');
 
 
@@ -44,23 +47,23 @@ export class FontLoader {
             return;
         }
 
-        const values = pairs.get('padding')!.split(',');
+        const attributes = pairs.get('padding')!.split(',');
 
-        if (values.length !== 4) {
-            log(LogLevel.Warning, `expected 4 values for padding, given ${values} (${values.length})`);
+        if (attributes.length !== 4) {
+            log(LogLevel.Warning, `expected 4 values for padding, given ${attributes} (${attributes.length})`);
             this._valid = false;
             return;
         }
 
         const padding: GLfloat4 = [
             /* top */
-            parseFloat(values[2]),
+            parseFloat(attributes[2]),
             /* right */
-            parseFloat(values[1]),
+            parseFloat(attributes[1]),
             /* bottom */
-            parseFloat(values[3]),
+            parseFloat(attributes[3]),
             /* left */
-            parseFloat(values[0]),
+            parseFloat(attributes[0]),
         ];
 
         fontFace.glyphTexturePadding = padding;
@@ -105,27 +108,26 @@ export class FontLoader {
      * Parses a page to load the associated png-file, i.e., the glyph atlas.
      * @param stream - The stream of the 'page' identifier.
      * @param fontFace - The font face in which the loaded glyph texture is stored.
-     * @param filename - The file name to find the png-file.
+     * @param uri - URI linking the fnt-file (used for dirname retrieval). Data URI not yet supported.
      * @returns - Promise for handling image load status.
      */
-    protected static processPage(
-        stream: Array<string>, fontFace: FontFace, filepath: string): Promise<void> {
-
+    protected static processPage(stream: Array<string>, fontFace: FontFace, uri: string): Promise<void> {
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream, ['file'], pairs);
 
         if (!success) {
-            log(LogLevel.Warning, `Could not read texture filename from fnt file.`);
+            log(LogLevel.Warning, `reading page uri from fnt file failed`);
             this._valid = false;
         }
 
-        const path = Path.dirname(filepath) + `/`;
-        const filename = Path.basename(filepath, `.fnt`);
+        const path = Path.dirname(uri);
+        let page = pairs.get('file')!;
+        page = page.replace(/['"]+/g, ''); /* remove quotes */
 
-        const pngPath: string = path + filename + `.png`;
+        const pageUri = `${path}/${page}`;
 
-        return fontFace.glyphTexture.load(pngPath).catch((error) => {
-            log(LogLevel.Warning, `${error}. Could not load glyphTexture: ${pngPath}`);
+        return fontFace.glyphTexture.load(pageUri).catch((error) => {
+            log(LogLevel.Warning, `loading glyph page from '${pageUri}' failed: ${error}`);
             this._valid = false;
         });
     }
@@ -251,23 +253,23 @@ export class FontLoader {
     }
 
     /**
-     * Asynchronously loads a fnt-file and a png-file of the same name, to create a font face from them.
+     * Asynchronously loads a fnt-file and referenced pages to create a font face from them.
      * @param context - Valid context to create the object for.
-     * @param filename - The path to the fnt-file.
+     * @param uri - URI linking the fnt-file that should be loaded. Data URI not yet supported.
      * @param headless - Boolean for headless mode.
      * @param onImageLoad - Callback is called when the glyph atlas is loaded.
      */
-    static async load(context: Context, filename: string, headless: boolean): Promise<FontFace> {
+    static async load(context: Context, uri: string, headless: boolean): Promise<FontFace> {
         const fontFace = new FontFace(context);
 
         this._valid = true;
 
         let text;
         try {
-            text = await fetchAsync(filename, '', (text) => text);
+            text = await fetchAsync(uri, '', (text) => text);
         } catch (e) {
             /* promise rejected */
-            log(LogLevel.Warning, `Could not load font file. filename is: ${filename}`);
+            log(LogLevel.Warning, `loading font file '${uri}' failed`);
             this._valid = false;
         }
 
@@ -275,32 +277,32 @@ export class FontLoader {
         const lines = text.split('\n');
 
         const promises = [];
-        for (const l of lines) {
+        for (const line of lines) {
             if (!this._valid) {
                 break;
             }
-            let line = l.split(' ');
-            const identifier = line[0];
-            line = line.slice(1);
+            let values = line.split(' ');
+            const identifier = values[0];
+            values = values.slice(1);
 
             /* tslint:disable-next-line:switch-default */
             switch (identifier) {
                 case 'info':
-                    this.processInfo(line, fontFace);
+                    this.processInfo(values, fontFace);
                     break;
                 case 'common':
-                    this.processCommon(line, fontFace);
+                    this.processCommon(values, fontFace);
                     break;
                 case 'page':
                     if (!headless) {
-                        promises.push(this.processPage(line, fontFace, filename));
+                        promises.push(this.processPage(values, fontFace, uri));
                     }
                     break;
                 case 'char':
-                    this.processChar(line, fontFace);
+                    this.processChar(values, fontFace);
                     break;
                 case 'kerning':
-                    this.processKerning(line, fontFace);
+                    this.processKerning(values, fontFace);
                     break;
             }
         }
@@ -310,8 +312,9 @@ export class FontLoader {
         if (this._valid) {
             return fontFace;
         } else {
-            log(LogLevel.Warning, `No valid FontFace created.`);
+            log(LogLevel.Warning, `no valid FontFace created`);
             return new FontFace(context, `invalid`);
         }
     }
+
 }
