@@ -1,10 +1,12 @@
 {
     "check-coverage": false,
     "include": [
-        "source/**/*.ts"
+        "source/**/*.ts",
+        "test/**/*.test.ts"
     ],
     "exclude": [
-        "**/*.d.ts"
+        "**/*.d.ts",
+        "**/website/**"
     ],
     "extension": [
         ".ts"
