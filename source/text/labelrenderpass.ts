@@ -63,8 +63,8 @@ export class LabelRenderPass extends Initializable {
     protected _labels2D: Array<Position2DLabel>;
     protected _geometry3D: LabelGeometry;
     protected _geometry2D: LabelGeometry;
-    protected _vertices3D: GlyphVertices;
-    protected _vertices2D: GlyphVertices;
+    protected _glyphs3D: GlyphVertices;
+    protected _glyphs2D: GlyphVertices;
 
     /**
      * Creates a render pass for labels.
@@ -77,8 +77,8 @@ export class LabelRenderPass extends Initializable {
         this._program = new Program(context, 'LabelRenderProgram');
         this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
-        this._vertices3D = new GlyphVertices(0);
-        this._vertices2D = new GlyphVertices(0);
+        this._glyphs3D = new GlyphVertices(0);
+        this._glyphs2D = new GlyphVertices(0);
 
         this._color = new Color([0.5, 0.5, 0.5], 1.0);
     }
@@ -164,14 +164,14 @@ export class LabelRenderPass extends Initializable {
      * Removes all calculated vertices for 2D labels.
      */
     clear2DLabels(): void {
-        this._vertices2D = new GlyphVertices(0);
+        this._glyphs2D = new GlyphVertices(0);
     }
 
     /**
      * Removes all calculated vertices for 3D labels.
      */
     clear3DLabels(): void {
-        this._vertices3D = new GlyphVertices(0);
+        this._glyphs3D = new GlyphVertices(0);
     }
 
     /**
@@ -183,11 +183,10 @@ export class LabelRenderPass extends Initializable {
 
         const frameSize = this._camera.viewport;
 
-        this._vertices2D = this._vertices2D.concat(label.typeset(frameSize)) as GlyphVertices;
-        this._vertices2D.updateBuffers();
+        this._glyphs2D.concat(label.typeset(frameSize));
 
-        this._geometry2D.setGlyphCoords(this._vertices2D.origins, this._vertices2D.tangents, this._vertices2D.ups);
-        this._geometry2D.setTexCoords(this._vertices2D.texCoords);
+        this._geometry2D.setGlyphCoords(this._glyphs2D.origins, this._glyphs2D.tangents, this._glyphs2D.ups);
+        this._geometry2D.setTexCoords(this._glyphs2D.texCoords);
     }
 
     /**
@@ -197,11 +196,10 @@ export class LabelRenderPass extends Initializable {
     render3DLabel(label: Position3DLabel): void {
         label.fontFace = this._fontFace;
 
-        this._vertices3D = this._vertices3D.concat(label.typeset()) as GlyphVertices;
-        this._vertices3D.updateBuffers();
+        this._glyphs3D.concat(label.typeset());
 
-        this._geometry3D.setGlyphCoords(this._vertices3D.origins, this._vertices3D.tangents, this._vertices3D.ups);
-        this._geometry3D.setTexCoords(this._vertices3D.texCoords);
+        this._geometry3D.setGlyphCoords(this._glyphs3D.origins, this._glyphs3D.tangents, this._glyphs3D.ups);
+        this._geometry3D.setTexCoords(this._glyphs3D.texCoords);
     }
 
     /**
@@ -257,21 +255,21 @@ export class LabelRenderPass extends Initializable {
         }
 
         /* prepare vertex storage (values will be overridden by typesetter) */
-        const vertices = new GlyphVertices(label.length);
+        const glyphs = new GlyphVertices(label.length);
 
-        Typesetter.typeset(label, vertices, 0);
+        Typesetter.typeset(label, glyphs, 0);
 
-        this._vertices2D = this._vertices2D.concat(vertices) as GlyphVertices;
+        this._glyphs2D.concat(glyphs);
 
         const origins: Array<number> = [];
         const tans: Array<number> = [];
         const ups: Array<number> = [];
         const texCoords: Array<number> = [];
 
-        const l = this._vertices2D.length;
+        const l = this._glyphs2D.length;
 
         for (let i = 0; i < l; i++) {
-            const v = this._vertices2D[i];
+            const v = this._glyphs2D.vertices[i];
 
             origins.push.apply(origins, v.origin);
             tans.push.apply(tans, v.tangent);

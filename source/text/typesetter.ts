@@ -100,13 +100,13 @@ export class Typesetter {
      * the targeted line alignment.
      * @param pen - Current typesetting position (probably the end of the line in typesetting space).
      * @param alignment - Targeted alignment, e.g., left, center, or right.
-     * @param vertices - Glyph vertices for rendering to align the origins' x-components of (expected untransformed).
+     * @param glyphs - Glyph vertices for rendering to align the origins' x-components of (expected untransformed).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      */
     protected static transformAlignment(pen: vec2, alignment: Label.Alignment,
-        vertices: GlyphVertices | undefined, begin: number, end: number): void {
-        if (vertices === undefined || alignment === Label.Alignment.Left) {
+        glyphs: GlyphVertices | undefined, begin: number, end: number): void {
+        if (glyphs === undefined || alignment === Label.Alignment.Left) {
             return;
         }
 
@@ -117,22 +117,22 @@ export class Typesetter {
 
         /* Origin is expected to be in typesetting space (not transformed yet). */
         for (let i = begin; i < end; ++i) {
-            vertices[i].origin[0] += penOffset;
+            glyphs.vertices[i].origin[0] += penOffset;
         }
     }
 
     /**
      * Adjusts the vertices for line anchor (done due after typesetting) w.r.t. the targeted anchoring.
      * @param label - Label to adjust the y-positions for.
-     * @param vertices - Glyph vertices for rendering to align the origins' y-components of (expected untransformed).
+     * @param glyphs - Glyph vertices for rendering to align the origins' y-components of (expected untransformed).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      *
      * @todo Apply once at the beginning! Initial offset!
      */
     protected static transformLineAnchor(label: Label,
-        vertices: GlyphVertices | undefined, begin: number, end: number): void {
-        if (vertices === undefined) {
+        glyphs: GlyphVertices | undefined, begin: number, end: number): void {
+        if (glyphs === undefined) {
             return;
         }
 
@@ -159,7 +159,7 @@ export class Typesetter {
         }
 
         for (let i = begin; i <= end; ++i) {
-            vertices[i].origin[1] -= offset;
+            glyphs.vertices[i].origin[1] -= offset;
         }
     }
 
@@ -200,18 +200,18 @@ export class Typesetter {
     /**
      * Computes origin, tangent, and up vector for every vertex of in the given range.
      * @param transform - Transformation to apply to every vertex.
-     * @param vertices - Glyph vertices to be transformed (expected untransformed, in typesetting space).
+     * @param glyphs - Glyph vertices to be transformed (expected untransformed, in typesetting space).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      */
     protected static transformVertex(transform: mat4,
-        vertices: GlyphVertices | undefined, begin: number, end: number): void {
-        if (vertices === undefined || mat4.equals(transform, mat4.create())) {
+        glyphs: GlyphVertices | undefined, begin: number, end: number): void {
+        if (glyphs === undefined || mat4.equals(transform, mat4.create())) {
             return;
         }
 
         for (let i: number = begin; i < end; ++i) {
-            const v = vertices[i];
+            const v = glyphs.vertices[i];
 
             const lowerLeft: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
                 v.origin[0], v.origin[1], v.origin[2], 1.0), transform);
@@ -244,10 +244,10 @@ export class Typesetter {
     /**
      * Typesets the given label, transforming the vertices in-world, ready to be rendered.
      * @param label the label that shall be typeset
-     * @param vertices the glyphvertices, a prepared (optionally empty) vertex storage
+     * @param glyphs the glyph vertices, a prepared (optionally empty) vertex storage
      * @param begin vertex index to start the typesetting (usually 0)
      */
-    static typeset(label: Label, vertices?: GlyphVertices, begin?: number): GLfloat2 {
+    static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
         /* Horizontal and vertical position at which typesetting takes place/arrived. */
         const pen = vec2.create();
 
@@ -274,7 +274,7 @@ export class Typesetter {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
                 Typesetter.backward(label, index - 1, iBegin, pen, extent);
                 /* Handle alignment (does nothing if vertices are not required/undefined). */
-                Typesetter.transformAlignment(pen, label.alignment, vertices, feedVertexIndex, vertexIndex);
+                Typesetter.transformAlignment(pen, label.alignment, glyphs, feedVertexIndex, vertexIndex);
 
                 pen[0] = 0.0;
                 pen[1] -= label.fontFace.lineHeight;
@@ -286,7 +286,7 @@ export class Typesetter {
             }
 
             /* Add and configure data for rendering the current character/glyph of the label. */
-            Typesetter.transformGlyph(label.fontFace, pen, glyph, vertices ? vertices[vertexIndex++] : undefined);
+            Typesetter.transformGlyph(label.fontFace, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
 
             pen[0] += glyph.advance;
         }
@@ -294,10 +294,10 @@ export class Typesetter {
         /* Handle alignment (when last line of sequence is processed). */
         Typesetter.backward(label, index - 1, iBegin, pen, extent);
         /* Handle alignment and anchoring (does nothing if vertices are not required/undefined). */
-        Typesetter.transformAlignment(pen, label.alignment, vertices, feedVertexIndex, iEnd - 1);
-        Typesetter.transformLineAnchor(label, vertices, iBegin, iEnd - 1);
+        Typesetter.transformAlignment(pen, label.alignment, glyphs, feedVertexIndex, iEnd - 1);
+        Typesetter.transformLineAnchor(label, glyphs, iBegin, iEnd - 1);
 
-        Typesetter.transformVertex(label.transform, vertices, iBegin, vertexIndex);
+        Typesetter.transformVertex(label.transform, glyphs, iBegin, vertexIndex);
 
         const labelExtent = Typesetter.transformExtent(label.transform, extent);
         label.extent = labelExtent;

@@ -1,5 +1,5 @@
 
-import { assert, log, logIf, LogLevel } from '../auxiliaries';
+import { log, logIf, LogLevel } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { Context } from '../context';
@@ -47,23 +47,23 @@ export class FontLoader {
             return;
         }
 
-        const values = pairs.get('padding')!.split(',');
+        const attributes = pairs.get('padding')!.split(',');
 
-        if (values.length !== 4) {
-            log(LogLevel.Warning, `expected 4 values for padding, given ${values} (${values.length})`);
+        if (attributes.length !== 4) {
+            log(LogLevel.Warning, `expected 4 values for padding, given ${attributes} (${attributes.length})`);
             this._valid = false;
             return;
         }
 
         const padding: GLfloat4 = [
             /* top */
-            parseFloat(values[2]),
+            parseFloat(attributes[2]),
             /* right */
-            parseFloat(values[1]),
+            parseFloat(attributes[1]),
             /* bottom */
-            parseFloat(values[3]),
+            parseFloat(attributes[3]),
             /* left */
-            parseFloat(values[0]),
+            parseFloat(attributes[0]),
         ];
 
         fontFace.glyphTexturePadding = padding;

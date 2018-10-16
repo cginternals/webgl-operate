@@ -30,10 +30,14 @@ export interface GlyphVertex {
     uvRect: vec4;
 }
 
+
 /**
  * Vertex cloud that describes each glyph that is to be rendered on the screen.
  */
-export class GlyphVertices extends Array<GlyphVertex> {
+export class GlyphVertices {
+
+    /** @see {@link vertices} */
+    protected _vertices = new Array<GlyphVertex>();
 
     /** @see {@link origins} */
     protected _origins: Float32Array;
@@ -44,18 +48,12 @@ export class GlyphVertices extends Array<GlyphVertex> {
     /** @see {@link texCoords} */
     protected _texCoords: Float32Array;
 
+
     /**
      * Constructs a specialized array containing GlyphVertex objects.
      * @param numGlyphs - the number of GlyphVertex objects.
      */
     constructor(numGlyphs: number) {
-        super();
-
-        /* Set the prototype explicitly:
-         * https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work
-         */
-        Object.setPrototypeOf(this, GlyphVertices.prototype);
-
         for (let i = 0; i < numGlyphs; ++i) {
 
             const vertex: GlyphVertex = {
@@ -65,7 +63,7 @@ export class GlyphVertices extends Array<GlyphVertex> {
                 /* vec2 lowerLeft and vec2 upperRight in glyph texture (uv) */
                 uvRect: vec4.create(),
             };
-            this.push(vertex);
+            this._vertices.push(vertex);
         }
 
         this._origins = new Float32Array(numGlyphs);
@@ -77,53 +75,80 @@ export class GlyphVertices extends Array<GlyphVertex> {
     /**
      * Updates its buffers origins, tangents, ups and texCoords. Call this to get buffers suitable for LabelGeometry.
      */
-    updateBuffers(): void {
+    update(): void {
+        const length = this.length;
 
-        const origins: Array<number> = [];
-        const tangents: Array<number> = [];
-        const ups: Array<number> = [];
-        const texCoords: Array<number> = [];
+        this._origins = new Float32Array(length * 3);
+        this._tangents = new Float32Array(length * 3);
+        this._ups = new Float32Array(length * 3);
 
-        const l = this.length;
+        this._texCoords = new Float32Array(length * 4);
 
-        for (let i = 0; i < l; i++) {
-            const v = this[i];
+        for (let i = 0; i < length; i++) {
+            const vertex = this._vertices[i];
 
-            origins.push.apply(origins, v.origin);
-            tangents.push.apply(tangents, v.tangent);
-            ups.push.apply(ups, v.up);
-            texCoords.push.apply(texCoords, v.uvRect);
+            this._origins[i * 3 + 0] = vertex.origin[0];
+            this._origins[i * 3 + 1] = vertex.origin[1];
+            this._origins[i * 3 + 2] = vertex.origin[2];
+
+            this._tangents[i * 3 + 0] = vertex.tangent[0];
+            this._tangents[i * 3 + 1] = vertex.tangent[1];
+            this._tangents[i * 3 + 2] = vertex.tangent[2];
+
+            this._ups[i * 3 + 0] = vertex.up[0];
+            this._ups[i * 3 + 1] = vertex.up[1];
+            this._ups[i * 3 + 2] = vertex.up[2];
+
+            this._texCoords[i * 4 + 0] = vertex.uvRect[0];
+            this._texCoords[i * 4 + 1] = vertex.uvRect[1];
+            this._texCoords[i * 4 + 2] = vertex.uvRect[2];
+            this._texCoords[i * 4 + 3] = vertex.uvRect[3];
         }
+    }
 
-        this._origins = Float32Array.from(origins);
-        this._tangents = Float32Array.from(tangents);
-        this._ups = Float32Array.from(ups);
-        this._texCoords = Float32Array.from(texCoords);
+    concat(glyphs: GlyphVertices): void {
+        this._vertices = this._vertices.concat(glyphs._vertices);
+        this.update();
+    }
+
+
+    /**
+     * Access to the glyph vertex array.
+     */
+    get vertices(): Array<GlyphVertex> {
+        return this._vertices;
     }
 
     /**
-     * All GlyphVertex origins gathered in one buffer. Call fillBuffers() to update it.
+     * Number of glyph vertices.
+     */
+    get length(): number {
+        return this._vertices.length;
+    }
+
+    /**
+     * All GlyphVertex origins gathered in one buffer. Call update() to update it.
      */
     get origins(): Float32Array {
         return this._origins;
     }
 
     /**
-     * All GlyphVertex tangent vectors gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex tangent vectors gathered in one buffer. Call update() to update it.
      */
     get tangents(): Float32Array {
         return this._tangents;
     }
 
     /**
-     * All GlyphVertex up vectors gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex up vectors gathered in one buffer. Call update() to update it.
      */
     get ups(): Float32Array {
         return this._ups;
     }
 
     /**
-     * All GlyphVertex texture coordinates gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex texture coordinates gathered in one buffer. Call update() to update it.
      */
     get texCoords(): Float32Array {
         return this._texCoords;
