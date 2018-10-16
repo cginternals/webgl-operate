@@ -25,23 +25,16 @@ uniform vec4 u_color;
 varying vec2 v_uv;
 
 
-#ifdef AASTEP
-
 float aastep(float t, float value)
 {
+#ifdef AASTEP
     /* float afwidth = length(vec2(dFdx(value), dFdy(value))) * 1.0; */
     float afwidth = fwidth(value) * 1.0;
     return smoothstep(t - afwidth, t + afwidth, value);
-}
-
 #else
-
-float aastep(float t, float value)
-{
     return step(t, value);
-}
-
 #endif
+}
 
 
 // float tex(float t, vec2 uv)
@@ -146,7 +139,7 @@ void main(void)
      * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
      *
      */
-    // if(d < 0.45)
+    // if(dist < 0.45)
     //     discard;
 
     /** @todo mipmap access? */
