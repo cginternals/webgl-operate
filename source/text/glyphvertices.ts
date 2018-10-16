@@ -102,28 +102,28 @@ export class GlyphVertices extends Array<GlyphVertex> {
     }
 
     /**
-     * All GlyphVertex origins gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex origins gathered in one buffer. Call updateBuffers() to update it.
      */
     get origins(): Float32Array {
         return this._origins;
     }
 
     /**
-     * All GlyphVertex tangent vectors gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex tangent vectors gathered in one buffer. Call updateBuffers() to update it.
      */
     get tangents(): Float32Array {
         return this._tangents;
     }
 
     /**
-     * All GlyphVertex up vectors gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex up vectors gathered in one buffer. Call updateBuffers() to update it.
      */
     get ups(): Float32Array {
         return this._ups;
     }
 
     /**
-     * All GlyphVertex texture coordinates gathered in one buffer. Call fillBuffers() to update it.
+     * All GlyphVertex texture coordinates gathered in one buffer. Call updateBuffers() to update it.
      */
     get texCoords(): Float32Array {
         return this._texCoords;
