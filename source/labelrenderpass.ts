@@ -83,6 +83,10 @@ export class LabelRenderPass extends Initializable {
         this._vertices2D = new GlyphVertices(0);
     }
 
+    /**
+     * Loads a font asset and creates a FontFace
+     * @param context - Valid context to create the object for.
+     */
     protected loadFont(context: Context): void {
 
         /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
@@ -98,6 +102,11 @@ export class LabelRenderPass extends Initializable {
         );
     }
 
+    /**
+     * Typesets and renders 2D labels. If font face is not loaded yet, this function will be called again after a valid
+     * font face is loaded.
+     * @param labels - all 2D labels
+     */
     renderThese2DLabels(labels: Array<Position2DLabel>): void {
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 2D labels to render!`);
@@ -122,6 +131,11 @@ export class LabelRenderPass extends Initializable {
         });
     }
 
+    /**
+     * Typesets and renders 3D labels. If font face is not loaded yet, this function will be called again after a valid
+     * font face is loaded.
+     * @param labels - all 3D labels
+     */
     renderThese3DLabels(labels: Array<Position3DLabel>): void {
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 3D labels to render!`);
@@ -146,14 +160,24 @@ export class LabelRenderPass extends Initializable {
         });
     }
 
+    /**
+     * Removes all calculated vertices for 2D labels.
+     */
     clear2DLabels(): void {
         this._vertices2D = new GlyphVertices(0);
     }
 
+    /**
+     * Removes all calculated vertices for 3D labels.
+     */
     clear3DLabels(): void {
         this._vertices3D = new GlyphVertices(0);
     }
 
+    /**
+     * Typesets a label and adds it to the 2D labels that will be rendered.
+     * @param label - the 2D label to be rendered.
+     */
     render2DLabel(label: Position2DLabel): void {
         label.fontFace = this._fontFace;
 
@@ -166,6 +190,10 @@ export class LabelRenderPass extends Initializable {
         this._geometry2D.setTexCoords(this._vertices2D.texCoords);
     }
 
+    /**
+     * Typesets a label and adds it to the 3D labels that will be rendered.
+     * @param label - the 3D label to be rendered.
+     */
     render3DLabel(label: Position3DLabel): void {
         label.fontFace = this._fontFace;
 
