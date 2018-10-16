@@ -275,7 +275,7 @@ namespace auxiliaries {
      * Queries window.location.search.
      */
     export function GETsearch(): string {
-        return document.location.search;
+        return document.location!.search;
     }
 
     /**
@@ -284,7 +284,7 @@ namespace auxiliaries {
      */
     export function GETparameter(parameter: string): string | undefined {
         const re = new RegExp(`${parameter}=([^&]+)`);
-        const match = document.location.search.match(re);
+        const match = document.location!.search.match(re);
         if (!match) {
             return undefined;
         }

@@ -19,7 +19,7 @@ describe('Ray Math', () => {
         const ray1 = [vec3.fromValues(0.0, 0.0, 0.0), vec3.fromValues(-1.0, 0.0, 1.0)];
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec3 = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
+            const result: vec3 | undefined = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
             expect(result).to.be.undefined;
         }
     });
@@ -29,7 +29,7 @@ describe('Ray Math', () => {
         const ray1 = [vec3.fromValues(-1.0, 0.0, 0.0), vec3.fromValues(0.0, 0.0, -1.0)];
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec3 = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
+            const result: vec3 | undefined = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
             expect(result).to.be.undefined;
         }
     });
@@ -39,7 +39,7 @@ describe('Ray Math', () => {
         const ray1 = [vec3.fromValues(0.0, +1.0, 0.0)];
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec3 = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
+            const result: vec3 | undefined = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
             expect(result).to.be.undefined;
         }
     });
@@ -59,7 +59,7 @@ describe('Ray Math', () => {
         expected.push(vec3.fromValues(2.0, 0.0, 3.0));
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec3 = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
+            const result: vec3 | undefined = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
             expect(result).to.deep.equal(expected[i]);
         }
     });
@@ -69,7 +69,7 @@ describe('Ray Math', () => {
         const ray1 = [vec3.fromValues(0.0, 1.0, 0.0)];
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec3 = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
+            const result: vec3 | undefined = rayMath.rayPlaneIntersection(ray0[i], ray1[i]);
             expect(result).to.be.undefined;
         }
     });
@@ -152,7 +152,7 @@ describe('Ray Math', () => {
         ray0.push(vec2.fromValues(+2.0, 0.0)); ray1.push(vec2.fromValues(+1.0, -1.0));
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec2 = rayMath.rayCircleIntersection(ray0[i], ray1[i]);
+            const result: vec2 | undefined = rayMath.rayCircleIntersection(ray0[i], ray1[i]);
             expect(result).to.be.undefined;
         }
     });
@@ -172,7 +172,7 @@ describe('Ray Math', () => {
         expected.push(vec2.fromValues(0.0, -1.0));
 
         for (let i = 0; i < ray0.length; ++i) {
-            const result: vec2 = rayMath.rayCircleIntersection(ray0[i], ray1[i]);
+            const result: vec2 | undefined = rayMath.rayCircleIntersection(ray0[i], ray1[i]);
             expect(result).to.deep.equal(expected[i]);
         }
     });

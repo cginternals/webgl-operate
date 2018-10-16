@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - [BREAKING CHANGE] Renamed `Texture2` to `Texture2D` and `Texture3` to `Texture3D`
+- Update developer dependencies.
+
+### Fixed
+- Dev dependencies `ts-node` and `sinon` are not restricted to old versions and can now be updated now.
+- Readback of depth and color values using the `ReadbackPass` is now working correct.
+- Strict compile settings applied to testing now.
+
+### Added
+- Text rendering and labeling supporting 2D and 3D positioning and font basic asset loading.
 
 ## [0.3.20] - 2010-10-18
 ### Fixed
