@@ -19,7 +19,7 @@ export class Position2DLabel extends Label {
 
     /**
      * Constructs a pre-configured 2D-label with given text
-     * @param text - Valid context to create the object for.
+     * @param text - The text that is displayed by this label.
      * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
      */
     constructor(text: Text, fontFace: FontFace) {

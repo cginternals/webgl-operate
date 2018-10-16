@@ -21,7 +21,7 @@ export class Position3DLabel extends Label {
 
     /**
      * Constructs a pre-configured 3D-label with given text.
-     * @param text - Valid context to create the object for.
+     * @param text - The text that is displayed by this label.
      * @param fontFace - The font face that should be used for that label.
      */
     constructor(text: Text, fontFace: FontFace) {
