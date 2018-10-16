@@ -35,21 +35,13 @@ export interface GlyphVertex {
  */
 export class GlyphVertices extends Array<GlyphVertex> {
 
-    /**
-     * All GlyphVertex origins gathered in one buffer. Call fillBuffers() to update it.
-     */
+    /** @see {@link origins} */
     protected _origins: Float32Array;
-    /**
-     * All GlyphVertex tangent vectors gathered in one buffer. Call fillBuffers() to update it.
-     */
+    /** @see {@link tangents} */
     protected _tangents: Float32Array;
-    /**
-     * All GlyphVertex up vectors gathered in one buffer. Call fillBuffers() to update it.
-     */
+    /** @see {@link ups} */
     protected _ups: Float32Array;
-    /**
-     * All GlyphVertex texture coordinates gathered in one buffer. Call fillBuffers() to update it.
-     */
+    /** @see {@link texCoords} */
     protected _texCoords: Float32Array;
 
     /**

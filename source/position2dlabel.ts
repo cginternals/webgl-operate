@@ -14,7 +14,9 @@ import { Typesetter } from './typesetter';
  */
 export class Position2DLabel extends Label {
 
+    /** @see {@link position} */
     protected _position: vec2;
+    /** @see {@link direction} */
     protected _direction: vec2;
 
     /**
@@ -33,8 +35,8 @@ export class Position2DLabel extends Label {
     /**
      * Applies its position and direction, then prepares the vertex storage so that the Typesetter can typeset this
      * label.
-     * @param frameSize The width and height of the frame, so that sizes can be calculated to use pixel units.
-     * @returns The transformed glyph vertices.
+     * @param frameSize - The width and height of the frame, so that sizes can be calculated to use pixel units.
+     * @returns - The transformed glyph vertices.
      */
     typeset(frameSize: [number, number]): GlyphVertices {
         /** @todo assert: this.fontSizeUnit === Label.SpaceUnit.Px or, later, === Label.SpaceUnit.Pt */
@@ -102,9 +104,9 @@ export class Position2DLabel extends Label {
     /**
      * Sets 2D position parameters as specified in OpenLL. Position is the label's reference point (i.e. lower left
      * corner for horizontal alignment).
-     * @param x x coordinate of the 2D position
-     * @param y y coordinate of the 2D position
-     * @param unit the unit to interpret the coordinates
+     * @param x - x coordinate of the 2D position
+     * @param y - y coordinate of the 2D position
+     * @param unit - the unit to interpret the coordinates
      */
     setPosition(x: number, y: number, unit?: Label.SpaceUnit): void {
         /** @todo assert that SpaceUnit is px or pt; transform to NDC? */
@@ -123,8 +125,8 @@ export class Position2DLabel extends Label {
 
     /**
      * Sets the 2D direction parameters as specified in OpenLL. The labels's direction is the direction of its baseline.
-     * @param x x coordinate of the 2D direction vector.
-     * @param y y coordinate of the 2D direction vector.
+     * @param x - x coordinate of the 2D direction vector.
+     * @param y - y coordinate of the 2D direction vector.
      */
     setDirection(x: number, y: number): void {
         this.direction = vec2.fromValues(x, y);
@@ -134,7 +136,7 @@ export class Position2DLabel extends Label {
      * This unit is used for the font size. This method overrides the super.fontSizeUnit, since a position2dlabel only
      * allows px, not World.
      * (@see {@link fontSize})
-     * @param newUnit unused, since there is only one allowed unit (Px) for this kind of label
+     * @param newUnit - unused, since there is only one allowed unit (Px) for this kind of label
      */
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is Px for this label.`);
