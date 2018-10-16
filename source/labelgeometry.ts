@@ -92,7 +92,7 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Binds the vertex buffer object (VBO) to an attribute binding point of a given, pre-defined index.
-     * @param indices indices of buffers to bind
+     * @param indices - indices of buffers to bind
      */
     protected bindBuffers(indices: Array<GLuint>): void {
         const gl = this.context.gl;
@@ -119,7 +119,7 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Unbinds the vertex buffer object (VBO) and disables the binding point.
-     * @param indices indices of buffers to unbind
+     * @param indices - indices of buffers to unbind
      */
     protected unbindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit unbind in attribEnable is skipped */
@@ -170,9 +170,9 @@ export class LabelGeometry extends Geometry {
      * Use this method to set (or update) the glyph coordinates, e.g. after typesetting or after the calculations
      * of a placement algorithm. The actuall interpretation of those buffers depends on the shader,
      * usually they are 3-component vector in world space (provided as flat array.)
-     * @param origins coordinates of the lower left corner of every glyph
-     * @param tangents tangent vector for every glyph (direction along base line)
-     * @param ups up vector for every glyph (orthogonal to its tangent vector)
+     * @param origins - coordinates of the lower left corner of every glyph
+     * @param tangents - tangent vector for every glyph (direction along base line)
+     * @param ups - up vector for every glyph (orthogonal to its tangent vector)
      */
     setGlyphCoords(origins: Float32Array, tangents: Float32Array, ups: Float32Array): void {
 
@@ -196,7 +196,7 @@ export class LabelGeometry extends Geometry {
 
     /**
      * Use this method to set (or update) the texture coordinates for every glyph, e.g. after typesetting.
-     * @param texCoords The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y
+     * @param texCoords - The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y
      */
     setTexCoords(texCoords: Float32Array): void {
 

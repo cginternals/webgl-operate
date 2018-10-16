@@ -57,10 +57,10 @@ namespace debug {
 
         /**
          * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
-         * @param context valid context to create the object for.
-         * @param identifier meaningful name for identification of this instance.
-         * @param mouseEventProvider required for mouse interaction
-         * @returns whether initialization was successful
+         * @param context - valid context to create the object for.
+         * @param identifier - meaningful name for identification of this instance.
+         * @param mouseEventProvider - required for mouse interaction
+         * @returns - whether initialization was successful
          */
         protected onInitialize(context: Context, callback: Invalidate,
             mouseEventProvider: MouseEventProvider,
@@ -244,7 +244,7 @@ namespace debug {
 
         /**
          * After (1) update and (2) preparation are invoked, a frame is invoked. Renders both 2D and 3D labels.
-         * @param frameNumber for intermediate frames in accumulation rendering
+         * @param frameNumber - for intermediate frames in accumulation rendering
          */
         protected onFrame(frameNumber: number): void {
             const gl = this._context.gl;

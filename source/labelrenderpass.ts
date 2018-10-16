@@ -20,7 +20,9 @@ import { Typesetter } from './typesetter';
 
 import tuples = require('./tuples');
 
-
+/**
+ * The LabelRenderPass @todo
+ */
 export class LabelRenderPass extends Initializable {
 
     private _standardDerivatives: any = undefined;
@@ -68,7 +70,7 @@ export class LabelRenderPass extends Initializable {
 
     /**
      * Creates a render pass for labels.
-     * @param context the WebGL rendering context
+     * @param context - Valid context to create the object for.
      */
     constructor(context: Context) {
         super();
