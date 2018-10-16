@@ -265,7 +265,7 @@ namespace debug {
             gl.uniform2fv(this._uNdcOffset, ndcOffset);
             gl.uniform1i(this._uFrameNumber, frameNumber);
 
-            this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
+            this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
             this._labelPass.frame();
             this._intermediateFBO.unbind();
 

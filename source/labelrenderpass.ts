@@ -101,14 +101,12 @@ export class LabelRenderPass extends Initializable {
             (fontFace) => {
                 this._fontFace = fontFace;
                 this.renderThese3DLabels(this._labels3D);
-                console.log('now 2d, please');
                 this.renderThese2DLabels(this._labels2D);
             },
         );
     }
 
     renderThese2DLabels(labels: Array<Position2DLabel>): void {
-        console.log('renderndernasdfa');
         if (labels.length === 0) {
             log(LogLevel.Debug, `No 2D labels to render!`);
             return;
@@ -154,8 +152,6 @@ export class LabelRenderPass extends Initializable {
         labels.forEach((label: Position3DLabel) => {
             this.render3DLabel(label);
         });
-
-        console.log('renderndernasdfa33333finisch');
     }
 
     clear2DLabels(): void {
@@ -171,50 +167,21 @@ export class LabelRenderPass extends Initializable {
 
         const frameSize = this._camera.viewport;
 
-        /** TODO: this._vertices3D is not a GlyphVertices anymore, since it lost its function
-         * 'constructBuffers'. Find a way to override `concat` or gather the vertices in another way.
-         */
         this._vertices2D = this._vertices2D.concat(label.typeset(frameSize)) as GlyphVertices;
+        this._vertices2D.updateBuffers();
 
-        // tslint:disable-next-line:prefer-const
-        let origins = new Float32Array(0);
-        // tslint:disable-next-line:prefer-const
-        let tangents = new Float32Array(0);
-        // tslint:disable-next-line:prefer-const
-        let ups = new Float32Array(0);
-        // tslint:disable-next-line:prefer-const
-        let texCoords = new Float32Array(0);
-
-        this._vertices2D.constructBuffers(origins, tangents, ups, texCoords);
-
-        this._geometry2D.setGlyphCoords(origins, tangents, ups);
-        this._geometry2D.setTexCoords(texCoords);
+        this._geometry2D.setGlyphCoords(this._vertices2D.origins, this._vertices2D.tangents, this._vertices2D.ups);
+        this._geometry2D.setTexCoords(this._vertices2D.texCoords);
     }
 
     render3DLabel(label: Position3DLabel): void {
-        console.log('set fontFace');
         label.fontFace = this._fontFace;
 
-        /** TODO: this._vertices3D is not a GlyphVertices anymore, since it lost its function
-         * 'constructBuffers'. Find a way to override `concat` or gather the vertices in another way.
-         */
         this._vertices3D = this._vertices3D.concat(label.typeset()) as GlyphVertices;
+        this._vertices3D.updateBuffers();
 
-        // tslint:disable-next-line:prefer-const
-        let origins = new Float32Array(0);
-        // tslint:disable-next-line:prefer-const
-        let tangents = new Float32Array(0);
-        // tslint:disable-next-line:prefer-const
-        let ups = new Float32Array(0);
-        // tslint:disable-next-line:prefer-const
-        let texCoords = new Float32Array(0);
-
-        this._vertices3D.constructBuffers(origins, tangents, ups, texCoords);
-
-        console.log('setglyphtexCoords');
-        console.log(origins);
-        this._geometry3D.setGlyphCoords(origins, tangents, ups);
-        this._geometry3D.setTexCoords(texCoords);
+        this._geometry3D.setGlyphCoords(this._vertices3D.origins, this._vertices3D.tangents, this._vertices3D.ups);
+        this._geometry3D.setTexCoords(this._vertices3D.texCoords);
     }
 
     /**
