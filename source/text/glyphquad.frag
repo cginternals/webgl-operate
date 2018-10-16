@@ -1,6 +1,7 @@
 precision mediump float;
 
-@import ./facade.frag;
+@import ./../shaders/facade.frag;
+
 
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
@@ -13,6 +14,7 @@ precision mediump float;
 uniform sampler2D u_glyphs;
 
 varying vec2 v_texture_coord;
+
 
 void main(void)
 {

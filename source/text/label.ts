@@ -1,8 +1,9 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
-import { ChangeLookup } from './changelookup';
-import { Color } from './color';
+import { ChangeLookup } from '../changelookup';
+import { Color } from '../color';
+
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Text } from './text';

@@ -1,24 +1,26 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
-import { assert, log, LogLevel } from './auxiliaries';
+import { assert, log, LogLevel } from '../auxiliaries';
 
-import { Camera } from './camera';
-import { ChangeLookup } from './changelookup';
-import { Context } from './context';
+import { Camera } from '../camera';
+import { ChangeLookup } from '../changelookup';
+import { Context } from '../context';
+import { Framebuffer } from '../framebuffer';
+import { Initializable } from '../initializable';
+import { Program } from '../program';
+import { Shader } from '../shader';
 import { FontFace } from './fontface';
-import { FontLoader } from './fontloader';
-import { Framebuffer } from './framebuffer';
 import { GlyphVertices } from './glyphvertices';
-import { Initializable } from './initializable';
+
+import { FontLoader } from './fontloader';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
-import { Program } from './program';
-import { Shader } from './shader';
 import { Typesetter } from './typesetter';
 
-import tuples = require('./tuples');
+import tuples = require('../tuples');
+
 
 /**
  * The LabelRenderPass @todo
@@ -305,9 +307,9 @@ export class LabelRenderPass extends Initializable {
         }
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
-        vert.initialize(require('./shaders/glyphquad.vert'));
+        vert.initialize(require('./glyphquad.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
-        frag.initialize(require('./shaders/glyphquad.frag'));
+        frag.initialize(require('./glyphquad.frag'));
 
         this._program.initialize([vert, frag]);
 
@@ -485,4 +487,3 @@ export class LabelRenderPass extends Initializable {
         this._attachment = id;
     }
 }
-

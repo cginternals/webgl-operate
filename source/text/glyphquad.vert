@@ -1,7 +1,8 @@
 precision mediump float;
 precision lowp int;
 
-@import ./facade.vert;
+@import ./../shaders/facade.vert;
+
 
 #if __VERSION__ == 100
     #extension GL_EXT_draw_buffers : enable
@@ -20,12 +21,14 @@ precision lowp int;
     layout(location = 4) in vec3 a_up;
 #endif
 
+
 uniform mat4 u_viewProjection;
 uniform vec2 u_ndcOffset;
 
 varying vec2 v_texture_coord;
 
-@import ./ndcoffset;
+@import ./../shaders/ndcoffset;
+
 
 void main(void)
 {

@@ -9,19 +9,20 @@ import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
-import { FontFace } from '../fontface';
 import { Framebuffer } from '../framebuffer';
-import { LabelRenderPass } from '../labelrenderpass';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { Navigation } from '../navigation';
-import { Position2DLabel } from '../position2dlabel';
-import { Position3DLabel } from '../position3dlabel';
 import { Program } from '../program';
 import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
-import { Text } from '../text';
 import { Texture2D } from '../texture2d';
+
+import { FontFace } from '../text/fontface';
+import { LabelRenderPass } from '../text/labelrenderpass';
+import { Position2DLabel } from '../text/position2dlabel';
+import { Position3DLabel } from '../text/position3dlabel';
+import { Text } from '../text/text';
 
 import { TestNavigation } from './testnavigation';
 
@@ -82,10 +83,10 @@ namespace debug {
             /* Create and configure program and geometry. */
 
             const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
-            vert.initialize(require('../shaders/glyphquad.vert'));
+            vert.initialize(require('../text/glyphquad.vert'));
 
             const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
-            frag.initialize(require('../shaders/glyphquad.frag'));
+            frag.initialize(require('../text/glyphquad.frag'));
 
             this._program = new Program(this._context);
             this._program.initialize([vert, frag]);

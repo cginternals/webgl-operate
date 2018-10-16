@@ -13,15 +13,19 @@ export import fetch = root_fetch;
 import * as root_raymath from './raymath';
 export import ray_math = root_raymath;
 
-export { FontFace } from './fontface';
-export { FontLoader } from './fontloader';
-export { GlyphVertex, GlyphVertices } from './glyphvertices';
-export { Label } from './label';
-export { Position2DLabel } from './position2dlabel';
-export { Position3DLabel } from './position3dlabel';
-export { LabelGeometry } from './labelgeometry';
-export { Text } from './text';
-export { Typesetter } from './typesetter';
+
+// /* TEXT facilities */
+
+export { FontFace } from './text/fontface';
+export { FontLoader } from './text/fontloader';
+export { GlyphVertex, GlyphVertices } from './text/glyphvertices';
+export { Label } from './text/label';
+export { LabelGeometry } from './text/labelgeometry';
+export { Position2DLabel } from './text/position2dlabel';
+export { Position3DLabel } from './text/position3dlabel';
+export { Text } from './text/text';
+export { Typesetter } from './text/typesetter';
+
 
 // /* DEBUG facilities */
 

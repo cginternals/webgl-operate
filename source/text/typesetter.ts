@@ -1,13 +1,14 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
-import { fromVec4, v4 } from './gl-matrix-extensions';
+import { fromVec4, v4 } from '../gl-matrix-extensions';
 
-import { assert } from './auxiliaries';
+import { assert } from '../auxiliaries';
+import { GLfloat2 } from '../tuples';
+
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
-import { GLfloat2 } from './tuples';
 
 
 /**
@@ -302,4 +303,5 @@ export class Typesetter {
         label.extent = labelExtent;
         return labelExtent;
     }
+
 }

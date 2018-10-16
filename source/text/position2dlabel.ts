@@ -1,7 +1,8 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { log, LogLevel } from './auxiliaries';
+import { log, LogLevel } from '../auxiliaries';
+
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
@@ -142,4 +143,3 @@ export class Position2DLabel extends Label {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is Px for this label.`);
     }
 }
-

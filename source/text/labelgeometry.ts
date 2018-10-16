@@ -1,10 +1,10 @@
 
-import { assert } from './auxiliaries';
+import { assert } from '../auxiliaries';
 
-import { Buffer } from './buffer';
-import { Context } from './context';
-import { Geometry } from './geometry';
-import { Initializable } from './initializable';
+import { Buffer } from '../buffer';
+import { Context } from '../context';
+import { Geometry } from '../geometry';
+import { Initializable } from '../initializable';
 
 
 /**
