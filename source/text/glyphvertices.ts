@@ -106,6 +106,10 @@ export class GlyphVertices {
         }
     }
 
+    /**
+     * Concatenates all vertices of a glyph vertices object and calls update.
+     * @param glyphs - glyph vertices to concatenate.
+     */
     concat(glyphs: GlyphVertices): void {
         this._vertices = this._vertices.concat(glyphs._vertices);
         this.update();
@@ -127,44 +131,28 @@ export class GlyphVertices {
     }
 
     /**
-<<<<<<< HEAD
      * All GlyphVertex origins gathered in one buffer. Call update() to update it.
-=======
-     * All GlyphVertex origins gathered in one buffer. Call updateBuffers() to update it.
->>>>>>> 4468ec53cc2d6d6fa39fc8c4d8e5b2f4334d9fcb
      */
     get origins(): Float32Array {
         return this._origins;
     }
 
     /**
-<<<<<<< HEAD
      * All GlyphVertex tangent vectors gathered in one buffer. Call update() to update it.
-=======
-     * All GlyphVertex tangent vectors gathered in one buffer. Call updateBuffers() to update it.
->>>>>>> 4468ec53cc2d6d6fa39fc8c4d8e5b2f4334d9fcb
      */
     get tangents(): Float32Array {
         return this._tangents;
     }
 
     /**
-<<<<<<< HEAD
      * All GlyphVertex up vectors gathered in one buffer. Call update() to update it.
-=======
-     * All GlyphVertex up vectors gathered in one buffer. Call updateBuffers() to update it.
->>>>>>> 4468ec53cc2d6d6fa39fc8c4d8e5b2f4334d9fcb
      */
     get ups(): Float32Array {
         return this._ups;
     }
 
     /**
-<<<<<<< HEAD
      * All GlyphVertex texture coordinates gathered in one buffer. Call update() to update it.
-=======
-     * All GlyphVertex texture coordinates gathered in one buffer. Call updateBuffers() to update it.
->>>>>>> 4468ec53cc2d6d6fa39fc8c4d8e5b2f4334d9fcb
      */
     get texCoords(): Float32Array {
         return this._texCoords;
