@@ -49,10 +49,6 @@ This canvas can then be setup by associating the canvas element with a single-fr
 ToDo
 ```
 
-## Dependencies
-
-*webgl-operate* has currently no non-dev dependencies.
-
 
 ## Source Structure
 

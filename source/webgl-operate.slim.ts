@@ -51,7 +51,23 @@ export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel'
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
+
+
+/* TEXT facilities */
+
+export { FontFace } from './text/fontface';
+export { FontLoader } from './text/fontloader';
+export { GlyphVertex, GlyphVertices } from './text/glyphvertices';
+export { Label } from './text/label';
+export { LabelGeometry } from './text/labelgeometry';
+export { Position2DLabel } from './text/position2dlabel';
+export { Position3DLabel } from './text/position3dlabel';
+export { Text } from './text/text';
+export { Typesetter } from './text/typesetter';
 export { LabelRenderPass } from './text/labelrenderpass';
+
+
+/* AUXILIARIES */
 
 import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;
