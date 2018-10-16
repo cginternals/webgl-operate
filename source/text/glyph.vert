@@ -6,14 +6,14 @@ precision lowp int;
 
 #if __VERSION__ == 100
     #extension GL_EXT_draw_buffers : enable
-    attribute vec2 a_quadVertex;
+    attribute vec2 a_vertex;
     /* [ texture ll: vec2, ur: vec2 ] */
     attribute vec4 a_texCoord;
     attribute vec3 a_origin;
     attribute vec3 a_tangent;
     attribute vec3 a_up;
 #else
-    layout(location = 0) in vec2 a_quadVertex;
+    layout(location = 0) in vec2 a_vertex;
     /* [ texture ll: vec2, ur: vec2 ]*/
     layout(location = 1) in vec4 a_texCoord;
     layout(location = 2) in vec3 a_origin;
@@ -25,7 +25,7 @@ precision lowp int;
 uniform mat4 u_viewProjection;
 uniform vec2 u_ndcOffset;
 
-varying vec2 v_texture_coord;
+varying vec2 v_uv;
 
 @import ./../shaders/ndcoffset;
 
@@ -37,10 +37,10 @@ void main(void)
     /* flip y-coordinates */
     vec2 texExt = vec2(a_texCoord[2] - a_texCoord[0], a_texCoord[1] - a_texCoord[3]);
 
-    v_texture_coord = a_quadVertex * texExt + vec2(a_texCoord[0], 1.0 - a_texCoord[1]);
+    v_uv = a_vertex * texExt + vec2(a_texCoord[0], 1.0 - a_texCoord[1]);
 
     /* POSITIONING*/
-    /* quad data as flat array: [0, 0,  0, 1,  1, 0,  1, 1] (a_quadVertex), which translates to ll, lr, ul, ur corners.
+    /* quad data as flat array: [0, 0,  0, 1,  1, 0,  1, 1] (a_vertex), which translates to ll, lr, ul, ur corners.
      * 2-------4
      * |  \    |
      * |    \  |
@@ -48,8 +48,8 @@ void main(void)
      * The current vertex is calculated based on the current quad corners and the tangent / up attributes.
      * The following lines are optimized for MAD optimization.
      */
-    vec3 tangentDirection = a_origin + a_quadVertex.x * a_tangent;
-    vec4 vertex = vec4(tangentDirection + a_quadVertex.y * a_up, 1.0);
+    vec3 tangentDirection = a_origin + a_vertex.x * a_tangent;
+    vec4 vertex = vec4(tangentDirection + a_vertex.y * a_up, 1.0);
 
     vertex = u_viewProjection * vertex;
 

@@ -82,11 +82,11 @@ namespace debug {
 
             /* Create and configure program and geometry. */
 
-            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyphquad.vert');
-            vert.initialize(require('../text/glyphquad.vert'));
+            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
+            vert.initialize(require('../text/glyph.vert'));
 
-            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyphquad.frag');
-            frag.initialize(require('../text/glyphquad.frag'));
+            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
+            frag.initialize(require('../text/glyph.frag'));
 
             this._program = new Program(this._context);
             this._program.initialize([vert, frag]);
