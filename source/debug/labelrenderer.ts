@@ -239,6 +239,8 @@ namespace debug {
                 this._program.unbind();
             }
 
+            this._labelPass.update();
+
             this._altered.reset();
             this._camera.altered = false;
         }

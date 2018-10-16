@@ -32,7 +32,7 @@ export class LabelRenderPass extends Initializable {
      * Alterable auxiliary object for tracking changes on render pass inputs and lazy updates.
      */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, camera: false, geometry: false,
+        any: false, camera: false, geometry: false, color: false,
     });
 
     /**
@@ -352,6 +352,10 @@ export class LabelRenderPass extends Initializable {
             gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         }
 
+        if (this._altered.color) {
+            gl.uniform4fv(this._uColor, this._color.rgbaF32);
+        }
+
         this._altered.reset();
     }
 
@@ -434,6 +438,22 @@ export class LabelRenderPass extends Initializable {
         }
         this._camera = camera;
         this._altered.alter('camera');
+    }
+
+    /**
+     * Color to be applied when rendering glyphs. Note that color will only change on update in order to reduce number
+     * of uniform value changes.
+     */
+    set color(color: Color) {
+        if (this._color.equals(color)) {
+            return;
+        }
+        this._color = color;
+        this._altered.alter('color');
+    }
+    get color(): Color {
+        this._altered.alter('color'); /* just assume it will be altered on access. */
+        return this._color;
     }
 
 }

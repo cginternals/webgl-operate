@@ -108,6 +108,7 @@ export class FontLoader {
      * Parses a page to load the associated png-file, i.e., the glyph atlas.
      * @param stream - The stream of the 'page' identifier.
      * @param fontFace - The font face in which the loaded glyph texture is stored.
+     * @param uri - URI linking the fnt-file (used for dirname retrieval). Data URI not yet supported.
      * @returns - Promise for handling image load status.
      */
     protected static processPage(stream: Array<string>, fontFace: FontFace, uri: string): Promise<void> {
