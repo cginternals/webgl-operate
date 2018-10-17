@@ -3,6 +3,7 @@ import * as chai from 'chai';
 
 const expect = chai.expect;
 
+import { Context } from '../source/context';
 import { WEBGL2_EXTENSIONS } from '../source/extensions';
 import { ExtensionsHash } from '../source/extensionshash';
 
@@ -67,14 +68,17 @@ describe('ExtensionsHash', () => {
 
     it('should encode version and backend in head', () => {
         // version 0b000
-        expect(ExtensionsHash.encode('webgl1', [])[0]).to.equal('1');
-        expect(ExtensionsHash.encode('webgl2', [])[0]).to.equal('2');
+        expect(ExtensionsHash.encode(Context.BackendType.WebGL1, [])[0]).to.equal('1');
+        expect(ExtensionsHash.encode(Context.BackendType.WebGL2, [])[0]).to.equal('2');
     });
 
     it('should encode single extensions', () => {
-        expect(ExtensionsHash.encode('webgl1', SOME_6_000_EXTENSIONS).substring(1)).to.equal('SE000');
-        expect(ExtensionsHash.encode('webgl1', [SOME_6_000_EXTENSIONS[5]]).substring(1)).to.equal('08000');
-        expect(ExtensionsHash.encode('webgl1', FIRST_6_000_EXTENSIONS).substring(1)).to.equal('+0000');
+        expect(ExtensionsHash.encode(Context.BackendType.WebGL1,
+            SOME_6_000_EXTENSIONS).substring(1)).to.equal('SE000');
+        expect(ExtensionsHash.encode(Context.BackendType.WebGL1,
+            [SOME_6_000_EXTENSIONS[5]]).substring(1)).to.equal('08000');
+        expect(ExtensionsHash.encode(Context.BackendType.WebGL1,
+            FIRST_6_000_EXTENSIONS).substring(1)).to.equal('+0000');
     });
 
     it('should throw when decoding hash with invalid length', () => {

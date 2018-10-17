@@ -51,7 +51,12 @@ export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel'
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
-export { LabelRenderPass } from './text/labelrenderpass';
+
+
+export * from './text/index';
+
+
+/* AUXILIARIES */
 
 import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;

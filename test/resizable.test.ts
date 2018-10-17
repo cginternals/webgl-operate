@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 chai.use(spies);
 
 const expect = chai.expect;
-const spy = chai.spy;
 const stub = sinon.stub;
 
 import { Resizable as AbstractResizable } from '../source/resizable';
@@ -20,7 +19,7 @@ class Resizable extends AbstractResizable {
         AbstractResizable.resize();
     }
 
-    protected onResize(): void { }
+    onResize(): void { }
 
     dispose(): void {
         super.dispose();
@@ -33,7 +32,7 @@ describe('Resizable', () => {
 
     /** @todo test multiple instances, probably ignore elementSize  */
 
-    global.document = undefined;
+    (global as any).document = undefined;
 
     it('instance should receive onResize', () => {
         const consoleLogStub = stub(console, 'log');

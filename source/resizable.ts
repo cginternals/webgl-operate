@@ -64,8 +64,9 @@ export abstract class Resizable {
     constructor() {
         if (Resizable.instances.length === 0) { // initialize once
             const event = `on${Resizable.EVENT_IDENTIFIER}`;
+
             /* istanbul ignore next */
-            Resizable.eventSupported = document && (event in document.documentElement || event in document.body);
+            Resizable.eventSupported = document && (event in document.documentElement! || event in document.body);
 
             logIf(!Resizable.eventSupported, LogLevel.Warning, `resize event not supported`);
         }

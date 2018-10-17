@@ -171,8 +171,8 @@ describe('gl-matrix extensions', () => {
         expect(parseVec2('0.0')).to.be.undefined;
         expect(parseVec2('0.0, 0.0, 0.0')).to.be.undefined;
 
-        expect(vec2.equals(parseVec2('0.0, 0.0'), v2())).to.be.true;
-        expect(vec2.equals(parseVec2('2.0, 4.0'), vec2.fromValues(2.0, 4.0))).to.be.true;
+        expect(vec2.equals(parseVec2('0.0, 0.0')!, v2())).to.be.true;
+        expect(vec2.equals(parseVec2('2.0, 4.0')!, vec2.fromValues(2.0, 4.0))).to.be.true;
     });
 
     it('should parse vec3 from string', () => {
@@ -186,8 +186,8 @@ describe('gl-matrix extensions', () => {
         expect(parseVec3('0.0, 0.0')).to.be.undefined;
         expect(parseVec3('0.0, 0.0, 0.0, 0.0')).to.be.undefined;
 
-        expect(vec3.equals(parseVec3('0.0, 0.0, 0.0'), v3())).to.be.true;
-        expect(vec3.equals(parseVec3('2.0, 4.0, 8.0'), vec3.fromValues(2.0, 4.0, 8.0))).to.be.true;
+        expect(vec3.equals(parseVec3('0.0, 0.0, 0.0')!, v3())).to.be.true;
+        expect(vec3.equals(parseVec3('2.0, 4.0, 8.0')!, vec3.fromValues(2.0, 4.0, 8.0))).to.be.true;
     });
 
     it('should parse vec4 from string', () => {
@@ -202,8 +202,8 @@ describe('gl-matrix extensions', () => {
         expect(parseVec4('0.0, 0.0, 0.0')).to.be.undefined;
         expect(parseVec4('0.0, 0.0, 0.0, 0.0, 0.0')).to.be.undefined;
 
-        expect(vec4.equals(parseVec4('0.0, 0.0, 0.0, 0.0'), v4())).to.be.true;
-        expect(vec4.equals(parseVec4('1.0, 2.0, 4.0, 8.0'), vec4.fromValues(1.0, 2.0, 4.0, 8.0))).to.be.true;
+        expect(vec4.equals(parseVec4('0.0, 0.0, 0.0, 0.0')!, v4())).to.be.true;
+        expect(vec4.equals(parseVec4('1.0, 2.0, 4.0, 8.0')!, vec4.fromValues(1.0, 2.0, 4.0, 8.0))).to.be.true;
     });
 
     it('should provide default initialized vec and mat abbreviations', () => {

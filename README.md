@@ -49,44 +49,35 @@ This canvas can then be setup by associating the canvas element with a single-fr
 ToDo
 ```
 
-## Dependencies
-
-*webgl-operate* has currently no non-dev dependencies.
-Please note the following fixed (allowing patch only) version dependencies, that should not be updated until further review/evaluation:
-* Typescript problems
-   - `ts-node: ~5.0.1,` (compilation errors in tests with version 6/7)
-* TypeDoc compiler issues (could be resolved by ignoring compile errors in typedocOptions, but ...):
-   - `@types/sinon: ~4.3.3,`
-   - `sinon: ~4.5.0,`
 
 ## Source Structure
 
-| directory | description |
-|-----------|-------------|
-| `source`         | most of webgl-operate's rendering and operational logic |
-| `source/data`    | contains, e.g., pre-built sampling patterns or other data |
-| `source/shaders` | on build, shaders are packed into the dist as well (and includes are resolved) |
-| `source/debug`   | optional: various tools for run-time debugging |
+| directory        | description                                                                       |
+| ---------------- | --------------------------------------------------------------------------------- |
+| `source`         | most of webgl-operate's rendering and operational logic                           |
+| `source/data`    | contains, e.g., pre-built sampling patterns or other data                         |
+| `source/shaders` | on build, shaders are packed into the dist as well (and includes are resolved)    |
+| `source/debug`   | optional: various tools for run-time debugging                                    |
 | `source/viewer`  | optional: generic viewer overlay and controller for webgl-operate based rendering |
-| `website`        | website demonstrating webgl-operate features (referencing examples) |
-| `test`           | tests of sources located in `source` |
+| `website`        | website demonstrating webgl-operate features (referencing examples)               |
+| `test`           | tests of sources located in `source`                                              |
 
 
 ## NPM Configuration and Project Setup
 
 `package.json` specifies the following scripts that can be run by `npm run-script <command>`.
 
-| command          | description |
-|------------------|-------------|
-| `build`          | build for local development to `./build`, creates a bundle with all facilities and a test website |
-| `start`          | starts a local start on port 4000 on the `./build` directory |
-| `start-watch`    | runs `build` tasks concurrently in watch mode and starts `start` |
-| `build-dist`     | transpile sources and declarations to `./dist` for distribution via, e.g., CDN |
-| `build-lib`      | transpile sources and declarations to `./lib/` for distribution via npm |
-| `cleanup`        | removes all build directories, i.e., `./build`, `./dist`, and `./lib` |
-| `lint`           | code quality lint [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json` |
-| `doc`            | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc) |
-| `test`           | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
+| command       | description                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| `build`       | build for local development to `./build`, creates a bundle with all facilities and a test website         |
+| `start`       | starts a local start on port 4000 on the `./build` directory                                              |
+| `start-watch` | runs `build` tasks concurrently in watch mode and starts `start`                                          |
+| `build-dist`  | transpile sources and declarations to `./dist` for distribution via, e.g., CDN                            |
+| `build-lib`   | transpile sources and declarations to `./lib/` for distribution via npm                                   |
+| `cleanup`     | removes all build directories, i.e., `./build`, `./dist`, and `./lib`                                     |
+| `lint`        | code quality lint [TSLint Rules](https://palantir.github.io/tslint/rules/): `tslint.json`                 |
+| `doc`         | build html documentation in `dist/docs` using [TypeDoc](https://github.com/TypeStrong/typedoc)            |
+| `test`        | run unit tests using [mocha](https://github.com/mochajs/mocha) and [chai](https://github.com/chaijs/chai) |
 
 The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use `npm install` to install dependencies.
 For development use `npm run-script build` and, e.g., `npm run-script start` to access the test website locally.

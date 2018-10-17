@@ -72,7 +72,7 @@ describe('ContextMasquerade', () => {
         const getParameterStub = sandbox.stub(aux, 'GETparameter');
         getParameterStub.returns('1w0000');
 
-        const masquerade = ContextMasquerade.fromGET();
+        const masquerade = ContextMasquerade.fromGET()!;
         expect(masquerade.backend).to.equal('webgl1');
         expect(masquerade.extensionsStrive).to.include('ANGLE_instanced_arrays');
         expect(masquerade.extensionsStrive).not.to.include('EXT_foo_bar');
@@ -84,7 +84,7 @@ describe('ContextMasquerade', () => {
             .onFirstCall().returns(undefined)
             .onSecondCall().returns('edge-41');
 
-        const masquerade = ContextMasquerade.fromGET();
+        const masquerade = ContextMasquerade.fromGET()!;
         expect(masquerade.backend).to.equal('webgl1');
         expect(masquerade.extensionsStrive).to.include('ANGLE_instanced_arrays');
         expect(masquerade.extensionsStrive).not.to.include('EXT_foo_bar');

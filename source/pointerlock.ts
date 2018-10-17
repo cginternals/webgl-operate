@@ -55,7 +55,8 @@ export class PointerLock {
         switch (api) {
             case 0: // native
                 PointerLock._exit = () => document.exitPointerLock();
-                PointerLock._request = (element: HTMLElement) => element.requestPointerLock();
+                /* @todo - refine the request pointer lock as soon as candidate recommendation is approved. */
+                PointerLock._request = (element: HTMLElement) => (element as any).requestPointerLock();
                 PointerLock._element = () => document.pointerLockElement;
                 break;
 

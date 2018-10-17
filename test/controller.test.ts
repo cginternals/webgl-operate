@@ -15,8 +15,8 @@ class ControllerMock extends Controller {
 
     static nextAnimationFrame = 1;
 
-    request(update: boolean = false) {
-        super.request(update);
+    request(type?: Controller.RequestType): void {
+        super.request(type);
     }
 
     cancel(): void {
@@ -38,16 +38,18 @@ class ControllerMock extends Controller {
 
 class RendererMock implements Controllable {
 
-    update = (multiFrameNumber: number): void => undefined;
+    update = (multiFrameNumber: number): boolean => true;
+    prepare = (): void => undefined;
     frame = (frameNumber: number): void => undefined;
     swap = (): void => undefined;
 }
 
 class InvalidatingRendererMock implements Controllable {
 
-    public controller: Controller = undefined;
+    public controller: Controller | undefined = undefined;
 
-    update = (multiFrameNumber: number): void => undefined;
+    update = (multiFrameNumber: number): boolean => true;
+    prepare = (): void => undefined;
     frame = (frameNumber: number): void => undefined;
     swap = (): void => {
         if (this.controller !== undefined) {
@@ -68,8 +70,6 @@ describe('Controller', () => {
 
     it('should not be paused nor blocked after initialization', () => {
         const controller = new ControllerMock();
-
-        const requestStub = stub(controller, 'request');
 
         expect(controller.paused).to.be.false;
         expect(controller.blocked).to.be.false;
@@ -157,10 +157,8 @@ describe('Controller', () => {
     it('should restart render when multi-frame number is changed', () => {
         const controller = new ControllerMock();
 
-        global.window = {
-            requestAnimationFrame: () => {
-                return ControllerMock.nextAnimationFrame++;
-            },
+        (global as any).window = {
+            requestAnimationFrame: () => ++ControllerMock.nextAnimationFrame,
             cancelAnimationFrame: () => undefined,
         };
 
@@ -181,14 +179,12 @@ describe('Controller', () => {
     it('should request next animation frame only once a frame (simple renderer)', () => {
         const controller = new ControllerMock();
 
-        global.window = {
-            requestAnimationFrame: () => {
-                return ControllerMock.nextAnimationFrame++;
-            },
+        (global as any).window = {
+            requestAnimationFrame: () => ++ControllerMock.nextAnimationFrame,
             cancelAnimationFrame: () => undefined,
         };
 
-        const rafStub = stub(global.window, 'requestAnimationFrame');
+        const rafStub = stub((global as any).window, 'requestAnimationFrame');
         expect(rafStub.called).to.be.false;
 
         controller.block();
@@ -202,24 +198,19 @@ describe('Controller', () => {
         const controller = new ControllerMock();
         const renderer = new InvalidatingRendererMock();
 
-        global.window = {
-            requestAnimationFrame: () => {
-                return ControllerMock.nextAnimationFrame++;
-            },
+        (global as any).window = {
+            requestAnimationFrame: () => ++ControllerMock.nextAnimationFrame,
             cancelAnimationFrame: () => undefined,
         };
-        global.performance = {
-            now: (): number => {
-                return 0;
-            },
-        };
+
+        (global as any).performance = { now: (): number => 0 };
 
         controller.block();
         renderer.controller = controller;
         controller.controllable = renderer;
         controller.unblock();
 
-        const rafStub = stub(global.window, 'requestAnimationFrame');
+        const rafStub = stub((global as any).window, 'requestAnimationFrame');
 
         expect(rafStub.called).to.be.false;
         expect(controller.blockedUpdates).to.equal(0);
