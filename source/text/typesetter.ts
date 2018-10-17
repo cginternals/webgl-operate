@@ -116,7 +116,7 @@ export class Typesetter {
         }
 
         /* Origin is expected to be in typesetting space (not transformed yet). */
-        for (let i = begin; i < end; ++i) {
+        for (let i = begin; i <= end; ++i) {
             glyphs.vertices[i].origin[0] += penOffset;
         }
     }

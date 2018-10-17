@@ -34,6 +34,7 @@ export class Position3DLabel extends Label {
         this._direction = vec3.fromValues(1.0, 0.0, 0.0);
         this._up = vec3.fromValues(0.0, 1.0, 0.0);
 
+        this._fontSize = 0.05;
         this._fontSizeUnit = Label.SpaceUnit.World;
     }
 
