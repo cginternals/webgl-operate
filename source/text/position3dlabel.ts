@@ -26,9 +26,9 @@ export class Position3DLabel extends Label {
     /**
      * Constructs a pre-configured 3D-label with given text.
      * @param text - The text that is displayed by this label.
-     * @param fontFace - The font face that should be used for that label.
+     * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace: FontFace) {
+    constructor(text: Text, fontFace?: FontFace) {
         super(text, fontFace);
         this._position = vec3.fromValues(0.0, 0.0, 0.0);
         this._direction = vec3.fromValues(1.0, 0.0, 0.0);

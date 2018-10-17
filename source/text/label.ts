@@ -64,14 +64,17 @@ export class Label {
     /**
      * Constructs an unconfigured, empty label.
      * @param text - The text that is displayed by this label.
-     * @param fontFace - The font face that should be used for that label.
+     * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace: FontFace) {
+    constructor(text: Text, fontFace?: FontFace) {
         this._text = text;
-        this._fontFace = fontFace;
         this._transform = mat4.create();
         this._userTransform = mat4.create();
         this._extent = [0, 0];
+
+        if (fontFace) {
+            this._fontFace = fontFace;
+        }
     }
 
     /**
