@@ -6,6 +6,8 @@ import { Context } from '../context';
 import { Texture2D } from '../texture2d';
 import { Wizard } from '../wizard';
 
+import { fetchAsync } from '../fetch';
+import { FontFaceLoader } from './fontfaceloader';
 import { Glyph } from './glyph';
 
 
@@ -54,6 +56,30 @@ export class FontFace {
 
     protected _context: Context;
 
+
+    /**
+     * Fetches a font face file, and, if successful, processes it and fetches referenced pages.
+     *
+     * Resolving the promise:
+     * ```
+     * let fontFace: FontFace | undefined;
+     * FontFace.fromFile(context, 'todo').then((value) => fontFace = value);
+     * ```
+     * @param url - Uniform resource locator string referencing the fnt-file that should be loaded.
+     * @param context - Valid context to create the object for.
+     * @param headless - Whether or not to enable headless mode. If enabled, pages are not loaded.
+     * @param identifier - Meaningful name/prefix for identification of fetched pages (glyph atlases).
+     */
+    static fromFile(url: string, context: Context, headless: boolean = false, identifier?: string): Promise<FontFace> {
+
+        const transform = (data: any): FontFace | undefined => {
+            const font = new FontFace(context, identifier);
+            return FontFaceLoader.process(font, data, url, headless);
+        };
+
+        return fetchAsync<FontFace>(url, 'text', transform);
+    }
+
     /**
      * Constructs an unconfigured, empty font face specification. The appropriate setters should be used for
      * configuring the font face. Alternatively, the font importer (@see {@link FontImporter}) provides the import
@@ -70,6 +96,93 @@ export class FontFace {
         const internalFormat = Wizard.queryInternalTextureFormat(context, gl.RGBA, Wizard.Precision.byte);
         this._glyphTexture.initialize(1, 1, internalFormat[0], gl.RGBA, internalFormat[1]);
     }
+
+
+    /**
+     * Check if a glyph of a specific index is available.
+     * @return - True if a glyph for the provided index was added.
+     */
+    hasGlyph(index: GLsizei): boolean {
+        return !!this._glyphs.get(index);
+    }
+
+    /**
+     * Direct access to an indexed glyph. If the glyph does not exist, an empty glyph is returned without adding it
+     * to glyphs. The glyph atlas might be loaded asynchronously, thus, new glyphs are expected to be added via
+     * addGlyph.
+     * @param index - Index of the glyph to access.
+     * @return - Glyph with the matching index or an empty glyph, if index has not match
+     */
+    glyph(index: GLsizei): Glyph {
+        const existingGlyph = this._glyphs.get(index);
+        if (existingGlyph) {
+            return existingGlyph;
+        }
+        const glyph = new Glyph();
+        glyph.index = index;
+        return glyph;
+    }
+
+    /**
+     * Add a glyph to the font face's set of glyphs. If the glyph already exists, the existing glyph remains.
+     * @param glyph - The glyph to add to the set of glyphs.
+     */
+    addGlyph(glyph: Glyph): void {
+        assert(!(this._glyphs.get(glyph.index)), 'expected glyph to not already exist');
+        this._glyphs.set(glyph.index, glyph);
+    }
+
+    /**
+     * Generates aan array of all comprised glyph indices.
+     * @return - An array of all glyph indices available to this font face.
+     */
+    arrayOfGlyphIndices(): Array<GLsizei> {
+        return Array.from(this._glyphs.keys());
+    }
+
+    /**
+     * Check if a glyph is depictable/renderable. If the glyph's sub-texture vertical or horizontal extent is zero
+     * the glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well
+     * as unknown glyphs do not need to be processed for rendering.
+     * @param index - Index of the glyph to access.
+     * @return - Returns true if the glyph needs to be depicted/rendered.
+     */
+    depictable(index: GLsizei): boolean {
+        return this.glyph(index).depictable();
+    }
+
+    /**
+     * Kerning for a glyph and a subsequent glyph in pt. If the glyph or the subsequent glyph are unknown to this
+     * font face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph class.
+     * @param index - The current glyph index (e.g., of the current pen-position).
+     * @param subsequentIndex - The glyph index of the subsequent/next glyph.
+     * @return - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown
+     * to this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
+     */
+    kerning(index: GLsizei, subsequentIndex: GLsizei): number {
+        const glyph = this._glyphs.get(index);
+        if (!glyph) {
+            return 0.0;
+        }
+        return glyph.kerning(subsequentIndex);
+    }
+
+    /**
+     * Set the kerning for a glyph w.r.t. to a subsequent glyph in pt. If the glyph is known to this font face, the
+     * values are forwarded to the glyphs kerning setter (see Glyph for more information).
+     * @param index - The target glyph index.
+     * @param subsequentIndex - The glyph index of the respective subsequent/next glyph.
+     * @param kerning - Kerning of the two glyphs in pt.
+     */
+    setKerning(index: GLsizei, subsequentIndex: GLsizei, kerning: number): void {
+        const glyph = this._glyphs.get(index);
+        if (!glyph || !this.hasGlyph(subsequentIndex)) {
+            assert(false, 'expected glyph or glyph of subsequent index to exist.');
+            return;
+        }
+        glyph.setKerning(subsequentIndex, kerning);
+    }
+
 
     /**
      * The size of the font in pt. The font size is the measure from the tops of the tallest glyphs (ascenders) to
@@ -209,89 +322,5 @@ export class FontFace {
         return this._glyphTexture;
     }
 
-    /**
-     * Check if a glyph of a specific index is available.
-     * @return - True if a glyph for the provided index was added.
-     */
-    hasGlyph(index: GLsizei): boolean {
-        return !!this._glyphs.get(index);
-    }
-
-    /**
-     * Direct access to an indexed glyph. If the glyph does not exist, an empty glyph is returned without adding it
-     * to glyphs. The glyph atlas might be loaded asynchronously, thus, new glyphs are expected to be added via
-     * addGlyph.
-     * @param index - Index of the glyph to access.
-     * @return - Glyph with the matching index or an empty glyph, if index has not match
-     */
-    glyph(index: GLsizei): Glyph {
-        const existingGlyph = this._glyphs.get(index);
-        if (existingGlyph) {
-            return existingGlyph;
-        }
-        const glyph = new Glyph();
-        glyph.index = index;
-        return glyph;
-    }
-
-    /**
-     * Add a glyph to the font face's set of glyphs. If the glyph already exists, the existing glyph remains.
-     * @param glyph - The glyph to add to the set of glyphs.
-     */
-    addGlyph(glyph: Glyph): void {
-        assert(!(this._glyphs.get(glyph.index)), 'expected glyph to not already exist');
-        this._glyphs.set(glyph.index, glyph);
-    }
-
-    /**
-     * Generates aan array of all comprised glyph indices.
-     * @return - An array of all glyph indices available to this font face.
-     */
-    arrayOfGlyphIndices(): Array<GLsizei> {
-        return Array.from(this._glyphs.keys());
-    }
-
-    /**
-     * Check if a glyph is depictable/renderable. If the glyph's sub-texture vertical or horizontal extent is zero
-     * the glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well
-     * as unknown glyphs do not need to be processed for rendering.
-     * @param index - Index of the glyph to access.
-     * @return - Returns true if the glyph needs to be depicted/rendered.
-     */
-    depictable(index: GLsizei): boolean {
-        return this.glyph(index).depictable();
-    }
-
-    /**
-     * Kerning for a glyph and a subsequent glyph in pt. If the glyph or the subsequent glyph are unknown to this
-     * font face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph class.
-     * @param index - The current glyph index (e.g., of the current pen-position).
-     * @param subsequentIndex - The glyph index of the subsequent/next glyph.
-     * @return - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown
-     * to this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
-     */
-    kerning(index: GLsizei, subsequentIndex: GLsizei): number {
-        const glyph = this._glyphs.get(index);
-        if (!glyph) {
-            return 0.0;
-        }
-        return glyph.kerning(subsequentIndex);
-    }
-
-    /**
-     * Set the kerning for a glyph w.r.t. to a subsequent glyph in pt. If the glyph is known to this font face, the
-     * values are forwarded to the glyphs kerning setter (see Glyph for more information).
-     * @param index - The target glyph index.
-     * @param subsequentIndex - The glyph index of the respective subsequent/next glyph.
-     * @param kerning - Kerning of the two glyphs in pt.
-     */
-    setKerning(index: GLsizei, subsequentIndex: GLsizei, kerning: number): void {
-        const glyph = this._glyphs.get(index);
-        if (!glyph || !this.hasGlyph(subsequentIndex)) {
-            assert(false, 'expected glyph or glyph of subsequent index to exist.');
-            return;
-        }
-        glyph.setKerning(subsequentIndex, kerning);
-    }
 
 }

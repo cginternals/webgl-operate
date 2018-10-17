@@ -165,7 +165,8 @@
         "vbos",
         "vertexarray",
         "viridis",
-        "webgl"
+        "webgl",
+        "xadvance"
     ],
     "cSpell.flagWords": [
         "hte"

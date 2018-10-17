@@ -56,6 +56,26 @@ namespace debug {
         protected _testNavigation: TestNavigation;
         protected _navigation: Navigation;
 
+        protected _fontFace: FontFace;
+
+
+        // /**
+        //  * Loads a font asset and creates a FontFace
+        //  * @param context - Valid context to create the object for.
+        //  */
+        // protected loadFont(context: Context): void {
+
+        //     /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
+        //     FontFace.fromFile('./data/opensansr144.fnt', context).then(
+        //         (fontFace) => {
+        //             this._fontFace = fontFace;
+        //             this.render3DLabels(this._labels3D);
+        //             this.render2DLabels(this._labels2D);
+        //         },
+        //     );
+        // }
+
+
         /**
          * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
          * @param context - valid context to create the object for.
@@ -311,7 +331,7 @@ namespace debug {
             anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
             anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            this._labelPass.render3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
+            this._labelPass.prepare3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
 
 
             /** OpenLL 2D Labels */
@@ -323,7 +343,7 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.render2DLabels([pos2Dlabel]);
+            this._labelPass.prepare2DLabels([pos2Dlabel]);
         }
     }
 }
