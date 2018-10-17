@@ -22,10 +22,10 @@ type StringPairs = Map<string, string>;
  *
  * Example:
  * ```
- * let fontFace: FontFace = FontLoader.load(this.context, 'font/yourFont.fnt', false, callbackFunction);
+ * let fontFace: FontFace = FontFaceLoader.load(this.context, 'font/yourFont.fnt', false, callbackFunction);
  * ```
  */
-export class FontLoader {
+export class FontFaceLoader {
 
     /**
      * False when the current loading process gets invalid.

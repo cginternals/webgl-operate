@@ -5,6 +5,9 @@ import { clamp, mix } from './gl-matrix-extensions';
 import { assert, log, LogLevel } from './auxiliaries';
 import { clampf, clampf3, clampf4, duplicate4, equals4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
 
+/** @todo remove this when webgl types are working again. */
+export type GLubyte = number;
+
 
 /**
  * Color class that allows for specification and conversion of colors in various color spaces. Please not that most of
@@ -393,6 +396,7 @@ export class Color {
         this._altered = !equals4<GLclampf>(this._rgba, previous);
         return this;
     }
+
 
     /**
      * Specifies the internal rgba store using a color in unsigned int (8bit) RGBA colors.

@@ -19,9 +19,9 @@ class ContextMock {
 
 class ObjectMock extends AbstractObject<string> {
 
-    protected _fakeFail;
-    first: boolean = undefined;
-    second: boolean = undefined;
+    protected _fakeFail: boolean;
+    first: boolean | undefined;
+    second: boolean | undefined;
 
     constructor(fakeFail: boolean, context: ContextMock, identifier?: string) {
         super(context as Context, identifier);
@@ -30,7 +30,6 @@ class ObjectMock extends AbstractObject<string> {
 
     initialize(first?: boolean, second?: boolean): boolean {
         const result = super.initialize();
-
         this.first = first;
         this.second = second;
         return result;
@@ -39,7 +38,7 @@ class ObjectMock extends AbstractObject<string> {
     create(): string {
         this._object = this._fakeFail ? undefined : 'object';
         this._valid = !this._fakeFail;
-        return this._object;
+        return this._object || 'undefined';
     }
     delete(): void {
         this._object = undefined;

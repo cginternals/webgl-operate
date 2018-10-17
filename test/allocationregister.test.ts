@@ -169,8 +169,8 @@ describe('AllocationRegister', () => {
         tracker.allocate(foo, 123);
         expect(tracker.bytes).to.equal(123);
 
-        let observed: number;
-        let observedString: string;
+        let observed = 0;
+        let observedString = '';
         tracker.bytes$.subscribe((value) => { observed = value[0]; observedString = value[1]; });
 
         expect(observed).to.equal(123);
