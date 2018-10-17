@@ -30,6 +30,7 @@ export class Position2DLabel extends Label {
         this._position = vec2.fromValues(0.0, 0.0);
         this._direction = vec2.fromValues(1.0, 0.0);
 
+        this._fontSize = 20;
         this._fontSizeUnit = Label.SpaceUnit.Px;
     }
 
