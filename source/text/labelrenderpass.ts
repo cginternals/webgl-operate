@@ -15,7 +15,7 @@ import { Shader } from '../shader';
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 
-import { FontLoader } from './fontloader';
+import { FontFaceLoader } from './fontfaceloader';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
@@ -93,7 +93,7 @@ export class LabelRenderPass extends Initializable {
         const fontFace: FontFace = new FontFace(context);
         this._fontFace = fontFace;
 
-        FontLoader.load(context, './data/opensansr144.fnt', false).then(
+        FontFaceLoader.load(context, './data/opensansr144.fnt', false).then(
             (fontFace) => {
                 this._fontFace = fontFace;
                 this.render3DLabels(this._labels3D);

@@ -38,7 +38,7 @@ class ObjectMock extends AbstractObject<string> {
     create(): string {
         this._object = this._fakeFail ? undefined : 'object';
         this._valid = !this._fakeFail;
-        return this._object ? this._object : 'undefined';
+        return this._object || 'undefined';
     }
     delete(): void {
         this._object = undefined;

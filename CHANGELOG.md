@@ -11,11 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Dev dependencies `ts-node` and `sinon` are not restricted to old versions and can now be updated now.
-- Readback of depth and color values using the `ReadbackPass` is now working correct.
 - Strict compile settings applied to testing now.
 
 ### Added
-- Text rendering and labeling supporting 2D and 3D positioning and font basic asset loading.
+- Text rendering and labeling supporting 2D and 3D positioning and font basic asset loading. See
 
 ## [0.3.20] - 2010-10-18
 ### Fixed
