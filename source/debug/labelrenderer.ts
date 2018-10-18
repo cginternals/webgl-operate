@@ -147,6 +147,11 @@ namespace debug {
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
 
+            FontFace.fromFile('./data/opensansr144.fnt', context).then((fontFace) => {
+                this._labelPass.fontFace = fontFace;
+                this.invalidate();
+            });
+
             this.setupScene();
 
             return true;

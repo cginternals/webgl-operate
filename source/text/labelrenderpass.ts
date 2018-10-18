@@ -169,20 +169,23 @@ export class LabelRenderPass extends Initializable {
     }
 
 
+    /**
+     * @param override - If enabled, everything will be updated, regardless of tracked alterations.
+     */
     @Initializable.assert_initialized()
-    update(): void {
+    update(override: boolean = false): void {
         const gl = this._context.gl;
         this._program.bind();
 
-        if (this._altered.camera || this._camera.altered) {
+        if (override || this._altered.camera || this._camera.altered) {
             gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         }
 
-        if (this._altered.color) {
+        if (override || this._altered.color) {
             gl.uniform4fv(this._uColor, this._color.rgbaF32);
         }
 
-        if (this._altered.labels || this._altered.font) {
+        if (override || this._altered.labels || this._altered.font) {
             this.prepare();
         }
 
@@ -323,6 +326,18 @@ export class LabelRenderPass extends Initializable {
     set labels(labels: Array<Label>) {
         this._labels = labels;
         this._altered.alter('labels');
+    }
+
+    /**
+     * Allows to specify the font face for rendering. Note that if changes to the font face occur, `update(true)`
+     * should be invoked to invoke, e.g., re-typesetting of labels.
+     */
+    set fontFace(fontFace: FontFace | undefined) {
+        this._font = fontFace;
+        this._altered.alter('font');
+    }
+    get fontFace(): FontFace | undefined {
+        return this._font;
     }
 
 }
