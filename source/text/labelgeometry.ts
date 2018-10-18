@@ -39,7 +39,8 @@ export class LabelGeometry extends Geometry {
      * |    \  |
      * 1-------3
      */
-    protected static readonly DATA = new Float32Array([0, 0, 0, 1, 1, 0, 1, 1]);
+    protected static readonly VERTICES = new Float32Array(
+        [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]);
 
     /**
      * Number of glyphs encoded within the geometry.
@@ -133,7 +134,7 @@ export class LabelGeometry extends Geometry {
          * These vertices are equal for all quads. There actual position will be changed using
          * origin, tangent and up(-vector).
          */
-        this._buffers[0].data(LabelGeometry.DATA, gl.STATIC_DRAW);
+        this._buffers[0].data(LabelGeometry.VERTICES, gl.STATIC_DRAW);
 
         return valid;
     }
