@@ -106,7 +106,8 @@ export class FontFace {
 
     /**
      * Check if a glyph of a specific index is available.
-     * @return - True if a glyph for the provided index was added.
+     * @param index - Index of the glyph to access.
+     * @returns - True if a glyph for the provided index was added.
      */
     hasGlyph(index: GLsizei): boolean {
         return !!this._glyphs.get(index);
@@ -117,7 +118,7 @@ export class FontFace {
      * to glyphs. The glyph atlas might be loaded asynchronously, thus, new glyphs are expected to be added via
      * addGlyph.
      * @param index - Index of the glyph to access.
-     * @return - Glyph with the matching index or an empty glyph, if index has not match
+     * @returns - Glyph with the matching index or an empty glyph, if index has not match
      */
     glyph(index: GLsizei): Glyph {
         const existingGlyph = this._glyphs.get(index);
@@ -140,7 +141,7 @@ export class FontFace {
 
     /**
      * Generates aan array of all comprised glyph indices.
-     * @return - An array of all glyph indices available to this font face.
+     * @returns - An array of all glyph indices available to this font face.
      */
     arrayOfGlyphIndices(): Array<GLsizei> {
         return Array.from(this._glyphs.keys());
@@ -151,7 +152,7 @@ export class FontFace {
      * the glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well
      * as unknown glyphs do not need to be processed for rendering.
      * @param index - Index of the glyph to access.
-     * @return - Returns true if the glyph needs to be depicted/rendered.
+     * @returns - Returns true if the glyph needs to be depicted/rendered.
      */
     depictable(index: GLsizei): boolean {
         return this.glyph(index).depictable();
@@ -162,7 +163,7 @@ export class FontFace {
      * font face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph class.
      * @param index - The current glyph index (e.g., of the current pen-position).
      * @param subsequentIndex - The glyph index of the subsequent/next glyph.
-     * @return - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown
+     * @returns - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown
      * to this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
      */
     kerning(index: GLsizei, subsequentIndex: GLsizei): number {
@@ -193,7 +194,7 @@ export class FontFace {
     /**
      * The size of the font in pt. The font size is the measure from the tops of the tallest glyphs (ascenders) to
      * the bottom of the lowest descenders in pt. It is derived via the sum of ascent and descent.
-     * @return - The font size in pt (ascent + descent).
+     * @returns - The font size in pt (ascent + descent).
      */
     get size(): number {
         /* Note: this._descent is usually negative. */
@@ -275,7 +276,7 @@ export class FontFace {
     /**
      * The relative baseline-to-baseline distance w.r.t. the font's size. The relative line space is derived as
      * follows: line_space = size / line_height; Note that the descent is usually a negative value.
-     * @return - The relative baseline-to-baseline distance w.r.t. the font's size.
+     * @returns - The relative baseline-to-baseline distance w.r.t. the font's size.
      */
     get lineSpace(): number {
         if (this.lineHeight === 0.0) {
@@ -295,7 +296,7 @@ export class FontFace {
     }
     /**
      * The size/extent of the glyph texture in px.
-     * @return - The size/extent of the glyph texture in px.
+     * @returns - The size/extent of the glyph texture in px.
      */
     get glyphTextureExtent(): GLsizei2 {
         return this._glyphTextureExtent;
