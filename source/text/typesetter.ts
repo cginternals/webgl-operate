@@ -84,7 +84,7 @@ export class Typesetter {
      */
     protected static backward(label: Label, index: number, begin: number, pen: vec2, extent: vec2): void {
         while (index > begin) {
-            const precedingGlyph = label.fontFace.glyph(label.charCodeAt(index));
+            const precedingGlyph = label.fontFace!.glyph(label.charCodeAt(index));
             if (precedingGlyph.depictable()) {
                 break;
             }
@@ -92,7 +92,7 @@ export class Typesetter {
             --index;
         }
         extent[0] = Math.max(pen[0], extent[1]);
-        extent[1] += label.fontFace.lineHeight;
+        extent[1] += label.fontFace!.lineHeight;
     }
 
     /**
@@ -139,19 +139,19 @@ export class Typesetter {
         let offset = 0.0;
         switch (label.lineAnchor) {
             case Label.LineAnchor.Ascent:
-                offset = label.fontFace.ascent;
+                offset = label.fontFace!.ascent;
                 break;
             case Label.LineAnchor.Center:
-                offset = label.fontFace.size * 0.5 + label.fontFace.descent;
+                offset = label.fontFace!.size * 0.5 + label.fontFace!.descent;
                 break;
             case Label.LineAnchor.Descent:
-                offset = label.fontFace.descent;
+                offset = label.fontFace!.descent;
                 break;
             case Label.LineAnchor.Top:
-                offset = label.fontFace.base;
+                offset = label.fontFace!.base;
                 break;
             case Label.LineAnchor.Bottom:
-                offset = label.fontFace.base - label.fontFace.lineHeight;
+                offset = label.fontFace!.base - label.fontFace!.lineHeight;
                 break;
             case Label.LineAnchor.Baseline:
             default:
@@ -248,6 +248,8 @@ export class Typesetter {
      * @param begin vertex index to start the typesetting (usually 0)
      */
     static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
+        assert(!!label.fontFace, `expected a font face for label before typesetting`);
+
         /* Horizontal and vertical position at which typesetting takes place/arrived. */
         const pen = vec2.create();
 
@@ -264,7 +266,7 @@ export class Typesetter {
 
         let index = iBegin;
         for (; index !== iEnd; ++index) {
-            const glyph = label.fontFace.glyph(label.charCodeAt(index));
+            const glyph = label.fontFace!.glyph(label.charCodeAt(index));
 
             /* Handle line feeds as well as word wrap for next word (or next glyph if word exceeds the line width). */
             const feedLine = label.lineFeedAt(index) || (label.wordWrap &&
@@ -277,7 +279,7 @@ export class Typesetter {
                 Typesetter.transformAlignment(pen, label.alignment, glyphs, feedVertexIndex, vertexIndex);
 
                 pen[0] = 0.0;
-                pen[1] -= label.fontFace.lineHeight;
+                pen[1] -= label.fontFace!.lineHeight;
 
                 feedVertexIndex = vertexIndex;
 
@@ -286,7 +288,7 @@ export class Typesetter {
             }
 
             /* Add and configure data for rendering the current character/glyph of the label. */
-            Typesetter.transformGlyph(label.fontFace, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
+            Typesetter.transformGlyph(label.fontFace!, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
 
             pen[0] += glyph.advance;
         }
