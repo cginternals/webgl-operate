@@ -1,5 +1,6 @@
 
 import { log, logIf, LogLevel } from '../auxiliaries';
+import { wait } from '../fetch';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
@@ -13,14 +14,9 @@ import Path = require('path');
 type StringPairs = Map<string, string>;
 
 /**
- * Loads the png image that displays the glyph atlas, that was prepared using a Distance Field Transform. It also
- * loads all needed data to use that image from a fnt-file with the same name as the png image. It thus creates
- * a font face (@see {@link FontFace}).
- *
- * Example:
- * ```
- * let fontFace: FontFace = FontFaceLoader.load(this.context, 'font/yourFont.fnt', false, callbackFunction);
- * ```
+ * Transforms input raw data of a text-based font file to a font face (@see {@link FontFace}) specification. All
+ * referenced pages/glyph atlases will be loaded and setup as well. This is intended to be used directly by the
+ * FontFace and is not required to be exposed to webgl-operates public API.
  */
 export class FontFaceLoader {
 
@@ -273,13 +269,10 @@ export class FontFaceLoader {
 
         /* Multiple promises might be invoked (one per page due to async texture2D load). Since this is a non async
         transform intended to be used in a async fetch, waiting on all promises here. */
-        // tslint:disable-next-line:space-before-function-paren
-        (async () => {
-            await Promise.all(promises).catch((reason: any) => {
-                log(LogLevel.Warning, `processing font face data failed: ${reason}`);
-                status = false;
-            });
-        })();
+        wait<void>(promises, (reason) => {
+            log(LogLevel.Warning, `processing font face data failed: ${reason}`);
+            status = false;
+        });
 
         return status ? fontFace : undefined;
     }
