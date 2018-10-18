@@ -24,6 +24,12 @@ import { Glyph } from './glyph';
  * type setting/font rendering as possible.
  * Note: This class does not provide dpi awareness, which has to be handled outside of this class, e.g., during
  * layouting and rendering.
+ *
+ * A font can be loaded as follows:
+ * ```
+ * let fontFace: FontFace | undefined;
+ * FontFace.fromFile(context, './data/opensansr144.fnt').then((value) => fontFace = value);
+ * ```
  */
 export class FontFace {
 
@@ -63,7 +69,7 @@ export class FontFace {
      * Resolving the promise:
      * ```
      * let fontFace: FontFace | undefined;
-     * FontFace.fromFile(context, 'todo').then((value) => fontFace = value);
+     * FontFace.fromFile(context, './data/opensansr144.fnt').then((value) => fontFace = value);
      * ```
      * @param url - Uniform resource locator string referencing the fnt-file that should be loaded.
      * @param context - Valid context to create the object for.
