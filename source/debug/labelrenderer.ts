@@ -56,6 +56,9 @@ namespace debug {
         protected _testNavigation: TestNavigation;
         protected _navigation: Navigation;
 
+        protected _fontFace: FontFace;
+
+
         /**
          * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
          * @param context - valid context to create the object for.
@@ -143,6 +146,11 @@ namespace debug {
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
+
+            FontFace.fromFile('./data/opensansr144.fnt', context).then((fontFace) => {
+                this._labelPass.fontFace = fontFace;
+                this.invalidate();
+            });
 
             this.setupScene();
 
@@ -311,9 +319,6 @@ namespace debug {
             anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
             anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            this._labelPass.render3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
-
-
             /** OpenLL 2D Labels */
 
             const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), placeholderFontFace);
@@ -323,7 +328,7 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.render2DLabels([pos2Dlabel]);
+            this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel];
         }
     }
 }

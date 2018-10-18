@@ -150,17 +150,17 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
-     * Asynchronous load of an image comprising a column of slices via URI or data URI. Please note that due to the lack
+     * Asynchronous load of an image comprising a column of slices via URL or data URI. Please note that due to the lack
      * of sub-data access on images, the slices are loaded using a auxiliary canvas and context (temporarily). The sub
      * images (slices) are drawn using the canvas and the image data is then captured.
      * @todo perhaps also support horizontal slicing.
-     * @param uri - URI linking the image slices that should be loaded. Data URI is also supported.
+     * @param url - Uniform resource locator string referencing image slices that should be loaded (data URI supported).
      * @param slices - Number of slices (resulting in the 3D texture's depth) vertically aligned within the image.
      * @param crossOrigin - Enable cross origin data loading.
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    load(uri: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
+    load(url: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
         assert(false, `not implemented`);
         return new Promise<void>(() => true);
         // return new Promise((resolve, reject) => {
@@ -205,7 +205,7 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
         //     if (crossOrigin) {
         //         image.crossOrigin = 'anonymous';
         //     }
-        //     image.src = uri;
+        //     image.src = url;
         // });
     }
 

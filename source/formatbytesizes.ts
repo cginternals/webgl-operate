@@ -11,7 +11,7 @@ import { Context } from './context';
  * UNSIGNED_SHORT_5_6_5, HALF_FLOAT, UNSIGNED_SHORT, FLOAT, etc. and will assert when provided with types.
  * @param context - The OpenGL context.
  * @param format - Format identifier of the target internal OpenGL data type.
- * @return - The size in bytes of one type instance on the GPU.
+ * @returns - The size in bytes of one type instance on the GPU.
  */
 export function byteSizeOfFormat(context: Context, format: GLenum): number {
     const gl = context.gl;
