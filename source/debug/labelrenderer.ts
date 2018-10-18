@@ -18,7 +18,6 @@ import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 
-import { FontFace } from '../text/fontface';
 import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
@@ -285,14 +284,13 @@ namespace debug {
 
         /**
          * Sets up an example scene with 2D and 3D labels and sets the corresponding data on LabelGeometries.
+         * The FontFace is set on each label by the LabelRenderPass.
          */
         protected setupScene(): void {
 
             /** OpenLL 3D Labels */
 
-            const placeholderFontFace = new FontFace(this._context, `FontfacePlaceholder`);
-
-            const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'), placeholderFontFace);
+            const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'));
             pos3Dlabel.fontSize = 0.1;
 
             /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
@@ -300,13 +298,13 @@ namespace debug {
             pos3Dlabel.setDirection(0.0, 1.0, 0.0);
             pos3Dlabel.setUp(-1.0, 0.0, 0.0);
 
-            const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'), placeholderFontFace);
+            const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'));
             shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
             shadowPos3Dlabel.fontSize = 0.1;
             shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
             shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
 
-            const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'), placeholderFontFace);
+            const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'));
             anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
             anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
             anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
@@ -316,7 +314,7 @@ namespace debug {
 
             /** OpenLL 2D Labels */
 
-            const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), placeholderFontFace);
+            const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'));
             pos2Dlabel.fontSize = 40;
 
             /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */

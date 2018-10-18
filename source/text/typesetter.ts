@@ -248,6 +248,7 @@ export class Typesetter {
      * @param begin vertex index to start the typesetting (usually 0)
      */
     static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
+        assert(!!label.fontFace && label.fontFace.valid, `expected a valid font face for typesetting`);
         /* Horizontal and vertical position at which typesetting takes place/arrived. */
         const pen = vec2.create();
 
