@@ -50,6 +50,9 @@ export class LabelRenderPass extends Initializable {
     /** @see {@link color} */
     protected _color: Color;
 
+    /** @see {@link depthMask} */
+    protected _depthMask = false;
+
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation | undefined;
@@ -212,6 +215,10 @@ export class LabelRenderPass extends Initializable {
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
 
+        if (this._depthMask === false) {
+            gl.depthMask(this._depthMask);
+        }
+
         gl.enable(gl.BLEND);
         /* Note that WebGL supports separate blend by default. */
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -245,6 +252,10 @@ export class LabelRenderPass extends Initializable {
         // this._program.unbind();
 
         this._font.glyphTexture.unbind(gl.TEXTURE0);
+
+        if (this._depthMask === false) {
+            gl.depthMask(true);
+        }
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
@@ -295,6 +306,23 @@ export class LabelRenderPass extends Initializable {
     get color(): Color {
         this._altered.alter('color'); /* just assume it will be altered on access. */
         return this._color;
+    }
+
+
+    /**
+     * Allows to restrict writing into the depth buffer. If the mask is set to `true`, labels might affect the depth
+     * buffer and apply fragment-based discard in order to reduce blank glyph areas to override depth values. If this
+     * mode is used, labels should be the last or one of the later rendering passes. If the mask is set to `false`, the
+     * common transparency/blending etc issues might occur when several labels overlap or other, e.g., transparent
+     * areas are rendered afterwards... However, if only labels of the same color can overlap and no other objects can
+     * interfere, this might be the better choice.
+     * By default, writing to the depth buffer is disabled (depth mask is false).
+     */
+    set depthMask(flag: boolean) {
+        this._depthMask = flag;
+    }
+    get depthMask(): boolean {
+        return this._depthMask;
     }
 
 
