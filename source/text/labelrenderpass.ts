@@ -1,7 +1,7 @@
 
-import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
+import { mat4 } from 'gl-matrix';
 
-import { assert, log, LogLevel } from '../auxiliaries';
+import { assert } from '../auxiliaries';
 import { GLfloat2 } from '../tuples';
 
 import { Camera } from '../camera';
@@ -19,7 +19,6 @@ import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
-import { Typesetter } from './typesetter';
 
 
 /**
@@ -31,7 +30,7 @@ export class LabelRenderPass extends Initializable {
      * Alterable auxiliary object for tracking changes on render pass inputs and lazy updates.
      */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, camera: false, geometry: false, color: false, // font: false, labels: false,
+        any: false, camera: false, geometry: false, color: false, font: false, labels: false,
     });
 
     /**
@@ -57,13 +56,12 @@ export class LabelRenderPass extends Initializable {
     protected _uNdcOffset: WebGLUniformLocation | undefined;
     protected _uColor: WebGLUniformLocation | undefined;
 
-    protected _fontFace: FontFace | undefined;
-    protected _labels3D: Array<Position3DLabel>;
-    protected _labels2D: Array<Position2DLabel>;
+    protected _font: FontFace | undefined;
+    protected _labels: Array<Label>;
+
     protected _geometry3D: LabelGeometry;
     protected _geometry2D: LabelGeometry;
-    protected _glyphs3D: GlyphVertices;
-    protected _glyphs2D: GlyphVertices;
+
 
     /**
      * Creates a render pass for labels.
@@ -76,11 +74,40 @@ export class LabelRenderPass extends Initializable {
         this._program = new Program(context, 'LabelRenderProgram');
         this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
-        this._glyphs3D = new GlyphVertices(0);
-        this._glyphs2D = new GlyphVertices(0);
 
         this._color = new Color([0.5, 0.5, 0.5], 1.0);
     }
+
+    /**
+     * Typesets and renders 2D and 3D labels.
+     */
+    protected prepare(): void {
+        if (this._font === undefined) {
+            const empty = new Float32Array(0);
+            this._geometry2D.update(empty, empty, empty, empty);
+            this._geometry3D.update(empty, empty, empty, empty);
+            return;
+        }
+
+        /* Remove all calculated vertices for 2D and 3D labels. */
+        const glyphs2D = new GlyphVertices(0);
+        const glyphs3D = new GlyphVertices(0);
+
+        const frameSize = this._camera.viewport;
+        for (const label of this._labels) {
+            label.fontFace = this._font!;
+
+            if (label instanceof Position2DLabel) {
+                glyphs2D.concat(label.typeset(frameSize));
+            } else if (label instanceof Position3DLabel) {
+                glyphs3D.concat(label.typeset());
+            }
+        }
+
+        this._geometry2D.update(glyphs2D.origins, glyphs2D.tangents, glyphs2D.ups, glyphs2D.texCoords);
+        this._geometry3D.update(glyphs3D.origins, glyphs3D.tangents, glyphs3D.ups, glyphs3D.texCoords);
+    }
+
 
     /**
      * Loads a font asset and creates a FontFace
@@ -91,205 +118,12 @@ export class LabelRenderPass extends Initializable {
         /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
         FontFace.fromFile('./data/opensansr144.fnt', context).then(
             (fontFace) => {
-                this._fontFace = fontFace;
-                // @todo this.update();
-                this.prepare3DLabels(this._labels3D);
-                this.prepare2DLabels(this._labels2D);
+                this._font = fontFace;
+                this._altered.alter('font');
             },
         );
     }
 
-    /**
-     * Typesets and renders 2D labels. If font face is not loaded yet, this function will be called again after a valid
-     * font face is loaded.
-     * @param labels - all 2D labels
-     */
-    prepare2DLabels(labels: Array<Position2DLabel>): void {
-        /** We need to hold those labels because this function might be called before the font face
-         * is loaded. Once the font face is loaded, we try to render those labels again.
-         */
-
-        this._labels2D = labels;
-        if (this._fontFace === undefined) {
-            log(LogLevel.Debug, `no font face available, preparation of 2D labels skipped`);
-            return;
-        }
-
-        if (this._fontFace.glyphTextureExtent['0'] === 0) {
-            log(LogLevel.Debug,
-                `Will not render 2D labels as long as font face is not loaded.`);
-            return;
-        }
-
-        this.clear2DLabels();
-        labels.forEach((label: Position2DLabel) => {
-            this.prepare2DLabel(label);
-        });
-    }
-
-    /**
-     * Typesets and renders 3D labels. If font face is not loaded yet, this function will be called again after a valid
-     * font face is loaded.
-     * @param labels - all 3D labels
-     */
-    prepare3DLabels(labels: Array<Position3DLabel>): void {
-        /** We need to hold those labels because this function might be called before the font face
-         * is loaded. Once the font face is loaded, we try to render those labels again.
-         */
-
-        this._labels3D = labels;
-        if (this._fontFace === undefined) {
-            log(LogLevel.Debug, `no font face available, preparation of 3D labels skipped`);
-            return;
-        }
-
-        if (this._fontFace.glyphTextureExtent['0'] === 0) {
-            log(LogLevel.Debug,
-                `Will not render 3D labels as long as font face is not loaded.`);
-            return;
-        }
-
-        this.clear3DLabels();
-        labels.forEach((label: Position3DLabel) => {
-            this.prepare3DLabel(label);
-        });
-    }
-
-    /**
-     * Removes all calculated vertices for 2D labels.
-     */
-    clear2DLabels(): void {
-        this._glyphs2D = new GlyphVertices(0);
-    }
-
-    /**
-     * Removes all calculated vertices for 3D labels.
-     */
-    clear3DLabels(): void {
-        this._glyphs3D = new GlyphVertices(0);
-    }
-
-    /**
-     * Typesets a label and adds it to the 2D labels that will be rendered.
-     * @param label - the 2D label to be rendered.
-     */
-    prepare2DLabel(label: Position2DLabel): void {
-        if (this._fontFace === undefined) {
-            log(LogLevel.Debug, `no font face available, preparation of 2D label skipped`);
-            return;
-        }
-        label.fontFace = this._fontFace;
-
-        const frameSize = this._camera.viewport;
-
-        this._glyphs2D.concat(label.typeset(frameSize));
-
-        this._geometry2D.setGlyphCoords(this._glyphs2D.origins, this._glyphs2D.tangents, this._glyphs2D.ups);
-        this._geometry2D.setTexCoords(this._glyphs2D.texCoords);
-    }
-
-    /**
-     * Typesets a label and adds it to the 3D labels that will be rendered.
-     * @param label - the 3D label to be rendered.
-     */
-    prepare3DLabel(label: Position3DLabel): void {
-        if (this._fontFace === undefined) {
-            log(LogLevel.Debug, `no font face available, preparation of 3D label skipped`);
-            return;
-        }
-        label.fontFace = this._fontFace;
-
-        this._glyphs3D.concat(label.typeset());
-
-        this._geometry3D.setGlyphCoords(this._glyphs3D.origins, this._glyphs3D.tangents, this._glyphs3D.ups);
-        this._geometry3D.setTexCoords(this._glyphs3D.texCoords);
-    }
-
-    // /**
-    //  * This is deprecated and currently kept for compatibility. It can be generically used for all kinds of labels.
-    //  */
-    // prepareLabel(label: Label, is3D: boolean): void {
-    //     label.fontFace = this._fontFace;
-
-    //     label.transform = label.userTransform;
-
-    //     const frameSize = this._camera.viewport;
-
-    //     if (label.fontSizeUnit === Label.SpaceUnit.Px) {
-    //         // TODO meaningful margins from label.margins or config.margins ?
-    //         const margins: vec4 = vec4.create();
-    //         // TODO meaningful ppiScale from label.ppiScale or config.ppiScale ?
-    //         const ppiScale = 1;
-
-    //         /* compute transform matrix */
-    //         const transform = mat4.create();
-
-    //         if (is3D) {
-    //             /* even though px as font size unit doesn't make sense in 3D space, the current architecture doesn't
-    //             forbid it. We have to pre-scale using aspect ratio. */
-    //             mat4.scale(transform, transform, vec3.fromValues(1.0,
-    //                 frameSize[1] / frameSize[0],
-    //                 1.0));
-    //         }
-
-    //         // translate to lower left in NDC
-    //         mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
-    //         // scale glyphs to NDC size
-    //         // this._frameSize should be the viewport size
-    //         mat4.scale(transform, transform, vec3.fromValues(2.0 / frameSize[0],
-    //             2.0 / frameSize[1],
-    //             1.0));
-
-    //         // scale glyphs to pixel size with respect to the displays ppi
-    //         mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
-
-    //         // translate to origin in point space - scale origin within
-    //         // margined extend (i.e., viewport with margined areas removed)
-    //         const marginedExtent: vec2 = vec2.create();
-    //         vec2.sub(marginedExtent, vec2.fromValues(
-    //             frameSize[0] / ppiScale, frameSize[1] / ppiScale),
-    //             vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
-
-    //         const v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
-    //         vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
-    //         mat4.translate(transform, transform, v3);
-
-    //         label.transform = mat4.mul(label.transform, label.userTransform, transform);
-    //     }
-
-    //     /* prepare vertex storage (values will be overridden by typesetter) */
-    //     const glyphs = new GlyphVertices(label.length);
-
-    //     Typesetter.typeset(label, glyphs, 0);
-
-    //     this._glyphs2D.concat(glyphs);
-
-    //     const origins: Array<number> = [];
-    //     const tans: Array<number> = [];
-    //     const ups: Array<number> = [];
-    //     const texCoords: Array<number> = [];
-
-    //     const l = this._glyphs2D.length;
-
-    //     for (let i = 0; i < l; i++) {
-    //         const v = this._glyphs2D.vertices[i];
-
-    //         origins.push.apply(origins, v.origin);
-    //         tans.push.apply(tans, v.tangent);
-    //         ups.push.apply(ups, v.up);
-    //         texCoords.push.apply(texCoords, v.uvRect);
-    //     }
-
-    //     if (is3D) {
-    //         this._geometry3D.setGlyphCoords(
-    //             Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
-    //         this._geometry3D.setTexCoords(Float32Array.from(texCoords));
-    //     } else {
-    //         this._geometry2D.setGlyphCoords(
-    //             Float32Array.from(origins), Float32Array.from(tans), Float32Array.from(ups));
-    //         this._geometry2D.setTexCoords(Float32Array.from(texCoords));
-    //     }
-    // }
 
     @Initializable.initialize()
     initialize(): boolean {
@@ -322,7 +156,6 @@ export class LabelRenderPass extends Initializable {
         if (!this._geometry2D.initialized) {
             this._geometry2D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
-
         if (!this._geometry3D.initialized) {
             this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
@@ -357,13 +190,17 @@ export class LabelRenderPass extends Initializable {
             gl.uniform4fv(this._uColor, this._color.rgbaF32);
         }
 
+        if (this._altered.labels || this._altered.font) {
+            this.prepare();
+        }
+
         this._altered.reset();
     }
 
     @Initializable.assert_initialized()
     frame(): void {
         assert(this._target && this._target.valid, `valid target expected`);
-        if (this._fontFace === undefined) {
+        if (this._font === undefined) {
             return;
         }
 
@@ -386,7 +223,7 @@ export class LabelRenderPass extends Initializable {
         gl.uniform2fv(this._uNdcOffset, this._ndcOffset);
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
-        this._fontFace.glyphTexture.bind(gl.TEXTURE0);
+        this._font.glyphTexture.bind(gl.TEXTURE0);
 
 
         /* Controlling renderer is expected to bind the appropriate target, thus, unbinding is not
@@ -407,7 +244,7 @@ export class LabelRenderPass extends Initializable {
         /** Every stage is expected to bind its own program when drawing, unbinding is not necessary. */
         // this._program.unbind();
 
-        this._fontFace.glyphTexture.unbind(gl.TEXTURE0);
+        this._font.glyphTexture.unbind(gl.TEXTURE0);
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
@@ -458,6 +295,17 @@ export class LabelRenderPass extends Initializable {
     get color(): Color {
         this._altered.alter('color'); /* just assume it will be altered on access. */
         return this._color;
+    }
+
+
+    /**
+     * Write access to the labels that should be rendered. Note that label preparation is currently done per
+     * label-render pass instance, so drawing the same label with multiple renderers should be avoided. Label
+     * preparation will be invoked on update, iff the labels or the font face have changed.
+     */
+    set labels(labels: Array<Label>) {
+        this._labels = labels;
+        this._altered.alter('labels');
     }
 
 }

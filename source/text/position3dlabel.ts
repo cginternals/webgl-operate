@@ -49,7 +49,7 @@ export class Position3DLabel extends Label {
         const transform = mat4.create();
         const normal = vec3.create();
 
-        /* apply user tranformations (position, direction) */
+        /* apply user transformations (position, direction) */
 
         mat4.translate(transform, mat4.create(),
             vec3.fromValues(this._position[0], this._position[1], this._position[2]));
@@ -140,4 +140,5 @@ export class Position3DLabel extends Label {
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is World for this label.`);
     }
+
 }

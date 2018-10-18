@@ -331,9 +331,6 @@ namespace debug {
             anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
             anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            this._labelPass.prepare3DLabels([pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel]);
-
-
             /** OpenLL 2D Labels */
 
             const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'), placeholderFontFace);
@@ -343,7 +340,7 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.prepare2DLabels([pos2Dlabel]);
+            this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel];
         }
     }
 }

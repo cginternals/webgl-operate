@@ -1,7 +1,5 @@
 
-import { log, LogLevel } from './auxiliaries';
 import { validate } from './properties';
-
 
 
 /** Namespace that comprises various utils (also cleans up documentation). */

@@ -72,7 +72,7 @@ export class Position2DLabel extends Label {
         mat4.translate(transform, transform, v3);
 
 
-        /* apply user tranformations (position, direction) */
+        /* apply user transformations (position, direction) */
         mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
 
         const n: vec2 = vec2.fromValues(1.0, 0.0);
@@ -143,4 +143,5 @@ export class Position2DLabel extends Label {
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is Px for this label.`);
     }
+
 }

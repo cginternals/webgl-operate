@@ -11,7 +11,7 @@ import { Initializable } from '../initializable';
  * Gathers vertices and other data needed for drawing all labels using the glyphquad-shaders.
  *
  * Example usage:
- *
+ * ```
  * const labelGeometry = new LabelGeometry(this._context);
  * labelGeometry = new LabelGeometry(this._context);
  * const aVertex = this._program.attribute('a_quadVertex', 0);
@@ -21,18 +21,13 @@ import { Initializable } from '../initializable';
  * const aUp = this._program.attribute('a_up', 4);
  *
  * labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
- * labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
- *
- * ....
- *
- * labelGeometry.setTexCoords(Float32Array.from(texCoords));
- * labelGeometry.setGlyphCoords(Float32Array.from(origins), Float32Array.from(tangents), Float32Array.from(ups));
- *
- * ....
- *
+ * ...
+ * labelGeometry.update(origins, tangents, ups, texCoords);
+ * ...
  * labelGeometry.bind();
  * labelGeometry.draw();
  * labelGeometry.unbind();
+ * ```
  */
 export class LabelGeometry extends Geometry {
 
@@ -44,26 +39,13 @@ export class LabelGeometry extends Geometry {
      * |    \  |
      * 1-------3
      */
-    protected _vertices: Float32Array = new Float32Array(0);
+    protected static readonly DATA = new Float32Array([0, 0, 0, 1, 1, 0, 1, 1]);
+
     /**
-     * Texture coordinates (uv) for every glyph, format: ll.x, ll.y, ur.x, ur.y
+     * Number of glyphs encoded within the geometry.
      */
-    protected _texCoords: Float32Array = new Float32Array(0);
-    /**
-     * The coordinates of the lower left corner of every glyph. Its interpretation depends on the shader,
-     * usually it's a 3-component vector in world space.
-     */
-    protected _origins: Float32Array = new Float32Array(0);
-    /**
-     * The tangent vector for every glyph (direction along base line). Its interpretation depends on the shader,
-     * usually it's a 3-component vector in world space.
-     */
-    protected _tangents: Float32Array = new Float32Array(0);
-    /**
-     * The up vector for every glyph (orthogonal to its tangent vector). Its interpretation depends on the shader,
-     * usually it's a 3-component vector in world space.
-     */
-    protected _ups: Float32Array = new Float32Array(0);
+    protected _glyphCount = 0;
+
 
     /**
      * Object constructor, requires a context and an identifier.
@@ -73,21 +55,17 @@ export class LabelGeometry extends Geometry {
     constructor(context: Context, identifier?: string) {
         super(context, identifier);
 
-        assert(context.isWebGL2 || context.supportsInstancedArrays, `Support for Instanced Arrays is required.`);
+        assert(context.isWebGL2 || context.supportsInstancedArrays,
+            `expected extension 'ANGLE_instanced_arrays' to be supported`);
 
         /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
-        const vertexVBO = new Buffer(context, `${identifier}VBO`);
-        this._buffers.push(vertexVBO);
-        const texCoordBuffer = new Buffer(context, `${identifier}TexCoordBuffer`);
-        this._buffers.push(texCoordBuffer);
-        const originBuffer = new Buffer(context, `${identifier}OriginBuffer`);
-        this._buffers.push(originBuffer);
-        const tangentBuffer = new Buffer(context, `${identifier}TangentBuffer`);
-        this._buffers.push(tangentBuffer);
-        const upBuffer = new Buffer(context, `${identifier}UpBuffer`);
-        this._buffers.push(upBuffer);
+        this._buffers.push(new Buffer(context, `${identifier}VBO`));
+        this._buffers.push(new Buffer(context, `${identifier}TexCoordVBO`));
+        this._buffers.push(new Buffer(context, `${identifier}OriginVBO`));
+        this._buffers.push(new Buffer(context, `${identifier}TangentVBO`));
+        this._buffers.push(new Buffer(context, `${identifier}UpVBO`));
     }
 
     /**
@@ -134,10 +112,7 @@ export class LabelGeometry extends Geometry {
      */
     @Initializable.assert_initialized()
     draw(): void {
-        const gl = this.context.gl;
-        const count = this._origins.length / 3;
-
-        this.context.gl2facade.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+        this.context.gl2facade.drawArraysInstanced(this.context.gl.TRIANGLE_STRIP, 0, 4, this._glyphCount);
     }
 
     /**
@@ -149,64 +124,42 @@ export class LabelGeometry extends Geometry {
      * @param aUp - Attribute binding point for glyph up-vector coordinates.
      */
     initialize(aQuadVertex: GLuint, aTexCoord: GLuint, aOrigin: GLuint, aTangent: GLuint, aUp: GLuint): boolean {
-
         const gl = this.context.gl;
-
         const valid = super.initialize(
-            [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER]
-            , [aQuadVertex, aTexCoord, aOrigin, aTangent, aUp]);
+            [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER],
+            [aQuadVertex, aTexCoord, aOrigin, aTangent, aUp]);
 
         /**
          * These vertices are equal for all quads. There actual position will be changed using
          * origin, tangent and up(-vector).
          */
-        this._vertices = new Float32Array([0, 0, 0, 1, 1, 0, 1, 1]);
-        this._buffers[0].data(this._vertices, gl.STATIC_DRAW);
+        this._buffers[0].data(LabelGeometry.DATA, gl.STATIC_DRAW);
 
         return valid;
     }
 
+
     /**
      * Use this method to set (or update) the glyph coordinates, e.g. after typesetting or after the calculations
-     * of a placement algorithm. The actuall interpretation of those buffers depends on the shader,
-     * usually they are 3-component vector in world space (provided as flat array.)
-     * @param origins - coordinates of the lower left corner of every glyph
-     * @param tangents - tangent vector for every glyph (direction along base line)
-     * @param ups - up vector for every glyph (orthogonal to its tangent vector)
+     * of a placement algorithm. The actual interpretation of those buffers depends on the shader, usually they are
+     * 3-component vectors in world space (provided as flat array.)
+     * @param origins - Coordinates of the lower left corner of every glyph.
+     * @param tangents - Tangent vector for every glyph (direction along base line).
+     * @param ups - Up vector for every glyph (orthogonal to its tangent vector).
+     * @param texCoords - The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y.
      */
-    setGlyphCoords(origins: Float32Array, tangents: Float32Array, ups: Float32Array): void {
+    update(origins: Float32Array, tangents: Float32Array, ups: Float32Array, texCoords: Float32Array): void {
 
-        assert(this._buffers[2] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
-            `expected valid WebGLBuffer`);
-        assert(this._buffers[3] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
-            `expected valid WebGLBuffer`);
-        assert(this._buffers[4] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
-            `expected valid WebGLBuffer`);
+        /** @todo The following buffers could be simplified to an interleaved buffer. */
 
-        this._origins = origins;
-        this._tangents = tangents;
-        this._ups = ups;
+        this._glyphCount = origins.length / 3;
 
         const gl = this.context.gl;
         /** @todo is DYNAMIC_DRAW more appropriate? */
-        this._buffers[2].data(this._origins, gl.STATIC_DRAW);
-        this._buffers[3].data(this._tangents, gl.STATIC_DRAW);
-        this._buffers[4].data(this._ups, gl.STATIC_DRAW);
+        this._buffers[2].data(origins, gl.STATIC_DRAW);
+        this._buffers[3].data(tangents, gl.STATIC_DRAW);
+        this._buffers[4].data(ups, gl.STATIC_DRAW);
+        this._buffers[1].data(texCoords, gl.STATIC_DRAW);
     }
 
-    /**
-     * Use this method to set (or update) the texture coordinates for every glyph, e.g. after typesetting.
-     * @param texCoords - The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y
-     */
-    setTexCoords(texCoords: Float32Array): void {
-
-        assert(this._buffers[1] !== undefined && this._buffers[1].object instanceof WebGLBuffer,
-            `expected valid WebGLBuffer`);
-
-        this._texCoords = texCoords;
-
-        const gl = this.context.gl;
-        /** @todo is DYNAMIC_DRAW more appropriate? */
-        this._buffers[1].data(this._texCoords, gl.STATIC_DRAW);
-    }
 }
