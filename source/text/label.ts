@@ -271,7 +271,8 @@ export class Label {
     }
 
     /**
-     * Font face used for typesetting, transformation, and rendering.
+     * Font face used for typesetting, transformation, and rendering. The font face is usually set by the
+     * LabelRenderPass.
      */
     set fontFace(fontFace: FontFace) {
         if (this._fontFace === fontFace) {

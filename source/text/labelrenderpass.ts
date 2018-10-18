@@ -119,7 +119,7 @@ export class LabelRenderPass extends Initializable {
 
         this._labels2D = labels;
 
-        if (this._fontFace.glyphTextureExtent['0'] === 0) {
+        if (!this._fontFace.valid) {
             log(LogLevel.Debug,
                 `Will not render 2D labels as long as font face is not loaded.`);
             return;
@@ -148,7 +148,7 @@ export class LabelRenderPass extends Initializable {
 
         this._labels3D = labels;
 
-        if (this._fontFace.glyphTextureExtent['0'] === 0) {
+        if (!this._fontFace.valid) {
             log(LogLevel.Debug,
                 `Will not render 3D labels as long as font face is not loaded.`);
             return;
@@ -179,6 +179,7 @@ export class LabelRenderPass extends Initializable {
      * @param label - the 2D label to be rendered.
      */
     render2DLabel(label: Position2DLabel): void {
+        assert(this._fontFace.valid, `valid font face expected`);
         label.fontFace = this._fontFace;
 
         const frameSize = this._camera.viewport;
@@ -194,6 +195,7 @@ export class LabelRenderPass extends Initializable {
      * @param label - the 3D label to be rendered.
      */
     render3DLabel(label: Position3DLabel): void {
+        assert(this._fontFace.valid, `valid font face expected`);
         label.fontFace = this._fontFace;
 
         this._glyphs3D.concat(label.typeset());

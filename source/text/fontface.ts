@@ -294,4 +294,11 @@ export class FontFace {
         glyph.setKerning(subsequentIndex, kerning);
     }
 
+    /**
+     * read-only. Returns true if the set glyph texture seems valid.
+     */
+    get valid(): boolean {
+        return this._glyphTextureExtent[0] !== 0 && this._glyphTextureExtent[1] !== 0;
+    }
+
 }
