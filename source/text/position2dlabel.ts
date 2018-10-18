@@ -1,7 +1,7 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { log, LogLevel } from '../auxiliaries';
+import { assert, log, LogLevel } from '../auxiliaries';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -23,9 +23,9 @@ export class Position2DLabel extends Label {
     /**
      * Constructs a pre-configured 2D-label with given text
      * @param text - The text that is displayed by this label.
-     * @param identifier - Meaningful name for identification of this instances VAO and VBOs.
+     * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace: FontFace) {
+    constructor(text: Text, fontFace?: FontFace) {
         super(text, fontFace);
         this._position = vec2.fromValues(0.0, 0.0);
         this._direction = vec2.fromValues(1.0, 0.0);
@@ -42,6 +42,7 @@ export class Position2DLabel extends Label {
      */
     typeset(frameSize: [number, number]): GlyphVertices {
         /** @todo assert: this.fontSizeUnit === Label.SpaceUnit.Px or, later, === Label.SpaceUnit.Pt */
+        assert(!!this.fontFace, `expected a font face for this label before typesetting`);
 
         /** @todo meaningful margins from label.margins or config.margins ? */
         const margins: vec4 = vec4.create();
@@ -72,7 +73,7 @@ export class Position2DLabel extends Label {
         mat4.translate(transform, transform, v3);
 
 
-        /* apply user tranformations (position, direction) */
+        /* apply user transformations (position, direction) */
         mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
 
         const n: vec2 = vec2.fromValues(1.0, 0.0);
@@ -143,4 +144,5 @@ export class Position2DLabel extends Label {
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is Px for this label.`);
     }
+
 }

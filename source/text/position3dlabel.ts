@@ -1,7 +1,7 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
-import { log, LogLevel } from '../auxiliaries';
+import { assert, log, LogLevel } from '../auxiliaries';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -26,9 +26,9 @@ export class Position3DLabel extends Label {
     /**
      * Constructs a pre-configured 3D-label with given text.
      * @param text - The text that is displayed by this label.
-     * @param fontFace - The font face that should be used for that label.
+     * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace: FontFace) {
+    constructor(text: Text, fontFace?: FontFace) {
         super(text, fontFace);
         this._position = vec3.fromValues(0.0, 0.0, 0.0);
         this._direction = vec3.fromValues(1.0, 0.0, 0.0);
@@ -45,11 +45,12 @@ export class Position3DLabel extends Label {
      */
     typeset(): GlyphVertices {
         /** @todo assert: this.fontSizeUnit === Label.SpaceUnit.World */
+        assert(!!this.fontFace, `expected a font face for this label before typesetting`);
 
         const transform = mat4.create();
         const normal = vec3.create();
 
-        /* apply user tranformations (position, direction) */
+        /* apply user transformations (position, direction) */
 
         mat4.translate(transform, mat4.create(),
             vec3.fromValues(this._position[0], this._position[1], this._position[2]));
@@ -140,4 +141,5 @@ export class Position3DLabel extends Label {
     set fontSizeUnit(newUnit: Label.SpaceUnit) {
         log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is World for this label.`);
     }
+
 }

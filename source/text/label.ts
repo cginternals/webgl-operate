@@ -38,7 +38,7 @@ export class Label {
     protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
 
     /** @see {@link fontFace} */
-    protected _fontFace: FontFace;
+    protected _fontFace: FontFace | undefined;
 
     /** @see {@link color} */
     protected _color: Color;
@@ -64,14 +64,17 @@ export class Label {
     /**
      * Constructs an unconfigured, empty label.
      * @param text - The text that is displayed by this label.
-     * @param fontFace - The font face that should be used for that label.
+     * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace: FontFace) {
+    constructor(text: Text, fontFace?: FontFace) {
         this._text = text;
-        this._fontFace = fontFace;
         this._transform = mat4.create();
         this._userTransform = mat4.create();
         this._extent = [0, 0];
+
+        if (fontFace) {
+            this._fontFace = fontFace;
+        }
     }
 
     /**
@@ -127,7 +130,7 @@ export class Label {
         if (index < 1 || index > this.length) {
             return NaN;
         }
-        return this._fontFace.kerning(this.charCodeAt(index - 1), this.charCodeAt(index));
+        return this._fontFace!.kerning(this.charCodeAt(index - 1), this.charCodeAt(index));
     }
 
     /**
@@ -139,7 +142,7 @@ export class Label {
         if (index < 0 || index > this.length - 1) {
             return NaN;
         }
-        return this._fontFace.kerning(this.charCodeAt(index), this.charCodeAt(index + 1));
+        return this._fontFace!.kerning(this.charCodeAt(index), this.charCodeAt(index + 1));
     }
 
     /**
@@ -152,7 +155,7 @@ export class Label {
         if (index < 0 || index > this.length) {
             return NaN;
         }
-        return this._fontFace.glyph(this.charCodeAt(index)).advance;
+        return this._fontFace!.glyph(this.charCodeAt(index)).advance;
     }
 
 
@@ -268,9 +271,10 @@ export class Label {
     }
 
     /**
-     * Font face used for typesetting, transformation, and rendering.
+     * Font face used for typesetting, transformation, and rendering. The font face is usually set by the
+     * LabelRenderPass.
      */
-    set fontFace(fontFace: FontFace) {
+    set fontFace(fontFace: FontFace | undefined) {
         if (this._fontFace === fontFace) {
             return;
         }
@@ -278,7 +282,7 @@ export class Label {
         this._altered.alter('resources');
         this._fontFace = fontFace;
     }
-    get fontFace(): FontFace {
+    get fontFace(): FontFace | undefined {
         return this._fontFace;
     }
 
@@ -325,7 +329,7 @@ export class Label {
     }
     get transform(): mat4 {
 
-        const s = this.fontSize / this._fontFace.size;
+        const s = this.fontSize / this._fontFace!.size;
 
         const t: mat4 = mat4.create();
         mat4.scale(t, this._transform, vec3.fromValues(s, s, s));

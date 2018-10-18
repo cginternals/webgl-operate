@@ -199,7 +199,7 @@ namespace auxiliaries {
      * Generates a random value within a given range [min,max].
      * @param min - Minimum random value possible.
      * @param max - Maximum random value possible.
-     * @return - Random number in the range [min,max].
+     * @returns - Random number in the range [min,max].
      */
     export function rand(min: number = 0.0, max: number = 1.0): number {
         return Math.random() * (max - min) + min;

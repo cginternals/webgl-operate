@@ -356,7 +356,7 @@ namespace gl_matrix_extensions {
      * @param value1 - The first value.
      * @param value2 - The second value.
      * @param interpolation - The interpolation value (usually between 0 and 1).
-     * @return - The interpolated value between value1 and value2.
+     * @returns - The interpolated value between value1 and value2.
      */
     export function mix(value1: number, value2: number, interpolation: number): number {
         return value1 * (1.0 - interpolation) + value2 * interpolation;

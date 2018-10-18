@@ -132,20 +132,20 @@ void main(void)
 {
     float dist = texture(u_glyphs, v_uv).r;
 
-    /**
-     * Don't discard fragments, as we might need them for an id-buffer for clicking-interaction.
-     * Furthermore, using if-statement and discard can slow down performance:
-     * it's bad for IMR, TBR, TBDR and early-Z optimization
-     * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
-     *
-     */
-    // if(dist < 0.45)
-    //     discard;
 
     /** @todo mipmap access? */
     /* When using multiframe sampling, might not be necessary and even tends to add more blur */
     float a = aastep(0.5, dist);
 
+    /**
+     * @todo - design decision: Don't discard fragments?, as we might need them for an id-buffer for
+     * clicking-interaction. Furthermore, using if-statement and discard can slow down performance:
+     * it's bad for IMR, TBR, TBDR and early-Z optimization
+     * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
+     */
+    if(a <= 0.0) {
+         discard;
+    }
     fragColor = vec4(u_color.rgb, u_color.a * a);
 
     /* use when pre-multiplied color is required. */

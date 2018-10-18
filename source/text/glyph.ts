@@ -39,7 +39,7 @@ export class Glyph {
      * Check if a glyph is depictable/renderable. If the glyph's sub texture vertical or horizontal extent is zero the
      * glyph does not need to be depicted/rendered. E.g., spaces, line feeds, other control sequences as well as
      * unknown glyphs do not need to be processed for rendering.
-     * @return - True if the glyph needs to be depicted/rendered.
+     * @returns - True if the glyph needs to be depicted/rendered.
      */
     depictable(): boolean {
         return this._subTextureExtent[0] > 0 && this._subTextureExtent[1] > 0;
@@ -50,7 +50,7 @@ export class Glyph {
      * baseline that can be used to move the pen-position respectively, i.e., the subsequent pen-position is computed
      * as follows: pen-position + advance + kerning
      * @param subsequentIndex - The subsequent glyph's index.
-     * @return - The kerning w.r.t. to the subsequent glyph in pt. If no kerning data is available for the subsequent
+     * @returns - The kerning w.r.t. to the subsequent glyph in pt. If no kerning data is available for the subsequent
      * glyph, the return value is zero indicating no kerning.
      */
     kerning(subsequentIndex: GLsizei): GLfloat {

@@ -139,13 +139,13 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
-     * Asynchronous load of an image via URI or data URI.
-     * @param uri - URI linking the image that should be loaded. Data URI is also supported.
+     * Asynchronous load of an image via URL or data URI.
+     * @param url - Uniform resource locator string referencing the image that should be loaded (data URI supported).
      * @param crossOrigin - Enable cross origin data loading.
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    load(uri: string, crossOrigin: boolean = false): Promise<void> {
+    load(url: string, crossOrigin: boolean = false): Promise<void> {
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onerror = () => reject();
@@ -159,7 +159,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
             if (crossOrigin) {
                 image.crossOrigin = 'anonymous';
             }
-            image.src = uri;
+            image.src = url;
         });
     }
 
