@@ -59,23 +59,6 @@ namespace debug {
         protected _fontFace: FontFace;
 
 
-        // /**
-        //  * Loads a font asset and creates a FontFace
-        //  * @param context - Valid context to create the object for.
-        //  */
-        // protected loadFont(context: Context): void {
-
-        //     /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
-        //     FontFace.fromFile('./data/opensansr144.fnt', context).then(
-        //         (fontFace) => {
-        //             this._fontFace = fontFace;
-        //             this.render3DLabels(this._labels3D);
-        //             this.render2DLabels(this._labels2D);
-        //         },
-        //     );
-        // }
-
-
         /**
          * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
          * @param context - valid context to create the object for.
