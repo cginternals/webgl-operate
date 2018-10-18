@@ -112,22 +112,6 @@ export class LabelRenderPass extends Initializable {
     }
 
 
-    /**
-     * Loads a font asset and creates a FontFace
-     * @param context - Valid context to create the object for.
-     */
-    protected loadFont(context: Context): void {
-
-        /* This is a placeholder until the 'real' fontFace is loaded asynchronously by the fontLoader */
-        FontFace.fromFile('./data/opensansr144.fnt', context).then(
-            (fontFace) => {
-                this._font = fontFace;
-                this._altered.alter('font');
-            },
-        );
-    }
-
-
     @Initializable.initialize()
     initialize(): boolean {
         const gl = this._context.gl;
@@ -163,7 +147,12 @@ export class LabelRenderPass extends Initializable {
             this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
 
-        this.loadFont(this._context);
+
+        /* Deprecated  @todo this will be removed soon. There will be no default font. */
+        FontFace.fromFile('./data/opensansr144.fnt', this._context).then((fontFace) => {
+            this._font = fontFace;
+            this._altered.alter('font');
+        });
 
         return true;
     }
