@@ -79,6 +79,8 @@ export class LabelRenderPass extends Initializable {
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
 
         this._color = new Color([0.5, 0.5, 0.5], 1.0);
+
+        this._labels = new Array<Label>();
     }
 
     /**
@@ -92,26 +94,14 @@ export class LabelRenderPass extends Initializable {
             return;
         }
 
-        if (this._labels === undefined) {
-            console.log('labels are undefined');
-            const empty = new Float32Array(0);
-            this._geometry2D.update(empty, empty, empty, empty);
-            this._geometry3D.update(empty, empty, empty, empty);
-            return;
-        }
-
         /* Remove all calculated vertices for 2D and 3D labels. */
         const glyphs2D = new GlyphVertices(0);
         const glyphs3D = new GlyphVertices(0);
-
-        console.log('prepare');
-        console.log(this._font);
 
         const frameSize = this._camera.viewport;
         console.log(this._labels);
         for (const label of this._labels) {
             label.fontFace = this._font!;
-            console.log(label);
 
             if (label instanceof Position2DLabel) {
                 glyphs2D.concat(label.typeset(frameSize));
@@ -337,8 +327,6 @@ export class LabelRenderPass extends Initializable {
      * preparation will be invoked on update, iff the labels or the font face have changed.
      */
     set labels(labels: Array<Label>) {
-        console.log('set labels');
-        console.log(labels);
         this._labels = labels;
         this._altered.alter('labels');
     }
