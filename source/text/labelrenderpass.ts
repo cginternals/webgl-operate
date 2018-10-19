@@ -329,6 +329,8 @@ export class LabelRenderPass extends Initializable {
      * preparation will be invoked on update, iff the labels or the font face have changed.
      */
     set labels(labels: Array<Label>) {
+        console.log('set labels');
+        console.log(labels);
         this._labels = labels;
         this._altered.alter('labels');
     }
