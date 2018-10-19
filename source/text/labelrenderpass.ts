@@ -1,7 +1,7 @@
 
 import { mat4 } from 'gl-matrix';
 
-import { assert } from '../auxiliaries';
+import { assert, log, LogLevel } from '../auxiliaries';
 import { GLfloat2 } from '../tuples';
 
 import { Camera } from '../camera';
@@ -79,6 +79,8 @@ export class LabelRenderPass extends Initializable {
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
 
         this._color = new Color([0.5, 0.5, 0.5], 1.0);
+
+        this._labels = new Array<Label>();
     }
 
     /**
@@ -97,7 +99,12 @@ export class LabelRenderPass extends Initializable {
         const glyphs3D = new GlyphVertices(0);
 
         const frameSize = this._camera.viewport;
+
         for (const label of this._labels) {
+            if (label === undefined) {
+                log(LogLevel.Warning, `skip undefined label`);
+                continue;
+            }
             label.fontFace = this._font!;
 
             if (label instanceof Position2DLabel) {
