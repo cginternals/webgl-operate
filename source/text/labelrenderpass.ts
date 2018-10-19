@@ -96,9 +96,14 @@ export class LabelRenderPass extends Initializable {
         const glyphs2D = new GlyphVertices(0);
         const glyphs3D = new GlyphVertices(0);
 
+        console.log('prepare');
+        console.log(this._font);
+
         const frameSize = this._camera.viewport;
+        console.log(this._labels);
         for (const label of this._labels) {
             label.fontFace = this._font!;
+            console.log(label);
 
             if (label instanceof Position2DLabel) {
                 glyphs2D.concat(label.typeset(frameSize));
