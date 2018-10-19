@@ -92,6 +92,14 @@ export class LabelRenderPass extends Initializable {
             return;
         }
 
+        if (this._labels === undefined) {
+            console.log('labels are undefined');
+            const empty = new Float32Array(0);
+            this._geometry2D.update(empty, empty, empty, empty);
+            this._geometry3D.update(empty, empty, empty, empty);
+            return;
+        }
+
         /* Remove all calculated vertices for 2D and 3D labels. */
         const glyphs2D = new GlyphVertices(0);
         const glyphs3D = new GlyphVertices(0);
