@@ -76,14 +76,18 @@ export class FontFace {
      * @param headless - Whether or not to enable headless mode. If enabled, pages are not loaded.
      * @param identifier - Meaningful name/prefix for identification of fetched pages (glyph atlases).
      */
-    static fromFile(url: string, context: Context, headless: boolean = false, identifier?: string): Promise<FontFace> {
+    static fromFile(url: string, context: Context, headless: boolean = false, identifier?: string):
+        Promise<FontFace | undefined> {
 
-        const transform = (data: any): FontFace | undefined => {
-            const font = new FontFace(context, identifier);
-            return FontFaceLoader.process(font, data, url, headless);
+        let fetchedData: any;
+        const transform = (data: any): FontFace => {
+            fetchedData = data;
+            return new FontFace(context, identifier);
         };
 
-        return fetchAsync<FontFace>(url, 'text', transform);
+        return fetchAsync<FontFace | undefined>(url, 'text', transform)
+            .then((font: FontFace) =>
+                FontFaceLoader.process(font, fetchedData, url, headless));
     }
 
     /**

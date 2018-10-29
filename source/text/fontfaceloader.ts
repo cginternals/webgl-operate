@@ -1,6 +1,5 @@
 
 import { log, logIf, LogLevel } from '../auxiliaries';
-import { wait } from '../fetch';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
@@ -221,7 +220,9 @@ export class FontFaceLoader {
      * @param url - Uniform resource locator string referencing the fnt-file that was loaded.
      * @param headless - Whether or not to enable headless mode. If enabled, pages are not loaded.
      */
-    static process(fontFace: FontFace, data: string, url: string, headless: boolean = false): FontFace | undefined {
+    static process(fontFace: FontFace, data: string, url: string, headless: boolean = false):
+        Promise<FontFace | undefined> {
+
         const lines = data.split('\n');
 
         const promises = new Array<Promise<void>>();
@@ -269,12 +270,11 @@ export class FontFaceLoader {
 
         /* Multiple promises might be invoked (one per page due to async texture2D load). Since this is a non async
         transform intended to be used in a async fetch, waiting on all promises here. */
-        wait<void>(promises, (reason) => {
-            log(LogLevel.Warning, `processing font face data failed: ${reason}`);
-            status = false;
-        });
-
-        return status ? fontFace : undefined;
+        return Promise.all(promises)
+            .then((results: Array<void>) => fontFace)
+            .catch((reason) => {
+                log(LogLevel.Warning, `processing font face data failed: ${reason}`);
+                return undefined;
+            });
     }
-
 }
