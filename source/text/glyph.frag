@@ -21,6 +21,7 @@ precision mediump float;
 
 uniform sampler2D u_glyphs;
 uniform vec4 u_color;
+uniform float u_aaStepScale;
 
 varying vec2 v_uv;
 
@@ -28,8 +29,12 @@ varying vec2 v_uv;
 float aastep(float t, float value)
 {
 #ifdef AASTEP
-    /* float afwidth = length(vec2(dFdx(value), dFdy(value))) * 1.0; */
-    float afwidth = fwidth(value) * 1.0;
+    /* float afwidth = length(vec2(dFdx(value), dFdy(value))) * u_aaStepScale; */
+    float afwidth = fwidth(value) * u_aaStepScale;
+    /* The aa step scale is more of a hack to provide seemingly smoother (e.g., >= 1.0) or crisper (e.g., between 0.0
+     * and 1.0) contours without specific sampling. Its just scaling the outcome of the derivatives.
+     */
+
     return smoothstep(t - afwidth, t + afwidth, value);
 #else
     return step(t, value);
