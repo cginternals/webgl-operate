@@ -21,8 +21,6 @@ import { fetchJsonAsync } from './fetch';
 //  * gradient.color(0.66).rgb; // [0.8264121413230896, 0.8263672590255737, 0.8262822031974792]
 //  * ```
 //  */
-
-
 export class ColorScale {
 
     /**
