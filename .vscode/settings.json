@@ -136,6 +136,7 @@
         "readbacks",
         "reconfigures",
         "reinitializing",
+        "relinking",
         "renderable",
         "renderbuffer",
         "renderbuffers",

@@ -105,6 +105,7 @@ export class FontFace {
         this._glyphTexture = new Texture2D(context, `${identifier}GlyphAtlas`);
         const internalFormat = Wizard.queryInternalTextureFormat(context, gl.RGBA, Wizard.Precision.byte);
         this._glyphTexture.initialize(1, 1, internalFormat[0], gl.RGBA, internalFormat[1]);
+        this._glyphTexture.filter(gl.LINEAR, gl.LINEAR);
     }
 
 
