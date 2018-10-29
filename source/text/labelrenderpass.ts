@@ -27,6 +27,18 @@ import { Position3DLabel } from './position3dlabel';
 export class LabelRenderPass extends Initializable {
 
     /**
+     * Default color that is used for label rendering.
+     */
+    protected static readonly DEFAULT_COLOR: Color = new Color([0.1, 0.1, 0.1, 1.0]);
+
+
+    /**
+     * Default AA step scale: more crisp text rendering.
+     */
+    protected static readonly DEFAULT_AA_STEP_SCALE: GLfloat = 0.6666;
+
+
+    /**
      * Alterable auxiliary object for tracking changes on render pass inputs and lazy updates.
      */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
@@ -92,8 +104,8 @@ export class LabelRenderPass extends Initializable {
         this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
 
-        this._color = new Color([0.5, 0.5, 0.5], 1.0);
-        this._aaStepScale = 0.66;
+        this._color = LabelRenderPass.DEFAULT_COLOR;
+        this._aaStepScale = LabelRenderPass.DEFAULT_AA_STEP_SCALE;
 
         this._labels = new Array<Label>();
     }
