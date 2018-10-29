@@ -100,23 +100,6 @@ namespace fetch {
         return response;
     }
 
-
-    /**
-     * Allows to wait synchronously on one or multiple promises
-     * @param promises - A single or an array of promises to wait for.
-     */
-    export function wait<T>(promises: PromiseLike<T> | Array<PromiseLike<T>>,
-        reject?: { (reason: any): void }): void {
-        // tslint:disable-next-line:space-before-function-paren
-        (async () => {
-            if (Array.isArray(promises)) {
-                await Promise.all(promises).catch(reject);
-            } else {
-                await promises.then(undefined, reject);
-            }
-        })();
-    }
-
 }
 
 export = fetch;

@@ -37,65 +37,15 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
     static readonly DEFAULT_PROGRAM = undefined;
 
 
-    /**
-     * Attaches and references all given shaders. Attach is expected to be called once within creation of a Program.
-     * Shaders that are not initialized will be skipped/not attached.
-     * @param shaders - All shaders to be attached to the program for linking.
-     * @returns - True if attaching all shaders and linking succeeded, false otherwise.
-     */
-    protected attach(shaders: Array<Shader>): boolean {
-        assert(this._object !== undefined, `expected a WebGLProgram object`);
-        const gl = this._context.gl;
+    /** @see {@link shaders} */
+    protected _shaders = new Array<Shader>();
 
-        for (const shader of shaders) {
-            if (!shader.initialized) {
-                log(LogLevel.Error, `shader '${shader.identifier}' not initialized.`);
-                continue;
-            }
-            gl.attachShader(this._object, shader.object);
-            shader.ref();
-        }
-        return true;
-    }
-
-    /**
-     * Links the program with all its already attached shaders. If linking fails, a developer log with additional
-     * information is provided.
-     * @returns - True if linking the program succeeded, false otherwise.
-     */
-    protected link(): boolean {
-        assert(this._object !== undefined, `expected WebGLProgram object`);
-        const gl = this._context.gl;
-
-        gl.linkProgram(this._object);
-
-        if (!gl.getProgramParameter(this._object, gl.LINK_STATUS)) {
-            const infoLog: string = gl.getProgramInfoLog(this._object);
-            log(LogLevel.Error, `linking of program '${this._identifier}' failed: '${infoLog}'`);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Detaches all shaders from the program. For now, expected to be called after successful linking/program creation.
-     * @param shaders - Shaders that are to be deleted.
-     */
-    protected detach(shaders: Array<Shader>): void {
-        assert(this._object !== undefined, `expected WebGLProgram object`);
-        const gl = this._context.gl;
-
-        for (const shader of shaders) {
-            assert(shader.initialized, `expected shader '${shader.identifier}' to be initialized`);
-            gl.detachShader(this._object, shader.object);
-            shader.unref();
-        }
-    }
 
     /**
      * Creates a WebGLProgram object and attaches, and references all shaders to it. The program is then linked. All
      * shaders have to be initialized in order to be attached and at least on vertex and one fragment shader has to be
-     * present.
+     * present. Note that the shaders are not detached by default. If neither the shader objects nor recompilation is
+     * required all shaders should be detached manually after initialization/creation.
      * @param shaders - Vertex and fragment shaders that are to be attached to the program.
      * @returns - Either a new program or undefined if linking failed or one of the shaders is invalid/not compiled.
      */
@@ -131,7 +81,6 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
             this.delete();
             return undefined;
         }
-        this.detach(shaders);
 
         this._valid = gl.isProgram(this._object);
         return this._object;
@@ -145,6 +94,72 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
         this._context.gl.deleteProgram(this._object);
         this._object = undefined;
         this._valid = false;
+    }
+
+
+    /**
+     * Attaches and references all given shaders. Attach is expected to be called once within creation of a Program.
+     * Shaders that are not initialized will be skipped/not attached.
+     * @param shaders - All shaders to be attached to the program for linking.
+     * @returns - True if attaching all shaders and linking succeeded, false otherwise.
+     */
+    attach(shaders: Shader | Array<Shader>): boolean {
+        assert(this._object !== undefined, `expected a WebGLProgram object`);
+        const gl = this._context.gl;
+
+        for (const shader of (shaders instanceof Array ? shaders : [shaders])) {
+            if (this._shaders.indexOf(shader) > -1) {
+                continue;
+            }
+            this._shaders.push(shader);
+
+            if (!shader.initialized) {
+                log(LogLevel.Error, `shader '${shader.identifier}' not initialized.`);
+                continue;
+            }
+            gl.attachShader(this._object, shader.object);
+            shader.ref();
+        }
+        return true;
+    }
+
+    /**
+     * Detaches one or multiple shaders from the program. Note that relinking is not invoked automatically.
+     * @param shaders - Shaders that are to be deleted.
+     */
+    detach(shaders: Shader | Array<Shader>): void {
+        assert(this._object !== undefined, `expected WebGLProgram object`);
+        const gl = this._context.gl;
+
+        for (const shader of (shaders instanceof Array ? shaders : [shaders])) {
+            const index = this._shaders.indexOf(shader);
+            if (index > -1) {
+                this._shaders.splice(index);
+            }
+            assert(shader.initialized, `expected shader '${shader.identifier}' to be initialized`);
+            gl.detachShader(this._object, shader.object);
+            shader.unref();
+        }
+    }
+
+
+    /**
+     * Links the program with all its already attached shaders. If linking fails, a developer log with additional
+     * information is provided.
+     * @returns - True if linking the program succeeded, false otherwise.
+     */
+    link(): boolean {
+        assert(this._object !== undefined, `expected WebGLProgram object`);
+        const gl = this._context.gl;
+
+        gl.linkProgram(this._object);
+
+        if (!gl.getProgramParameter(this._object, gl.LINK_STATUS)) {
+            const infoLog: string = gl.getProgramInfoLog(this._object);
+            log(LogLevel.Error, `linking of program '${this._identifier}' failed: '${infoLog}'`);
+            return false;
+        }
+        return true;
     }
 
 
@@ -188,6 +203,14 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
         } else {
             return this._context.gl.getAttribLocation(this._object, attribute);
         }
+    }
+
+
+    /**
+     * Provides access (leaky abstraction) to all shaders attached to this program.
+     */
+    get shaders(): Array<Shader> {
+        return this._shaders;
     }
 
 }

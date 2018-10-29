@@ -171,13 +171,6 @@ export class LabelRenderPass extends Initializable {
             this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
 
-
-        /* Deprecated  @todo this will be removed soon. There will be no default font. */
-        FontFace.fromFile('./data/opensansr144.fnt', this._context).then((fontFace) => {
-            this._font = fontFace;
-            this._altered.alter('font');
-        });
-
         return true;
     }
 
