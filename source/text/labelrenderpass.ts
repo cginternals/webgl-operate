@@ -27,10 +27,28 @@ import { Position3DLabel } from './position3dlabel';
 export class LabelRenderPass extends Initializable {
 
     /**
+     * Default color that is used for label rendering.
+     */
+    protected static readonly DEFAULT_COLOR: Color = new Color([0.1, 0.1, 0.1, 1.0]);
+
+
+    /**
+     * Default AA step scale: more crisp text rendering.
+     */
+    protected static readonly DEFAULT_AA_STEP_SCALE: GLfloat = 0.6666;
+
+
+    /**
      * Alterable auxiliary object for tracking changes on render pass inputs and lazy updates.
      */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, camera: false, geometry: false, color: false, font: false, labels: false,
+        any: false,
+        camera: false,
+        geometry: false,
+        color: false,
+        font: false,
+        labels: false,
+        aaStepScale: false,
     });
 
     /**
@@ -53,11 +71,18 @@ export class LabelRenderPass extends Initializable {
     /** @see {@link depthMask} */
     protected _depthMask = false;
 
+    /** @see {@link depthFunc} */
+    protected _depthFunc: GLenum;
+
+    /** @see {@link aaStepScale} */
+    protected _aaStepScale: GLfloat;
+
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation | undefined;
     protected _uNdcOffset: WebGLUniformLocation | undefined;
     protected _uColor: WebGLUniformLocation | undefined;
+    protected _uAAStepScale: WebGLUniformLocation | undefined;
 
     protected _font: FontFace | undefined;
     protected _labels: Array<Label>;
@@ -73,12 +98,14 @@ export class LabelRenderPass extends Initializable {
     constructor(context: Context) {
         super();
         this._context = context;
+        this._depthFunc = context.gl.LESS;
 
         this._program = new Program(context, 'LabelRenderProgram');
         this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
         this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
 
-        this._color = new Color([0.5, 0.5, 0.5], 1.0);
+        this._color = LabelRenderPass.DEFAULT_COLOR;
+        this._aaStepScale = LabelRenderPass.DEFAULT_AA_STEP_SCALE;
 
         this._labels = new Array<Label>();
     }
@@ -133,10 +160,12 @@ export class LabelRenderPass extends Initializable {
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uColor = this._program.uniform('u_color');
+        this._uAAStepScale = this._program.uniform('u_aaStepScale');
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_glyphs'), 0);
         gl.uniform4fv(this._uColor, this._color.rgbaF32);
+        gl.uniform1f(this._uAAStepScale, this._aaStepScale);
         this._program.unbind();
 
 
@@ -166,6 +195,7 @@ export class LabelRenderPass extends Initializable {
         this._uViewProjection = undefined;
         this._uNdcOffset = undefined;
         this._uColor = undefined;
+        this._uAAStepScale = undefined;
     }
 
 
@@ -183,6 +213,10 @@ export class LabelRenderPass extends Initializable {
 
         if (override || this._altered.color) {
             gl.uniform4fv(this._uColor, this._color.rgbaF32);
+        }
+
+        if (override || this._altered.aaStepScale) {
+            gl.uniform1f(this._uAAStepScale, this._aaStepScale);
         }
 
         if (override || this._altered.labels || this._altered.font) {
@@ -205,7 +239,7 @@ export class LabelRenderPass extends Initializable {
         gl.viewport(0, 0, size[0], size[1]);
 
         gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LESS);
+        gl.depthFunc(this._depthFunc);
 
         if (this._depthMask === false) {
             gl.depthMask(this._depthMask);
@@ -248,6 +282,9 @@ export class LabelRenderPass extends Initializable {
         if (this._depthMask === false) {
             gl.depthMask(true);
         }
+
+
+        gl.depthFunc(gl.LESS);
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
@@ -319,6 +356,17 @@ export class LabelRenderPass extends Initializable {
 
 
     /**
+     * Allows to specify the value used for depth buffer comparisons.
+     */
+    set depthFunc(func: GLenum) {
+        this._depthFunc = func;
+    }
+    get depthFunc(): GLenum {
+        return this._depthFunc;
+    }
+
+
+    /**
      * Write access to the labels that should be rendered. Note that label preparation is currently done per
      * label-render pass instance, so drawing the same label with multiple renderers should be avoided. Label
      * preparation will be invoked on update, iff the labels or the font face have changed.
@@ -338,6 +386,24 @@ export class LabelRenderPass extends Initializable {
     }
     get fontFace(): FontFace | undefined {
         return this._font;
+    }
+
+
+    /**
+     * Allows to specify the basic AA step scale which is more of a hack to provide seemingly smoother (e.g., >= 1.0)
+     * or crisper (e.g., between 0.0 and 1.0) contours without specific multi sampling. Its just scaling the outcome
+     * of the derivatives.
+     */
+    set aaStepScale(scale: GLfloat) {
+        if (this._aaStepScale === scale) {
+            return;
+        }
+
+        this._aaStepScale = scale;
+        this._altered.alter('aaStepScale');
+    }
+    get aaStepScale(): GLfloat {
+        return this._aaStepScale;
     }
 
 }
