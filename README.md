@@ -14,7 +14,7 @@ In contrast to most other rendering engines, neither a specific rendering approa
 Instead, it features a basis for arbitrary rendering implementations and facilitates common rendering processes in an atomic manner.
 It can be used for, e.g., complex charting, volume rendering, point-cloud rendering, product visualization, learning webgl, raymarching or pathtracing, rendering implicit or procedural geometry, as well as modern rendering of 3D models and complex scenes.
 
-## How to Install
+# How to Install
 
 *webgl-operate* can be used both as npm module (TypeScript or JavaScript) and linked JavaScript bundle:
 
@@ -26,15 +26,18 @@ npm install --save-dev webgl-operate
 <script src="https://cdn.jsdelivr.net/npm/webgl-operate@latest/dist/webgl-operate.min.js"></script>
 ```
 
-## Features
+# Features
 
-#### Implemented
-Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Professional Customer Support, Professional Integration Service
+##### Implemented
+Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Progressive Rendering Controller, Programs and Shaders with Includes and Replacements, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D and 3D Textures, Drawables, Camera and Camera Modifiers, Text Rendering, ..., and, finally, Professional Customer Support and Integration Service
 
-#### Planned
-Progressive Rendering Controller, Programs and Shaders with Includes, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D Textures, Drawables, Observable Rendering Stats, Camera and Camera Controllers, 3D Textures, Default Viewer UI/Overlay, Volume Rendering Basics, Adaptive Resolution, Post-processing Library, LUT Color Grading, Text Rendering, Ray Tracing Utils, Progressive Path Tracing Utils, ...
+##### In Progress
+glTF Support, PBR Rendering, XR Rendering Controller, Rendering Controller (single frame + continuous capable), Post-processing Library, ...
 
-## Getting Started
+##### Planned
+Observable Rendering Stats, Default Viewer UI/Overlay, Volume Rendering Basics, LUT Color Grading, Ray Tracing Utils, Progressive Path Tracing Utils, ...
+
+# Getting Started
 
 The canvas can be integrated into HTML5 as follows:
 ```
@@ -50,7 +53,7 @@ ToDo
 ```
 
 
-## Source Structure
+# Source Structure
 
 | directory        | description                                                                       |
 | ---------------- | --------------------------------------------------------------------------------- |
@@ -63,7 +66,7 @@ ToDo
 | `test`           | tests of sources located in `source`                                              |
 
 
-## NPM Configuration and Project Setup
+# NPM Configuration and Project Setup
 
 `package.json` specifies the following scripts that can be run by `npm run-script <command>`.
 
@@ -88,19 +91,16 @@ For development use `npm run-script build` and, e.g., `npm run-script start` to 
 Please note that deployment of documentation and examples is managed by CG Internals manually for now.
 
 
-## Visual Studio Code configuration
+# Visual Studio Code configuration
 
-"[Visual Studio Code](https://code.visualstudio.com/) is a code editor redefined and optimized for building and debugging modern web and cloud applications."
 Please not that the workspace configuration `.vscode/settings.json` has automatic format on save enabled.
-
-#### tasks
 
 All the above scripts, namely `build, build-lib, build-dist, lint, cleanup, start, start-watch, doc`, as well as `test` can be triggered from within Visual Studio Code.
 The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
 The tasks are configured in `.vscode/tasks.json`.
 
 
-## Related Work
+# Related Work
 
 * [ES6 Specification](http://www.ecma-international.org/ecma-262/6.0/)
 * [ES6 Modules](http://www.2ality.com/2014/09/es6-modules-final.html)
