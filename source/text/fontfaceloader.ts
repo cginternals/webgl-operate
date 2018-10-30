@@ -99,7 +99,8 @@ export class FontFaceLoader {
         let page = pairs.get('file')!;
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
-        return fontFace.glyphTexture.load(`${path}/${page}`);
+        return fontFace.glyphTexture.load(`${path}/${page}`)
+            .catch(() => Promise.reject(`page '${page}' referenced in font file '${url}' was not found`));
     }
 
     /**
@@ -270,11 +271,8 @@ export class FontFaceLoader {
 
         /* Multiple promises might be invoked (one per page due to async texture2D load). Since this is a non async
         transform intended to be used in a async fetch, waiting on all promises here. */
-        return Promise.all(promises)
-            .then((results: Array<void>) => fontFace)
-            .catch((reason) => {
-                log(LogLevel.Warning, `processing font face data failed: ${reason}`);
-                return undefined;
-            });
+        return Promise.all(promises).then(() => fontFace);
     }
+
+
 }

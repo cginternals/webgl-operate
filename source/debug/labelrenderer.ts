@@ -1,5 +1,5 @@
 
-import { assert } from '../auxiliaries';
+import { assert, log, LogLevel } from '../auxiliaries';
 
 import { vec3 } from 'gl-matrix';
 
@@ -147,10 +147,12 @@ namespace debug {
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
 
-            FontFace.fromFile('./data/opensansr144.fnt', context).then((fontFace) => {
-                this._labelPass.fontFace = fontFace;
-                this.invalidate();
-            });
+            FontFace.fromFile('./data/opensansr144.fnt', context)
+                .then((fontFace) => {
+                    this._labelPass.fontFace = fontFace;
+                    this.invalidate();
+                })
+                .catch((reason) => log(LogLevel.Error, reason));
 
             this.setupScene();
 
@@ -158,7 +160,7 @@ namespace debug {
         }
 
         /**
-         * Uninitializes Buffers, Textures and and Programm.
+         * Uninitializes Buffers, Textures, and Program.
          */
         protected onUninitialize(): void {
             super.uninitialize();
