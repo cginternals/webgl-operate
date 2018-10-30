@@ -1,5 +1,5 @@
 
-import { assert, log, LogLevel } from '../auxiliaries';
+import { assert } from '../auxiliaries';
 import { GLfloat2, GLfloat4, GLsizei2 } from '../tuples';
 
 import { Context } from '../context';
