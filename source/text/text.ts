@@ -38,6 +38,26 @@ export class Text {
     }
 
     /**
+     * Returns the character at the specified index.
+     * @param index - The zero-based index of the desired character.
+     * @returns character at the specified index
+     */
+    charAt(index: number): string {
+        return this._text.charAt(index);
+    }
+
+    /**
+     * Returns the Unicode value (codepoint) of the character at the specified location.
+     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
+     * NaN is returned.
+     * @returns - codepoint of the char at given index or NaN
+     */
+    charCodeAt(index: number): number {
+        return this._text.charCodeAt(index);
+    }
+
+
+    /**
      * Text that is to be rendered.
      */
     set text(text: string) {

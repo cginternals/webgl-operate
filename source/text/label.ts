@@ -17,10 +17,16 @@ import { Text } from './text';
 export class Label {
 
     /** @see {@link text} */
-    protected _text: Text | string;
+    protected _text: Text;
 
     /** @see {@link wordWrap} */
     protected _wordWrap = false;
+
+    /** @see {@link wordWrapper} */
+    protected _wordWrapper: Label.WordWrapper = Label.WordWrapper.NewLine;
+
+    /** @see {@link maxLineWidth} */
+    protected _maxLineWidth = 0.0;
 
     /** @see {@link alignment} */
     protected _alignment: Label.Alignment = Label.Alignment.Left;
@@ -91,9 +97,6 @@ export class Label {
      * @returns character at the specified index
      */
     charAt(index: number): string {
-        if (this._text instanceof Text) {
-            return this._text.text.charAt(index);
-        }
         return this._text.charAt(index);
     }
 
@@ -104,9 +107,6 @@ export class Label {
      * @returns - codepoint of the char at given index or NaN
      */
     charCodeAt(index: number): number {
-        if (this._text instanceof Text) {
-            return this._text.text.charCodeAt(index);
-        }
         return this._text.charCodeAt(index);
     }
 
@@ -162,11 +162,11 @@ export class Label {
     /**
      * Text that is to be rendered.
      */
-    set text(text: Text | string) {
+    set text(text: Text) {
         this._altered.alter('text');
         this._text = text;
     }
-    get text(): Text | string {
+    get text(): Text {
         return this._text;
     }
 
@@ -203,6 +203,36 @@ export class Label {
     }
 
     /**
+     * Which algorithm should be used when label.wordWrap = true and label exceeds the defined maximum line width, see
+     * maxLineWidth();
+     */
+    set wordWrapper(wordWrapper: Label.WordWrapper) {
+        this._wordWrapper = wordWrapper;
+    }
+    get wordWrapper(): Label.WordWrapper {
+        return this._wordWrapper;
+    }
+
+    /**
+     * Maximum line width allowed for this label. The current label.fontSizeUnit is used as line width unit.
+     * The maximum line width is ignored if label.wordWrap==false.
+     */
+    set maxLineWidth(maxLineWidth: number) {
+        this._maxLineWidth = maxLineWidth;
+    }
+    get maxLineWidth(): number {
+        return this._maxLineWidth;
+    }
+
+    /**
+     * Width of a single line (in px or w.r.t. font face scaling in world space respectively). The width of the line
+     * is not intended to be set explicitly, but implicitly via transformations/label placement in its subclass.
+     */
+    get lineWidth(): number {
+        return this._lineWidth;
+    }
+
+    /**
      * Horizontal text alignment for typesetting.
      */
     set alignment(alignment: Label.Alignment) {
@@ -230,13 +260,6 @@ export class Label {
         return this._lineAnchor;
     }
 
-    /**
-     * Width of a single line (in pt or w.r.t. font face scaling in world space respectively). The width of the line
-     * is not intended to be set explicitly, but implicitly via transformations/label placement.
-     */
-    get lineWidth(): number {
-        return this._lineWidth;
-    }
 
     /**
      * The currently used font size.
@@ -391,6 +414,11 @@ export class Label {
 }
 
 export namespace Label {
+
+    export enum WordWrapper {
+        NewLine = 'newLine',
+        Ellipse = 'ellipse',
+    }
 
     export enum Alignment {
         Left = 'left',

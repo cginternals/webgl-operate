@@ -7,6 +7,7 @@ import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
+import { Color } from '../color';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { Framebuffer } from '../framebuffer';
@@ -19,6 +20,7 @@ import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 
 import { FontFace } from '../text/fontface';
+import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
@@ -146,6 +148,7 @@ namespace debug {
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
+            this._labelPass.color = new Color([1.0, 1.0, 1.0, 1.0]);
 
             FontFace.fromFile('./data/opensansr144.fnt', context).then((fontFace) => {
                 this._labelPass.fontFace = fontFace;
@@ -327,7 +330,28 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel];
+            /** Wrapped labels using Ellipse */
+
+            const wrapped2DLabel = new Position2DLabel(new Text('This is a very long text.\nToo long, to be precise. \
+This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
+is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
+ very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
+            wrapped2DLabel.wordWrap = true;
+            wrapped2DLabel.maxLineWidth = 500;
+            wrapped2DLabel.wordWrapper = Label.WordWrapper.Ellipse;
+
+
+            const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text.\nToo long, to be precise. \
+This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
+is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
+ very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
+            wrapped3DLabel.wordWrap = true;
+            wrapped3DLabel.maxLineWidth = 1;
+            wrapped3DLabel.wordWrapper = Label.WordWrapper.Ellipse;
+            wrapped3DLabel.setPosition(-1, 0.1, 0);
+
+            this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
+                wrapped2DLabel, wrapped3DLabel];
         }
     }
 }

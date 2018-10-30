@@ -265,12 +265,21 @@ export class Typesetter {
         let feedVertexIndex: number = vertexIndex;
 
         let index = iBegin;
+
+        /* todo - omfg - refactor this */
         for (; index !== iEnd; ++index) {
-            const glyph = label.fontFace!.glyph(label.charCodeAt(index));
+            let glyph = label.fontFace!.glyph(label.charCodeAt(index));
 
             /* Handle line feeds as well as word wrap for next word (or next glyph if word exceeds the line width). */
-            const feedLine = label.lineFeedAt(index) || (label.wordWrap &&
+
+            const reachingMaxLineWidth = (label.wordWrap &&
                 Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
+
+            const feedLine = label.lineFeedAt(index) ||
+                (reachingMaxLineWidth && label.wordWrapper === Label.WordWrapper.NewLine);
+
+            const elideRemainingGlyphs =
+                reachingMaxLineWidth && label.wordWrapper === Label.WordWrapper.Ellipse;
 
             if (feedLine) {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
@@ -283,6 +292,43 @@ export class Typesetter {
 
                 feedVertexIndex = vertexIndex;
 
+            } else if (elideRemainingGlyphs) {
+                /** replace last 2 glyphs with .. */
+
+                /* roll back last 2 glyphs */
+                --index;
+                let precedingGlyph = label.fontFace!.glyph(label.charCodeAt(index));
+                pen[0] -= precedingGlyph.advance;
+                pen[0] -= label.kerningBefore(index);
+                --index;
+                precedingGlyph = label.fontFace!.glyph(label.charCodeAt(index));
+                pen[0] -= precedingGlyph.advance;
+                pen[0] -= label.kerningBefore(index);
+
+                vertexIndex -= 2;
+
+                /* update text */
+                const newText = label.text;
+                newText.text = newText.text.slice(0, index);
+                newText.text += '..';
+
+                /* type set the .. */
+                pen[0] += label.kerningBefore(index);
+                glyph = label.fontFace!.glyph(label.charCodeAt(index));
+                Typesetter.transformGlyph(label.fontFace!, pen, glyph,
+                    glyphs ? glyphs.vertices[vertexIndex++] : undefined);
+                pen[0] += glyph.advance;
+
+                ++index;
+
+                pen[0] += label.kerningBefore(index);
+                glyph = label.fontFace!.glyph(label.charCodeAt(index));
+                Typesetter.transformGlyph(label.fontFace!, pen, glyph,
+                    glyphs ? glyphs.vertices[vertexIndex++] : undefined);
+                pen[0] += glyph.advance;
+
+                /* break out of loop, elide the remaining glyphs that don't fit the line anymore */
+                break;
             } else if (index > iBegin) {
                 pen[0] += label.kerningBefore(index);
             }
