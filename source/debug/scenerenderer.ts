@@ -1,33 +1,33 @@
 
-import { assert } from '../auxiliaries';
-
 import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
+import { Camera } from '../camera';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { Framebuffer } from '../framebuffer';
 import { MouseEventProvider } from '../mouseeventprovider';
-import { NdcFillingTriangle } from '../ndcfillingtriangle';
-import { Program } from '../program';
+import { Navigation } from '../navigation';
 import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
-import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
-import { TestNavigation } from './testnavigation';
+
+import { ForwardSceneRenderPass } from '../scene/forwardscenerenderpass';
+import { SceneNode } from '../scene/scenenode';
 
 
 namespace debug {
 
-    export class TestRenderer extends Renderer {
+    /**
+     * @todo comment
+     */
+    export class SceneRenderer extends Renderer {
 
-        protected _extensions = false;
-        protected _program: Program;
+        protected _scene: SceneNode;
+        protected _camera: Camera;
 
+        protected _navigation: Navigation;
         protected _ndcOffsetKernel: AntiAliasingKernel;
-        protected _uNdcOffset: WebGLUniformLocation;
-        protected _uFrameNumber: WebGLUniformLocation;
-        protected _ndcTriangle: NdcFillingTriangle;
 
         protected _accumulate: AccumulatePass;
         protected _blit: BlitPass;
@@ -37,42 +37,24 @@ namespace debug {
         protected _depthRenderbuffer: Renderbuffer;
         protected _intermediateFBO: Framebuffer;
 
-        protected _testNavigation: TestNavigation;
+        protected _forwardPass: ForwardSceneRenderPass;
 
 
+        /**
+         * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
+         * @param context - valid context to create the object for.
+         * @param identifier - meaningful name for identification of this instance.
+         * @param mouseEventProvider - required for mouse interaction
+         * @returns - whether initialization was successful
+         */
         protected onInitialize(context: Context, callback: Invalidate,
             mouseEventProvider: MouseEventProvider,
-            /* keyEventProvider: KeyEventProvider, */
-            /* touchEventProvider: TouchEventProvider */): boolean {
+        /* keyEventProvider: KeyEventProvider, */
+        /* touchEventProvider: TouchEventProvider */): boolean {
 
             const gl = this._context.gl;
             const gl2facade = this._context.gl2facade;
 
-            /* Enable required extensions. */
-
-            if (this._extensions === false && this._context.isWebGL1) {
-                assert(this._context.supportsStandardDerivatives, `expected OES_standard_derivatives support`);
-                /* tslint:disable-next-line:no-unused-expression */
-                this._context.standardDerivatives;
-                this._extensions = true;
-            }
-
-            /* Create and configure program and geometry. */
-
-            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'testrenderer.vert');
-            vert.initialize(require('./testrenderer.vert'));
-            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'testrenderer.frag');
-            frag.initialize(require('./testrenderer.frag'));
-
-            this._program = new Program(this._context);
-            this._program.initialize([vert, frag]);
-
-            this._uNdcOffset = this._program.uniform('u_ndcOffset');
-            this._uFrameNumber = this._program.uniform('u_frameNumber');
-
-            this._ndcTriangle = new NdcFillingTriangle(this._context);
-            const aVertex = this._program.attribute('a_vertex', 0);
-            this._ndcTriangle.initialize(aVertex);
 
             this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
@@ -89,7 +71,7 @@ namespace debug {
             /* Create and configure accumulation pass. */
 
             this._accumulate = new AccumulatePass(this._context);
-            this._accumulate.initialize(this._ndcTriangle);
+            this._accumulate.initialize();
             this._accumulate.precision = this._framePrecision;
             this._accumulate.texture = this._colorRenderTexture;
             // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
@@ -97,26 +79,46 @@ namespace debug {
             /* Create and configure blit pass. */
 
             this._blit = new BlitPass(this._context);
-            this._blit.initialize(this._ndcTriangle);
+            this._blit.initialize();
             this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
             this._blit.drawBuffer = gl.BACK;
             this._blit.target = this._defaultFBO;
 
-            /* Create and configure test navigation. */
+            /* Create and configure camera. */
 
-            this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
+            this._camera = new Camera();
+            // this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            // this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            // this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
+            // this._camera.near = 0.1;
+            // this._camera.far = 8.0;
+
+            /* Create and configure navigation */
+
+            this._navigation = new Navigation(callback, mouseEventProvider);
+            this._navigation.camera = this._camera;
+
+            /* Create and configure forward pass. */
+
+            this._forwardPass = new ForwardSceneRenderPass(context);
+            this._forwardPass.initialize();
+
+            this._forwardPass.camera = this._camera;
+            this._forwardPass.target = this._intermediateFBO;
+
+            /* Create a scene */
+
+            this.generateScene();
+            this._forwardPass.scene = this._scene;
 
             return true;
         }
 
+        /**
+         * Uninitializes Buffers, Textures, and Program.
+         */
         protected onUninitialize(): void {
             super.uninitialize();
-
-            this._uNdcOffset = -1;
-            this._uFrameNumber = -1;
-            this._program.uninitialize();
-
-            this._ndcTriangle.uninitialize();
 
             this._intermediateFBO.uninitialize();
             this._defaultFBO.uninitialize();
@@ -127,21 +129,30 @@ namespace debug {
             this._accumulate.uninitialize();
         }
 
-
+        /**
+         * This is invoked in order to check if rendering of a frame is required by means of implementation specific
+         * evaluation (e.g., lazy non continuous rendering). Regardless of the return value a new frame (preparation,
+         * frame, swap) might be invoked anyway, e.g., when update is forced or canvas or context properties have
+         * changed or the renderer was invalidated @see{@link invalidate}.
+         * Updates the navigaten and the AntiAliasingKernel.
+         * @returns whether to redraw
+         */
         protected onUpdate(): boolean {
-            this._testNavigation.update();
 
-            const redraw = this._testNavigation.altered;
-            this._testNavigation.reset();
+            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
-            if (!redraw && !this._altered.any) {
-                return false;
-            }
+            this._navigation.update();
+            this._forwardPass.update();
 
-            return redraw;
+            return this._altered.any || this._camera.altered;
         }
 
+        /**
+         * This is invoked in order to prepare rendering of one or more frames, regarding multi-frame rendering and
+         * camera-updates.
+         */
         protected onPrepare(): void {
+
             const gl = this._context.gl;
             const gl2facade = this._context.gl2facade;
 
@@ -168,30 +179,33 @@ namespace debug {
 
             this._accumulate.update();
 
+            this._forwardPass.prepare();
+
             this._altered.reset();
+            this._camera.altered = false;
         }
 
+        /**
+         * @todo comment
+         * @param frameNumber - for intermediate frames in accumulation rendering.
+         */
         protected onFrame(frameNumber: number): void {
             const gl = this._context.gl;
 
-            gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+            this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 
-            this._program.bind();
-
-            const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
+            const ndcOffset = this._ndcOffsetKernel.get(frameNumber) as [number, number];
             ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
             ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
-            gl.uniform2fv(this._uNdcOffset, ndcOffset);
-            gl.uniform1i(this._uFrameNumber, frameNumber);
 
-            this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, true, false);
-            this._ndcTriangle.bind();
-            this._ndcTriangle.draw();
-            this._intermediateFBO.unbind();
+            this._forwardPass.ndcOffset = ndcOffset;
 
-            this._accumulate.frame(frameNumber);
+            this._forwardPass.frame();
         }
 
+        /**
+         * @todo comment ...
+         */
         protected onSwap(): void {
             this._blit.framebuffer = this._accumulate.framebuffer ?
                 this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
@@ -199,8 +213,21 @@ namespace debug {
         }
 
 
-    }
+        /**
+         *  @todo comment
+         */
+        protected generateScene(): void {
 
+            /** @todo generate random scene, e.g., consisting of colored and transformed spheres */
+
+            this._scene = new SceneNode(undefined);
+
+            // this._scene.addComponent(...);
+            // this._scene.addNode(...);
+
+        }
+
+    }
 }
 
 export = debug;
