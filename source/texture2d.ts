@@ -145,7 +145,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    load(url: string, crossOrigin: boolean = false): Promise<void> {
+    fetch(url: string, crossOrigin: boolean = false): Promise<void> {
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onerror = () => {
