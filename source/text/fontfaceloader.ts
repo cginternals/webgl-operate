@@ -99,7 +99,7 @@ export class FontFaceLoader {
         let page = pairs.get('file')!;
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
-        return fontFace.glyphTexture.load(`${path}/${page}`)
+        return fontFace.glyphTexture.fetch(`${path}/${page}`)
             .catch(() => Promise.reject(`page '${page}' referenced in font file '${url}' was not found`));
     }
 
