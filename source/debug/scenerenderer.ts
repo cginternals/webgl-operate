@@ -199,8 +199,9 @@ namespace debug {
             ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
 
             this._forwardPass.ndcOffset = ndcOffset;
-
             this._forwardPass.frame();
+
+            this._accumulate.frame(frameNumber);
         }
 
         /**

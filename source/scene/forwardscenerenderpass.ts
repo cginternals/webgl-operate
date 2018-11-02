@@ -105,6 +105,9 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         /** @todo implement ... */
 
+        this._target.clear(gl.COLOR_BUFFER_BIT, true, false);
+
+
         gl.disable(gl.DEPTH_TEST);
     }
 
