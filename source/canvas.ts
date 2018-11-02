@@ -240,6 +240,9 @@ export class Canvas extends Resizable {
      */
     protected retrieveSize(): void {
         const size = Resizable.elementSize(this._element);
+        if (size === undefined) {
+            return;
+        }
         this._size = [size[0], size[1]];
         this.sizeNext();
     }
