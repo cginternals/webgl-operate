@@ -48,7 +48,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
     @Initializable.initialize()
     initialize(): boolean {
-        const gl = this._context.gl;
+        // const gl = this._context.gl;
 
         /** @todo create shaders, programs, fbos, etc. - checkout label render pass for example */
 
@@ -78,7 +78,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
      */
     @Initializable.assert_initialized()
     update(override: boolean = false): void {
-        const gl = this._context.gl;
+        // const gl = this._context.gl;
 
         /** @todo  checkout label render pass update for reference */
 

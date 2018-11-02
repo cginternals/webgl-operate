@@ -190,7 +190,7 @@ namespace debug {
          * @param frameNumber - for intermediate frames in accumulation rendering.
          */
         protected onFrame(frameNumber: number): void {
-            const gl = this._context.gl;
+            // const gl = this._context.gl;
 
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 

@@ -84,7 +84,7 @@ export class UVSphere extends Geometry {
      */
     @Initializable.assert_initialized()
     draw(): void {
-        const gl = this.context.gl;
+        // const gl = this.context.gl;
         /** @todo implement draw */
         // gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
