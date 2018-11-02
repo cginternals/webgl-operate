@@ -241,6 +241,7 @@ export class Canvas extends Resizable {
     protected retrieveSize(): void {
         const size = Resizable.elementSize(this._element);
         if (size === undefined) {
+            this._size = [0, 0];
             return;
         }
         this._size = [size[0], size[1]];
@@ -256,7 +257,8 @@ export class Canvas extends Resizable {
         /* If the canvas does not have a size, block rendering. This can happen if the canvas is, e.g., hidden and
         DOM layouting leads to width of zero. */
         if (this._size[0] === 0 || this._size[1] === 0) {
-            log(LogLevel.Warning, `canvas width or height is 0, thus, not visible, resize discarded`);
+            log(LogLevel.Warning, `canvas width or height is invalid, resize discarded and controller blocked`);
+            this._controller.block();
             return;
         }
 
