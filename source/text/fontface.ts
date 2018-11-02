@@ -77,17 +77,16 @@ export class FontFace {
      * @param identifier - Meaningful name/prefix for identification of fetched pages (glyph atlases).
      */
     static fromFile(url: string, context: Context, headless: boolean = false, identifier?: string):
-        Promise<FontFace | undefined> {
+        Promise<FontFace> {
 
-        let fetchedData: any;
-        const transform = (data: any): FontFace => {
-            fetchedData = data;
-            return new FontFace(context, identifier);
+        const transform = (data: any): PromiseLike<FontFace> => {
+            const font = new FontFace(context, identifier);
+            return FontFaceLoader.process(font, data, url, headless)
+                .then((fontFace: FontFace) => fontFace)
+                .catch((reason: any) => Promise.reject(`processing font face data failed: ${reason}`));
         };
 
-        return fetchAsync<FontFace | undefined>(url, 'text', transform)
-            .then((font: FontFace) =>
-                FontFaceLoader.process(font, fetchedData, url, headless));
+        return fetchAsync<FontFace>(url, 'text').then(transform);
     }
 
     /**

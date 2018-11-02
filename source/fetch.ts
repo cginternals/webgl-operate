@@ -10,17 +10,14 @@ namespace fetch {
 
     export interface FetchTransform<T> { (data: any): T | undefined; }
 
-
     /**
      * Creates a promise for an asynchronous xml/http request on a given URL. If an URL is fetched successfully, the
-     * promise is resolved with a transform to the typed object. An error code and message can be caught otherwise.
+     * promise is resolved with the fetched data.
      * @param url - Uniform resource locator string referencing a file.
      * @param type - Request response type.
-     * @param transform - Callback to a function that transforms the fetched data into an instance of targeted type.
      * @returns - A promise that resolves on a parsed object if successful.
      */
-    export function fetchAsync<T>(url: string, type: XMLHttpRequestResponseType,
-        transform: FetchTransform<T>): Promise<T> {
+    export function fetchAsync<T>(url: string, type: XMLHttpRequestResponseType): Promise<T> {
 
         const response = new Promise<T>((resolve, reject) => {
             const request = new XMLHttpRequest();
@@ -32,14 +29,7 @@ namespace fetch {
                     reject(failed(url, request));
                     return;
                 }
-
-                const data = request.response;
-                const object = transform(data);
-                if (object === undefined) {
-                    reject(`fetching '${url}' failed (TransformError): transforming the object failed.`);
-                    return;
-                }
-                resolve(object);
+                resolve(request.response);
             };
 
             request.onerror = () => reject(failed(url, request));
@@ -99,6 +89,7 @@ namespace fetch {
         });
         return response;
     }
+
 
 }
 
