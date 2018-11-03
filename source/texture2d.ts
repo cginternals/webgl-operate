@@ -1,5 +1,5 @@
 
-import { assert } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei2 } from './tuples';
 
@@ -148,7 +148,10 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
     load(url: string, crossOrigin: boolean = false): Promise<void> {
         return new Promise((resolve, reject) => {
             const image = new Image();
-            image.onerror = () => reject();
+            image.onerror = () => {
+                log(LogLevel.Error, `loading image from '${image.src}' failed`);
+                reject();
+            };
 
             image.onload = () => {
                 this.resize(image.width, image.height);
