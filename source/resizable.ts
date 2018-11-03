@@ -1,5 +1,5 @@
 
-import { assert, logIf, LogLevel } from './auxiliaries';
+import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
 
@@ -38,16 +38,24 @@ export abstract class Resizable {
     /**
      * Retrieves the native width and height of a given element in device pixel (size on screen in physical pixels). If
      * the element is not found, or either window or its device pixel ratio are not defined, a default vec2 is returned.
+     * If the canvas size is not yet computed, i.e., not provided in px unit, undefined will be return.
      * @param element - DOM element to get the width and height in (native) pixel from.
-     * @returns - Size of the element in native screen pixels.
+     * @returns - Size of the element in native screen pixels. Undefined when size is not available in 'px'.
      */
-    static elementSize(element: HTMLElement): GLsizei2 {
+    static elementSize(element: HTMLElement): GLsizei2 | undefined {
         if (element === undefined || window === undefined || typeof window.devicePixelRatio !== 'number') {
             return [0, 0];
         }
 
         const scale = window.devicePixelRatio;
         const style = getComputedStyle(element);
+
+        const pxUnits = style.width !== null && (style.width as string).endsWith('px') &&
+            style.height !== null && (style.height as string).endsWith('px');
+        if (!pxUnits) {
+            log(LogLevel.Debug, `computed element size expected in 'px', given ${style.width} ${style.height}`);
+            return undefined;
+        }
         const size: GLsizei2 = [parseInt(style.width as string, 10), parseInt(style.height as string, 10)];
 
         size[0] = Math.round(size[0] * scale);
