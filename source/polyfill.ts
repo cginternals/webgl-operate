@@ -50,6 +50,22 @@ if (String.prototype.startsWith === undefined) {
     };
 }
 
+
+/**
+ * IE11 polyfill for string.endsWith function, from
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
+ */
+if (String.prototype.endsWith === undefined) {
+    /* tslint:disable-next-line:space-before-function-paren */
+    String.prototype.endsWith = function (search, length?): boolean {
+        if (length === undefined || length > this.length) {
+            length = this.length as number;
+        }
+        return this.substring(length - search.length, length) === search;
+    };
+}
+
+
 /**
  * IE11 polyfill for Array.forEach function, from ...
  */
