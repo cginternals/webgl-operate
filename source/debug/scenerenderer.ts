@@ -1,4 +1,6 @@
 
+import { mat4, vec3 } from 'gl-matrix';
+
 import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
@@ -6,11 +8,17 @@ import { Camera } from '../camera';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { Framebuffer } from '../framebuffer';
+import { Geometry } from '../geometry';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { Navigation } from '../navigation';
+import { Program } from '../program';
 import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
+import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
+
+import { Box } from '../core/box';
+import { Sphere } from '../core/sphere';
 
 import { ForwardSceneRenderPass } from '../scene/forwardscenerenderpass';
 import { SceneNode } from '../scene/scenenode';
@@ -22,9 +30,6 @@ namespace debug {
      * @todo comment
      */
     export class SceneRenderer extends Renderer {
-
-        protected _scene: SceneNode;
-        protected _camera: Camera;
 
         protected _navigation: Navigation;
         protected _ndcOffsetKernel: AntiAliasingKernel;
@@ -38,6 +43,26 @@ namespace debug {
         protected _intermediateFBO: Framebuffer;
 
         protected _forwardPass: ForwardSceneRenderPass;
+
+        protected _camera: Camera;
+
+        protected _scene: SceneNode;
+
+        // Will be removed ...
+        protected _useSphere = true;
+        protected _meshSize = 1.0;
+        protected _textured = true;
+
+        protected _meshNode: SceneNode;
+        protected _mesh: Geometry;
+        protected _meshProgram: Program;
+        protected _uViewProjection: WebGLUniformLocation;
+        protected _uModel: WebGLUniformLocation;
+        protected _uTexture: WebGLUniformLocation;
+        protected _uTextured: WebGLUniformLocation;
+        protected _aMeshVertex: GLuint;
+        protected _aMeshTexCoord: GLuint;
+        protected _texture: Texture2D;
 
 
         /**
@@ -87,11 +112,11 @@ namespace debug {
             /* Create and configure camera. */
 
             this._camera = new Camera();
-            // this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-            // this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-            // this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
-            // this._camera.near = 0.1;
-            // this._camera.far = 8.0;
+            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
+            this._camera.near = 0.1;
+            this._camera.far = 8.0;
 
             /* Create and configure navigation */
 
@@ -106,10 +131,51 @@ namespace debug {
             this._forwardPass.camera = this._camera;
             this._forwardPass.target = this._intermediateFBO;
 
-            /* Create a scene */
+            /* Create scene. */
 
             this.generateScene();
             this._forwardPass.scene = this._scene;
+
+            /* Will be removed ... */
+
+            /* Create mesh rendering program. */
+            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+            vert.initialize(require('./mesh.vert'));
+            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
+            frag.initialize(require('./mesh.frag'));
+            this._meshProgram = new Program(this._context, 'MeshProgram');
+            this._meshProgram.initialize([vert, frag]);
+            this._uViewProjection = this._meshProgram.uniform('u_viewProjection');
+            this._uModel = this._meshProgram.uniform('u_model');
+            this._uTexture = this._meshProgram.uniform('u_texture');
+            this._uTextured = this._meshProgram.uniform('u_textured');
+            this._aMeshVertex = this._meshProgram.attribute('a_vertex', 0);
+            this._aMeshTexCoord = this._meshProgram.attribute('a_texcoord', 1);
+
+            /* Create geometry. */
+            if (this._useSphere) {
+                this._mesh = new Sphere(
+                    this._context,
+                    'mesh',
+                    this._meshSize,
+                    this._textured);
+            } else {
+                this._mesh = new Box(
+                    this._context,
+                    'mesh',
+                    this._meshSize,
+                    this._meshSize,
+                    this._meshSize,
+                    this._textured);
+            }
+            this._mesh.initialize(this._aMeshVertex, this._aMeshTexCoord);
+
+            /* Create and load texture. */
+            this._texture = new Texture2D(this._context, 'Texture');
+            this._texture.initialize(128, 128, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
+            this._texture.fetch('data/logo.png', false).then(() => {
+                this.invalidate(true);
+            });
 
             return true;
         }
@@ -119,6 +185,9 @@ namespace debug {
          */
         protected onUninitialize(): void {
             super.uninitialize();
+
+            this._mesh.uninitialize();
+            this._meshProgram.uninitialize();
 
             this._intermediateFBO.uninitialize();
             this._defaultFBO.uninitialize();
@@ -190,7 +259,7 @@ namespace debug {
          * @param frameNumber - for intermediate frames in accumulation rendering.
          */
         protected onFrame(frameNumber: number): void {
-            // const gl = this._context.gl;
+            const gl = this._context.gl;
 
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 
@@ -201,6 +270,32 @@ namespace debug {
             this._forwardPass.ndcOffset = ndcOffset;
             this._forwardPass.frame();
 
+            // Will be removed ...
+            this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
+
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(gl.BACK);
+            gl.enable(gl.DEPTH_TEST);
+
+            this._mesh.bind();
+            this._meshProgram.bind();
+
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, this._meshNode.transform);
+
+            this._texture.bind(gl.TEXTURE0);
+            gl.uniform1i(this._uTexture, 0);
+            gl.uniform1i(this._uTextured, this._textured);
+
+            this._mesh.draw();
+
+            this._meshProgram.unbind();
+            this._mesh.unbind();
+
+            gl.cullFace(gl.BACK);
+            gl.disable(gl.CULL_FACE);
+
+            // Accumulate
             this._accumulate.frame(frameNumber);
         }
 
@@ -219,13 +314,15 @@ namespace debug {
          */
         protected generateScene(): void {
 
-            /** @todo generate random scene, e.g., consisting of colored and transformed spheres */
+            /* Create scene */
+            this._scene = new SceneNode('root');
 
-            this._scene = new SceneNode(undefined);
-
-            // this._scene.addComponent(...);
-            // this._scene.addNode(...);
-
+            /* Create node with a mesh */
+            this._meshNode = this._scene.addNode(new SceneNode('mesh'));
+            const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, 0.0, 0.0));
+            const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
+            const transform = mat4.multiply(mat4.create(), translate, scale);
+            this._meshNode.transform = transform;
         }
 
     }

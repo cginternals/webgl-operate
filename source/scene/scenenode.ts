@@ -1,5 +1,7 @@
 
 
+import { mat4 } from 'gl-matrix';
+
 import { SceneNodeComponent } from './scenenodecomponent';
 
 
@@ -8,13 +10,19 @@ import { SceneNodeComponent } from './scenenodecomponent';
  */
 export class SceneNode {
 
+    /** @see {@link name} */
+    protected _name: string;
+
     /** @see {@link parent} */
     protected _parent: SceneNode | undefined;
 
     /** @see {@link nodes} */
     protected _nodes = new Array<SceneNode>();
 
-    /** @see {@link component} */
+    /** @see {@link transform} */
+    protected _transform: mat4;
+
+    /** @see {@link components} */
     protected _components = new Array<SceneNodeComponent>();
 
 
@@ -22,8 +30,9 @@ export class SceneNode {
      * @todo comment
      * @param parent - @todo comment
      */
-    constructor(parent: SceneNode | undefined) {
-        this._parent = parent;
+    constructor(name: string) {
+        this._name = name;
+        this._parent = undefined;
     }
 
 
@@ -44,16 +53,21 @@ export class SceneNode {
      * @todo comment
      * @param node - @todo comment
      */
-    addNode(node: SceneNode): void {
+    addNode(node: SceneNode): SceneNode {
+        node._parent = this;
         this._nodes.push(node);
+
+        return node;
     }
 
     /**
      * @todo comment
      * @param component - @todo comment
      */
-    addComponent(component: SceneNodeComponent): void {
+    addComponent(component: SceneNodeComponent): SceneNodeComponent {
         this._components.push(component);
+
+        return component;
     }
 
     /**
@@ -68,6 +82,13 @@ export class SceneNode {
     /**
      * Read-only access to ... @todo comment
      */
+    get name(): string {
+        return this._name;
+    }
+
+    /**
+     * Read-only access to ... @todo comment
+     */
     get parent(): SceneNode | undefined {
         return this._parent;
     }
@@ -77,6 +98,21 @@ export class SceneNode {
      */
     get nodes(): Array<SceneNode> | undefined {
         return this._nodes;
+    }
+
+    /**
+     * Read-only access to ... @todo comment
+     */
+    get transform(): mat4 {
+        return this._transform;
+    }
+
+    /**
+     * Sets the transformation of the scene node.
+     * @param transform - Transformation relative to parent node.
+     */
+    set transform(transform: mat4) {
+        this._transform = transform;
     }
 
     /**
