@@ -31,6 +31,9 @@ export class Shader extends AbstractObject<WebGLShader> {
     /** @see {@link source} */
     protected _source: string;
 
+    /** @see {@link compiled} */
+    protected _compiled = false;
+
     /**
      * Map of replacement strings and the value to replace them with.
      */
@@ -44,6 +47,8 @@ export class Shader extends AbstractObject<WebGLShader> {
      * @param identifier - Meaningful name for identification of this instance.
      */
     constructor(context: Context, type: GLenum, identifier?: string) {
+        super(context, identifier);
+
         const gl = context.gl;
         if (identifier === undefined) {
             switch (type) {
@@ -58,7 +63,7 @@ export class Shader extends AbstractObject<WebGLShader> {
                         `or a VERTEX_SHADER (${gl.VERTEX_SHADER}), given ${type}`);
             }
         }
-        super(context, identifier);
+
         this._type = type;
     }
 
@@ -67,15 +72,24 @@ export class Shader extends AbstractObject<WebGLShader> {
      * identifier and an info log are logged to console and the shader object is deleted. Note that a '#version 300 es'
      * is added in case the shader source is compiled in a WebGL2 context.
      * @param source - Shader source.
+     * @param compile - Whether or not to compile the shader immediately if a source is provided.
      * @returns - Either a new shader or undefined if compilation failed.
      */
-    protected create(source: string): WebGLShader | undefined {
+    protected create(source?: string, compile: boolean = true): WebGLShader | undefined {
         const gl = this._context.gl;
         this._object = gl.createShader(this._type);
+
+        this._valid = gl.isShader(this._object);
+        this._compiled = false;
+
         assert(this._object instanceof WebGLShader, `expected WebGLShader object to be created`);
 
-        this._source = source;
-        this.compile();
+        if (source) {
+            this.source = source;
+        }
+        if (source && compile) {
+            this.compile();
+        }
         return this._object;
     }
 
@@ -87,33 +101,20 @@ export class Shader extends AbstractObject<WebGLShader> {
         this._context.gl.deleteShader(this._object);
         this._object = undefined;
         this._valid = false;
+        this._compiled = false;
     }
 
-    /**
-     * Processes all search values and replaces them with the replace value on the source.
-     * @returns The source with all replacements applied.
-     */
-    protected sourceWithReplacements(): string {
-        if (this._replacements === undefined) {
-            return this._source;
-        }
-
-        let source = this._source;
-        this._replacements.forEach((replaceValue: string, searchValue: string) => {
-            source = source.replace(new RegExp(searchValue, 'g'), replaceValue);
-        });
-        return source;
-    }
 
     /**
      * Triggers recompilation of a shader. This is usually used internally automatically, but exposed here for leaky
-     * abstraction. It should not be required to invoke this manually in most cases. The shader object is marked valid
-     * iff the object is a shader object and the source compiled successfully.
+     * abstraction. It should not be required to invoke this manually in most cases. The shader object is marked as
+     * compiled iff the source compiled successfully. Note that invalidation of all programs this shader is attached
+     * to needs to be done manually.
      */
     compile(): void {
         const gl = this._context.gl;
 
-        let source = this.sourceWithReplacements();
+        let source = this.sourceWithReplacements;
         if (this._context.isWebGL2) {
             source = `#version 300 es\n${source}`;
         }
@@ -121,10 +122,8 @@ export class Shader extends AbstractObject<WebGLShader> {
         gl.shaderSource(this._object, source);
         gl.compileShader(this._object);
 
-        const compiled = gl.getShaderParameter(this._object, gl.COMPILE_STATUS);
-        this._valid = gl.isShader(this._object) && compiled;
-
-        if (!compiled) {
+        this._compiled = gl.getShaderParameter(this._object, gl.COMPILE_STATUS);
+        if (!this._compiled) {
             const infoLog: string = gl.getShaderInfoLog(this._object);
             log(LogLevel.Error, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
         }
@@ -132,8 +131,8 @@ export class Shader extends AbstractObject<WebGLShader> {
 
     /**
      * Adds a search-replacement-pair that is processed every time the shaders is recompiled. Note that recompilation
-     * has to be triggered manually. Internally, all replacments are stored as a Map of search and replacement values.
-     * Thus, specifying a replacment value overrides an existing search value.
+     * has to be triggered manually. Internally, all replacements are stored as a Map of search and replacement values.
+     * Thus, specifying a replacement value overrides an existing search value.
      * @param searchValue - String that is to be searched (all occurrences) and replaced by replace value.
      * @param replaceValue - The value to be used as replacement for all search value occurrences.
      */
@@ -153,15 +152,13 @@ export class Shader extends AbstractObject<WebGLShader> {
     }
 
     /**
-     * Allows to change the shader's source. Note that this will recompile the shader, but invalidation of all programs
-     * this shader is attached to needs to be done manually.
+     * Allows to change the shader's source. Note that this will not recompile the shader.
      */
     set source(source: string) {
         if (this._source === source) {
             return;
         }
         this._source = source;
-        this.compile();
     }
 
     /**
@@ -170,6 +167,31 @@ export class Shader extends AbstractObject<WebGLShader> {
     get source(): string {
         this.assertInitialized();
         return this._source;
+    }
+
+    /**
+     * Processes all search values and replaces them with the replace value on the source.
+     * @returns The source with all replacements applied.
+     */
+    get sourceWithReplacements(): string {
+        if (this._replacements === undefined) {
+            return this._source;
+        }
+
+        let source = this._source;
+        this._replacements.forEach((replaceValue: string, searchValue: string) => {
+            const searchRegex = searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+            source = source.replace(new RegExp(searchRegex, 'g'), replaceValue);
+        });
+        return source;
+    }
+
+    /**
+     * Read access the the shader's compile status. True if last compilation was successful.
+     */
+    get compiled(): boolean {
+        this.assertInitialized();
+        return this._compiled;
     }
 
 }

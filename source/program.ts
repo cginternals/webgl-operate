@@ -40,6 +40,9 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
     /** @see {@link shaders} */
     protected _shaders = new Array<Shader>();
 
+    /** @see {@link linked} */
+    protected _linked = false;
+
 
     /**
      * Creates a WebGLProgram object and attaches, and references all shaders to it. The program is then linked. All
@@ -47,9 +50,12 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      * present. Note that the shaders are not detached by default. If neither the shader objects nor recompilation is
      * required all shaders should be detached manually after initialization/creation.
      * @param shaders - Vertex and fragment shaders that are to be attached to the program.
+     * @param link - Whether or not to immediately link the program iff provided shader(s) are attached successfully.
      * @returns - Either a new program or undefined if linking failed or one of the shaders is invalid/not compiled.
      */
-    protected create(shaders: Array<Shader>): WebGLProgram | undefined {
+    protected create(shaders: Array<Shader> = new Array<Shader>(),
+        link: boolean = true): WebGLProgram | undefined {
+
         const gl = this._context.gl;
 
         let numVertShaders = 0;
@@ -75,14 +81,13 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
         }
 
         this._object = gl.createProgram();
+        this._valid = gl.isProgram(this._object);
+
         assert(this._object instanceof WebGLProgram, `expected WebGLProgram object to be created`);
 
-        if (!this.attach(shaders) || !this.link()) {
-            this.delete();
-            return undefined;
+        if (shaders.length > 0) {
+            this.attach(shaders, link);
         }
-
-        this._valid = gl.isProgram(this._object);
         return this._object;
     }
 
@@ -101,9 +106,10 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      * Attaches and references all given shaders. Attach is expected to be called once within creation of a Program.
      * Shaders that are not initialized will be skipped/not attached.
      * @param shaders - All shaders to be attached to the program for linking.
+     * @param link - Whether or not to link the program again after attaching the shader(s).
      * @returns - True if attaching all shaders and linking succeeded, false otherwise.
      */
-    attach(shaders: Shader | Array<Shader>): boolean {
+    attach(shaders: Shader | Array<Shader>, link: boolean = false): boolean {
         assert(this._object !== undefined, `expected a WebGLProgram object`);
         const gl = this._context.gl;
 
@@ -119,6 +125,9 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
             }
             gl.attachShader(this._object, shader.object);
             shader.ref();
+        }
+        if (link) {
+            this.link();
         }
         return true;
     }
@@ -157,9 +166,12 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
         if (!gl.getProgramParameter(this._object, gl.LINK_STATUS)) {
             const infoLog: string = gl.getProgramInfoLog(this._object);
             log(LogLevel.Error, `linking of program '${this._identifier}' failed: '${infoLog}'`);
-            return false;
+
+            this._linked = false;
+        } else {
+            this._linked = true;
         }
-        return true;
+        return this._linked;
     }
 
 
@@ -197,7 +209,11 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      */
     @Initializable.assert_initialized()
     attribute(attribute: string, location?: GLuint): GLint {
-        if (this._context.isWebGL2 && location !== undefined) {
+        if (location !== undefined) {
+            logIf(this._linked, LogLevel.Info,
+                `name-to-generic attribute index mapping does go into effect on next linking, ` +
+                `given ${attribute} -> ${location} (${this.identifier})`);
+
             this._context.gl.bindAttribLocation(this._object, location, attribute);
             return location as GLint;
         } else {
@@ -211,6 +227,13 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      */
     get shaders(): Array<Shader> {
         return this._shaders;
+    }
+
+    /**
+     * Read access the the program's link status. True if last linking was successful.
+     */
+    get linked(): boolean {
+        return this._linked;
     }
 
 }
