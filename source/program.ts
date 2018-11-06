@@ -209,7 +209,11 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      */
     @Initializable.assert_initialized()
     attribute(attribute: string, location?: GLuint): GLint {
-        if (this._context.isWebGL2 && location !== undefined) {
+        if (location !== undefined) {
+            logIf(this._linked, LogLevel.Info,
+                `name-to-generic attribute index mapping does go into effect on next linking, ` +
+                `given ${attribute} -> ${location} (${this.identifier})`);
+
             this._context.gl.bindAttribLocation(this._object, location, attribute);
             return location as GLint;
         } else {
