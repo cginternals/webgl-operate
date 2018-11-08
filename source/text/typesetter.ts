@@ -279,7 +279,7 @@ export class Typesetter {
                 (reachingMaxLineWidth && label.wordWrapper === Label.WordWrapper.NewLine);
 
             const elideRemainingGlyphs =
-                reachingMaxLineWidth && label.wordWrapper === Label.WordWrapper.Ellipse;
+                reachingMaxLineWidth && label.wordWrapper === Label.WordWrapper.Ellipsis;
 
             if (feedLine) {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */

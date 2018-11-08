@@ -417,7 +417,7 @@ export namespace Label {
 
     export enum WordWrapper {
         NewLine = 'newLine',
-        Ellipse = 'ellipse',
+        Ellipsis = 'ellipsis',
     }
 
     export enum Alignment {
@@ -436,7 +436,7 @@ export namespace Label {
     }
 
     /**
-     * This unit is used for the font size.
+     * This unit is used for the font size and related calculations.
      */
     export enum SpaceUnit {
         /* abstract world unit */
