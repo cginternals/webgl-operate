@@ -65,7 +65,7 @@ export class Position3DLabel extends Label {
         /** use the setter to trigger label.transform.altered */
         this.transform = mat4.mul(transform, transform, rotation);
 
-        if (this._maxLineWidth > 0.0 || this.wordWrap === true) {
+        if (this._maxLineWidth > 0.0) {
             /** Note:
              * this.fontSize uses this.fontSizeUnit,
              * maxLineWidth uses this.fontSizeUnit,

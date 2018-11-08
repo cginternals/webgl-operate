@@ -87,7 +87,7 @@ export class Position2DLabel extends Label {
         /** use the setter to trigger label.transform.altered */
         this.transform = mat4.rotateZ(transform, transform, angle);
 
-        if (this._maxLineWidth > 0.0 || this.wordWrap === true) {
+        if (this._maxLineWidth > 0.0) {
             /** Note:
              * this.fontSize uses this.fontSizeUnit,
              * maxLineWidth uses this.fontSizeUnit,

@@ -19,11 +19,8 @@ export class Label {
     /** @see {@link text} */
     protected _text: Text;
 
-    /** @see {@link wordWrap} */
-    protected _wordWrap = false;
-
     /** @see {@link wordWrapper} */
-    protected _wordWrapper: Label.WordWrapper = Label.WordWrapper.NewLine;
+    protected _wordWrapper: Label.WordWrapper = Label.WordWrapper.None;
 
     /** @see {@link maxLineWidth} */
     protected _maxLineWidth = 0.0;
@@ -188,21 +185,6 @@ export class Label {
     }
 
     /**
-     * Whether or not words can be wrapped at the end of a line.
-     * @param wrap - `true` if word wrap is enabled, else `false`
-     */
-    set wordWrap(wrap: boolean) {
-        if (this._wordWrap === wrap) {
-            return;
-        }
-        this._altered.alter('typesetting');
-        this._wordWrap = wrap;
-    }
-    get wordWrap(): boolean {
-        return this._wordWrap;
-    }
-
-    /**
      * Which algorithm should be used when label.wordWrap = true and label exceeds the defined maximum line width, see
      * maxLineWidth();
      */
@@ -215,7 +197,7 @@ export class Label {
 
     /**
      * Maximum line width allowed for this label. The current label.fontSizeUnit is used as line width unit.
-     * The maximum line width is ignored if label.wordWrap==false.
+     * The maximum line width is ignored if label.wordWrapper==Label.WordWrapper.None
      */
     set maxLineWidth(maxLineWidth: number) {
         this._maxLineWidth = maxLineWidth;
@@ -225,8 +207,8 @@ export class Label {
     }
 
     /**
-     * Width of a single line (in px or w.r.t. font face scaling in world space respectively). The width of the line
-     * is not intended to be set explicitly, but implicitly via transformations/label placement in its subclass.
+     * Width of a single line (in typesetting space). The width of the line is not intended to be set explicitly, but
+     * implicitly via transformations/label placement in its subclass.
      */
     get lineWidth(): number {
         return this._lineWidth;
@@ -416,6 +398,7 @@ export class Label {
 export namespace Label {
 
     export enum WordWrapper {
+        None = 'none',
         NewLine = 'newLine',
         Ellipsis = 'ellipsis',
     }

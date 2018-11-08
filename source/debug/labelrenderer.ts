@@ -332,22 +332,20 @@ namespace debug {
             pos2Dlabel.setPosition(-100, 0);
             pos2Dlabel.setDirection(0.5, -0.5);
 
-            /** Wrapped labels using Ellipsis */
 
-            const wrapped2DLabel = new Position2DLabel(new Text('This is a very long text.\nToo long, to be precise. \
+            /** Wrapped labels, showcasing Ellipsis and NewLine */
+
+            const wrapped2DLabel = new Position2DLabel(new Text('This is a very long text: NewLine.\n\
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped2DLabel.wordWrap = true;
             wrapped2DLabel.maxLineWidth = 500;
-            wrapped2DLabel.wordWrapper = Label.WordWrapper.Ellipsis;
+            wrapped2DLabel.wordWrapper = Label.WordWrapper.NewLine;
 
-
-            const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text.\nToo long, to be precise. \
+            const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text: Ellipsis.\n\
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel.wordWrap = true;
             wrapped3DLabel.maxLineWidth = 1;
             wrapped3DLabel.wordWrapper = Label.WordWrapper.Ellipsis;
             wrapped3DLabel.setPosition(-1, 0.1, 0);

@@ -23,7 +23,7 @@ export class Typesetter {
 
     /**
      * Returns if newline should be applied for next word (or next glyph if word exceeds the line width)
-     * @param label the label that has wordWrap enabled
+     * @param label the label that has a wordWrapper different from WordWrapper.None
      * @param pen horizontal and vertical position at which typesetting takes place/arrived.
      * @param glyph current glyph
      * @param index current index for char in this label
@@ -31,7 +31,8 @@ export class Typesetter {
      * @returns whether or not typesetting should go on a new line
      */
     protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, safeForwardIndex: number): boolean {
-        assert(label.wordWrap, `expected wordWrap to be enabled for label, given ${label}`);
+        assert(label.wordWrapper !== Label.WordWrapper.None,
+            `expected a WordWrapper enabled for label, given ${label.wordWrapper}`);
         const lineWidth = label.lineWidth;
 
         const penForward = pen[0] + glyph.advance + (index > 0 ? label.kerningBefore(index) : 0.0);
@@ -266,13 +267,12 @@ export class Typesetter {
 
         let index = iBegin;
 
-        /* todo - omfg - refactor this */
         for (; index !== iEnd; ++index) {
             let glyph = label.fontFace!.glyph(label.charCodeAt(index));
 
             /* Handle line feeds as well as word wrap for next word (or next glyph if word exceeds the line width). */
 
-            const reachingMaxLineWidth = (label.wordWrap &&
+            const reachingMaxLineWidth = (label.wordWrapper !== Label.WordWrapper.None &&
                 Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
 
             const feedLine = label.lineFeedAt(index) ||
