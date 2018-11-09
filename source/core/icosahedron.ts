@@ -2,13 +2,14 @@
 import { vec2, vec3 } from 'gl-matrix';
 import { v2, v3 } from '../gl-matrix-extensions';
 
+type ivec3 = [number, number, number];
 
 /**
  * Helper class to generate a sphere geometry based on a refinable icosahedron
  */
 export class Icosahedron {
 
-    protected _faces: Array<vec3>;     // List of faces (triangles)
+    protected _faces: Array<ivec3>;     // List of faces (triangles)
     protected _vertices: Array<vec3>;  // List of vertices
     protected _texcoords: Array<vec2>; // List of texture coordinates
 
@@ -50,31 +51,31 @@ export class Icosahedron {
     /**
      * Returns the base faces for the icosahedron.
      */
-    protected baseFaces(): Array<vec3> {
-        const faces: Array<vec3> = [
-            vec3.fromValues(0, 11, 5),
-            vec3.fromValues(0, 5, 1),
-            vec3.fromValues(0, 1, 7),
-            vec3.fromValues(0, 7, 10),
-            vec3.fromValues(0, 10, 11),
+    protected baseFaces(): Array<ivec3> {
+        const faces: Array<ivec3> = [
+            [0, 11, 5],
+            [0, 5, 1],
+            [0, 1, 7],
+            [0, 7, 10],
+            [0, 10, 11],
 
-            vec3.fromValues(1, 5, 9),
-            vec3.fromValues(5, 11, 4),
-            vec3.fromValues(11, 10, 2),
-            vec3.fromValues(10, 7, 6),
-            vec3.fromValues(7, 1, 8),
+            [1, 5, 9],
+            [5, 11, 4],
+            [11, 10, 2],
+            [10, 7, 6],
+            [7, 1, 8],
 
-            vec3.fromValues(3, 9, 4),
-            vec3.fromValues(3, 4, 2),
-            vec3.fromValues(3, 2, 6),
-            vec3.fromValues(3, 6, 8),
-            vec3.fromValues(3, 8, 9),
+            [3, 9, 4],
+            [3, 4, 2],
+            [3, 2, 6],
+            [3, 6, 8],
+            [3, 8, 9],
 
-            vec3.fromValues(4, 9, 5),
-            vec3.fromValues(2, 4, 11),
-            vec3.fromValues(6, 2, 10),
-            vec3.fromValues(8, 6, 7),
-            vec3.fromValues(9, 8, 1),
+            [4, 9, 5],
+            [2, 4, 11],
+            [6, 2, 10],
+            [8, 6, 7],
+            [9, 8, 1],
         ];
 
         return faces;
@@ -86,7 +87,7 @@ export class Icosahedron {
      * @param faces - List of faces that is modified.
      * @param levels - Number of levels of refinement.
      */
-    protected refine(vertices: Array<vec3>, faces: Array<vec3>, levels: number): void {
+    protected refine(vertices: Array<vec3>, faces: Array<ivec3>, levels: number): void {
         /* Create cache to avoid duplicating vertices. */
         const cache = new Map<number, number>();
 
@@ -110,10 +111,10 @@ export class Icosahedron {
                 const ca = this.split(c, a, vertices, cache);
 
                 /* Split triangle into 4. */
-                faces[f] = vec3.fromValues(ab, bc, ca);
-                faces.push(vec3.fromValues(a, ab, ca));
-                faces.push(vec3.fromValues(b, bc, ab));
-                faces.push(vec3.fromValues(c, ca, bc));
+                faces[f] = [ab, bc, ca];
+                faces.push([a, ab, ca]);
+                faces.push([b, bc, ab]);
+                faces.push([c, ca, bc]);
             }
         }
     }
@@ -180,7 +181,7 @@ export class Icosahedron {
 
             const uv = vec2.fromValues(
                 ofs - (Math.atan2(normal[2], normal[0]) / (2.0 * Math.PI)),
-                Math.asin(normal[1]) / Math.PI + ofs
+                Math.asin(normal[1]) / Math.PI + ofs,
             );
 
             this._texcoords.push(uv);
@@ -190,7 +191,7 @@ export class Icosahedron {
     /**
      * Read-only access to the faces of the icosahedron.
      */
-    get faces(): Array<vec3> {
+    get faces(): Array<ivec3> {
         return this._faces;
     }
 

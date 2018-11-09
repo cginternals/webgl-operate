@@ -207,6 +207,15 @@ namespace debug {
          * @returns whether to redraw
          */
         protected onUpdate(): boolean {
+            const gl = this.context.gl;
+            // Resize
+            if (this._altered.frameSize) {
+                this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
+                gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+            }
+            if (this._altered.canvasSize) {
+                this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+            }
 
             this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 

@@ -94,14 +94,14 @@ export class Sphere extends Geometry {
 
         /* Generate icosahedron geometry. */
         const icosahedron = new Icosahedron();
-        icosahedron.generateGeometry(2);
+        icosahedron.generateGeometry(3);
         if (this._textured) {
             icosahedron.generateTextureCoordinates();
         }
 
         /* Generate index buffer. */
         const faces = icosahedron.faces;
-        const indexBuffer = new Uint8Array(faces.length * 3);
+        const indexBuffer = new Uint16Array(faces.length * 3);
 
         let i = 0;
         for (const face of faces) {
@@ -153,7 +153,7 @@ export class Sphere extends Geometry {
      */
     draw(): void {
         const gl = this.context.gl;
-        gl.drawElements(gl.TRIANGLES, this._size, gl.UNSIGNED_BYTE, 0);
+        gl.drawElements(gl.TRIANGLES, this._size, gl.UNSIGNED_SHORT, 0);
     }
 
 }
