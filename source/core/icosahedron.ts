@@ -1,6 +1,6 @@
 
 import { vec2, vec3 } from 'gl-matrix';
-import { v2, v3 } from '../gl-matrix-extensions';
+import { v3 } from '../gl-matrix-extensions';
 
 type ivec3 = [number, number, number];
 
