@@ -20,6 +20,8 @@ import { Label } from './label';
 export class Typesetter {
 
     protected static readonly DELIMITERS: string = '\x0A ,.-/()[]<>';
+
+    /** @todo should a Label define its ellipsis characters? */
     protected static readonly ELLIPSIS_CHARS: string = '...';
 
     /**
@@ -201,7 +203,7 @@ export class Typesetter {
     /**
      * Call this when a label was already typeset, but the WordWrapper abbreviates the label's text and thus needs to
      * disable vertices that were already typeset.
-     * @todo this smells like the typesetter needs to be refactored.
+     * @todo this smells like the typesetter or the GlyphVertices or the Label need to be refactored.
      * @param vertex - Associated vertex to store data required for rendering.
      */
     protected static disableGlyphVertex(vertex: GlyphVertex): void {
@@ -261,6 +263,7 @@ export class Typesetter {
      * @param label
      * @param advancesPerGlyph
      * @returns true when label needs to be typeset again.
+     * @todo line feeds are not handled well when they appear in the last line and that line fits the label.lineWidth
      */
     protected static applyWordWrapper(label: Label, advancesPerGlyph: Array<number>, pen: vec2, vertexIndex: number,
         glyphs?: GlyphVertices): boolean {
@@ -293,8 +296,50 @@ export class Typesetter {
                 labelNeedsReTypeset = false;
                 break;
             }
+            case Label.WordWrapper.EllipsisMiddle: {
+                /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
+                 * the maximum line width.
+                 */
+                const sum = (accumulator: number, currentValue: number) => accumulator + currentValue;
+
+                let index = Math.floor(advancesPerGlyph.length / 2);
+                let newText = label.text.text;
+
+                const goalWidth = label.lineWidth - ellipsisWidth;
+
+                let width = advancesPerGlyph.reduce(sum);
+
+                while (width > goalWidth) {
+                    index = Math.floor(advancesPerGlyph.length / 2);
+                    advancesPerGlyph.splice(index, 1);
+                    newText = newText.slice(0, index) + newText.slice(index + 1);
+
+                    if (advancesPerGlyph.length < 1) {
+                        console.warn('damn.');
+                        break;
+                    }
+                    width = advancesPerGlyph.reduce(sum);
+                }
+
+                /** Update the label's text. We cannot undo this.
+                 * @todo make it undoable? e.g., label.originalText and label.currentText ?
+                 */
+                newText = newText.slice(0, index) + this.ELLIPSIS_CHARS + newText.slice(index + 1);
+                label.text.text = newText;
+
+                /** We already typeset the whole label and need to disable all glyph vertices in order to overwrite
+                 * them properly.
+                 */
+                if (glyphs) {
+                    for (const glyphVertex of glyphs.vertices) {
+                        this.disableGlyphVertex(glyphVertex);
+                    }
+                }
+
+                labelNeedsReTypeset = true;
+                break;
+            }
             case Label.WordWrapper.EllipsisBeginning: {
-                /** @todo line feeds are not handled well */
 
                 /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
                  * the maximum line width.
@@ -320,7 +365,9 @@ export class Typesetter {
                 newText.text = this.ELLIPSIS_CHARS + newText.text;
                 label.text = newText;
 
-                /** We already typeset the whole label and need to disable all vertices of glyphs that we elide. */
+                /** We already typeset the whole label and need to disable all glyph vertices in order to overwrite
+                 * them properly.
+                 */
                 if (glyphs) {
                     assert(index < glyphs.vertices.length,
                         `expected index (${index}) to be smaller than vertices.length (${glyphs.vertices.length})`);
@@ -451,7 +498,7 @@ export class Typesetter {
         if (label.lineWidth < pen[0]) {
             if (index !== advancesPerGlyph.length || vertexIndex !== index || vertexIndex !== advancesPerGlyph.length) {
                 /** all three of them should be equal
-                 * @todo debug; remove this
+                 * @todo debug; remove this when in PR!
                  */
                 console.warn(index, advancesPerGlyph.length, vertexIndex);
             }

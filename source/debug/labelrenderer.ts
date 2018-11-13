@@ -350,7 +350,7 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
             wrapped3DLabel.wordWrapper = Label.WordWrapper.EllipsisEnd;
             wrapped3DLabel.setPosition(-1, 0.1, 0);
 
-            const wrapped3DLabel2 = new Position3DLabel(new Text('This is a very long text: EllipsisEnd.\n\
+            const wrapped3DLabel2 = new Position3DLabel(new Text('This is a very long text: EllipsisBeginning.\n\
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
@@ -358,9 +358,16 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
             wrapped3DLabel2.wordWrapper = Label.WordWrapper.EllipsisBeginning;
             wrapped3DLabel2.setPosition(-1, -0.2, 0);
 
+            const wrapped3DLabel3 = new Position3DLabel(new Text('This is a very long text: EllipsisMiddle.\n\
+This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
+is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
+ very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
+            wrapped3DLabel3.maxLineWidth = 1;
+            wrapped3DLabel3.wordWrapper = Label.WordWrapper.EllipsisMiddle;
+            wrapped3DLabel3.setPosition(-1, 0.4, 0);
 
             this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
-                wrapped2DLabel, wrapped3DLabel2, wrapped3DLabel];
+                wrapped2DLabel, wrapped3DLabel3, wrapped3DLabel2, wrapped3DLabel];
         }
     }
 }
