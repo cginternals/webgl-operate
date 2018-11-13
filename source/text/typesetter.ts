@@ -128,14 +128,16 @@ export class Typesetter {
     /**
      * Adjusts the vertices for line anchor (done due after typesetting) w.r.t. the targeted anchoring.
      * @param label - Label to adjust the y-positions for.
-     * @param glyphs - Glyph vertices for rendering to align the origins' y-components of (expected untransformed).
+     * @param glyphs - In/out param: Glyph vertices for rendering to align the origins' y-components of (expected
+     * untransformed).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      *
      * @todo Apply once at the beginning! Initial offset!
      */
-    protected static transformLineAnchor(label: Label,
-        glyphs: GlyphVertices | undefined, begin: number, end: number): void {
+    protected static transformLineAnchor(label: Label, glyphs: GlyphVertices | undefined, begin: number, end: number):
+        void {
+
         if (glyphs === undefined) {
             return;
         }
@@ -173,7 +175,7 @@ export class Typesetter {
      * @param fontFace - Font face to be applied for setting up the vertex.
      * @param pen - Typesetting position which is the not-yet-transformed position the glyph will be rendered at.
      * @param glyph - Glyph that is to be rendered/configured.
-     * @param vertex - Associated vertex to store data required for rendering.
+     * @param vertex - Out param: Associated vertex to store data required for rendering.
      */
     protected static transformGlyph(fontFace: FontFace, pen: vec2, glyph: Glyph,
         vertex: GlyphVertex | undefined): void {
@@ -204,7 +206,7 @@ export class Typesetter {
      * Call this when a label was already typeset, but the WordWrapper abbreviates the label's text and thus needs to
      * disable vertices that were already typeset.
      * @todo this smells like the typesetter or the GlyphVertices or the Label need to be refactored.
-     * @param vertex - Associated vertex to store data required for rendering.
+     * @param vertex - In/out param: associated vertex to store data required for rendering.
      */
     protected static disableGlyphVertex(vertex: GlyphVertex): void {
         vertex.origin = vec3.create();
@@ -242,7 +244,6 @@ export class Typesetter {
         }
     }
 
-
     /**
      * Transforms the labels extent (typesetting space to, e.g., world space or screen space).
      * @param transform - Transformation that was applied to every vertex.
@@ -256,23 +257,22 @@ export class Typesetter {
         return [vec4.distance(lowerRight, lowerLeft), vec4.distance(upperLeft, lowerLeft)];
     }
 
-
     /**
-     * @todo doc!
-     * NOTE: only call this when label exceeds its line width!!!
-     * @param label
-     * @param advancesPerGlyph
+     * This functions applies the label's wordWrapper, so that the label fits its given lineWidth. It updates the
+     * label's text, but it does not re-typeset it.
+     * NOTE: Only call this when label exceeds its line width after typesetting. With other circumstances, behaviour is
+     * undefined.
+     * @param label - the typeset label that exceeds its given lineWidth
+     * @param advancesPerGlyph - an array of glyph advances with applied kerning (for the given label)
      * @returns true when label needs to be typeset again.
      * @todo line feeds are not handled well when they appear in the last line and that line fits the label.lineWidth
      */
-    protected static applyWordWrapper(label: Label, advancesPerGlyph: Array<number>, pen: vec2, vertexIndex: number,
-        glyphs?: GlyphVertices): boolean {
+    protected static applyWordWrapper(label: Label, advancesPerGlyph: Array<number>): boolean {
 
         let labelNeedsReTypeset = false;
 
-        /** We need to know the width of the ellipsis, so that the ellipsis itself does not make the label
-         * exceeds its line width; this only is needed when the wordWrapper uses an ellipsis, i.e.,
-         * WordWrapper.EllipsisEnd, WordWrapper.EllipsisBeginning, WordWrapper.EllipsisMiddle.
+        /** In case the wordWrapper uses ellipsis, we need to know the width of the ellipsis, so that the ellipsis
+         * itself does not make the label exceed its line width.
          * @todo What if the width of the ellipsis is larger than label.lindWidth?
          */
         let ellipsisWidth = 0;
@@ -327,15 +327,6 @@ export class Typesetter {
                 newText = newText.slice(0, index) + this.ELLIPSIS_CHARS + newText.slice(index + 1);
                 label.text.text = newText;
 
-                /** We already typeset the whole label and need to disable all glyph vertices in order to overwrite
-                 * them properly.
-                 */
-                if (glyphs) {
-                    for (const glyphVertex of glyphs.vertices) {
-                        this.disableGlyphVertex(glyphVertex);
-                    }
-                }
-
                 labelNeedsReTypeset = true;
                 break;
             }
@@ -364,18 +355,6 @@ export class Typesetter {
                 newText.text = newText.text.slice(index);
                 newText.text = this.ELLIPSIS_CHARS + newText.text;
                 label.text = newText;
-
-                /** We already typeset the whole label and need to disable all glyph vertices in order to overwrite
-                 * them properly.
-                 */
-                if (glyphs) {
-                    assert(index < glyphs.vertices.length,
-                        `expected index (${index}) to be smaller than vertices.length (${glyphs.vertices.length})`);
-
-                    for (const glyphVertex of glyphs.vertices) {
-                        this.disableGlyphVertex(glyphVertex);
-                    }
-                }
 
                 labelNeedsReTypeset = true;
                 break;
@@ -406,13 +385,6 @@ export class Typesetter {
 
                 label.text = newText;
 
-                /** We already typeset the whole label and need to disable all vertices of glyphs that we elide. */
-                if (glyphs) {
-                    for (let k = index; k < glyphs.vertices.length; k++) {
-                        this.disableGlyphVertex(glyphs.vertices[k]);
-                    }
-                }
-
                 labelNeedsReTypeset = true;
                 break;
             }
@@ -423,8 +395,20 @@ export class Typesetter {
         return labelNeedsReTypeset;
     }
 
+    /**
+     * Typesets the given label, transforming the vertices in-world and gathering the glyphs' advances (including
+     * kerning). Those glyph advances might be useful for later changes to the label as reaction to the typeset values,
+     * e.g., word wrap for labels exceeding their given lineWidth.
+     * @param label - the label that shall be typeset
+     * @param advancesPerGlyph - out param: an array of glyph advances with applied kerning (for the given label)
+     * @param pen - In/out param: horizontal and vertical position at which typesetting takes place/arrived
+     * @param vertexIndex - the current vertex index
+     * @param extent - In/out param: extent to be adjusted.
+     * @param glyphs - In/out param: the glyph vertices, a prepared (optionally empty) vertex storage
+     * @returns indices useful for subsequent calculations: [iBegin, iEnd, index, vertexIndex, feedVertexIndex];
+     */
     protected static typesetGlyphs(label: Label, advancesPerGlyph: Array<number>, pen: vec2, vertexIndex: number,
-        extent: vec2, glyphs?: GlyphVertices, begin?: number): Array<number> {
+        extent: vec2, glyphs?: GlyphVertices): Array<number> {
 
         const iBegin = 0;
         const iEnd: number = label.length;
@@ -444,6 +428,7 @@ export class Typesetter {
 
             /** @todo use this function for WordWrapper.NewLine */
             // Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
+
             if (feedLine) {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
                 Typesetter.backward(label, index - 1, iBegin, pen, extent);
@@ -476,6 +461,7 @@ export class Typesetter {
      * @param label the label that shall be typeset
      * @param glyphs the glyph vertices, a prepared (optionally empty) vertex storage
      * @param begin vertex index to start the typesetting (usually 0)
+     * @returns the transformed label extent
      */
     static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
         assert(!!label.fontFace, `expected a font face for label before typesetting`);
@@ -486,7 +472,7 @@ export class Typesetter {
         let vertexIndex: number = begin !== undefined ? begin : 0;
         let extent = vec2.create();
 
-        let indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs, begin);
+        let indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs);
 
         let iBegin = indices[0];
         let iEnd = indices[1];
@@ -503,14 +489,23 @@ export class Typesetter {
                 console.warn(index, advancesPerGlyph.length, vertexIndex);
             }
 
-            const typesetAgain = this.applyWordWrapper(label, advancesPerGlyph, pen, vertexIndex, glyphs);
+            const typesetAgain = this.applyWordWrapper(label, advancesPerGlyph);
 
             if (typesetAgain) {
                 pen = vec2.create();
                 vertexIndex = begin !== undefined ? begin : 0;
                 extent = vec2.create();
 
-                indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs, begin);
+                /** We already typeset the whole label and need to disable all glyph vertices in order to overwrite
+                 * them properly.
+                 */
+                if (glyphs) {
+                    for (const glyphVertex of glyphs.vertices) {
+                        this.disableGlyphVertex(glyphVertex);
+                    }
+                }
+
+                indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs);
 
                 iBegin = indices[0];
                 iEnd = indices[1];
