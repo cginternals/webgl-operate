@@ -20,7 +20,7 @@ import { Label } from './label';
 export class Typesetter {
 
     protected static readonly DELIMITERS: string = '\x0A ,.-/()[]<>';
-    protected static readonly ELLIPSIS_CHARS: string = '..';
+    protected static readonly ELLIPSIS_CHARS: string = '...';
 
     /**
      * Returns if newline should be applied for next word (or next glyph if word exceeds the line width)
@@ -260,48 +260,94 @@ export class Typesetter {
      * NOTE: only call this when label exceeds its line width!!!
      * @param label
      * @param advancesPerGlyph
+     * @returns true when label needs to be typeset again.
      */
     protected static applyWordWrapper(label: Label, advancesPerGlyph: Array<number>, pen: vec2, vertexIndex: number,
-        glyphs?: GlyphVertices): void {
+        glyphs?: GlyphVertices): boolean {
+
+        let labelNeedsReTypeset = false;
+
+        /** We need to know the width of the ellipsis, so that the ellipsis itself does not make the label
+         * exceeds its line width; this only is needed when the wordWrapper uses an ellipsis, i.e.,
+         * WordWrapper.EllipsisEnd, WordWrapper.EllipsisBeginning, WordWrapper.EllipsisMiddle.
+         * @todo What if the width of the ellipsis is larger than label.lindWidth?
+         */
+        let ellipsisWidth = 0;
+
+        for (let j = 0; j < this.ELLIPSIS_CHARS.length; j++) {
+            const glyph = label.fontFace!.glyph(this.ELLIPSIS_CHARS.charCodeAt(j));
+
+            let kerning = 0;
+            if (j + 1 < this.ELLIPSIS_CHARS.length) {
+                kerning = label.fontFace!.kerning(
+                    this.ELLIPSIS_CHARS.charCodeAt(j), this.ELLIPSIS_CHARS.charCodeAt(j + 1));
+            }
+
+            ellipsisWidth += glyph.advance + kerning;
+        }
 
         switch (label.wordWrapper) {
 
-            case Label.WordWrapper.NewLine:
+            case Label.WordWrapper.NewLine: {
                 console.log('TODO: newline');
+                labelNeedsReTypeset = false;
                 break;
-            case Label.WordWrapper.EllipsisEnd:
+            }
+            case Label.WordWrapper.EllipsisBeginning: {
+                /** @todo line feeds are not handled well */
 
-                /** We need to know the width of the ellipsis, so that the ellipsis itself does not make the label
-                 * exceeds its line width;
+                /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
+                 * the maximum line width.
                  */
-                let ellipsisWidth = 0;
-                const ellipsisAdvances = [];
-
-                for (let j = 0; j < this.ELLIPSIS_CHARS.length; j++) {
-                    const glyph = label.fontFace!.glyph(this.ELLIPSIS_CHARS.charCodeAt(j));
-
-                    let kerning = 0;
-                    if (j + 1 < this.ELLIPSIS_CHARS.length) {
-                        kerning = label.fontFace!.kerning(
-                            this.ELLIPSIS_CHARS.charCodeAt(j), this.ELLIPSIS_CHARS.charCodeAt(j + 1));
+                let index = advancesPerGlyph.length - 1;
+                let width = 0;
+                for (; index >= 0; index--) {
+                    /** We already know that not all glyphs will fit, so always test with current glyph's width AND
+                     * ellipsis width.
+                     */
+                    if (width + advancesPerGlyph[index] + ellipsisWidth > label.lineWidth) {
+                        index--;
+                        break;
                     }
-
-                    ellipsisAdvances.push(glyph.advance + kerning);
-                    ellipsisWidth += glyph.advance + kerning;
+                    width += advancesPerGlyph[index];
                 }
 
-                /** Now test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
+                /** Update the label's text. We cannot undo this.
+                 * @todo make it undoable? e.g., label.originalText and label.currentText ?
+                 */
+                const newText = label.text;
+                newText.text = newText.text.slice(index);
+                newText.text = this.ELLIPSIS_CHARS + newText.text;
+                label.text = newText;
+
+                /** We already typeset the whole label and need to disable all vertices of glyphs that we elide. */
+                if (glyphs) {
+                    assert(index < glyphs.vertices.length,
+                        `expected index (${index}) to be smaller than vertices.length (${glyphs.vertices.length})`);
+
+                    for (const glyphVertex of glyphs.vertices) {
+                        this.disableGlyphVertex(glyphVertex);
+                    }
+                }
+
+                labelNeedsReTypeset = true;
+                break;
+            }
+            case Label.WordWrapper.EllipsisEnd: {
+                /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
                  * the maximum line width.
                  */
                 let index = 0;
+                let width = 0;
                 for (; index < advancesPerGlyph.length; index++) {
                     /** We already know that not all glyphs will fit, so always test with current glyph's width AND
                      * ellipsis width.
                      */
-                    if (advancesPerGlyph[index] + ellipsisWidth > label.lineWidth) {
+                    if (width + advancesPerGlyph[index] + ellipsisWidth > label.lineWidth) {
                         index--;
                         break;
                     }
+                    width += advancesPerGlyph[index];
                 }
 
                 /** Update the label's text. We cannot undo this.
@@ -320,48 +366,18 @@ export class Typesetter {
                     }
                 }
 
-                pen[0] = advancesPerGlyph[index];
-                vertexIndex = index;
-
-                /* typeset the ELLIPSIS_CHARS */
-
-                let glyph;
-                for (let i = 0; i < this.ELLIPSIS_CHARS.length; i++ , index++) {
-                    pen[0] += label.kerningBefore(index);
-
-                    glyph = label.fontFace!.glyph(label.charCodeAt(index));
-                    Typesetter.transformGlyph(label.fontFace!, pen, glyph,
-                        glyphs ? glyphs.vertices[vertexIndex++] : undefined);
-                    pen[0] += glyph.advance;
-                }
-
-                assert(pen[0] < label.lineWidth,
-                    `expected pen-advance (${pen[0]}) to be smaller than label's lineWidth (${label.lineWidth})`);
-
+                labelNeedsReTypeset = true;
                 break;
+            }
             case Label.WordWrapper.None:
             default:
                 break;
         }
+        return labelNeedsReTypeset;
     }
 
-
-    /**
-     * Typesets the given label, transforming the vertices in-world, ready to be rendered.
-     * @param label the label that shall be typeset
-     * @param glyphs the glyph vertices, a prepared (optionally empty) vertex storage
-     * @param begin vertex index to start the typesetting (usually 0)
-     */
-    static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
-        assert(!!label.fontFace, `expected a font face for label before typesetting`);
-
-        const advancesPerGlyph: Array<number> = [];
-
-        /* Horizontal and vertical position at which typesetting takes place/arrived. */
-        const pen = vec2.create();
-
-        let vertexIndex = begin !== undefined ? begin : 0;
-        const extent = vec2.create();
+    protected static typesetGlyphs(label: Label, advancesPerGlyph: Array<number>, pen: vec2, vertexIndex: number,
+        extent: vec2, glyphs?: GlyphVertices, begin?: number): Array<number> {
 
         const iBegin = 0;
         const iEnd: number = label.length;
@@ -372,7 +388,7 @@ export class Typesetter {
         let feedVertexIndex: number = vertexIndex;
 
         let index = iBegin;
-
+        let width = 0;
         for (; index !== iEnd; ++index) {
             const glyph = label.fontFace!.glyph(label.charCodeAt(index));
 
@@ -396,13 +412,40 @@ export class Typesetter {
                 pen[0] += label.kerningBefore(index);
             }
 
-            advancesPerGlyph.push(pen[0]);
+            advancesPerGlyph.push(pen[0] - width);
+            width = pen[0];
 
             /* Add and configure data for rendering the current character/glyph of the label. */
             Typesetter.transformGlyph(label.fontFace!, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
 
             pen[0] += glyph.advance;
         }
+
+        return [iBegin, iEnd, index, vertexIndex, feedVertexIndex];
+    }
+
+    /**
+     * Typesets the given label, transforming the vertices in-world, ready to be rendered.
+     * @param label the label that shall be typeset
+     * @param glyphs the glyph vertices, a prepared (optionally empty) vertex storage
+     * @param begin vertex index to start the typesetting (usually 0)
+     */
+    static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
+        assert(!!label.fontFace, `expected a font face for label before typesetting`);
+
+        const advancesPerGlyph: Array<number> = [];
+        /* Horizontal and vertical position at which typesetting takes place/arrived. */
+        let pen = vec2.create();
+        let vertexIndex: number = begin !== undefined ? begin : 0;
+        let extent = vec2.create();
+
+        let indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs, begin);
+
+        let iBegin = indices[0];
+        let iEnd = indices[1];
+        let index = indices[2];
+        vertexIndex = indices[3];
+        let feedVertexIndex = indices[4];
 
         /* Handle word wrap if label exceeds the maximum line width */
         if (label.lineWidth < pen[0]) {
@@ -413,7 +456,21 @@ export class Typesetter {
                 console.warn(index, advancesPerGlyph.length, vertexIndex);
             }
 
-            this.applyWordWrapper(label, advancesPerGlyph, pen, vertexIndex, glyphs);
+            const typesetAgain = this.applyWordWrapper(label, advancesPerGlyph, pen, vertexIndex, glyphs);
+
+            if (typesetAgain) {
+                pen = vec2.create();
+                vertexIndex = begin !== undefined ? begin : 0;
+                extent = vec2.create();
+
+                indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs, begin);
+
+                iBegin = indices[0];
+                iEnd = indices[1];
+                index = indices[2];
+                vertexIndex = indices[3];
+                feedVertexIndex = indices[4];
+            }
         }
 
         /* Handle alignment (when last line of sequence is processed). */
