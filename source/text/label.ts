@@ -81,7 +81,7 @@ export class Label {
     }
 
     /**
-     * Creates an Array of glyph vertices with given length, ready to be used in the Typesetter.
+     * Creates an Array of glyph vertices, ready to be used in the Typesetter.
      */
     protected prepareVertexStorage(): GlyphVertices {
         const vertices = new GlyphVertices(this.length);
@@ -400,7 +400,9 @@ export namespace Label {
     export enum WordWrapper {
         None = 'none',
         NewLine = 'newLine',
-        Ellipsis = 'ellipsis',
+        EllipsisEnd = 'ellipsisEnd',
+        EllipsisMiddle = 'ellipsisMiddle',
+        EllipsisBeginning = 'ellipsisBeginning',
     }
 
     export enum Alignment {

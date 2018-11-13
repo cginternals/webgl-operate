@@ -342,12 +342,12 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
             wrapped2DLabel.maxLineWidth = 500;
             wrapped2DLabel.wordWrapper = Label.WordWrapper.NewLine;
 
-            const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text: Ellipsis.\n\
+            const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text: EllipsisEnd.\n\
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
             wrapped3DLabel.maxLineWidth = 1;
-            wrapped3DLabel.wordWrapper = Label.WordWrapper.Ellipsis;
+            wrapped3DLabel.wordWrapper = Label.WordWrapper.EllipsisEnd;
             wrapped3DLabel.setPosition(-1, 0.1, 0);
 
             this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
