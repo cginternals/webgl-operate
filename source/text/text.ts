@@ -48,9 +48,8 @@ export class Text {
 
     /**
      * Returns the Unicode value (codepoint) of the character at the specified location.
-     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
-     * NaN is returned.
-     * @returns - codepoint of the char at given index or NaN
+     * @param index - The zero-based index of the desired character.
+     * @returns - Codepoint of the character at given index or NaN, if no character exists at index.
      */
     charCodeAt(index: number): number {
         return this._text.charCodeAt(index);
