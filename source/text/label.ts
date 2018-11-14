@@ -22,8 +22,8 @@ export class Label {
     /** @see {@link wordWrapper} */
     protected _wordWrapper: Label.WordWrapper = Label.WordWrapper.None;
 
-    /** @see {@link ellpsisChars} */
-    protected _ellpsisChars = '...';
+    /** @see {@link ellipsisChars} */
+    protected _ellipsisChars = '...';
 
     /** @see {@link alignment} */
     protected _alignment: Label.Alignment = Label.Alignment.Left;
@@ -198,11 +198,11 @@ export class Label {
      * Set the characters that should be used as an ellipsis. Only takes effect when label.wordWrapper is one
      * of the ellipsis wrappers (e.g., Label.WordWrapper.EllipsisMiddle).
      */
-    set ellpsisChars(ellpsisChars: string) {
-        this._ellpsisChars = ellpsisChars;
+    set ellipsisChars(ellipsisChars: string) {
+        this._ellipsisChars = ellipsisChars;
     }
-    get ellpsisChars(): string {
-        return this._ellpsisChars;
+    get ellipsisChars(): string {
+        return this._ellipsisChars;
     }
 
     /**

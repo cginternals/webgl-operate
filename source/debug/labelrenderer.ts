@@ -366,8 +366,8 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
             wrapped3DLabel2.setPosition(-1, -0.2, 0);
 
             const differentEllipsis = new Position2DLabel(new Text('EllipsisEllipsisEllipsisEllipsisEllipsisEllipsis'));
-            differentEllipsis.ellpsisChars = '~';
-            differentEllipsis.setPosition(-200, -200);
+            differentEllipsis.ellipsisChars = '~';
+            differentEllipsis.setPosition(-200, -150);
             differentEllipsis.lineWidth = 200;
             differentEllipsis.wordWrapper = Label.WordWrapper.EllipsisMiddle;
 

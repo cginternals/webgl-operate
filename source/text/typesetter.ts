@@ -274,13 +274,13 @@ export class Typesetter {
          */
         let ellipsisWidth = 0;
 
-        for (let j = 0; j < label.ellpsisChars.length; j++) {
-            const glyph = label.fontFace!.glyph(label.ellpsisChars.charCodeAt(j));
+        for (let j = 0; j < label.ellipsisChars.length; j++) {
+            const glyph = label.fontFace!.glyph(label.ellipsisChars.charCodeAt(j));
 
             let kerning = 0;
-            if (j + 1 < label.ellpsisChars.length) {
+            if (j + 1 < label.ellipsisChars.length) {
                 kerning = label.fontFace!.kerning(
-                    label.ellpsisChars.charCodeAt(j), label.ellpsisChars.charCodeAt(j + 1));
+                    label.ellipsisChars.charCodeAt(j), label.ellipsisChars.charCodeAt(j + 1));
             }
 
             ellipsisWidth += glyph.advance + kerning;
@@ -323,7 +323,7 @@ export class Typesetter {
                 /** Update the label's text. We cannot undo this.
                  * @todo make it undoable? e.g., label.originalText and label.currentText ?
                  */
-                newText = newText.slice(0, index + 1) + label.ellpsisChars + newText.slice(index + 1);
+                newText = newText.slice(0, index + 1) + label.ellipsisChars + newText.slice(index + 1);
                 label.text.text = newText;
 
                 labelNeedsReTypeset = true;
@@ -357,7 +357,7 @@ export class Typesetter {
                  */
                 const newText = label.text;
                 newText.text = newText.text.slice(index + 1);
-                newText.text = label.ellpsisChars + newText.text;
+                newText.text = label.ellipsisChars + newText.text;
                 label.text = newText;
 
                 labelNeedsReTypeset = true;
@@ -392,7 +392,7 @@ export class Typesetter {
                  */
                 const newText = label.text;
                 newText.text = newText.text.slice(0, index);
-                newText.text += label.ellpsisChars;
+                newText.text += label.ellipsisChars;
 
                 label.text = newText;
 
