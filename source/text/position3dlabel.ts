@@ -50,7 +50,7 @@ export class Position3DLabel extends Label {
         const transform = mat4.create();
         const normal = vec3.create();
 
-        /* apply user transformations (position, direction) */
+        /* Apply user transformations (position, direction). */
 
         mat4.translate(transform, mat4.create(),
             vec3.fromValues(this._position[0], this._position[1], this._position[2]));
@@ -62,7 +62,7 @@ export class Position3DLabel extends Label {
             normal[0], normal[1], normal[2], 0,
             0.0, 0.0, 0.0, 1.0);
 
-        /** use the setter to trigger label.transform.altered */
+        /* Use the setter to trigger label.transform.altered. */
         this.transform = mat4.mul(transform, transform, rotation);
 
         const vertices = this.prepareVertexStorage();
