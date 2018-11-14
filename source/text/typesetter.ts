@@ -323,7 +323,7 @@ export class Typesetter {
                 /** Update the label's text. We cannot undo this.
                  * @todo make it undoable? e.g., label.originalText and label.currentText ?
                  */
-                newText = newText.slice(0, index) + label.ellpsisChars + newText.slice(index + 1);
+                newText = newText.slice(0, index + 1) + label.ellpsisChars + newText.slice(index + 1);
                 label.text.text = newText;
 
                 labelNeedsReTypeset = true;
