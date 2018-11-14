@@ -22,9 +22,6 @@ export class Label {
     /** @see {@link wordWrapper} */
     protected _wordWrapper: Label.WordWrapper = Label.WordWrapper.None;
 
-    /** @see {@link maxLineWidth} */
-    protected _maxLineWidth = 0.0;
-
     /** @see {@link alignment} */
     protected _alignment: Label.Alignment = Label.Alignment.Left;
 
@@ -185,8 +182,7 @@ export class Label {
     }
 
     /**
-     * Which algorithm should be used when label.wordWrap = true and label exceeds the defined maximum line width, see
-     * maxLineWidth();
+     * Set the algorithm that should be used when the label exceeds the defined line width, see lineWidth()
      */
     set wordWrapper(wordWrapper: Label.WordWrapper) {
         this._wordWrapper = wordWrapper;
@@ -196,22 +192,22 @@ export class Label {
     }
 
     /**
-     * Maximum line width allowed for this label. The current label.fontSizeUnit is used as line width unit.
-     * The maximum line width is ignored if label.wordWrapper==Label.WordWrapper.None
+     * The (maximum) line width allowed for this label. The current label.fontSizeUnit is used as line width unit. It
+     * is ignored if label.wordWrapper==Label.WordWrapper.None
      */
-    set maxLineWidth(maxLineWidth: number) {
-        this._maxLineWidth = maxLineWidth;
-    }
-    get maxLineWidth(): number {
-        return this._maxLineWidth;
+    set lineWidth(lineWidth: number) {
+        this._lineWidth = lineWidth;
     }
 
     /**
-     * Width of a single line (in typesetting space). The width of the line is not intended to be set explicitly, but
-     * implicitly via transformations/label placement in its subclass.
+     * Width of a single line in typesetting space (the unit used while Typesetting, i.e., the unit as the fontFace's
+     * glyph texture atlas). Since the fontFace needs to be defined in order to typeset, we assume here that the label
+     * has a defined fontFace.
      */
     get lineWidth(): number {
-        return this._lineWidth;
+        /* this.fontSize and lineWidth use the same unit (i.e., this.fontSizeUnit),
+         * this._lineWidth is expected to be in the same unit as the fontFace's glyph texture atlas */
+        return this._lineWidth * this._fontFace!.size / this.fontSize;
     }
 
     /**

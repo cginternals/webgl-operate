@@ -87,14 +87,6 @@ export class Position2DLabel extends Label {
         /** use the setter to trigger label.transform.altered */
         this.transform = mat4.rotateZ(transform, transform, angle);
 
-        if (this._maxLineWidth > 0.0) {
-            /** Note:
-             * this.fontSize uses this.fontSizeUnit,
-             * maxLineWidth uses this.fontSizeUnit,
-             * this._lineWidth is expected to be in the same unit as the fontFace's glyph texture atlas
-             */
-            this._lineWidth = this._maxLineWidth * this._fontFace!.size / this.fontSize;
-        }
         const vertices = this.prepareVertexStorage();
         Typesetter.typeset(this, vertices, 0);
 

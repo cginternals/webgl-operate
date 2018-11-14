@@ -339,14 +339,14 @@ namespace debug {
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped2DLabel.maxLineWidth = 500;
+            wrapped2DLabel.lineWidth = 500;
             wrapped2DLabel.wordWrapper = Label.WordWrapper.NewLine;
 
             const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text: EllipsisEnd.\n\
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel.maxLineWidth = 1;
+            wrapped3DLabel.lineWidth = 1;
             wrapped3DLabel.wordWrapper = Label.WordWrapper.EllipsisEnd;
             wrapped3DLabel.setPosition(-1, 0.1, 0);
 
@@ -354,7 +354,7 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel2.maxLineWidth = 1;
+            wrapped3DLabel2.lineWidth = 1;
             wrapped3DLabel2.wordWrapper = Label.WordWrapper.EllipsisBeginning;
             wrapped3DLabel2.setPosition(-1, -0.2, 0);
 
@@ -362,7 +362,7 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel3.maxLineWidth = 1;
+            wrapped3DLabel3.lineWidth = 1;
             wrapped3DLabel3.wordWrapper = Label.WordWrapper.EllipsisMiddle;
             wrapped3DLabel3.setPosition(-1, 0.4, 0);
 
