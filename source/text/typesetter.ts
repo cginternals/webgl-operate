@@ -313,14 +313,14 @@ export class Typesetter {
 
                 const goalWidth = label.lineWidth - ellipsisWidth;
                 const sum = (accumulator: number, currentValue: number) => accumulator + currentValue;
-                let width = advancesPerGlyph.reduce(sum);
+                let width = advancesPerGlyph.reduce(sum, 0);
 
                 while (width > goalWidth) {
                     index = Math.floor(advancesPerGlyph.length / 2);
                     advancesPerGlyph.splice(index, 1);
                     newText = newText.slice(0, index) + newText.slice(index + 1);
 
-                    width = advancesPerGlyph.reduce(sum);
+                    width = advancesPerGlyph.reduce(sum, 0);
 
                     if (advancesPerGlyph.length < 1 || width === 0) {
                         index = 0;
@@ -399,7 +399,7 @@ export class Typesetter {
                  * @todo make it undoable? e.g., label.originalText and label.currentText ?
                  */
                 const newText = label.text;
-                newText.text = newText.text.slice(0, index - 1);
+                newText.text = newText.text.slice(0, index);
                 newText.text += this.ELLIPSIS_CHARS;
 
                 label.text = newText;
@@ -432,9 +432,8 @@ export class Typesetter {
         const iBegin = 0;
         const iEnd: number = label.length;
 
-        /* Index used to reduce the number of wordwrap forward passes. */
-        /* tslint:disable-next-line:prefer-const */
-        let safeForwardIndex = [iBegin];
+        /* Index used to reduce the number of wordwrap forward passes, wrapped in an Array for pass-by-reference */
+        const safeForwardIndex = [iBegin];
         let feedVertexIndex: number = vertexIndex;
 
         let index = iBegin;
@@ -463,13 +462,13 @@ export class Typesetter {
                 pen[0] += label.kerningBefore(index);
             }
 
-            advancesPerGlyph.push(pen[0] - width);
-            width = pen[0];
-
             /* Add and configure data for rendering the current character/glyph of the label. */
             Typesetter.transformGlyph(label.fontFace!, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
 
             pen[0] += glyph.advance;
+
+            advancesPerGlyph.push(pen[0] - width);
+            width = pen[0];
         }
 
         return [iBegin, iEnd, index, vertexIndex, feedVertexIndex];
