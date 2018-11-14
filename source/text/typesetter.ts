@@ -30,13 +30,12 @@ export class Typesetter {
      * @param safeForwardIndex used to reduce the number of wordwrap forward passes
      * @returns whether or not typesetting should go on a new line
      */
-    protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, safeForwardIndex: Array<number>):
-        boolean {
-        // assert(label.wordWrapper !== Label.WordWrapper.None,
-        //     `expected a WordWrapper enabled for label, given ${label.wordWrapper}`);
-        const lineWidth = label.lineWidth;
+    protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, 
+        safeForwardIndex: Array<number>): boolean {
 
+        const lineWidth = label.lineWidth;
         const penForward = pen[0] + glyph.advance + (index > 0 ? label.kerningBefore(index) : 0.0);
+
         if (glyph.depictable() && penForward > lineWidth && (glyph.advance <= lineWidth || pen[0] > 0.0)) {
             return true;
         }
