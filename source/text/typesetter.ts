@@ -21,9 +21,6 @@ export class Typesetter {
 
     protected static readonly DELIMITERS: string = '\x0A ,.-/()[]<>';
 
-    /** @todo should a Label define its ellipsis characters? */
-    protected static readonly ELLIPSIS_CHARS: string = '...';
-
     /**
      * Returns if newline should be applied for next word (or next glyph if word exceeds the line width)
      * @param label the label that has a wordWrapper different from WordWrapper.None
@@ -277,13 +274,13 @@ export class Typesetter {
          */
         let ellipsisWidth = 0;
 
-        for (let j = 0; j < this.ELLIPSIS_CHARS.length; j++) {
-            const glyph = label.fontFace!.glyph(this.ELLIPSIS_CHARS.charCodeAt(j));
+        for (let j = 0; j < label.ellpsisChars.length; j++) {
+            const glyph = label.fontFace!.glyph(label.ellpsisChars.charCodeAt(j));
 
             let kerning = 0;
-            if (j + 1 < this.ELLIPSIS_CHARS.length) {
+            if (j + 1 < label.ellpsisChars.length) {
                 kerning = label.fontFace!.kerning(
-                    this.ELLIPSIS_CHARS.charCodeAt(j), this.ELLIPSIS_CHARS.charCodeAt(j + 1));
+                    label.ellpsisChars.charCodeAt(j), label.ellpsisChars.charCodeAt(j + 1));
             }
 
             ellipsisWidth += glyph.advance + kerning;
@@ -326,7 +323,7 @@ export class Typesetter {
                 /** Update the label's text. We cannot undo this.
                  * @todo make it undoable? e.g., label.originalText and label.currentText ?
                  */
-                newText = newText.slice(0, index) + this.ELLIPSIS_CHARS + newText.slice(index + 1);
+                newText = newText.slice(0, index) + label.ellpsisChars + newText.slice(index + 1);
                 label.text.text = newText;
 
                 labelNeedsReTypeset = true;
@@ -360,7 +357,7 @@ export class Typesetter {
                  */
                 const newText = label.text;
                 newText.text = newText.text.slice(index + 1);
-                newText.text = this.ELLIPSIS_CHARS + newText.text;
+                newText.text = label.ellpsisChars + newText.text;
                 label.text = newText;
 
                 labelNeedsReTypeset = true;
@@ -395,7 +392,7 @@ export class Typesetter {
                  */
                 const newText = label.text;
                 newText.text = newText.text.slice(0, index);
-                newText.text += this.ELLIPSIS_CHARS;
+                newText.text += label.ellpsisChars;
 
                 label.text = newText;
 

@@ -336,9 +336,7 @@ namespace debug {
             /** Wrapped labels, showcasing Ellipsis and NewLine */
 
             const wrapped2DLabel = new Position2DLabel(new Text('This is a very long text: NewLine.\n\
-This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
-is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
- very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
+This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
             wrapped2DLabel.lineWidth = 500;
             wrapped2DLabel.wordWrapper = Label.WordWrapper.NewLine;
 
@@ -367,8 +365,14 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
             wrapped3DLabel2.wordWrapper = Label.WordWrapper.EllipsisBeginning;
             wrapped3DLabel2.setPosition(-1, -0.2, 0);
 
+            const differentEllipsis = new Position2DLabel(new Text('EllipsisEllipsisEllipsisEllipsisEllipsisEllipsis'));
+            differentEllipsis.ellpsisChars = '~';
+            differentEllipsis.setPosition(-200, -200);
+            differentEllipsis.lineWidth = 200;
+            differentEllipsis.wordWrapper = Label.WordWrapper.EllipsisMiddle;
+
             this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
-                wrapped2DLabel, wrapped3DLabel3, wrapped3DLabel2, wrapped3DLabel];
+                wrapped2DLabel, wrapped3DLabel3, wrapped3DLabel2, wrapped3DLabel, differentEllipsis];
         }
     }
 }
