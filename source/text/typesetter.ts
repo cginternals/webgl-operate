@@ -33,7 +33,8 @@ export class Typesetter {
      * @param safeForwardIndex used to reduce the number of wordwrap forward passes
      * @returns whether or not typesetting should go on a new line
      */
-    protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, safeForwardIndex: number): boolean {
+    protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, safeForwardIndex: Array<number>):
+        boolean {
         // assert(label.wordWrapper !== Label.WordWrapper.None,
         //     `expected a WordWrapper enabled for label, given ${label.wordWrapper}`);
         const lineWidth = label.lineWidth;
@@ -42,12 +43,12 @@ export class Typesetter {
         if (glyph.depictable() && penForward > lineWidth && (glyph.advance <= lineWidth || pen[0] > 0.0)) {
             return true;
         }
-        if (index < safeForwardIndex) {
+        if (index < safeForwardIndex[0]) {
             return false;
         }
         /* tslint:disable-next-line:prefer-const */
         let forwardWidth = 0.0;
-        safeForwardIndex = Typesetter.forward(label, index, forwardWidth);
+        safeForwardIndex[0] = Typesetter.forward(label, index, forwardWidth);
         return forwardWidth <= lineWidth && (pen[0] + forwardWidth) > lineWidth;
     }
 
@@ -273,7 +274,6 @@ export class Typesetter {
 
         /** In case the wordWrapper uses ellipsis, we need to know the width of the ellipsis, so that the ellipsis
          * itself does not make the label exceed its line width.
-         * @todo What if the width of the ellipsis is larger than label.lindWidth?
          */
         let ellipsisWidth = 0;
 
@@ -297,16 +297,22 @@ export class Typesetter {
                 break;
             }
             case Label.WordWrapper.EllipsisMiddle: {
+
+                if (label.lineWidth < ellipsisWidth) {
+                    label.text.text = '';
+                    labelNeedsReTypeset = true;
+                    break;
+                }
+
                 /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
                  * the maximum line width.
                  */
-                const sum = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
                 let index = Math.floor(advancesPerGlyph.length / 2);
                 let newText = label.text.text;
 
                 const goalWidth = label.lineWidth - ellipsisWidth;
-
+                const sum = (accumulator: number, currentValue: number) => accumulator + currentValue;
                 let width = advancesPerGlyph.reduce(sum);
 
                 while (width > goalWidth) {
@@ -314,11 +320,12 @@ export class Typesetter {
                     advancesPerGlyph.splice(index, 1);
                     newText = newText.slice(0, index) + newText.slice(index + 1);
 
-                    if (advancesPerGlyph.length < 1) {
-                        console.warn('damn.');
+                    width = advancesPerGlyph.reduce(sum);
+
+                    if (advancesPerGlyph.length < 1 || width === 0) {
+                        index = 0;
                         break;
                     }
-                    width = advancesPerGlyph.reduce(sum);
                 }
 
                 /** Update the label's text. We cannot undo this.
@@ -332,6 +339,12 @@ export class Typesetter {
             }
             case Label.WordWrapper.EllipsisBeginning: {
 
+                if (label.lineWidth < ellipsisWidth) {
+                    label.text.text = '';
+                    labelNeedsReTypeset = true;
+                    break;
+                }
+
                 /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
                  * the maximum line width.
                  */
@@ -342,7 +355,6 @@ export class Typesetter {
                      * ellipsis width.
                      */
                     if (width + advancesPerGlyph[index] + ellipsisWidth > label.lineWidth) {
-                        index--;
                         break;
                     }
                     width += advancesPerGlyph[index];
@@ -352,7 +364,7 @@ export class Typesetter {
                  * @todo make it undoable? e.g., label.originalText and label.currentText ?
                  */
                 const newText = label.text;
-                newText.text = newText.text.slice(index);
+                newText.text = newText.text.slice(index + 1);
                 newText.text = this.ELLIPSIS_CHARS + newText.text;
                 label.text = newText;
 
@@ -360,9 +372,17 @@ export class Typesetter {
                 break;
             }
             case Label.WordWrapper.EllipsisEnd: {
+
+                if (label.lineWidth < ellipsisWidth) {
+                    label.text.text = '';
+                    labelNeedsReTypeset = true;
+                    break;
+                }
+
                 /** Test how many glyphs we need to elide, so that the label's text and the ellipsis fit into
                  * the maximum line width.
                  */
+
                 let index = 0;
                 let width = 0;
                 for (; index < advancesPerGlyph.length; index++) {
@@ -370,7 +390,6 @@ export class Typesetter {
                      * ellipsis width.
                      */
                     if (width + advancesPerGlyph[index] + ellipsisWidth > label.lineWidth) {
-                        index--;
                         break;
                     }
                     width += advancesPerGlyph[index];
@@ -380,7 +399,7 @@ export class Typesetter {
                  * @todo make it undoable? e.g., label.originalText and label.currentText ?
                  */
                 const newText = label.text;
-                newText.text = newText.text.slice(0, index);
+                newText.text = newText.text.slice(0, index - 1);
                 newText.text += this.ELLIPSIS_CHARS;
 
                 label.text = newText;
@@ -415,7 +434,7 @@ export class Typesetter {
 
         /* Index used to reduce the number of wordwrap forward passes. */
         /* tslint:disable-next-line:prefer-const */
-        let safeForwardIndex = iBegin;
+        let safeForwardIndex = [iBegin];
         let feedVertexIndex: number = vertexIndex;
 
         let index = iBegin;
@@ -427,7 +446,7 @@ export class Typesetter {
             const feedLine = label.lineFeedAt(index);
 
             /** @todo use this function for WordWrapper.NewLine */
-            // Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
+            // console.log(safeForwardIndex[0], Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
 
             if (feedLine) {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
@@ -512,6 +531,11 @@ export class Typesetter {
                 index = indices[2];
                 vertexIndex = indices[3];
                 feedVertexIndex = indices[4];
+
+                if (label.wordWrapper === Label.WordWrapper.None) {
+                    assert(label.lineWidth < pen[0],
+                        `Expected the wordWrapper ${label.wordWrapper} to result in (${label.lineWidth}) > ${pen[0]}`);
+                }
             }
         }
 
