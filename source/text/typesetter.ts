@@ -268,7 +268,7 @@ export class Typesetter {
      * @returns true when label needs to be typeset again.
      * @todo line feeds are not handled well when they appear in the last line and that line fits the label.lineWidth
      */
-    protected static applyWordWrapper(label: Label, advancesPerGlyph: Array<number>): boolean {
+    protected static applyWordWrapperEllipsis(label: Label, advancesPerGlyph: Array<number>): boolean {
 
         let labelNeedsReTypeset = false;
 
@@ -291,11 +291,6 @@ export class Typesetter {
 
         switch (label.wordWrapper) {
 
-            case Label.WordWrapper.NewLine: {
-                console.log('TODO: newline');
-                labelNeedsReTypeset = false;
-                break;
-            }
             case Label.WordWrapper.EllipsisMiddle: {
 
                 if (label.lineWidth < ellipsisWidth) {
@@ -407,8 +402,15 @@ export class Typesetter {
                 labelNeedsReTypeset = true;
                 break;
             }
+            case Label.WordWrapper.NewLine:
+            /** already handled in typesetGlyphs().
+             * Yes, we could handle it here, by inserting lineFeeds (\n) into the label.text after every glyph that
+             * exceeds the line width, and then set labelNeedsReTypeset = true. But the way it is done now, we can
+             * avoid the re-typeset and the altering of label.text.
+             */
             case Label.WordWrapper.None:
             default:
+                labelNeedsReTypeset = false;
                 break;
         }
         return labelNeedsReTypeset;
@@ -442,7 +444,9 @@ export class Typesetter {
             const glyph = label.fontFace!.glyph(label.charCodeAt(index));
 
             /* Handle line feeds */
-            const feedLine = label.lineFeedAt(index);
+            const feedLine = label.lineFeedAt(index) ||
+                (label.wordWrapper === Label.WordWrapper.NewLine
+                    && Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
 
             /** @todo use this function for WordWrapper.NewLine */
             // console.log(safeForwardIndex[0], Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
@@ -507,7 +511,7 @@ export class Typesetter {
                 console.warn(index, advancesPerGlyph.length, vertexIndex);
             }
 
-            const typesetAgain = this.applyWordWrapper(label, advancesPerGlyph);
+            const typesetAgain = this.applyWordWrapperEllipsis(label, advancesPerGlyph);
 
             if (typesetAgain) {
                 pen = vec2.create();

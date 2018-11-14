@@ -342,11 +342,12 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
             wrapped2DLabel.lineWidth = 500;
             wrapped2DLabel.wordWrapper = Label.WordWrapper.NewLine;
 
+            const a = 1; // 0.0668; // 0.03993;
             const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text: EllipsisEnd.\n\
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel.lineWidth = 1;
+            wrapped3DLabel.lineWidth = a;
             wrapped3DLabel.wordWrapper = Label.WordWrapper.EllipsisEnd;
             wrapped3DLabel.setPosition(-1, 0.4, 0);
 
@@ -354,7 +355,7 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel3.lineWidth = 1;
+            wrapped3DLabel3.lineWidth = a;
             wrapped3DLabel3.wordWrapper = Label.WordWrapper.EllipsisMiddle;
             wrapped3DLabel3.setPosition(-1, 0.1, 0);
 
@@ -362,17 +363,12 @@ is a very long text. Too long, to be precise. This is a very long text. Too long
 This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
 is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
  very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel2.lineWidth = 1;
+            wrapped3DLabel2.lineWidth = a;
             wrapped3DLabel2.wordWrapper = Label.WordWrapper.EllipsisBeginning;
             wrapped3DLabel2.setPosition(-1, -0.2, 0);
 
-            const shouldNotNeedWrap = new Position3DLabel(new Text('Yepyepyepyepyepyepyepyepyepyepyepyepyepyepyepyep'));
-            shouldNotNeedWrap.lineWidth = 2;
-            shouldNotNeedWrap.wordWrapper = Label.WordWrapper.EllipsisMiddle;
-            shouldNotNeedWrap.setPosition(-1, 0.5, 0);
-
             this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
-                shouldNotNeedWrap, wrapped2DLabel, wrapped3DLabel3, wrapped3DLabel2, wrapped3DLabel];
+                wrapped2DLabel, wrapped3DLabel3, wrapped3DLabel2, wrapped3DLabel];
         }
     }
 }
