@@ -448,9 +448,6 @@ export class Typesetter {
                 (label.wordWrapper === Label.WordWrapper.NewLine
                     && Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
 
-            /** @todo use this function for WordWrapper.NewLine */
-            // console.log(safeForwardIndex[0], Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
-
             if (feedLine) {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
                 Typesetter.backward(label, index - 1, iBegin, pen, extent);
@@ -504,12 +501,6 @@ export class Typesetter {
 
         /* Handle word wrap if label exceeds the maximum line width */
         if (label.lineWidth < pen[0]) {
-            if (index !== advancesPerGlyph.length || vertexIndex !== index || vertexIndex !== advancesPerGlyph.length) {
-                /** all three of them should be equal
-                 * @todo debug; remove this when in PR!
-                 */
-                console.warn(index, advancesPerGlyph.length, vertexIndex);
-            }
 
             const typesetAgain = this.applyWordWrapperEllipsis(label, advancesPerGlyph);
 
