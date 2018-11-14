@@ -62,7 +62,8 @@ import * as root_auxiliaries from './auxiliaries';
 export import auxiliaries = root_auxiliaries;
 
 export { vec2, vec3, vec4 } from 'gl-matrix';
-export { mat2, mat3, mat4 } from 'gl-matrix';
+export { mat2, mat2d, mat3, mat4 } from 'gl-matrix';
+export { quat } from 'gl-matrix';
 
 import * as root_gl_matrix_extensions from './gl-matrix-extensions';
 export import gl_matrix_extensions = root_gl_matrix_extensions;
