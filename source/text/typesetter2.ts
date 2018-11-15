@@ -195,6 +195,90 @@ export class Typesetter2 {
     }
 
     /**
+     *
+     * @param label -
+     * @param ellipsisWidth -
+     * @returns -
+     */
+    private static elideThresholds(label: Label, ellipsisWidth: number): [number, number] {
+        switch (label.elide) {
+            case Label.Elide.Right:
+                return [label.lineWidth - ellipsisWidth, 0.0];
+                break;
+            case Label.Elide.Middle:
+                const threshold = label.lineWidth / 2 - ellipsisWidth / 2;
+                return [threshold, threshold];
+            case Label.Elide.Left:
+                return [0.0, label.lineWidth - ellipsisWidth];
+            default:
+                return [0.0, 0.0];
+        }
+    }
+
+
+    /**
+     *
+     * @param threshold -
+     * @param labelFragments -
+     * @param labelFragmentWidths -
+     * @param labelAdvances -
+     * @param labelKernings -
+     * @param reverse -
+     * @returns -
+     */
+    private static elideFragments(threshold: number,
+        labelFragments: Array<Fragment>, labelFragmentWidths: Float32Array,
+        labelAdvances: Float32Array, labelKernings: Float32Array,
+        reverse: boolean): [Array<Fragment>, Array<number>] {
+
+        const fragments = new Array<Fragment>();
+        const fragmentWidths = new Array<number>();
+
+        let width = 0.0;
+
+        // tslint:disable-next-line:prefer-for-of
+        for (let i0 = reverse ? labelFragments.length - 1 : 0;
+            reverse ? i0 > -1 : i0 < labelFragments.length; reverse ? --i0 : ++i0) {
+
+            const fragment = labelFragments[i0];
+
+            if (fragment[2] === Typesetter2.FragmentType.LineFeed) {
+                continue;
+            }
+
+            /* If next fragment fits as a whole, put it in. */
+
+            if (width + labelFragmentWidths[i0] < threshold) {
+                width += labelFragmentWidths[i0];
+
+                fragments.push(fragment);
+                fragmentWidths.push(labelFragmentWidths[i0]);
+                continue;
+            }
+            /* If the single delimiter didn't fit, then break. */
+            if (fragment[2] === Typesetter2.FragmentType.Delimiter) {
+                break;
+            }
+
+            /* Try to cramp as many characters of the fragment (word) as possible. */
+            for (let i1 = fragment[0]; i1 < fragment[1]; ++i1) {
+                if (width + labelAdvances[i1] + labelKernings[i1] < threshold) {
+                    width += labelAdvances[i1] + labelKernings[i1];
+                    continue;
+                }
+
+                fragments.push([fragment[0], i1, fragment[2]]);
+                fragmentWidths.push(width + labelAdvances[i1]);
+                break;
+            }
+            break;
+        }
+
+        return [fragments, fragmentWidths];
+    }
+
+
+    /**
      * Computes origin, tangent, and up vector for every vertex of in the given range.
      * @param transform - Transformation to apply to every vertex.
      * @param vertices - Glyph vertices to be transformed (expected untransformed, in typesetting space).
@@ -270,8 +354,7 @@ export class Typesetter2 {
      */
     static typeset(label: Label, vertices: GlyphVertices): void {
 
-        /** @todo this is so wrong to get the vertices here when we do not even know how many glyphs will be typeset. */
-        console.log(label.length, vertices.vertices.length);
+        /** @todo its  wrong to get the vertices here when we do not even know how many glyphs will be typeset. */
 
         if (label.length === 0) {
             return;
@@ -285,12 +368,14 @@ export class Typesetter2 {
         const glyphs = (index: number): Glyph => index < label.length ? fontFace.glyph(label.charCodeAt(index)) :
             fontFace.glyph(label.ellipsis.charCodeAt(index - label.length));
 
-        const advances = Typesetter2.advances(label);
-        const kernings = Typesetter2.kernings(label);
+        const labelAdvances = Typesetter2.advances(label);
+        const labelKernings = Typesetter2.kernings(label);
 
-        const fragments = Typesetter2.fragments(label);
-        const fragmentWidths = Typesetter2.fragmentWidths(fragments, advances, kernings);
+        const labelFragments = Typesetter2.fragments(label);
+        const labelFragmentWidths = Typesetter2.fragmentWidths(labelFragments, labelAdvances, labelKernings);
 
+
+        const pen: vec2 = vec2.fromValues(0.0, -Typesetter2.lineAnchorOffset(label));
 
         const lines = new Array<Line>();
         let vertexIndex = 0;
@@ -301,10 +386,10 @@ export class Typesetter2 {
         /* Typeset Lines. A line is a 3-tuple of start-index, end-index, and line width. The indices are referencing
         vertices of the glyph vertices. They cannot be reused for further typesetting. For it a local advance function
         is defined (easier to maintain without need of so many arguments). */
-        const advance = (fragments: Array<Fragment>, fragmentWidths: Float32Array, threshold: number) => {
+        const advance = (fragments: Array<Fragment>, fragmentWidths: Float32Array, threshold: number = NaN,
+            advances: Float32Array = labelAdvances, kernings: Float32Array = labelKernings, offset: number = 0) => {
 
-            const pen: vec2 = vec2.fromValues(0.0, -Typesetter2.lineAnchorOffset(label));
-            let firstIndexOfLine = 0;
+            let firstIndexOfLine = vertexIndex;
 
             for (let i = 0; i < fragments.length; ++i) {
 
@@ -352,7 +437,7 @@ export class Typesetter2 {
                     Typesetter2.writeVertex(fontFace, pen, glyphs(i), vertices.vertices[vertexIndex]);
                     ++vertexIndex;
 
-                    pen[0] += advances[i] + kernings[i];
+                    pen[0] += advances[i - offset] + kernings[i - offset];
                 }
             }
             if (firstIndexOfLine < vertexIndex) {
@@ -363,114 +448,33 @@ export class Typesetter2 {
 
         if (elide) {
 
-
             /* Compute width of ellipsis (reuse default advances, kernings and fragment widths functions). */
+            const ellipsisFragments: Array<Fragment> =
+                [[label.length, label.length + label.ellipsis.length, Typesetter2.FragmentType.Word]];
+
             const ellipsisAdvances = Typesetter2.advances(label, label.ellipsis);
             const ellipsisKernings = Typesetter2.kernings(label, label.ellipsis);
-            const ellipsisWidth = Typesetter2.fragmentWidths(
-                [[0, label.ellipsis.length, Typesetter2.FragmentType.Word]], ellipsisAdvances, ellipsisKernings)[0];
+            const ellipsisFragmentWidths = Typesetter2.fragmentWidths(
+                [[0, label.ellipsis.length, Typesetter2.FragmentType.Word]], ellipsisAdvances, ellipsisKernings);
 
-            const thresholds: [number, number] = [0.0, 0.0];
-            switch (label.elide) {
-                case Label.Elide.Right:
-                    thresholds[0] = label.lineWidth - ellipsisWidth;
-                    break;
-                case Label.Elide.Middle:
-                    thresholds[0] = label.lineWidth / 2 - ellipsisWidth / 2;
-                    thresholds[1] = thresholds[0];
-                    break;
-                case Label.Elide.Left:
-                    thresholds[1] = label.lineWidth - ellipsisWidth;
-                    break;
-                default:
-            }
+            const thresholds = Typesetter2.elideThresholds(label, ellipsisFragmentWidths[0]);
+
+            const [leftFragments, leftFragmentWidths] = Typesetter2.elideFragments(
+                thresholds[0], labelFragments, labelFragmentWidths, labelAdvances, labelKernings, false);
+
+            const [rightFragments, rightFragmentWidths] = Typesetter2.elideFragments(
+                thresholds[1], labelFragments, labelFragmentWidths, labelAdvances, labelKernings, true);
 
 
-            const elideFragments = new Array<Fragment>();
-            const elideFragmentWidths = new Array<number>();
+            advance(leftFragments, new Float32Array(leftFragmentWidths));
 
-            let width = 0.0;
-            // tslint:disable-next-line:prefer-for-of
-            for (let i0 = 0; i0 < fragments.length; ++i0) {
-                const fragment = fragments[i0];
+            advance(ellipsisFragments, ellipsisFragmentWidths, NaN,
+                ellipsisAdvances, ellipsisKernings, label.length);
 
-                if (fragment[2] === Typesetter2.FragmentType.LineFeed) {
-                    continue;
-                }
-
-                /* If next fragment fits as a whole, put it in. */
-
-                if (width + fragmentWidths[i0] < thresholds[0]) {
-                    width += fragmentWidths[i0];
-
-                    elideFragments.push(fragment);
-                    elideFragmentWidths.push(fragmentWidths[i0]);
-                    continue;
-                }
-                /* If the single delimiter didn't fit, then break. */
-                if (fragment[2] === Typesetter2.FragmentType.Delimiter) {
-                    break;
-                }
-
-                /* Try to cramp as many characters of the fragment (word) as possible. */
-                for (let i1 = fragment[0]; i1 < fragment[1]; ++i1) {
-                    if (width + advances[i1] + kernings[i1] < thresholds[0]) {
-                        width += advances[i1] + kernings[i1];
-                        continue;
-                    }
-
-                    elideFragments.push([fragment[0], i1, fragment[2]]);
-                    elideFragmentWidths.push(width + advances[i1]);
-                    break;
-                }
-                break;
-            }
-
-
-            width = 0.0;
-            // // tslint:disable-next-line:prefer-for-of
-            // for (let i0 = fragments.length - 1; i0 > -1; --i0) {
-            //     const fragment = fragments[i0];
-
-            //     if (fragment[2] === Typesetter2.FragmentType.LineFeed) {
-            //         continue;
-            //     }
-
-            //     /* If next fragment fits as a whole, put it in. */
-
-            //     if (width + fragmentWidths[i0] < thresholds[1]) {
-            //         width += fragmentWidths[i0];
-
-            //         elideFragments.push(fragment);
-            //         elideFragmentWidths.push(fragmentWidths[i0]);
-            //         continue;
-            //     }
-            //     /* If the single delimiter didn't fit, then break. */
-            //     if (fragment[2] === Typesetter2.FragmentType.Delimiter) {
-            //         break;
-            //     }
-
-            //     /* Try to cramp as many characters of the fragment (word) as possible. */
-            //     for (let i1 = fragment[0]; i1 < fragment[1]; ++i1) {
-            //         if (width + advances[i1] + kernings[i1] < thresholds[1]) {
-            //             width += advances[i1] + kernings[i1];
-            //             continue;
-            //         }
-
-            //         elideFragments.push([fragment[0], i1, fragment[2]]);
-            //         elideFragmentWidths.push(width + advances[i1]);
-            //         break;
-            //     }
-            //     break;
-            // }
-
-
-            advance(elideFragments, new Float32Array(elideFragmentWidths), NaN);
-            // fragments = elideFragments;
-            // fragmentWidths = new Float32Array(elideFragmentWidths);
+            advance(rightFragments.reverse(), new Float32Array(rightFragmentWidths.reverse()));
 
         } else {
-            advance(fragments, fragmentWidths, label.lineWidth);
+            advance(labelFragments, labelFragmentWidths, label.lineWidth);
         }
 
 

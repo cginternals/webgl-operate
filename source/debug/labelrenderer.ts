@@ -365,8 +365,8 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label1.setPosition(+0.1, +0.5, 0.5);
             label1.alignment = Label.Alignment.Left;
             label1.moep = true;
-            label1.wrap = true;
-            // label1.elide = Label.Elide.Left;
+            // label1.wrap = true;
+            label1.elide = Label.Elide.Middle;
 
 
 
