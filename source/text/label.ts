@@ -16,13 +16,12 @@ import { Text } from './text';
  */
 export class Label {
 
-    private static readonly DEFAULT_ELIDE_FILL = '...';
+    private static readonly DEFAULT_ELLIPSIS = '...';
 
     protected _wrap = false;
 
     protected _elide: Label.Elide = Label.Elide.None;
-    protected _ellipsis: string = Label.DEFAULT_ELIDE_FILL;
-
+    protected _ellipsis: string = Label.DEFAULT_ELLIPSIS;
 
 
     /**
@@ -75,31 +74,6 @@ export class Label {
     }
 
 
-    /**
-     * Set the algorithm that should be used when the label exceeds the defined line width, see lineWidth()
-     */
-    set wordWrapper(wordWrapper: Label.WordWrap) {
-        this._wordWrapper = wordWrapper;
-    }
-    get wordWrapper(): Label.WordWrap {
-        return this._wordWrapper;
-    }
-
-    /**
-     * Set the characters that should be used as an ellipsis. Only takes effect when label.wordWrapper is one
-     * of the ellipsis wrappers (e.g., Label.WordWrapper.EllipsisMiddle).
-     */
-    set ellipsisChars(ellipsisChars: string) {
-        this._ellipsisChars = ellipsisChars;
-    }
-    get ellipsisChars(): string {
-        return this._ellipsisChars;
-    }
-
-    /**
-     * The (maximum) line width allowed for this label. The current label.fontSizeUnit is used as line width unit. It
-     * is ignored if label.wordWrapper==Label.WordWrapper.None
-     */
     set lineWidth(lineWidth: number) {
         this._lineWidth = lineWidth;
     }
@@ -278,12 +252,6 @@ export class Label {
 
     /** @see {@link text} */
     protected _text: Text;
-
-    /** @see {@link wordWrapper} */
-    protected _wordWrapper: Label.WordWrap = Label.WordWrap.None;
-
-    /** @see {@link ellipsisChars} */
-    protected _ellipsisChars = '...';
 
     /** @see {@link alignment} */
     protected _alignment: Label.Alignment = Label.Alignment.Left;

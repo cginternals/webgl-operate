@@ -22,7 +22,6 @@ import { Texture2D } from '../texture2d';
 import { FontFace } from '../text/fontface';
 import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
-import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
 
@@ -354,48 +353,36 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
 
             const label0 = new Position3DLabel(new Text(`${werther}`));
             label0.lineWidth = 1.0;
-            label0.lineAnchor = Label.LineAnchor.Descent;
             label0.setPosition(-1.2, +0.5, 0.5);
             label0.alignment = Label.Alignment.Left;
-            label0.wordWrapper = Label.WordWrap.LineFeed;
+            label0.wrap = true;
 
             const label1 = new Position3DLabel(new Text(`${werther}`));
             label1.lineWidth = 1.0;
-            label1.lineAnchor = Label.LineAnchor.Descent;
             label1.setPosition(+0.1, +0.5, 0.5);
             label1.alignment = Label.Alignment.Left;
-            label1.moep = true;
-            // label1.wrap = true;
-            label1.elide = Label.Elide.Middle;
+            label1.elide = Label.Elide.Right;
+
+            const label2 = new Position3DLabel(new Text(`${werther}`));
+            label2.lineWidth = 1.0;
+            label2.setPosition(+0.1, +0.3, 0.5);
+            label2.alignment = Label.Alignment.Left;
+            label2.elide = Label.Elide.Middle;
+
+            const label3 = new Position3DLabel(new Text(`${werther}`));
+            label3.lineWidth = 1.0;
+            label3.setPosition(+0.1, +0.1, 0.5);
+            label3.alignment = Label.Alignment.Left;
+            label3.elide = Label.Elide.Left;
+
+            const label4 = new Position3DLabel(new Text(`${werther}`));
+            label4.lineWidth = 1.0;
+            label4.setPosition(+1.2, -0.1, 0.5);
+            label4.alignment = Label.Alignment.Right;
+            label4.wrap = true;
 
 
-
-            // const a = 1; // 0.0668; // 0.03993;
-            // const label3dEllipsisEnd = new Position3DLabel(new Text(`WordWrap.EllipsisEnd | ${werther}`));
-            // label3dEllipsisEnd.lineWidth = a;
-            // label3dEllipsisEnd.wordWrapper = Label.WordWrap.EllipsisEnd;
-            // label3dEllipsisEnd.setPosition(-1, 0.4, 0);
-
-            // const label3dEllipsisMiddle = new Position3DLabel(new Text(`WordWrap.EllipsisMiddle | ${werther}`));
-            // label3dEllipsisMiddle.lineWidth = a;
-            // label3dEllipsisMiddle.wordWrapper = Label.WordWrap.EllipsisMiddle;
-            // label3dEllipsisMiddle.setPosition(-1, 0.1, 0);
-
-            // const label3dEllipsisBeginning = new Position3DLabel(new Text(`WordWrap.EllipsisBeginning | ${werther}`));
-            // label3dEllipsisBeginning.lineWidth = a;
-            // label3dEllipsisBeginning.wordWrapper = Label.WordWrap.EllipsisBeginning;
-            // label3dEllipsisBeginning.setPosition(-1, -0.2, 0);
-
-            // const differentEllipsis = new Position2DLabel(new Text(`Custom Ellipsis | ${werther}`));
-            // differentEllipsis.ellipsisChars = '~';
-            // differentEllipsis.setPosition(-200, -150);
-            // differentEllipsis.lineWidth = 200;
-            // differentEllipsis.wordWrapper = Label.WordWrap.EllipsisMiddle;
-
-
-            this._labelPass.labels = [label0, label1];
-            // this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
-            //     wrapped2DLabel, label3dEllipsisMiddle, label3dEllipsisBeginning, label3dEllipsisEnd, differentEllipsis];
+            this._labelPass.labels = [label0, label1, label2, label3, label4];
         }
     }
 }

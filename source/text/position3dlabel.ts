@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3 } from 'gl-matrix';
 
 import { assert, log, LogLevel } from '../auxiliaries';
@@ -9,8 +11,7 @@ import { Label } from './label';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
 
-import { Typesetter2 } from './typesetter2';
-import { auxiliaries } from '../webgl-operate.slim';
+/* spellchecker: enable */
 
 
 /**
@@ -67,9 +68,6 @@ export class Position3DLabel extends Label {
     protected _up: vec3;
 
 
-    moep = false;
-
-
     /**
      * Constructs a pre-configured 3D-label with given text.
      * @param text - The text that is displayed by this label.
@@ -114,19 +112,7 @@ export class Position3DLabel extends Label {
 
         const vertices = this.prepareVertexStorage();
 
-        if (this.moep) {
-            auxiliaries.logPerformanceStart('moep');
-            // for (let i = 0; i < 100; ++i) {
-            Typesetter2.typeset(this, vertices);
-            // }
-            auxiliaries.logPerformanceStop('moep', 'new');
-        } else {
-            auxiliaries.logPerformanceStart('moep');
-            // for (let i = 0; i < 100; ++i) {
-            Typesetter.typeset(this, vertices, 0);
-            // }
-            auxiliaries.logPerformanceStop('moep', 'old');
-        }
+        Typesetter.typeset(this, vertices);
 
         return vertices;
     }
