@@ -195,10 +195,10 @@ export class Typesetter2 {
     }
 
     /**
-     *
-     * @param label -
-     * @param ellipsisWidth -
-     * @returns -
+     * Computes the left and right side thresholds for elide computation.
+     * @param label - Label to query elide mode and line width from.
+     * @param ellipsisWidth - Pre-computed width of the full ellipsis (t avoid re-computation).
+     * @returns - The left and right thresholds intended for elide fragment retrieval.
      */
     private static elideThresholds(label: Label, ellipsisWidth: number): [number, number] {
         switch (label.elide) {
@@ -217,14 +217,15 @@ export class Typesetter2 {
 
 
     /**
-     *
-     * @param threshold -
-     * @param labelFragments -
-     * @param labelFragmentWidths -
-     * @param labelAdvances -
-     * @param labelKernings -
-     * @param reverse -
-     * @returns -
+     * Creates a sub list of fragments that fit into threshold. The last fragment might be adjusted in order to cram
+     * as many  characters as possible for the elide. Reverse flag can be used do start left or right.
+     * @param threshold - Threshold in typesetting space.
+     * @param labelFragments - Pre-computed label fragments.
+     * @param labelFragmentWidths - Pre-accumulated widths of the label fragments.
+     * @param labelAdvances - Advances in order to reduce lookups.
+     * @param labelKernings - Kernings in order to reduce lookups.
+     * @param reverse -If enabled, the right side elide fragments will be collected and adjusted. Left side otherwise.
+     * @returns - A new fragment and fragment-weights array for elide advancing.
      */
     private static elideFragments(threshold: number,
         labelFragments: Array<Fragment>, labelFragmentWidths: Float32Array,
@@ -474,7 +475,9 @@ export class Typesetter2 {
             advance(rightFragments.reverse(), new Float32Array(rightFragmentWidths.reverse()));
 
         } else {
+
             advance(labelFragments, labelFragmentWidths, label.lineWidth);
+
         }
 
 
