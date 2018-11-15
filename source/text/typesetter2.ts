@@ -165,7 +165,7 @@ export class Typesetter2 {
         }
         /* Account for last fragment that does not end with delimiter. */
         if (!isDelimiter!) {
-            fragments.push([currentWordIndex, i, Typesetter2.FragmentType.Word]);
+            fragments.push([currentWordIndex, label.length, Typesetter2.FragmentType.Word]);
         }
 
 

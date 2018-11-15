@@ -116,11 +116,15 @@ export class Position3DLabel extends Label {
 
         if (this.moep) {
             auxiliaries.logPerformanceStart('moep');
-            Typesetter2.typeset(this, vertices, 0);
+            for (let i = 0; i < 100; ++i) {
+                Typesetter2.typeset(this, vertices, 0);
+            }
             auxiliaries.logPerformanceStop('moep', 'new');
         } else {
             auxiliaries.logPerformanceStart('moep');
-            Typesetter.typeset(this, vertices, 0);
+            for (let i = 0; i < 100; ++i) {
+                Typesetter.typeset(this, vertices, 0);
+            }
             auxiliaries.logPerformanceStop('moep', 'old');
         }
 
