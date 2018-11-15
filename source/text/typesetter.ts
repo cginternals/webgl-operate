@@ -541,7 +541,7 @@ export class Typesetter {
         Typesetter.transformAlignment(pen, label.alignment, glyphs, feedVertexIndex, iEnd - 1);
         Typesetter.transformLineAnchor(label, glyphs, iBegin, iEnd - 1);
 
-        Typesetter.transformVertex(label.transform, glyphs, iBegin, vertexIndex);
+        Typesetter.transformVertex(label.staticTransform, glyphs, iBegin, vertexIndex);
     }
 
 }

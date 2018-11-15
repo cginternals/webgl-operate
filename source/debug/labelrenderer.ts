@@ -354,16 +354,19 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
 
             const label0 = new Position3DLabel(new Text(`${werther}`));
             label0.lineWidth = 1.0;
+            label0.lineAnchor = Label.LineAnchor.Descent;
             label0.setPosition(-1.2, +0.5, 0.5);
             label0.alignment = Label.Alignment.Left;
             label0.wordWrapper = Label.WordWrap.LineFeed;
 
             const label1 = new Position3DLabel(new Text(`${werther}`));
             label1.lineWidth = 1.0;
+            label1.lineAnchor = Label.LineAnchor.Descent;
             label1.setPosition(+0.1, +0.5, 0.5);
             label1.alignment = Label.Alignment.Left;
             label1.moep = true;
             label1.wrap = true;
+            // label1.elide = Label.Elide.Right;
 
 
 

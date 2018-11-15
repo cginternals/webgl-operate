@@ -67,6 +67,13 @@ export class Label {
         return this._elide;
     }
 
+    set ellipsis(ellipsis: string) {
+        this._ellipsis = ellipsis;
+    }
+    get ellipsis(): string {
+        return this._ellipsis;
+    }
+
 
     /**
      * Set the algorithm that should be used when the label exceeds the defined line width, see lineWidth()
@@ -219,19 +226,19 @@ export class Label {
      * screen space, world space, ...). This can be set either explicitly or implicitly using various transformation
      * utility functions.
      */
-    set transform(transform: mat4) {
-        if (mat4.equals(this._transform, transform)) {
+    set staticTransform(transform: mat4) {
+        if (mat4.equals(this._staticTransform, transform)) {
             return;
         }
         this._altered.alter('transform');
-        this._transform = transform;
+        this._staticTransform = transform;
     }
-    get transform(): mat4 {
+    get staticTransform(): mat4 {
 
         const s = this.fontSize / this._fontFace!.size;
 
         const t: mat4 = mat4.create();
-        mat4.scale(t, this._transform, vec3.fromValues(s, s, s));
+        mat4.scale(t, this._staticTransform, vec3.fromValues(s, s, s));
 
         return t;
     }
@@ -303,7 +310,7 @@ export class Label {
     protected _backgroundColor: Color;
 
     /** @see {@link transform} */
-    protected _transform: mat4;
+    protected _staticTransform: mat4;
 
     /** @see {@link userTransform} */
     protected _userTransform: mat4;
@@ -325,7 +332,7 @@ export class Label {
      */
     constructor(text: Text, fontFace?: FontFace) {
         this._text = text;
-        this._transform = mat4.create();
+        this._staticTransform = mat4.create();
         this._userTransform = mat4.create();
         this._extent = [0, 0];
 

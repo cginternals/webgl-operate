@@ -86,10 +86,10 @@ export class Position2DLabel extends Label {
         }
 
         /** use the setter to trigger label.transform.altered */
-        this.transform = mat4.rotateZ(transform, transform, angle);
+        this.staticTransform = mat4.rotateZ(transform, transform, angle);
 
         const vertices = this.prepareVertexStorage();
-        Typesetter2.typeset(this, vertices, 0);
+        Typesetter2.typeset(this, vertices);
 
         return vertices;
     }

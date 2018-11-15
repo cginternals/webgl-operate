@@ -110,14 +110,14 @@ export class Position3DLabel extends Label {
             0.0, 0.0, 0.0, 1.0);
 
         /* Use the setter to trigger label.transform.altered. */
-        this.transform = mat4.mul(transform, transform, rotation);
+        this.staticTransform = mat4.mul(transform, transform, rotation);
 
         const vertices = this.prepareVertexStorage();
 
         if (this.moep) {
             auxiliaries.logPerformanceStart('moep');
             // for (let i = 0; i < 100; ++i) {
-            Typesetter2.typeset(this, vertices, 0);
+            Typesetter2.typeset(this, vertices);
             // }
             auxiliaries.logPerformanceStop('moep', 'new');
         } else {
