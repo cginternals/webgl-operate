@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 import { fromVec4, v4 } from '../gl-matrix-extensions';
 
@@ -9,6 +11,8 @@ import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 import { GlyphVertex, GlyphVertices } from './glyphvertices';
 import { Label } from './label';
+
+/* spellchecker: enable */
 
 
 /**
@@ -23,14 +27,14 @@ export class Typesetter {
 
     /**
      * Returns if newline should be applied for next word (or next glyph if word exceeds the line width)
-     * @param label the label that has a wordWrapper different from WordWrapper.None
-     * @param pen horizontal and vertical position at which typesetting takes place/arrived.
-     * @param glyph current glyph
-     * @param index current index for char in this label
-     * @param safeForwardIndex used to reduce the number of wordwrap forward passes
-     * @returns whether or not typesetting should go on a new line
+     * @param label - The label word wrap is to be applied to.
+     * @param pen - Horizontal and vertical position at which typesetting takes place/arrived.
+     * @param glyph - Current glyph.
+     * @param index - Index of the current character within the label.
+     * @param safeForwardIndex - Used to reduce the number of wordwrap forward passes.
+     * @returns - Whether or not typesetting should go on a new line.
      */
-    protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number, 
+    protected static wordWrap(label: Label, pen: vec2, glyph: Glyph, index: number,
         safeForwardIndex: Array<number>): boolean {
 
         const lineWidth = label.lineWidth;
@@ -50,13 +54,12 @@ export class Typesetter {
 
     /**
      * Accumulate glyph advances (including kerning) up to the next delimiter or line feed occurrence starting at
-     * the given index for the given label.
+     * the given index for the given label. @todo Perhaps switch to another approach, i.e., calculate the all advances
+     * between delimiters once and create an index based lookup...
      * @param label - Label to compute accumulated advances for.
      * @param begin - Index to start glyph advance accumulation at.
      * @param width - Out parameter: the accumulated width up to the next delimiter (reset to 0).
      * @returns - The index of the last character that was included in the forward accumulation.
-     * @todo Perhaps switch to another approach, i.e., calculate the all advances between delimiters once and create
-     * an index based lookup...
      */
     protected static forward(label: Label, begin: number, width: number): number {
         let index: number = begin;
@@ -124,13 +127,12 @@ export class Typesetter {
 
     /**
      * Adjusts the vertices for line anchor (done due after typesetting) w.r.t. the targeted anchoring.
+     * @todo Apply once at the beginning! Initial offset!
      * @param label - Label to adjust the y-positions for.
      * @param glyphs - In/out param: Glyph vertices for rendering to align the origins' y-components of (expected
      * untransformed).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
-     *
-     * @todo Apply once at the beginning! Initial offset!
      */
     protected static transformLineAnchor(label: Label, glyphs: GlyphVertices | undefined, begin: number, end: number):
         void {
@@ -287,7 +289,7 @@ export class Typesetter {
 
         switch (label.wordWrapper) {
 
-            case Label.WordWrapper.EllipsisMiddle: {
+            case Label.WordWrap.ElideMiddle: {
 
                 if (label.lineWidth < ellipsisWidth) {
                     label.text.text = '';
@@ -328,7 +330,7 @@ export class Typesetter {
                 labelNeedsReTypeset = true;
                 break;
             }
-            case Label.WordWrapper.EllipsisBeginning: {
+            case Label.WordWrap.EllipsisBeginning: {
 
                 if (label.lineWidth < ellipsisWidth) {
                     label.text.text = '';
@@ -362,7 +364,7 @@ export class Typesetter {
                 labelNeedsReTypeset = true;
                 break;
             }
-            case Label.WordWrapper.EllipsisEnd: {
+            case Label.WordWrap.ElideLeft: {
 
                 if (label.lineWidth < ellipsisWidth) {
                     label.text.text = '';
@@ -398,13 +400,13 @@ export class Typesetter {
                 labelNeedsReTypeset = true;
                 break;
             }
-            case Label.WordWrapper.NewLine:
+            case Label.WordWrap.LineFeed:
             /** already handled in typesetGlyphs().
              * Yes, we could handle it here, by inserting lineFeeds (\n) into the label.text after every glyph that
              * exceeds the line width, and then set labelNeedsReTypeset = true. But the way it is done now, we can
              * avoid the re-typeset and the altering of label.text.
              */
-            case Label.WordWrapper.None:
+            case Label.WordWrap.None:
             default:
                 labelNeedsReTypeset = false;
                 break;
@@ -417,15 +419,17 @@ export class Typesetter {
      * kerning). Those glyph advances might be useful for later changes to the label as reaction to the typeset values,
      * e.g., word wrap for labels exceeding their given lineWidth.
      * @param label - the label that shall be typeset
-     * @param advancesPerGlyph - out param: an array of glyph advances with applied kerning (for the given label)
+     * @param advances - out param: an array of glyph advances with applied kerning (for the given label)
      * @param pen - In/out param: horizontal and vertical position at which typesetting takes place/arrived
      * @param vertexIndex - the current vertex index
      * @param extent - In/out param: extent to be adjusted.
      * @param glyphs - In/out param: the glyph vertices, a prepared (optionally empty) vertex storage
-     * @returns indices useful for subsequent calculations: [iBegin, iEnd, index, vertexIndex, feedVertexIndex];
+     * @returns - Indices useful for subsequent calculations: [iBegin, iEnd, index, vertexIndex, feedVertexIndex];
      */
-    protected static typesetGlyphs(label: Label, advancesPerGlyph: Array<number>, pen: vec2, vertexIndex: number,
-        extent: vec2, glyphs?: GlyphVertices): Array<number> {
+    protected static typesetGlyphs(label: Label, advances: Array<number>, accumulates: Array<number>, pen: vec2,
+        vertexIndex: number, extent: vec2, glyphs?: GlyphVertices): Array<number> {
+
+        const fontFace = label.fontFace!;
 
         const iBegin = 0;
         const iEnd: number = label.length;
@@ -434,60 +438,62 @@ export class Typesetter {
         const safeForwardIndex = [iBegin];
         let feedVertexIndex: number = vertexIndex;
 
-        let index = iBegin;
+        let i = iBegin;
         let width = 0;
-        for (; index !== iEnd; ++index) {
-            const glyph = label.fontFace!.glyph(label.charCodeAt(index));
+        for (; i !== iEnd; ++i) {
+            const glyph = fontFace.glyph(label.charCodeAt(i));
 
             /* Handle line feeds */
-            const feedLine = label.lineFeedAt(index) ||
-                (label.wordWrapper === Label.WordWrapper.NewLine
-                    && Typesetter.wordWrap(label, pen, glyph, index, safeForwardIndex));
+            const feedLine = label.lineFeedAt(i) ||
+                (label.wordWrapper === Label.WordWrap.LineFeed
+                    && Typesetter.wordWrap(label, pen, glyph, i, safeForwardIndex));
 
             if (feedLine) {
                 /* Handle pen and extent w.r.t. non-depictable glyphs. */
-                Typesetter.backward(label, index - 1, iBegin, pen, extent);
+                Typesetter.backward(label, i - 1, iBegin, pen, extent);
                 /* Handle alignment (does nothing if vertices are not required/undefined). */
                 Typesetter.transformAlignment(pen, label.alignment, glyphs, feedVertexIndex, vertexIndex);
 
                 pen[0] = 0.0;
-                pen[1] -= label.fontFace!.lineHeight;
+                pen[1] -= fontFace.lineHeight;
 
                 feedVertexIndex = vertexIndex;
 
-            } else if (index > iBegin) {
-                pen[0] += label.kerningBefore(index);
+            } else if (i > iBegin) {
+                pen[0] += label.kerningBefore(i);
             }
 
             /* Add and configure data for rendering the current character/glyph of the label. */
-            Typesetter.transformGlyph(label.fontFace!, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
+            Typesetter.transformGlyph(fontFace, pen, glyph, glyphs ? glyphs.vertices[vertexIndex++] : undefined);
 
             pen[0] += glyph.advance;
 
-            advancesPerGlyph.push(pen[0] - width);
+            advances.push(pen[0] - width);
+            accumulates.push(pen[0]);
             width = pen[0];
         }
 
-        return [iBegin, iEnd, index, vertexIndex, feedVertexIndex];
+        return [iBegin, iEnd, i, vertexIndex, feedVertexIndex];
     }
 
     /**
      * Typesets the given label, transforming the vertices in-world, ready to be rendered.
-     * @param label the label that shall be typeset
-     * @param glyphs the glyph vertices, a prepared (optionally empty) vertex storage
-     * @param begin vertex index to start the typesetting (usually 0)
-     * @returns the transformed label extent
+     * @param label - The label that is to be typeset.
+     * @param glyphs - The glyph vertices, a prepared (optionally empty) vertex storage.
+     * @param begin - Vertex index to start the typesetting (usually 0).
      */
-    static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): GLfloat2 {
-        assert(!!label.fontFace, `expected a font face for label before typesetting`);
+    static typeset(label: Label, glyphs?: GlyphVertices, begin?: number): void {
+        assert(label.fontFace !== undefined, `expected a font face for label before typesetting`);
 
-        const advancesPerGlyph: Array<number> = [];
+        const advances: Array<number> = [];
+        const accumulates: Array<number> = [];
+
         /* Horizontal and vertical position at which typesetting takes place/arrived. */
         let pen = vec2.create();
         let vertexIndex: number = begin !== undefined ? begin : 0;
         let extent = vec2.create();
 
-        let indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs);
+        let indices = this.typesetGlyphs(label, advances, accumulates, pen, vertexIndex, extent, glyphs);
 
         let iBegin = indices[0];
         let iEnd = indices[1];
@@ -498,7 +504,7 @@ export class Typesetter {
         /* Handle word wrap if label exceeds the maximum line width */
         if (label.lineWidth < pen[0]) {
 
-            const typesetAgain = this.applyWordWrapperEllipsis(label, advancesPerGlyph);
+            const typesetAgain = this.applyWordWrapperEllipsis(label, advances);
 
             if (typesetAgain) {
                 pen = vec2.create();
@@ -514,7 +520,7 @@ export class Typesetter {
                     }
                 }
 
-                indices = this.typesetGlyphs(label, advancesPerGlyph, pen, vertexIndex, extent, glyphs);
+                indices = this.typesetGlyphs(label, advances, accumulates, pen, vertexIndex, extent, glyphs);
 
                 iBegin = indices[0];
                 iEnd = indices[1];
@@ -522,7 +528,7 @@ export class Typesetter {
                 vertexIndex = indices[3];
                 feedVertexIndex = indices[4];
 
-                if (label.wordWrapper === Label.WordWrapper.None) {
+                if (label.wordWrapper === Label.WordWrap.None) {
                     assert(label.lineWidth < pen[0],
                         `Expected the wordWrapper ${label.wordWrapper} to result in (${label.lineWidth}) > ${pen[0]}`);
                 }
@@ -536,11 +542,6 @@ export class Typesetter {
         Typesetter.transformLineAnchor(label, glyphs, iBegin, iEnd - 1);
 
         Typesetter.transformVertex(label.transform, glyphs, iBegin, vertexIndex);
-
-        const labelExtent = Typesetter.transformExtent(label.transform, extent);
-        label.extent = labelExtent;
-
-        return labelExtent;
     }
 
 }

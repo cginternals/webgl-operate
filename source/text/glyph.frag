@@ -148,9 +148,10 @@ void main(void)
      * it's bad for IMR, TBR, TBDR and early-Z optimization
      * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
      */
-    if(a <= 0.0) {
-         discard;
-    }
+    // if(a <= 0.0) {
+    //      discard;
+    // }
+    a = a * 0.8 + 0.2;
     fragColor = vec4(u_color.rgb, u_color.a * a);
 
     /* use when pre-multiplied color is required. */

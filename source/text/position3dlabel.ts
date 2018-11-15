@@ -9,6 +9,9 @@ import { Label } from './label';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
 
+import { Typesetter2 } from './typesetter2';
+import { auxiliaries } from '../webgl-operate.slim';
+
 
 /**
  * A Label that can be positioned in 3D space. The unit for positions, size and transformations, is the abstract World
@@ -16,12 +19,56 @@ import { Typesetter } from './typesetter';
  */
 export class Position3DLabel extends Label {
 
+    /**
+     * Sets the 3D position of the label's reference point (i.e. lower left corner for horizontal alignment).
+     */
+    set position(xyz: vec3) {
+        this._position = vec3.clone(xyz);
+    }
+    get position(): vec3 {
+        return this._position;
+    }
+
+    /**
+     * Sets the 3D direction of the label, i.e., the direction of the baseline.
+     */
+    set direction(xyz: vec3) {
+        vec3.normalize(this._direction, xyz);
+    }
+    get direction(): vec3 {
+        return this._direction;
+    }
+
+    /**
+     * Sets the up-vector of the label. It should be orthogonal to the direction to ensure that the label is not skewed.
+     */
+    set up(xyz: vec3) {
+        this._up = vec3.normalize(this._up, xyz);
+    }
+    get up(): vec3 {
+        return this._up;
+    }
+
+    /**
+     * This unit is used for the font size. This method overrides the super.fontSizeUnit, since a position3dlabel only
+     * allows World, not Px nor Pt.
+     * (@see {@link fontSize})
+     * @param newUnit - unused, since there is only one allowed unit (World) for this kind of label
+     */
+    set fontSizeUnit(newUnit: Label.SpaceUnit) {
+        log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is World for this label.`);
+    }
+
     /** @see {@link position} */
     protected _position: vec3;
     /** @see {@link direction} */
     protected _direction: vec3;
     /** @see {@link up} */
     protected _up: vec3;
+
+
+    moep = false;
+
 
     /**
      * Constructs a pre-configured 3D-label with given text.
@@ -66,19 +113,18 @@ export class Position3DLabel extends Label {
         this.transform = mat4.mul(transform, transform, rotation);
 
         const vertices = this.prepareVertexStorage();
-        Typesetter.typeset(this, vertices, 0);
+
+        if (this.moep) {
+            auxiliaries.logPerformanceStart('moep');
+            Typesetter2.typeset(this, vertices, 0);
+            auxiliaries.logPerformanceStop('moep', 'new');
+        } else {
+            auxiliaries.logPerformanceStart('moep');
+            Typesetter.typeset(this, vertices, 0);
+            auxiliaries.logPerformanceStop('moep', 'old');
+        }
 
         return vertices;
-    }
-
-    /**
-     * Sets the 3D position of the label's reference point (i.e. lower left corner for horizontal alignment).
-     */
-    set position(xyz: vec3) {
-        this._position = vec3.clone(xyz);
-    }
-    get position(): vec3 {
-        return this._position;
     }
 
     /**
@@ -93,16 +139,6 @@ export class Position3DLabel extends Label {
     }
 
     /**
-     * Sets the 3D direction of the label, i.e., the direction of the baseline.
-     */
-    set direction(xyz: vec3) {
-        vec3.normalize(this._direction, xyz);
-    }
-    get direction(): vec3 {
-        return this._direction;
-    }
-
-    /**
      * Sets the 3D direction parameters as specified in OpenLL. The labels's direction is the direction of its baseline.
      * @param x - x coordinate of the 3D direction vector.
      * @param y - y coordinate of the 3D direction vector.
@@ -110,16 +146,6 @@ export class Position3DLabel extends Label {
      */
     setDirection(x: number, y: number, z: number): void {
         this.direction = vec3.fromValues(x, y, z);
-    }
-
-    /**
-     * Sets the up-vector of the label. It should be orthogonal to the direction to ensure that the label is not skewed.
-     */
-    set up(xyz: vec3) {
-        this._up = vec3.normalize(this._up, xyz);
-    }
-    get up(): vec3 {
-        return this._up;
     }
 
     /**
@@ -131,16 +157,6 @@ export class Position3DLabel extends Label {
      */
     setUp(x: number, y: number, z: number): void {
         this.up = vec3.fromValues(x, y, z);
-    }
-
-    /**
-     * This unit is used for the font size. This method overrides the super.fontSizeUnit, since a position3dlabel only
-     * allows World, not Px nor Pt.
-     * (@see {@link fontSize})
-     * @param newUnit - unused, since there is only one allowed unit (World) for this kind of label
-     */
-    set fontSizeUnit(newUnit: Label.SpaceUnit) {
-        log(LogLevel.Warning, `New SpaceUnit ${newUnit} not set; only allowed SpaceUnit is World for this label.`);
     }
 
 }

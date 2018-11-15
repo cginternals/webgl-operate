@@ -20,7 +20,7 @@ export class Label {
     protected _text: Text;
 
     /** @see {@link wordWrapper} */
-    protected _wordWrapper: Label.WordWrapper = Label.WordWrapper.None;
+    protected _wordWrapper: Label.WordWrap = Label.WordWrap.None;
 
     /** @see {@link ellipsisChars} */
     protected _ellipsisChars = '...';
@@ -181,16 +181,16 @@ export class Label {
         if (this._text instanceof Text) {
             return this._text.lineFeed;
         }
-        return Text.DEFAULT_LINEFEED;
+        return Text.DEFAULT_LINE_FEED;
     }
 
     /**
      * Set the algorithm that should be used when the label exceeds the defined line width, see lineWidth()
      */
-    set wordWrapper(wordWrapper: Label.WordWrapper) {
+    set wordWrapper(wordWrapper: Label.WordWrap) {
         this._wordWrapper = wordWrapper;
     }
-    get wordWrapper(): Label.WordWrapper {
+    get wordWrapper(): Label.WordWrap {
         return this._wordWrapper;
     }
 
@@ -407,12 +407,19 @@ export class Label {
 
 export namespace Label {
 
-    export enum WordWrapper {
+    export enum Elide {
         None = 'none',
-        NewLine = 'newLine',
-        EllipsisEnd = 'ellipsisEnd',
-        EllipsisMiddle = 'ellipsisMiddle',
-        EllipsisBeginning = 'ellipsisBeginning',
+        Left = 'left',
+        Middle = 'middle',
+        Right = 'right',
+    }
+
+    export enum WordWrap {
+        None = 'none',
+        LineFeed = 'new-line',
+        ElideLeft = 'elide-left',
+        ElideMiddle = 'elide-middle',
+        EllipsisBeginning = 'ellipsis-beginning',
     }
 
     export enum Alignment {

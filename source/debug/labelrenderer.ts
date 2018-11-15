@@ -304,75 +304,89 @@ namespace debug {
 
             /** OpenLL 3D Labels */
 
-            const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'));
-            pos3Dlabel.fontSize = 0.1;
+            // const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'));
+            // pos3Dlabel.fontSize = 0.1;
 
-            /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
-            pos3Dlabel.setPosition(0.0, 0.1, -0.5);
-            pos3Dlabel.setDirection(0.0, 1.0, 0.0);
-            pos3Dlabel.setUp(-1.0, 0.0, 0.0);
+            // /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
+            // pos3Dlabel.setPosition(0.0, 0.1, -0.5);
+            // pos3Dlabel.setDirection(0.0, 1.0, 0.0);
+            // pos3Dlabel.setUp(-1.0, 0.0, 0.0);
 
-            const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'));
-            shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
-            shadowPos3Dlabel.fontSize = 0.1;
-            shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
-            shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
+            // const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'));
+            // shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
+            // shadowPos3Dlabel.fontSize = 0.1;
+            // shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
+            // shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
 
-            const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'));
-            anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
-            anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
-            anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
+            // const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'));
+            // anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
+            // anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
+            // anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            /** OpenLL 2D Labels */
+            // /** OpenLL 2D Labels */
 
-            const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'));
-            pos2Dlabel.fontSize = 40;
+            // const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'));
+            // pos2Dlabel.fontSize = 40;
 
-            /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */
-            pos2Dlabel.setPosition(-100, 0);
-            pos2Dlabel.setDirection(0.5, -0.5);
+            // /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */
+            // pos2Dlabel.setPosition(-100, 0);
+            // pos2Dlabel.setDirection(0.5, -0.5);
 
 
             /** Wrapped labels, showcasing Ellipsis and NewLine */
 
-            const wrapped2DLabel = new Position2DLabel(new Text('This is a very long text: NewLine.\n\
-This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped2DLabel.lineWidth = 500;
-            wrapped2DLabel.wordWrapper = Label.WordWrapper.NewLine;
+            const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
+of spring which I enjoy with my whole heart. I am alone, and feel the\ncharm of existence in this spot, which was \
+created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere \
+tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present \
+moment; and yet I feel that I never was a greater artist than now. When, while the lovely valley teems with vapour \
+around me, and the meridian sun strikes the upper surface of the impene\ntrable foliage of my trees, and but a few \
+stray gleams steal into the inner sanctuary, I throw myself down among the tall grass by the trickling stream; and, \
+as I lie close to the earth, a thousand unknown plants are noticed by me: when I hear the buzz of the little world \
+among the stalks, and grow familiar with the countless indescribable forms of the insects and flies, then I feel the \
+presence of the Almighty, who formed us in his own image, and the breath of that universal love which bears and \
+sustains us, as it floats around us in an eternity of bliss;  and then, my friend, when darkness overspreads my eyes, \
+and heaven and earth seem to dwell in my soul and absorb its power, like the form of a beloved mistress, then I often \
+think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
+and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
-            const a = 1; // 0.0668; // 0.03993;
-            const wrapped3DLabel = new Position3DLabel(new Text('This is a very long text: EllipsisEnd.\n\
-This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
-is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
- very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel.lineWidth = a;
-            wrapped3DLabel.wordWrapper = Label.WordWrapper.EllipsisEnd;
-            wrapped3DLabel.setPosition(-1, 0.4, 0);
+            const label0 = new Position3DLabel(new Text(`${werther}`));
+            label0.setPosition(0.0, +0.15, 0.5);
+            label0.alignment = Label.Alignment.Right;
 
-            const wrapped3DLabel3 = new Position3DLabel(new Text('This is a very long text: EllipsisMiddle.\n\
-This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
-is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
- very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel3.lineWidth = a;
-            wrapped3DLabel3.wordWrapper = Label.WordWrapper.EllipsisMiddle;
-            wrapped3DLabel3.setPosition(-1, 0.1, 0);
+            const label1 = new Position3DLabel(new Text(`${werther}`));
+            label1.moep = true;
+            label1.setPosition(0.0, -0.05, 0.5);
+            label1.alignment = Label.Alignment.Right;
 
-            const wrapped3DLabel2 = new Position3DLabel(new Text('This is a very long text: EllipsisBeginning.\n\
-This is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This \
-is a very long text. Too long, to be precise. This is a very long text. Too long, to be precise. This is a\
- very long text. Too long, to be precise. This is a very long text. Too long, to be precise.'));
-            wrapped3DLabel2.lineWidth = a;
-            wrapped3DLabel2.wordWrapper = Label.WordWrapper.EllipsisBeginning;
-            wrapped3DLabel2.setPosition(-1, -0.2, 0);
 
-            const differentEllipsis = new Position2DLabel(new Text('EllipsisEllipsisEllipsisEllipsisEllipsisEllipsis'));
-            differentEllipsis.ellipsisChars = '~';
-            differentEllipsis.setPosition(-200, -150);
-            differentEllipsis.lineWidth = 200;
-            differentEllipsis.wordWrapper = Label.WordWrapper.EllipsisMiddle;
 
-            this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
-                wrapped2DLabel, wrapped3DLabel3, wrapped3DLabel2, wrapped3DLabel, differentEllipsis];
+            // const a = 1; // 0.0668; // 0.03993;
+            // const label3dEllipsisEnd = new Position3DLabel(new Text(`WordWrap.EllipsisEnd | ${werther}`));
+            // label3dEllipsisEnd.lineWidth = a;
+            // label3dEllipsisEnd.wordWrapper = Label.WordWrap.EllipsisEnd;
+            // label3dEllipsisEnd.setPosition(-1, 0.4, 0);
+
+            // const label3dEllipsisMiddle = new Position3DLabel(new Text(`WordWrap.EllipsisMiddle | ${werther}`));
+            // label3dEllipsisMiddle.lineWidth = a;
+            // label3dEllipsisMiddle.wordWrapper = Label.WordWrap.EllipsisMiddle;
+            // label3dEllipsisMiddle.setPosition(-1, 0.1, 0);
+
+            // const label3dEllipsisBeginning = new Position3DLabel(new Text(`WordWrap.EllipsisBeginning | ${werther}`));
+            // label3dEllipsisBeginning.lineWidth = a;
+            // label3dEllipsisBeginning.wordWrapper = Label.WordWrap.EllipsisBeginning;
+            // label3dEllipsisBeginning.setPosition(-1, -0.2, 0);
+
+            // const differentEllipsis = new Position2DLabel(new Text(`Custom Ellipsis | ${werther}`));
+            // differentEllipsis.ellipsisChars = '~';
+            // differentEllipsis.setPosition(-200, -150);
+            // differentEllipsis.lineWidth = 200;
+            // differentEllipsis.wordWrapper = Label.WordWrap.EllipsisMiddle;
+
+
+            this._labelPass.labels = [label0, label1];
+            // this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel,
+            //     wrapped2DLabel, label3dEllipsisMiddle, label3dEllipsisBeginning, label3dEllipsisEnd, differentEllipsis];
         }
     }
 }

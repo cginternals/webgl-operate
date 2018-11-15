@@ -9,5 +9,7 @@ export { Position3DLabel } from './position3dlabel';
 export { Text } from './text';
 export { Typesetter } from './typesetter';
 
+export { Typesetter2 } from './typesetter2';
+
 /* The following Classes are intended for internal/private use within webgl-operate. */
 // export { FontFaceLoader } from './fontfaceloader';

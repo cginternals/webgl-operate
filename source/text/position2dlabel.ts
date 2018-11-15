@@ -7,7 +7,8 @@ import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { Text } from './text';
-import { Typesetter } from './typesetter';
+
+import { Typesetter2 } from './typesetter2';
 
 
 /**
@@ -88,7 +89,7 @@ export class Position2DLabel extends Label {
         this.transform = mat4.rotateZ(transform, transform, angle);
 
         const vertices = this.prepareVertexStorage();
-        Typesetter.typeset(this, vertices, 0);
+        Typesetter2.typeset(this, vertices, 0);
 
         return vertices;
     }

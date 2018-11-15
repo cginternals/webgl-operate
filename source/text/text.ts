@@ -7,14 +7,14 @@
  */
 export class Text {
 
-    static readonly DEFAULT_LINEFEED = '\x0A';
+    static readonly DEFAULT_LINE_FEED = '\x0A';
 
 
     /** @see {@link text} */
     protected _text: string;
 
     /** @see {@link lineFeed} */
-    protected _lineFeed: string = Text.DEFAULT_LINEFEED;
+    protected _lineFeed: string = Text.DEFAULT_LINE_FEED;
 
     /** @see {@link altered} */
     protected _altered = false;
