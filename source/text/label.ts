@@ -16,11 +16,11 @@ import { Text } from './text';
  */
 export class Label {
 
-    /** @see {@link text} */
-    protected _text: Text | string;
+    private static readonly DEFAULT_ELLIPSIS = '...';
 
-    /** @see {@link wordWrap} */
-    protected _wordWrap = false;
+
+    /** @see {@link text} */
+    protected _text: Text;
 
     /** @see {@link alignment} */
     protected _alignment: Label.Alignment = Label.Alignment.Left;
@@ -29,7 +29,7 @@ export class Label {
     protected _lineAnchor: Label.LineAnchor = Label.LineAnchor.Baseline;
 
     /** @see {@link lineWidth} */
-    protected _lineWidth = 0.0;
+    protected _lineWidth = NaN;
 
     /** @see {@link fontSize} */
     protected _fontSize = 0.05;
@@ -46,30 +46,47 @@ export class Label {
     /** @see {@link background} */
     protected _backgroundColor: Color;
 
-    /** @see {@link transform} */
-    protected _transform: mat4;
+    /** @see {@link type} */
+    protected _type: Label.Type;
 
-    /** @see {@link userTransform} */
-    protected _userTransform: mat4;
+    /** @see {@link transform} */
+    protected _staticTransform: mat4;
+
+    /** @see {@link dynamicTransform} */
+    protected _dynamicTransform: mat4;
 
     /** @see {@link extent} */
     protected _extent: [number, number];
 
+
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, color: false, resources: false, text: false, typesetting: false,
-        transform: false, userTransform: false,
+        staticTransform: false, dynamicTransform: false,
     });
+
+
+    /** @see {@link wrap} */
+    protected _wrap = false;
+
+    /** @see {@link elide} */
+    protected _elide: Label.Elide = Label.Elide.None;
+
+    /** @see {@link ellipsis} */
+    protected _ellipsis: string = Label.DEFAULT_ELLIPSIS;
+
 
     /**
      * Constructs an unconfigured, empty label.
      * @param text - The text that is displayed by this label.
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace?: FontFace) {
+    constructor(text: Text, type: Label.Type, fontFace?: FontFace) {
         this._text = text;
-        this._transform = mat4.create();
-        this._userTransform = mat4.create();
+        this._type = type;
+
+        this._staticTransform = mat4.create();
+        this._dynamicTransform = mat4.create();
         this._extent = [0, 0];
 
         if (fontFace) {
@@ -78,10 +95,10 @@ export class Label {
     }
 
     /**
-     * Creates an Array of glyph vertices with given length, ready to be used in the Typesetter.
+     * Creates an Array of glyph vertices, ready to be used in the Typesetter.
      */
     protected prepareVertexStorage(): GlyphVertices {
-        const vertices = new GlyphVertices(this.length);
+        const vertices = new GlyphVertices(this.length + this.ellipsis.length);
         return vertices;
     }
 
@@ -91,9 +108,6 @@ export class Label {
      * @returns character at the specified index
      */
     charAt(index: number): string {
-        if (this._text instanceof Text) {
-            return this._text.text.charAt(index);
-        }
         return this._text.charAt(index);
     }
 
@@ -104,9 +118,6 @@ export class Label {
      * @returns - codepoint of the char at given index or NaN
      */
     charCodeAt(index: number): number {
-        if (this._text instanceof Text) {
-            return this._text.text.charCodeAt(index);
-        }
         return this._text.charCodeAt(index);
     }
 
@@ -158,16 +169,46 @@ export class Label {
         return this._fontFace!.glyph(this.charCodeAt(index)).advance;
     }
 
+    /**
+     * Convenience getter to the label's text as string.
+     * @returns the label's text as string
+     */
+    toString(): string {
+        if (this._text instanceof Text) {
+            return this._text.text;
+        }
+        return this._text;
+    }
+
+    /**
+     * Intended for resetting alteration status.
+     */
+    reset(): void {
+        this._altered.reset();
+    }
+
 
     /**
      * Text that is to be rendered.
      */
-    set text(text: Text | string) {
+    set text(text: Text) {
         this._altered.alter('text');
         this._text = text;
     }
-    get text(): Text | string {
+    get text(): Text {
         return this._text;
+    }
+
+    /**
+     * Read-only access to this labels type specified at construction time. Static labels are baking as much
+     * transformations as possible into the glyph vertices (used for GPU). This means, when the position or size
+     * changes, the label must be typeset again and vertices are fully re-computed. For dynamic labels, only most
+     * relevant transformations are applied and dynamic transformations such as rotation, translation, scale etc,
+     * are applied during rendering without requiring re-typesetting or re-computation of vertices. The type,
+     * however, does not relate to the text. Whenever the text changes, re-typesetting etc. have to be invoked.
+     */
+    get type(): Label.Type {
+        return this._type;
     }
 
     /**
@@ -184,22 +225,59 @@ export class Label {
         if (this._text instanceof Text) {
             return this._text.lineFeed;
         }
-        return Text.DEFAULT_LINEFEED;
+        return Text.DEFAULT_LINE_FEED;
     }
 
     /**
-     * Whether or not words can be wrapped at the end of a line.
-     * @param wrap - `true` if word wrap is enabled, else `false`
+     * If enabled, breaks lines automatically at line width (while typesetting). Note that elide mode takes precedence.
      */
-    set wordWrap(wrap: boolean) {
-        if (this._wordWrap === wrap) {
-            return;
-        }
-        this._altered.alter('typesetting');
-        this._wordWrap = wrap;
+    set wrap(flag: boolean) {
+        this._wrap = flag;
     }
-    get wordWrap(): boolean {
-        return this._wordWrap;
+    get wrap(): boolean {
+        return this._wrap;
+    }
+
+    /**
+     * If enabled, shrinks the label to line width. Depending on the elide mode, the ellipses is put left, middle, or
+     * right. The ellipsis string can be adjusted (@see {@link ellipsis}). If the labels text does not exceed the line
+     * width no elide will be applied.
+     */
+    set elide(elide: Label.Elide) {
+        this._elide = elide;
+    }
+    get elide(): Label.Elide {
+        return this._elide;
+    }
+
+    /**
+     * Allows to override/customize the ellipsis string used for text elide (@see {@link elide}).
+     */
+    set ellipsis(ellipsis: string) {
+        this._ellipsis = ellipsis;
+    }
+    get ellipsis(): string {
+        return this._ellipsis;
+    }
+
+    /**
+     * Line width used to either maximum length for elide or maximum length for line breaks due to word wrap. The line
+     * width is expected in typesetting space (the unit used while Typesetting, i.e., the unit as the font face's glyph
+     * texture atlas).
+     */
+    set lineWidth(lineWidth: number) {
+        this._lineWidth = lineWidth;
+    }
+
+    /**
+     * Width of a single line in typesetting space (the unit used while Typesetting, i.e., the unit as the font face's
+     * glyph texture atlas). Since the font face needs to be defined in order to typeset, we assume here that the label
+     * has a defined fontFace.
+     */
+    get lineWidth(): number {
+        /* this.fontSize and lineWidth use the same unit (i.e., this.fontSizeUnit),
+         * this._lineWidth is expected to be in the same unit as the fontFace's glyph texture atlas */
+        return this._lineWidth * this._fontFace!.size / this.fontSize;
     }
 
     /**
@@ -230,13 +308,6 @@ export class Label {
         return this._lineAnchor;
     }
 
-    /**
-     * Width of a single line (in pt or w.r.t. font face scaling in world space respectively). The width of the line
-     * is not intended to be set explicitly, but implicitly via transformations/label placement.
-     */
-    get lineWidth(): number {
-        return this._lineWidth;
-    }
 
     /**
      * The currently used font size.
@@ -320,33 +391,33 @@ export class Label {
      * screen space, world space, ...). This can be set either explicitly or implicitly using various transformation
      * utility functions.
      */
-    set transform(transform: mat4) {
-        if (mat4.equals(this._transform, transform)) {
+    set staticTransform(transform: mat4) {
+        if (mat4.equals(this._staticTransform, transform)) {
             return;
         }
-        this._altered.alter('transform');
-        this._transform = transform;
+        this._altered.alter('staticTransform');
+        this._staticTransform = transform;
     }
-    get transform(): mat4 {
+    get staticTransform(): mat4 {
 
         const s = this.fontSize / this._fontFace!.size;
 
         const t: mat4 = mat4.create();
-        mat4.scale(t, this._transform, vec3.fromValues(s, s, s));
+        mat4.scale(t, this._staticTransform, vec3.fromValues(s, s, s));
 
         return t;
     }
 
     /**
-     * This just stores a transform for the user. The user takes care of using this appropriately
+     * Stores the resulting dynamic transform. This is intended to be used when in dynamic mode.
      * (e.g., for calculations to the final transform).
      */
-    set userTransform(t: mat4) {
-        this._altered.alter('userTransform');
-        this._userTransform = t;
+    set dynamicTransform(t: mat4) {
+        this._altered.alter('dynamicTransform');
+        this._dynamicTransform = t;
     }
-    get userTransform(): mat4 {
-        return this._userTransform;
+    get dynamicTransform(): mat4 {
+        return this._dynamicTransform;
     }
 
     /**
@@ -362,17 +433,6 @@ export class Label {
         return this._extent;
     }
 
-    /**
-     * Convenience getter to the label's text as string.
-     * @returns the label's text as string
-     */
-    toString(): string {
-        if (this._text instanceof Text) {
-            return this._text.text;
-        }
-        return this._text;
-    }
-
     /*
     * Whether or not any property or the referenced text has changed requiring, e.g., the new typesetting.
     * The alteration status can be reset using `reset` (@see {@link reset}).
@@ -381,16 +441,21 @@ export class Label {
         return this._altered.any || (this._text instanceof Text ? this._text.altered : false);
     }
 
-    /**
-     * Intended for resetting alteration status.
-     */
-    reset(): void {
-        this._altered.reset();
-    }
-
 }
 
 export namespace Label {
+
+    export enum Type {
+        Static = 'static',
+        Dynamic = 'dynamic',
+    }
+
+    export enum Elide {
+        None = 'none',
+        Left = 'left',
+        Middle = 'middle',
+        Right = 'right',
+    }
 
     export enum Alignment {
         Left = 'left',
@@ -408,7 +473,7 @@ export namespace Label {
     }
 
     /**
-     * This unit is used for the font size.
+     * This unit is used for the font size and related calculations.
      */
     export enum SpaceUnit {
         /* abstract world unit */

@@ -7,6 +7,7 @@ import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
+import { Color } from '../color';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { Framebuffer } from '../framebuffer';
@@ -19,8 +20,8 @@ import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 
 import { FontFace } from '../text/fontface';
+import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
-import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
 
@@ -146,6 +147,7 @@ namespace debug {
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
+            this._labelPass.color = new Color([1.0, 1.0, 1.0, 1.0]);
 
             FontFace.fromFile('./data/opensansr144.fnt', context)
                 .then((fontFace) => {
@@ -301,35 +303,86 @@ namespace debug {
 
             /** OpenLL 3D Labels */
 
-            const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'));
-            pos3Dlabel.fontSize = 0.1;
+            // const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'));
+            // pos3Dlabel.fontSize = 0.1;
 
-            /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
-            pos3Dlabel.setPosition(0.0, 0.1, -0.5);
-            pos3Dlabel.setDirection(0.0, 1.0, 0.0);
-            pos3Dlabel.setUp(-1.0, 0.0, 0.0);
+            // /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
+            // pos3Dlabel.setPosition(0.0, 0.1, -0.5);
+            // pos3Dlabel.setDirection(0.0, 1.0, 0.0);
+            // pos3Dlabel.setUp(-1.0, 0.0, 0.0);
 
-            const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'));
-            shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
-            shadowPos3Dlabel.fontSize = 0.1;
-            shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
-            shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
+            // const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'));
+            // shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
+            // shadowPos3Dlabel.fontSize = 0.1;
+            // shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
+            // shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
 
-            const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'));
-            anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
-            anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
-            anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
+            // const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'));
+            // anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
+            // anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
+            // anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
 
-            /** OpenLL 2D Labels */
+            // /** OpenLL 2D Labels */
 
-            const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'));
-            pos2Dlabel.fontSize = 40;
+            // const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'));
+            // pos2Dlabel.fontSize = 40;
 
-            /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */
-            pos2Dlabel.setPosition(-100, 0);
-            pos2Dlabel.setDirection(0.5, -0.5);
+            // /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */
+            // pos2Dlabel.setPosition(-100, 0);
+            // pos2Dlabel.setDirection(0.5, -0.5);
 
-            this._labelPass.labels = [pos3Dlabel, shadowPos3Dlabel, anotherPos3Dlabel, pos2Dlabel];
+
+            /** Wrapped labels, showcasing Ellipsis and NewLine */
+
+            const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
+of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was \
+created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere \
+tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present \
+moment; and yet I feel that I never was a greater artist than now. When, while the lovely valley teems with vapour \
+around me, and the meridian sun strikes the upper surface of the impenetrable foliage of my trees, and but a few \
+stray gleams steal into the inner sanctuary, I throw myself down among the tall grass by the trickling stream; and, \
+as I lie close to the earth, a thousand unknown plants are noticed by me: when I hear the buzz of the little world \
+among the stalks, and grow familiar with the countless indescribable forms of the insects and flies, then I feel the \
+presence of the Almighty, who formed us in his own image, and the breath of that universal love which bears and \
+sustains us, as it floats around us in an eternity of bliss;  and then, my friend, when darkness overspreads my eyes, \
+and heaven and earth seem to dwell in my soul and absorb its power, like the form of a beloved mistress, then I often \
+think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
+and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
+
+            // const numbers = '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30';
+
+            const label0 = new Position3DLabel(new Text(`${werther}`));
+            label0.lineWidth = 1.0;
+            label0.setPosition(-1.2, +0.5, 0.5);
+            label0.alignment = Label.Alignment.Left;
+            label0.wrap = true;
+
+            const label1 = new Position3DLabel(new Text(`abcdef`));
+            label1.lineWidth = 0.01;
+            label1.setPosition(+0.1, +0.5, 0.5);
+            label1.alignment = Label.Alignment.Left;
+            label1.elide = Label.Elide.Middle;
+
+            const label2 = new Position3DLabel(new Text(`${werther}`));
+            label2.lineWidth = 1.0;
+            label2.setPosition(+0.1, +0.3, 0.5);
+            label2.alignment = Label.Alignment.Left;
+            label2.elide = Label.Elide.Middle;
+
+            const label3 = new Position3DLabel(new Text(`${werther}`));
+            label3.lineWidth = 1.0;
+            label3.setPosition(+0.1, +0.1, 0.5);
+            label3.alignment = Label.Alignment.Left;
+            label3.elide = Label.Elide.Left;
+
+            const label4 = new Position3DLabel(new Text(`${werther}`));
+            label4.lineWidth = 1.0;
+            label4.setPosition(+1.2, -0.1, 0.5);
+            label4.alignment = Label.Alignment.Right;
+            label4.wrap = true;
+
+
+            this._labelPass.labels = [label0, label1, label2, label3, label4];
         }
     }
 }

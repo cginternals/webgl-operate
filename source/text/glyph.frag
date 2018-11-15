@@ -149,7 +149,7 @@ void main(void)
      * https://stackoverflow.com/questions/8509051/is-discard-bad-for-program-performance-in-opengl
      */
     if(a <= 0.0) {
-         discard;
+        discard;
     }
     fragColor = vec4(u_color.rgb, u_color.a * a);
 

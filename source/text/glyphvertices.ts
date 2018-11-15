@@ -65,11 +65,6 @@ export class GlyphVertices {
             };
             this._vertices.push(vertex);
         }
-
-        this._origins = new Float32Array(numGlyphs);
-        this._tangents = new Float32Array(numGlyphs);
-        this._ups = new Float32Array(numGlyphs);
-        this._texCoords = new Float32Array(numGlyphs);
     }
 
     /**
@@ -157,9 +152,5 @@ export class GlyphVertices {
     get texCoords(): Float32Array {
         return this._texCoords;
     }
-
-    // optimize() {
-
-    // }
 
 }

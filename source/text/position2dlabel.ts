@@ -7,6 +7,7 @@ import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { Text } from './text';
+
 import { Typesetter } from './typesetter';
 
 
@@ -26,7 +27,7 @@ export class Position2DLabel extends Label {
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
     constructor(text: Text, fontFace?: FontFace) {
-        super(text, fontFace);
+        super(text, Label.Type.Static, fontFace);
         this._position = vec2.fromValues(0.0, 0.0);
         this._direction = vec2.fromValues(1.0, 0.0);
 
@@ -84,12 +85,11 @@ export class Position2DLabel extends Label {
             angle = -angle;
         }
 
-        mat4.rotateZ(transform, transform, angle);
-
-        this.transform = transform;
+        /** use the setter to trigger label.transform.altered */
+        this.staticTransform = mat4.rotateZ(transform, transform, angle);
 
         const vertices = this.prepareVertexStorage();
-        Typesetter.typeset(this, vertices, 0);
+        Typesetter.typeset(this, vertices);
 
         return vertices;
     }

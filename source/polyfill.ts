@@ -36,6 +36,7 @@ if (String.prototype.repeat === undefined) {
         }
         return rpt;
     };
+
 }
 
 
@@ -100,12 +101,14 @@ if (Number.EPSILON === undefined) {
     (Number as NumberPolyfill).EPSILON = Math.pow(2, -52);
 }
 
-/**
- * IE11 polyfill for Array.prototype.slice
- */
-[Float32Array, Float64Array, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array]
-    .forEach((type) => {
-        if (type.prototype.slice === undefined) {
-            (type.prototype.slice as any) = Array.prototype.slice;
-        }
-    });
+
+// tslint:disable-next-line:max-line-length
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice#Polyfill
+[Float32Array, Uint8Array, Int8Array, Uint32Array, Int32Array].forEach((arrayType) => {
+    if (!arrayType.prototype.slice) {
+        Object.defineProperty(arrayType.prototype, 'slice', { value: Array.prototype.slice });
+    }
+    if (!arrayType.prototype.reduce) {
+        Object.defineProperty(arrayType.prototype, 'reduce', { value: Array.prototype.reduce });
+    }
+});
