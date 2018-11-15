@@ -292,7 +292,7 @@ export class Label {
     protected _lineAnchor: Label.LineAnchor = Label.LineAnchor.Baseline;
 
     /** @see {@link lineWidth} */
-    protected _lineWidth = 0.0;
+    protected _lineWidth = NaN;
 
     /** @see {@link fontSize} */
     protected _fontSize = 0.05;

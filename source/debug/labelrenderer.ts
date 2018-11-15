@@ -335,7 +335,7 @@ namespace debug {
 
             /** Wrapped labels, showcasing Ellipsis and NewLine */
 
-            const werther = 'A wonderful serenity\n; has taken possession of my entire soul, like these sweet mornings \
+            const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
 of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was \
 created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere \
 tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present \
@@ -366,7 +366,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label1.alignment = Label.Alignment.Left;
             label1.moep = true;
             label1.wrap = true;
-            // label1.elide = Label.Elide.Right;
+            // label1.elide = Label.Elide.Left;
 
 
 
