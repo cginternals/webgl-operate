@@ -49,7 +49,6 @@ export class GlyphVertices {
     protected _texCoords: Float32Array;
 
 
-
     /**
      * Constructs a specialized array containing GlyphVertex objects.
      * @param numGlyphs - the number of GlyphVertex objects.
