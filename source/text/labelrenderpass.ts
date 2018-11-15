@@ -141,8 +141,12 @@ export class LabelRenderPass extends Initializable {
             }
         }
 
-        this._geometry2D.update(glyphs2D.origins, glyphs2D.tangents, glyphs2D.ups, glyphs2D.texCoords);
-        this._geometry3D.update(glyphs3D.origins, glyphs3D.tangents, glyphs3D.ups, glyphs3D.texCoords);
+        if (glyphs2D.length > 0) {
+            this._geometry2D.update(glyphs2D.origins, glyphs2D.tangents, glyphs2D.ups, glyphs2D.texCoords);
+        }
+        if (glyphs3D.length > 0) {
+            this._geometry3D.update(glyphs3D.origins, glyphs3D.tangents, glyphs3D.ups, glyphs3D.texCoords);
+        }
     }
 
 

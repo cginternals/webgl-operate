@@ -88,7 +88,7 @@ export class Typesetter {
     /**
      * Resolves a typed float array storing the advances of each of the label's characters.
      * @param label - Label to resolve advances for.
-     * @param text - Text to compute advances for, if none is fiven, label.text is used.
+     * @param text - Text to compute advances for, if none is given, label.text is used.
      * @returns - A typed float array of all ordered character advances.
      */
     private static advances(label: Label, text?: string): Float32Array {
@@ -108,7 +108,7 @@ export class Typesetter {
     /**
      * Resolves a typed float array storing the kernings of each of the label's characters.
      * @param label - Label to resolve kernings for.
-     * @param text - Text to compute advances for, if none is fiven, label.text is used.
+     * @param text - Text to compute advances for, if none is given, label.text is used.
      * @returns - A typed float array of all ordered character kernings.
      */
     private static kernings(label: Label, text?: string): Float32Array {
@@ -142,8 +142,8 @@ export class Typesetter {
     /**
      * Create array of word, delimiter, and line feed fragments. A fragment thereby denotes the start and exclusive end
      * index as well as the type. The array is intended to favor maintainability over performance.
-     * @param label -
-     * @returns -
+     * @param label - Label to create fragments for.
+     * @returns - Fragments, i.e., indices ranges and associated fragment type (word, linefeed, delimiter).
      */
     private static fragments(label: Label): Array<Fragment> {
 
@@ -261,13 +261,15 @@ export class Typesetter {
             }
 
             /* Try to cramp as many characters of the fragment (word) as possible. */
-            for (let i1 = fragment[0]; i1 < fragment[1]; ++i1) {
+            for (let i1 = reverse ? fragment[1] - 1 : fragment[0];
+                reverse ? i1 >= fragment[0] : i1 < fragment[1]; reverse ? --i1 : ++i1) {
+
                 if (width + labelAdvances[i1] + labelKernings[i1] < threshold) {
                     width += labelAdvances[i1] + labelKernings[i1];
                     continue;
                 }
 
-                fragments.push([fragment[0], i1, fragment[2]]);
+                fragments.push([reverse ? i1 : fragment[0], reverse ? fragment[1] : i1, fragment[2]]);
                 fragmentWidths.push(width + labelAdvances[i1]);
                 break;
             }
@@ -350,14 +352,13 @@ export class Typesetter {
     /**
      * Typesets the given label, transforming the vertices in-world, ready to be rendered.
      * @param label - The label that is to be typeset.
-     * @param vertices - The glyph vertices, a prepared (optionally empty) vertex storage.
+     * @param vertices - in/out The glyph vertices, a prepared (optionally empty) vertex storage.
+     * @returns - The number of glyphs that are actually typeset and setup as vertices.
      */
-    static typeset(label: Label, vertices: GlyphVertices): void {
-
-        /** @todo its  wrong to get the vertices here when we do not even know how many glyphs will be typeset. */
+    static typeset(label: Label, vertices: GlyphVertices): number {
 
         if (label.length === 0) {
-            return;
+            return 0;
         }
 
         assert(label.fontFace !== undefined, `expected a font face for label before typesetting`);
@@ -365,6 +366,9 @@ export class Typesetter {
 
         /* Retrieve advances, kernings, as well as line feed and delimiter indices. */
 
+        /* Utility to query glyphs by index. If the index exceeds the label's text length, the ellipsis is queried
+        instead of the text. Due to pre-fetching kernings and advances, additional/optional ellipsis data is appended
+        and later access via offset @see {@link advance}. */
         const glyphs = (index: number): Glyph => index < label.length ? fontFace.glyph(label.charCodeAt(index)) :
             fontFace.glyph(label.ellipsis.charCodeAt(index - label.length));
 
@@ -402,10 +406,16 @@ export class Typesetter {
                 const lineFeed = !elide && fragment[2] === Typesetter.FragmentType.LineFeed;
                 let wordWrap = false;
 
-                /* If word wrap is desired (no elide, no line feed already and label enabled), then keep words with
+                /* If word wrap is desired (no elide, no line feed already and label enabled), then take words with
                 subsequent delimiters into account. These should be moved to the next line together (not split). */
                 if (!elide && !lineFeed && label.wrap) {
-                    /* If this fragment is a non depictable delimiter keep don't break. */
+                    /* If this fragment is a non depictable delimiter don't break. Non depictable fragments/characters
+                    will not be visible at the end of a line, but would increase the indent for the subsequent line.
+                    This, however, is only applied for the first non depictable delimiter, since, e.g., multiple spaces
+                    are probably expected to indent the next line instead of trim-like behavior.
+                    Example: 'A wonderful serenity has taken place'. If line breaks is required after 'taken' it will
+                    ignore the subsequent space. For 'A wonderful serenity has taken     place' four spaces will occur
+                    on the next new line: '    place' instead of 'place'. */
                     const depictable = fragment[2] !== Typesetter.FragmentType.Delimiter ||
                         glyphs(fragment[0]).depictable();
 
@@ -446,7 +456,8 @@ export class Typesetter {
         };
 
 
-        if (elide) {
+        const fullApproximatedWidth = labelFragmentWidths.reduce((accumulate, width) => accumulate + width, 0.0);
+        if (elide && fullApproximatedWidth > label.lineWidth) {
 
             /* Compute width of ellipsis (reuse default advances, kernings and fragment widths functions). */
             const ellipsisFragments: Array<Fragment> =
@@ -457,7 +468,12 @@ export class Typesetter {
             const ellipsisFragmentWidths = Typesetter.fragmentWidths(
                 [[0, label.ellipsis.length, Typesetter.FragmentType.Word]], ellipsisAdvances, ellipsisKernings);
 
-            const thresholds = Typesetter.elideThresholds(label, ellipsisFragmentWidths[0]);
+            const ellipsisWidth = ellipsisFragmentWidths[0];
+            /* If even the ellipsis does not fit within line width, then skip typesetting. */
+            if (label.lineWidth < ellipsisWidth) {
+                return 0;
+            }
+            const thresholds = Typesetter.elideThresholds(label, ellipsisWidth);
 
             const [leftFragments, leftFragmentWidths] = Typesetter.elideFragments(
                 thresholds[0], labelFragments, labelFragmentWidths, labelAdvances, labelKernings, false);
@@ -482,6 +498,9 @@ export class Typesetter {
 
         /* Apply transforms (alignment and static label transform) to all written vertices. */
         Typesetter.transform(label, vertices, lines);
+        vertices.vertices.length = vertexIndex;
+
+        return vertexIndex;
     }
 
 }

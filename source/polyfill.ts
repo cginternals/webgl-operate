@@ -102,7 +102,6 @@ if (Number.EPSILON === undefined) {
 }
 
 
-
 // tslint:disable-next-line:max-line-length
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice#Polyfill
 [Float32Array, Uint8Array, Int8Array, Uint32Array, Int32Array].forEach((arrayType) => {

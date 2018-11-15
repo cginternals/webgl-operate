@@ -27,7 +27,7 @@ export class Position2DLabel extends Label {
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
     constructor(text: Text, fontFace?: FontFace) {
-        super(text, fontFace);
+        super(text, Label.Type.Static, fontFace);
         this._position = vec2.fromValues(0.0, 0.0);
         this._direction = vec2.fromValues(1.0, 0.0);
 
