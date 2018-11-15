@@ -31,7 +31,6 @@ export class LabelRenderPass extends Initializable {
      */
     protected static readonly DEFAULT_COLOR: Color = new Color([0.1, 0.1, 0.1, 1.0]);
 
-
     /**
      * Default AA step scale: more crisp text rendering.
      */
@@ -87,8 +86,8 @@ export class LabelRenderPass extends Initializable {
     protected _font: FontFace | undefined;
     protected _labels: Array<Label>;
 
-    protected _geometry3D: LabelGeometry;
-    protected _geometry2D: LabelGeometry;
+    protected _staticGeometry: LabelGeometry;
+    protected _dynamicGeometry: LabelGeometry;
 
 
     /**
@@ -101,8 +100,9 @@ export class LabelRenderPass extends Initializable {
         this._depthFunc = context.gl.LESS;
 
         this._program = new Program(context, 'LabelRenderProgram');
-        this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
-        this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
+
+        this._staticGeometry = new LabelGeometry(this._context, 'StaticLabels');
+        this._dynamicGeometry = new LabelGeometry(this._context, 'DynamicLabels');
 
         this._color = LabelRenderPass.DEFAULT_COLOR;
         this._aaStepScale = LabelRenderPass.DEFAULT_AA_STEP_SCALE;
@@ -114,16 +114,16 @@ export class LabelRenderPass extends Initializable {
      * Typesets and renders 2D and 3D labels.
      */
     protected prepare(): void {
+
         if (this._font === undefined) {
             const empty = new Float32Array(0);
-            this._geometry2D.update(empty, empty, empty, empty);
-            this._geometry3D.update(empty, empty, empty, empty);
+            this._staticGeometry.update(empty, empty, empty, empty);
+            this._dynamicGeometry.update(empty, empty, empty, empty);
             return;
         }
 
-        /* Remove all calculated vertices for 2D and 3D labels. */
-        const glyphs2D = new GlyphVertices(0);
-        const glyphs3D = new GlyphVertices(0);
+        const staticGlyphs = new GlyphVertices(0);
+        const dynamicGlyphs = new GlyphVertices(0);
 
         const frameSize = this._camera.viewport;
 
@@ -135,17 +135,19 @@ export class LabelRenderPass extends Initializable {
             label.fontFace = this._font!;
 
             if (label instanceof Position2DLabel) {
-                glyphs2D.concat(label.typeset(frameSize));
+                (label.type === Label.Type.Static ? staticGlyphs : dynamicGlyphs).concat(label.typeset(frameSize));
             } else if (label instanceof Position3DLabel) {
-                glyphs3D.concat(label.typeset());
+                (label.type === Label.Type.Static ? staticGlyphs : dynamicGlyphs).concat(label.typeset());
             }
         }
 
-        if (glyphs2D.length > 0) {
-            this._geometry2D.update(glyphs2D.origins, glyphs2D.tangents, glyphs2D.ups, glyphs2D.texCoords);
+        if (staticGlyphs.length > 0) {
+            this._staticGeometry.update(
+                staticGlyphs.origins, staticGlyphs.tangents, staticGlyphs.ups, staticGlyphs.texCoords);
         }
-        if (glyphs3D.length > 0) {
-            this._geometry3D.update(glyphs3D.origins, glyphs3D.tangents, glyphs3D.ups, glyphs3D.texCoords);
+        if (dynamicGlyphs.length > 0) {
+            this._dynamicGeometry.update(
+                dynamicGlyphs.origins, dynamicGlyphs.tangents, dynamicGlyphs.ups, dynamicGlyphs.texCoords);
         }
     }
 
@@ -180,11 +182,11 @@ export class LabelRenderPass extends Initializable {
         const aUp = this._program.attribute('a_up', 4);
 
 
-        if (!this._geometry2D.initialized) {
-            this._geometry2D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+        if (!this._staticGeometry.initialized) {
+            this._staticGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
-        if (!this._geometry3D.initialized) {
-            this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+        if (!this._dynamicGeometry.initialized) {
+            this._dynamicGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
 
         return true;
@@ -192,8 +194,8 @@ export class LabelRenderPass extends Initializable {
 
     @Initializable.uninitialize()
     uninitialize(): void {
-        this._geometry3D.uninitialize();
-        this._geometry2D.uninitialize();
+        this._staticGeometry.uninitialize();
+        this._dynamicGeometry.uninitialize();
         this._program.uninitialize();
 
         this._uViewProjection = undefined;
@@ -267,14 +269,15 @@ export class LabelRenderPass extends Initializable {
         necessary. */
         this._target.bind();
 
-        this._geometry3D.bind();
-        this._geometry3D.draw();
+        this._staticGeometry.bind();
+        this._staticGeometry.draw();
 
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, mat4.create());
 
-        this._geometry2D.bind();
-        this._geometry2D.draw();
+        /* @todo for dynamic draw per label, update transform uniform, this means label bounds within geometry need
+        to be available here or somehow referenced/associated within the geometry... */
 
+        this._dynamicGeometry.bind();
+        this._dynamicGeometry.draw();
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */
         // this._geometry.unbind();
