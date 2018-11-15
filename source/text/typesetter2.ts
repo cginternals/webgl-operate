@@ -137,7 +137,8 @@ export class Typesetter2 {
 
         const glyphs = new Array<Glyph>(label.length);
 
-        /* Create array of word, delimiter, and line feed fragments. */
+        /* Create array of word, delimiter, and line feed fragments. A fragment thereby denotes the start and exclusive
+        end index as well as the type. The array is intended to favor maintainability over performance. */
         const fragments = new Array<Fragment>();
 
         let isDelimiter: boolean;
@@ -169,18 +170,18 @@ export class Typesetter2 {
         }
 
 
+        /* Compute fragment widths without kernings w.r.t. preceding and subsequent fragments. */
 
-        // /* Compute fragment widths. The widths does comprise kerning after. */
-
-        // const fragmentWidths = new Float32Array(fragments.length);
-        // for (let i = 0; i < fragments.length; ++i) {
-        //     const fragment = fragments[i];
-        //     fragmentWidths[i] = advances.subarray(fragment[0], fragment[1]).reduce((width, advance, index) =>
-        //         width + advance + (index < fragment[1] ? kernings[index] : 0.0), 0.0);
-        // }
+        const fragmentWidths = new Float32Array(label.elide !== Label.Elide.None || label.wrap ? fragments.length : 0);
+        for (let i = 0; i < fragments.length; ++i) {
+            const fragment = fragments[i];
+            fragmentWidths[i] = advances.subarray(fragment[0], fragment[1]).reduce((width, advance, index) =>
+                width + advance + (index < fragment[1] ? kernings[index] : 0.0), 0.0);
+        }
 
 
-        /* Typeset Lines. A line is a 3-tuple of start-index, end-index, and line width. */
+        /* Typeset Lines. A line is a 3-tuple of start-index, end-index, and line width. The indices are referencing
+        vertices of the glyph vertices. They cannot be reused for further typesetting. */
 
         const lines = new Array<[number, number, number]>();
         let firstIndexOfLine = 0;
@@ -188,22 +189,41 @@ export class Typesetter2 {
         const pen: vec2 = vec2.fromValues(0.0, 0.0);
         let index = 0;
 
-        for (const fragment of fragments) {
+        for (let i = 0; i < fragments.length; ++i) {
 
-            if (/* label.elide === Label.Elide.None && */ fragment[2] === Typesetter2.FragmentType.LineFeed) {
+            const fragment = fragments[i];
+
+            /* Elide takes precedence, since full line width is used, so every line break is omitted. */
+            const elide = label.elide !== Label.Elide.None;
+            const lineFeed = !elide && fragment[2] === Typesetter2.FragmentType.LineFeed;
+            let wordWrap = false;
+
+            /* If word wrap is desired (no elide, no line feed already and label enabled), then keep words with
+            subsequent dilimiters into account. These should be moved to the next line together (not split). */
+            if (!elide && !lineFeed && label.wrap) {
+                const lookAhead = fragment[2] === Typesetter2.FragmentType.Word &&
+                    i < fragments.length - 1 && fragments[i + 1][2] === Typesetter2.FragmentType.Delimiter;
+
+                wordWrap = pen[0] + fragmentWidths[i] + (lookAhead ? fragmentWidths[i + 1] : 0) > label.lineWidth;
+            }
+
+            /* New line! Either line feed or word wrap made it. */
+            if (lineFeed || wordWrap) {
                 lines.push([firstIndexOfLine, index, pen[0]]);
+                firstIndexOfLine = index;
 
                 pen[0] = 0.0;
                 pen[1] -= fontFace.lineHeight;
 
-                ++index;
-                firstIndexOfLine = index;
-
-                continue;
+                /* In case of line feed, no additional vertex needs to be written. */
+                if (lineFeed) {
+                    continue;
+                }
+                index = fragment[0];
             }
 
             for (; index < fragment[1]; ++index) {
-                Typesetter2.writeVertex(fontFace, pen, glyphs[index], vertices.vertices[index - lines.length]);
+                Typesetter2.writeVertex(fontFace, pen, glyphs[index], vertices.vertices[index]);
                 pen[0] += advances[index] + kernings[index];
             }
         }
@@ -214,13 +234,9 @@ export class Typesetter2 {
 
         /* Create glyph vertices for rendering. */
 
-        for (let i = 0; i < lines.length; ++i) {
-            /* Adjust line feeds that are not accounted for within the vertices (one per line). */
-            const i0 = lines[i][0] - i;
-            const i1 = lines[i][1] - i;
-
-            Typesetter2.transformAlignment(lines[i][2], label.alignment, vertices, i0, i1);
-            Typesetter2.transformVertex(label.transform, vertices, i0, i1);
+        for (const line of lines) {
+            Typesetter2.transformAlignment(line[2], label.alignment, vertices, line[0], line[1]);
+            Typesetter2.transformVertex(label.transform, vertices, line[0], line[1]);
         }
     }
 

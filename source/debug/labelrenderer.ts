@@ -335,7 +335,7 @@ namespace debug {
 
             /** Wrapped labels, showcasing Ellipsis and NewLine */
 
-            const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
+            const werther = 'A wonderful serenity\n; has taken possession of my entire soul, like these sweet mornings \
 of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was \
 created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere \
 tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present \
@@ -350,14 +350,20 @@ and heaven and earth seem to dwell in my soul and absorb its power, like the for
 think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
 and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
+            // const numbers = '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30';
+
             const label0 = new Position3DLabel(new Text(`${werther}`));
-            label0.setPosition(0.0, +0.15, 0.5);
-            label0.alignment = Label.Alignment.Right;
+            label0.lineWidth = 1.0;
+            label0.setPosition(-1.2, +0.5, 0.5);
+            label0.alignment = Label.Alignment.Left;
+            label0.wordWrapper = Label.WordWrap.LineFeed;
 
             const label1 = new Position3DLabel(new Text(`${werther}`));
+            label1.lineWidth = 1.0;
+            label1.setPosition(+0.1, +0.5, 0.5);
+            label1.alignment = Label.Alignment.Left;
             label1.moep = true;
-            label1.setPosition(0.0, -0.05, 0.5);
-            label1.alignment = Label.Alignment.Right;
+            label1.wrap = true;
 
 
 

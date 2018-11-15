@@ -16,144 +16,13 @@ import { Text } from './text';
  */
 export class Label {
 
-    /** @see {@link text} */
-    protected _text: Text;
+    private static readonly DEFAULT_ELIDE_FILL = '...';
 
-    /** @see {@link wordWrapper} */
-    protected _wordWrapper: Label.WordWrap = Label.WordWrap.None;
+    protected _wrap = false;
 
-    /** @see {@link ellipsisChars} */
-    protected _ellipsisChars = '...';
+    protected _elide: Label.Elide = Label.Elide.None;
+    protected _ellipsis: string = Label.DEFAULT_ELIDE_FILL;
 
-    /** @see {@link alignment} */
-    protected _alignment: Label.Alignment = Label.Alignment.Left;
-
-    /** @see {@link lineAnchor} */
-    protected _lineAnchor: Label.LineAnchor = Label.LineAnchor.Baseline;
-
-    /** @see {@link lineWidth} */
-    protected _lineWidth = 0.0;
-
-    /** @see {@link fontSize} */
-    protected _fontSize = 0.05;
-
-    /** @see {@link fontSizeUnit} */
-    protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
-
-    /** @see {@link fontFace} */
-    protected _fontFace: FontFace | undefined;
-
-    /** @see {@link color} */
-    protected _color: Color;
-
-    /** @see {@link background} */
-    protected _backgroundColor: Color;
-
-    /** @see {@link transform} */
-    protected _transform: mat4;
-
-    /** @see {@link userTransform} */
-    protected _userTransform: mat4;
-
-    /** @see {@link extent} */
-    protected _extent: [number, number];
-
-    /** @see {@link altered} */
-    protected readonly _altered = Object.assign(new ChangeLookup(), {
-        any: false, color: false, resources: false, text: false, typesetting: false,
-        transform: false, userTransform: false,
-    });
-
-    /**
-     * Constructs an unconfigured, empty label.
-     * @param text - The text that is displayed by this label.
-     * @param fontFace - The font face that should be used for that label, or undefined if set later.
-     */
-    constructor(text: Text, fontFace?: FontFace) {
-        this._text = text;
-        this._transform = mat4.create();
-        this._userTransform = mat4.create();
-        this._extent = [0, 0];
-
-        if (fontFace) {
-            this._fontFace = fontFace;
-        }
-    }
-
-    /**
-     * Creates an Array of glyph vertices, ready to be used in the Typesetter.
-     */
-    protected prepareVertexStorage(): GlyphVertices {
-        const vertices = new GlyphVertices(this.length);
-        return vertices;
-    }
-
-    /**
-     * Returns the character at the specified index.
-     * @param index - The zero-based index of the desired character.
-     * @returns character at the specified index
-     */
-    charAt(index: number): string {
-        return this._text.charAt(index);
-    }
-
-    /**
-     * Returns the Unicode value (codepoint) of the character at the specified location.
-     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
-     * NaN is returned.
-     * @returns - codepoint of the char at given index or NaN
-     */
-    charCodeAt(index: number): number {
-        return this._text.charCodeAt(index);
-    }
-
-    /**
-     * Returns, whether or not the character at a given index is equal to the default or the text's line feed character.
-     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
-     * NaN is returned.
-     * @returns - true if char at given index equals the text's line feed character
-     */
-    lineFeedAt(index: number): boolean {
-        return this.charAt(index) === this.lineFeed;
-    }
-
-
-    /**
-     * Gets the kerning value before (i.e., left in left-to-right writing systems) the given glyph index.
-     * @param index - index of the glyph in this label
-     * @returns - kerning value before glyph at given index
-     */
-    kerningBefore(index: number): number {
-        if (index < 1 || index > this.length) {
-            return NaN;
-        }
-        return this._fontFace!.kerning(this.charCodeAt(index - 1), this.charCodeAt(index));
-    }
-
-    /**
-     * Gets the kerning value after (i.e., right in left-to-right writing systems) the given glyph index.
-     * @param index - index of the glyph in this label
-     * @returns - kerning value after glyph at given index
-     */
-    kerningAfter(index: number): number {
-        if (index < 0 || index > this.length - 1) {
-            return NaN;
-        }
-        return this._fontFace!.kerning(this.charCodeAt(index), this.charCodeAt(index + 1));
-    }
-
-    /**
-     * Returns the advancement of the glyph at given index.
-     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
-     * NaN is returned.
-     * @returns - advancement of the glyph at given index or NaN
-     */
-    advance(index: number): number {
-        if (index < 0 || index > this.length) {
-            return NaN;
-        }
-        return this._fontFace!.glyph(this.charCodeAt(index)).advance;
-    }
 
 
     /**
@@ -183,6 +52,21 @@ export class Label {
         }
         return Text.DEFAULT_LINE_FEED;
     }
+
+    set wrap(flag: boolean) {
+        this._wrap = flag;
+    }
+    get wrap(): boolean {
+        return this._wrap;
+    }
+
+    set elide(elide: Label.Elide) {
+        this._elide = elide;
+    }
+    get elide(): Label.Elide {
+        return this._elide;
+    }
+
 
     /**
      * Set the algorithm that should be used when the label exceeds the defined line width, see lineWidth()
@@ -377,6 +261,154 @@ export class Label {
         return this._extent;
     }
 
+    /*
+    * Whether or not any property or the referenced text has changed requiring, e.g., the new typesetting.
+    * The alteration status can be reset using `reset` (@see {@link reset}).
+    */
+    get altered(): boolean {
+        return this._altered.any || (this._text instanceof Text ? this._text.altered : false);
+    }
+
+    /** @see {@link text} */
+    protected _text: Text;
+
+    /** @see {@link wordWrapper} */
+    protected _wordWrapper: Label.WordWrap = Label.WordWrap.None;
+
+    /** @see {@link ellipsisChars} */
+    protected _ellipsisChars = '...';
+
+    /** @see {@link alignment} */
+    protected _alignment: Label.Alignment = Label.Alignment.Left;
+
+    /** @see {@link lineAnchor} */
+    protected _lineAnchor: Label.LineAnchor = Label.LineAnchor.Baseline;
+
+    /** @see {@link lineWidth} */
+    protected _lineWidth = 0.0;
+
+    /** @see {@link fontSize} */
+    protected _fontSize = 0.05;
+
+    /** @see {@link fontSizeUnit} */
+    protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
+
+    /** @see {@link fontFace} */
+    protected _fontFace: FontFace | undefined;
+
+    /** @see {@link color} */
+    protected _color: Color;
+
+    /** @see {@link background} */
+    protected _backgroundColor: Color;
+
+    /** @see {@link transform} */
+    protected _transform: mat4;
+
+    /** @see {@link userTransform} */
+    protected _userTransform: mat4;
+
+    /** @see {@link extent} */
+    protected _extent: [number, number];
+
+    /** @see {@link altered} */
+    protected readonly _altered = Object.assign(new ChangeLookup(), {
+        any: false, color: false, resources: false, text: false, typesetting: false,
+        transform: false, userTransform: false,
+    });
+
+
+    /**
+     * Constructs an unconfigured, empty label.
+     * @param text - The text that is displayed by this label.
+     * @param fontFace - The font face that should be used for that label, or undefined if set later.
+     */
+    constructor(text: Text, fontFace?: FontFace) {
+        this._text = text;
+        this._transform = mat4.create();
+        this._userTransform = mat4.create();
+        this._extent = [0, 0];
+
+        if (fontFace) {
+            this._fontFace = fontFace;
+        }
+    }
+
+    /**
+     * Creates an Array of glyph vertices, ready to be used in the Typesetter.
+     */
+    protected prepareVertexStorage(): GlyphVertices {
+        const vertices = new GlyphVertices(this.length);
+        return vertices;
+    }
+
+    /**
+     * Returns the character at the specified index.
+     * @param index - The zero-based index of the desired character.
+     * @returns character at the specified index
+     */
+    charAt(index: number): string {
+        return this._text.charAt(index);
+    }
+
+    /**
+     * Returns the Unicode value (codepoint) of the character at the specified location.
+     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
+     * NaN is returned.
+     * @returns - codepoint of the char at given index or NaN
+     */
+    charCodeAt(index: number): number {
+        return this._text.charCodeAt(index);
+    }
+
+    /**
+     * Returns, whether or not the character at a given index is equal to the default or the text's line feed character.
+     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
+     * NaN is returned.
+     * @returns - true if char at given index equals the text's line feed character
+     */
+    lineFeedAt(index: number): boolean {
+        return this.charAt(index) === this.lineFeed;
+    }
+
+
+    /**
+     * Gets the kerning value before (i.e., left in left-to-right writing systems) the given glyph index.
+     * @param index - index of the glyph in this label
+     * @returns - kerning value before glyph at given index
+     */
+    kerningBefore(index: number): number {
+        if (index < 1 || index > this.length) {
+            return NaN;
+        }
+        return this._fontFace!.kerning(this.charCodeAt(index - 1), this.charCodeAt(index));
+    }
+
+    /**
+     * Gets the kerning value after (i.e., right in left-to-right writing systems) the given glyph index.
+     * @param index - index of the glyph in this label
+     * @returns - kerning value after glyph at given index
+     */
+    kerningAfter(index: number): number {
+        if (index < 0 || index > this.length - 1) {
+            return NaN;
+        }
+        return this._fontFace!.kerning(this.charCodeAt(index), this.charCodeAt(index + 1));
+    }
+
+    /**
+     * Returns the advancement of the glyph at given index.
+     * @param index - The zero-based index of the desired character. If there is no character at the specified index,
+     * NaN is returned.
+     * @returns - advancement of the glyph at given index or NaN
+     */
+    advance(index: number): number {
+        if (index < 0 || index > this.length) {
+            return NaN;
+        }
+        return this._fontFace!.glyph(this.charCodeAt(index)).advance;
+    }
+
     /**
      * Convenience getter to the label's text as string.
      * @returns the label's text as string
@@ -386,14 +418,6 @@ export class Label {
             return this._text.text;
         }
         return this._text;
-    }
-
-    /*
-    * Whether or not any property or the referenced text has changed requiring, e.g., the new typesetting.
-    * The alteration status can be reset using `reset` (@see {@link reset}).
-    */
-    get altered(): boolean {
-        return this._altered.any || (this._text instanceof Text ? this._text.altered : false);
     }
 
     /**
