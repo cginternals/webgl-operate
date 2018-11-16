@@ -15,7 +15,7 @@ const copy = require('./copy.js');
 const websiteDir = './website';
 const buildDir = './build';
 
-const entries = ['index.pug'];
+const entries = ['index.pug', 'about.pug'];
 
 const assets = [
     [websiteDir, buildDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
