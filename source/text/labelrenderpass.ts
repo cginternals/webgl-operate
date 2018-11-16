@@ -50,6 +50,9 @@ export class LabelRenderPass extends Initializable {
         aaStepScale: false,
     });
 
+    /** @see {@link type} */
+    protected _type: Label.Type;
+
     /**
      * Read-only access to the objects context, used to get context information and WebGL API access.
      */
@@ -82,6 +85,7 @@ export class LabelRenderPass extends Initializable {
     protected _uNdcOffset: WebGLUniformLocation | undefined;
     protected _uColor: WebGLUniformLocation | undefined;
     protected _uAAStepScale: WebGLUniformLocation | undefined;
+    protected _uTransform: WebGLUniformLocation | undefined;
 
     protected _font: FontFace | undefined;
     protected _labels: Array<Label>;
@@ -153,13 +157,15 @@ export class LabelRenderPass extends Initializable {
 
 
     @Initializable.initialize()
-    initialize(): boolean {
+    initialize(type: Label.Type): boolean {
         const gl = this._context.gl;
+        this._type = type;
 
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
-        vert.initialize(require('./glyph.vert'));
+        const vertFile = type === Label.Type.Static ? 'staticglyph.vert' : 'dynamicglyph.vert';
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, vertFile);
+        vert.initialize(require(`./${vertFile}`));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
-        frag.initialize(require('./glyph.frag'));
+        frag.initialize(require(`./glyph.frag`));
 
         this._program.initialize([vert, frag]);
 
@@ -167,6 +173,9 @@ export class LabelRenderPass extends Initializable {
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uColor = this._program.uniform('u_color');
         this._uAAStepScale = this._program.uniform('u_aaStepScale');
+        if (this.isDynamic) {
+            this._uTransform = this._program.uniform('u_transform');
+        }
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_glyphs'), 0);
@@ -411,6 +420,28 @@ export class LabelRenderPass extends Initializable {
     }
     get aaStepScale(): GLfloat {
         return this._aaStepScale;
+    }
+
+    /**
+     * A label render pass renders exclusively either dynamic or static labels. The type of the label pass is specified
+     * during initialization.
+     */
+    get type(): Label.Type {
+        return this._type;
+    }
+
+    /**
+     * Returns true if the label render pass is initialized for static labels. False otherwise.
+     */
+    get isStatic(): boolean {
+        return this._type === Label.Type.Static;
+    }
+
+    /**
+     * Returns true if the label render pass is initialized for dynamic labels. False otherwise.
+     */
+    get isDynamic(): boolean {
+        return this._type === Label.Type.Dynamic;
     }
 
 }
