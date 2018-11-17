@@ -50,9 +50,6 @@ export class LabelRenderPass extends Initializable {
         aaStepScale: false,
     });
 
-    /** @see {@link type} */
-    protected _type: Label.Type;
-
     /**
      * Read-only access to the objects context, used to get context information and WebGL API access.
      */
@@ -87,11 +84,14 @@ export class LabelRenderPass extends Initializable {
     protected _uAAStepScale: WebGLUniformLocation | undefined;
     protected _uTransform: WebGLUniformLocation | undefined;
 
-    protected _font: FontFace | undefined;
     protected _labels: Array<Label>;
 
-    protected _staticGeometry: LabelGeometry;
-    protected _dynamicGeometry: LabelGeometry;
+    /**
+     * Stores for each label (same index in _labels) the range within the geometry.
+     */
+    protected _ranges: Array<[number, number]>;
+
+    protected _geometry: LabelGeometry;
 
 
     /**
@@ -105,7 +105,7 @@ export class LabelRenderPass extends Initializable {
 
         this._program = new Program(context, 'LabelRenderProgram');
 
-        this._staticGeometry = new LabelGeometry(this._context, 'StaticLabels');
+        this._geometry = new LabelGeometry(this._context, 'StaticLabels');
         this._dynamicGeometry = new LabelGeometry(this._context, 'DynamicLabels');
 
         this._color = LabelRenderPass.DEFAULT_COLOR;
@@ -121,7 +121,7 @@ export class LabelRenderPass extends Initializable {
 
         if (this._font === undefined) {
             const empty = new Float32Array(0);
-            this._staticGeometry.update(empty, empty, empty, empty);
+            this._geometry.update(empty, empty, empty, empty);
             this._dynamicGeometry.update(empty, empty, empty, empty);
             return;
         }
@@ -146,7 +146,7 @@ export class LabelRenderPass extends Initializable {
         }
 
         if (staticGlyphs.length > 0) {
-            this._staticGeometry.update(
+            this._geometry.update(
                 staticGlyphs.origins, staticGlyphs.tangents, staticGlyphs.ups, staticGlyphs.texCoords);
         }
         if (dynamicGlyphs.length > 0) {
@@ -191,8 +191,8 @@ export class LabelRenderPass extends Initializable {
         const aUp = this._program.attribute('a_up', 4);
 
 
-        if (!this._staticGeometry.initialized) {
-            this._staticGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+        if (!this._geometry.initialized) {
+            this._geometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
         }
         if (!this._dynamicGeometry.initialized) {
             this._dynamicGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
@@ -203,7 +203,7 @@ export class LabelRenderPass extends Initializable {
 
     @Initializable.uninitialize()
     uninitialize(): void {
-        this._staticGeometry.uninitialize();
+        this._geometry.uninitialize();
         this._dynamicGeometry.uninitialize();
         this._program.uninitialize();
 
@@ -278,15 +278,12 @@ export class LabelRenderPass extends Initializable {
         necessary. */
         this._target.bind();
 
-        this._staticGeometry.bind();
-        this._staticGeometry.draw();
+        this._geometry.bind();
+        this._geometry.draw();
 
 
         /* @todo for dynamic draw per label, update transform uniform, this means label bounds within geometry need
         to be available here or somehow referenced/associated within the geometry... */
-
-        this._dynamicGeometry.bind();
-        this._dynamicGeometry.draw();
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */
         // this._geometry.unbind();
@@ -298,7 +295,6 @@ export class LabelRenderPass extends Initializable {
         if (this._depthMask === false) {
             gl.depthMask(true);
         }
-
 
         gl.depthFunc(gl.LESS);
 
@@ -392,18 +388,6 @@ export class LabelRenderPass extends Initializable {
         this._altered.alter('labels');
     }
 
-    /**
-     * Allows to specify the font face for rendering. Note that if changes to the font face occur, `update(true)`
-     * should be invoked to invoke, e.g., re-typesetting of labels.
-     */
-    set fontFace(fontFace: FontFace | undefined) {
-        this._font = fontFace;
-        this._altered.alter('font');
-    }
-    get fontFace(): FontFace | undefined {
-        return this._font;
-    }
-
 
     /**
      * Allows to specify the basic AA step scale which is more of a hack to provide seemingly smoother (e.g., >= 1.0)
@@ -428,20 +412,6 @@ export class LabelRenderPass extends Initializable {
      */
     get type(): Label.Type {
         return this._type;
-    }
-
-    /**
-     * Returns true if the label render pass is initialized for static labels. False otherwise.
-     */
-    get isStatic(): boolean {
-        return this._type === Label.Type.Static;
-    }
-
-    /**
-     * Returns true if the label render pass is initialized for dynamic labels. False otherwise.
-     */
-    get isDynamic(): boolean {
-        return this._type === Label.Type.Dynamic;
     }
 
 }

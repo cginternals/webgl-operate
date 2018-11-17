@@ -342,9 +342,9 @@ export class Label {
     }
 
     /**
-     * Font face used for typesetting, transformation, and rendering. The font face is usually set by the
-     * LabelRenderPass. To avoid unnecessary typesetting, avoid rendering the same label using multiple render passes
-     * with different font faces (there is currently only a single set of typeset vertices per label).
+     * Font face used for typesetting, transformation, and rendering. To avoid unnecessary state changes when rendering,
+     * prefer to add labels of the same font face consecutively (since this specifies draw sequence and state change
+     * occurs whenever font face changes between two subsequent labels).
      */
     set fontFace(fontFace: FontFace | undefined) {
         if (this._fontFace === fontFace) {
