@@ -444,9 +444,10 @@ export class Typesetter {
 
                 /* Advance forward for the next word-fragment. */
                 for (let i = fragment[0]; i < fragment[1]; ++i) {
-                    Typesetter.writeVertex(fontFace, pen, glyphs(i), vertices.vertices[vertexIndex]);
-                    ++vertexIndex;
-
+                    if (glyphs(i).depictable()) {
+                        Typesetter.writeVertex(fontFace, pen, glyphs(i), vertices.vertices[vertexIndex]);
+                        ++vertexIndex;
+                    }
                     pen[0] += advances[i - offset] + kernings[i - offset];
                 }
             }
