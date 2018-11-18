@@ -22,7 +22,7 @@ export interface GlyphVertex {
      * Bitangent vector (orthogonal to the label's baseline). The length of this vector is expected to be the height of
      * this glyphs geometry, i.e., it is used to derive the glyph vertices using simple addition.
      */
-    up: vec3;
+    bitangent: vec3;
 
     /**
      * Sub image rect of the glyph in the glyph texture (uv-coordinates).
@@ -44,7 +44,7 @@ export class GlyphVertices {
     /** @see {@link tangents} */
     protected _tangents: Float32Array;
     /** @see {@link ups} */
-    protected _ups: Float32Array;
+    protected _bitangents: Float32Array;
     /** @see {@link texCoords} */
     protected _texCoords: Float32Array;
 
@@ -59,7 +59,7 @@ export class GlyphVertices {
             const vertex: GlyphVertex = {
                 origin: vec3.create(),
                 tangent: vec3.create(),
-                up: vec3.create(),
+                bitangent: vec3.create(),
                 /* vec2 lowerLeft and vec2 upperRight in glyph texture (uv) */
                 uvRect: vec4.create(),
             };
@@ -73,14 +73,19 @@ export class GlyphVertices {
     update(): void {
         const length = this.length;
 
+        this._texCoords = new Float32Array(length * 4);
         this._origins = new Float32Array(length * 3);
         this._tangents = new Float32Array(length * 3);
-        this._ups = new Float32Array(length * 3);
+        this._bitangents = new Float32Array(length * 3);
 
-        this._texCoords = new Float32Array(length * 4);
 
         for (let i = 0; i < length; i++) {
             const vertex = this._vertices[i];
+
+            this._texCoords[i * 4 + 0] = vertex.uvRect[0];
+            this._texCoords[i * 4 + 1] = vertex.uvRect[1];
+            this._texCoords[i * 4 + 2] = vertex.uvRect[2];
+            this._texCoords[i * 4 + 3] = vertex.uvRect[3];
 
             this._origins[i * 3 + 0] = vertex.origin[0];
             this._origins[i * 3 + 1] = vertex.origin[1];
@@ -90,24 +95,25 @@ export class GlyphVertices {
             this._tangents[i * 3 + 1] = vertex.tangent[1];
             this._tangents[i * 3 + 2] = vertex.tangent[2];
 
-            this._ups[i * 3 + 0] = vertex.up[0];
-            this._ups[i * 3 + 1] = vertex.up[1];
-            this._ups[i * 3 + 2] = vertex.up[2];
-
-            this._texCoords[i * 4 + 0] = vertex.uvRect[0];
-            this._texCoords[i * 4 + 1] = vertex.uvRect[1];
-            this._texCoords[i * 4 + 2] = vertex.uvRect[2];
-            this._texCoords[i * 4 + 3] = vertex.uvRect[3];
+            this._bitangents[i * 3 + 0] = vertex.bitangent[0];
+            this._bitangents[i * 3 + 1] = vertex.bitangent[1];
+            this._bitangents[i * 3 + 2] = vertex.bitangent[2];
         }
     }
 
     /**
-     * Concatenates all vertices of a glyph vertices object and calls update.
+     * Concatenates all vertices of a glyph vertices object and calls update. If glyphs are undefined or empty nothing
+     * gets concatenated.
      * @param glyphs - glyph vertices to concatenate.
      */
-    concat(glyphs: GlyphVertices): void {
+    concat(glyphs: GlyphVertices | undefined, update: boolean = true): void {
+        if (glyphs === undefined || glyphs.length === 0) {
+            return;
+        }
         this._vertices = this._vertices.concat(glyphs._vertices);
-        this.update();
+        if (update) {
+            this.update();
+        }
     }
 
 
@@ -140,10 +146,10 @@ export class GlyphVertices {
     }
 
     /**
-     * All GlyphVertex up vectors gathered in one buffer. Call update() to update it.
+     * All GlyphVertex up/bitangent vectors gathered in one buffer. Call update() to update it.
      */
-    get ups(): Float32Array {
-        return this._ups;
+    get bitangents(): Float32Array {
+        return this._bitangents;
     }
 
     /**

@@ -7,7 +7,6 @@ import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
-import { Color } from '../color';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { Framebuffer } from '../framebuffer';
@@ -118,14 +117,16 @@ namespace debug {
             /* Create and configure label pass. */
 
             this._labelPass = new LabelRenderPass(context);
-            this._labelPass.initialize(Label.Type.Static);
+            this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
-            this._labelPass.color = new Color([1.0, 1.0, 1.0, 1.0]);
 
             FontFace.fromFile('./data/opensansr144.fnt', context)
                 .then((fontFace) => {
-                    this._labelPass.fontFace = fontFace;
+                    this._fontFace = fontFace;
+                    for (const label of this._labelPass.labels) {
+                        label.fontFace = this._fontFace;
+                    }
                     this.invalidate();
                 })
                 .catch((reason) => log(LogLevel.Error, reason));
@@ -304,33 +305,38 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
 
             const label0 = new Position3DLabel(new Text(`${werther}`));
             label0.lineWidth = 1.0;
-            label0.setPosition(-1.2, +0.5, 0.5);
+            label0.position = [-1.2, +0.5, 0.5];
             label0.alignment = Label.Alignment.Left;
             label0.wrap = true;
 
-            const label1 = new Position3DLabel(new Text(`abcdef`));
-            label1.lineWidth = 0.01;
-            label1.setPosition(+0.1, +0.5, 0.5);
+            const label1 = new Position3DLabel(new Text(`${werther}`));
+            label1.lineWidth = 1.0;
+            label1.position = [+0.1, +0.5, 0.5];
             label1.alignment = Label.Alignment.Left;
-            label1.elide = Label.Elide.Middle;
+            label1.elide = Label.Elide.Right;
+            label1.color.fromHex('bc1c75');
 
             const label2 = new Position3DLabel(new Text(`${werther}`));
             label2.lineWidth = 1.0;
-            label2.setPosition(+0.1, +0.3, 0.5);
+            label2.position = [+0.1, +0.3, 0.5];
             label2.alignment = Label.Alignment.Left;
             label2.elide = Label.Elide.Middle;
+            label2.color.fromHex('75bc1c');
+
 
             const label3 = new Position3DLabel(new Text(`${werther}`));
             label3.lineWidth = 1.0;
-            label3.setPosition(+0.1, +0.1, 0.5);
+            label3.position = [+0.1, +0.1, 0.5];
             label3.alignment = Label.Alignment.Left;
             label3.elide = Label.Elide.Left;
+            label3.color.fromHex('1cbc75');
 
             const label4 = new Position3DLabel(new Text(`${werther}`));
             label4.lineWidth = 1.0;
-            label4.setPosition(+1.2, -0.1, 0.5);
+            label4.position = [+1.2, -0.1, 0.5];
             label4.alignment = Label.Alignment.Right;
             label4.wrap = true;
+            label4.color.fromHex('751cbc');
 
 
             this._labelPass.labels = [label0, label1, label2, label3, label4];

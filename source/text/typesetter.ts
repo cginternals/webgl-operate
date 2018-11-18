@@ -1,8 +1,8 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
-import { fromVec4, v4 } from '../gl-matrix-extensions';
+import { mat4, vec2, vec3 } from 'gl-matrix';
+import { v3 } from '../gl-matrix-extensions';
 
 import { assert } from '../auxiliaries';
 
@@ -49,7 +49,7 @@ export class Typesetter {
         vertex.origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[0];
 
         vertex.tangent = vec3.fromValues(glyph.extent[0], 0.0, 0.0);
-        vertex.up = vec3.fromValues(0.0, glyph.extent[1], 0.0);
+        vertex.bitangent = vec3.fromValues(0.0, glyph.extent[1], 0.0);
 
         vertex.uvRect[0] = glyph.subTextureOrigin[0];
         vertex.uvRect[1] = glyph.subTextureOrigin[1];
@@ -296,16 +296,16 @@ export class Typesetter {
         for (let i: number = begin; i < end; ++i) {
             const v = vertices.vertices[i];
 
-            const lowerLeft: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
-                v.origin[0], v.origin[1], v.origin[2], 1.0), transform);
-            const lowerRight: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
-                v.origin[0] + v.tangent[0], v.origin[1] + v.tangent[1], v.origin[2] + v.tangent[2], 1.0), transform);
-            const upperLeft: vec4 = vec4.transformMat4(v4(), vec4.fromValues(
-                v.origin[0] + v.up[0], v.origin[1] + v.up[1], v.origin[2] + v.up[2], 1.0), transform);
+            const lowerLeft: vec3 = v3();
+            vec3.transformMat4(lowerLeft, v.origin, transform);
+            const lowerRight: vec3 = v3();
+            vec3.transformMat4(lowerRight, vec3.add(lowerRight, v.origin, v.tangent), transform);
+            const upperLeft: vec3 = v3();
+            vec3.transformMat4(upperLeft, vec3.add(upperLeft, v.origin, v.bitangent), transform);
 
-            v.origin = fromVec4(lowerLeft);
-            v.tangent = fromVec4(vec4.sub(v4(), lowerRight, lowerLeft));
-            v.up = fromVec4(vec4.sub(v4(), upperLeft, lowerLeft));
+            v.origin = lowerLeft;
+            v.tangent = vec3.sub(v3(), lowerRight, lowerLeft);
+            v.bitangent = vec3.sub(v3(), upperLeft, lowerLeft);
         }
     }
 

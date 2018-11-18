@@ -3,6 +3,7 @@ import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from '../changelookup';
 import { Color } from '../color';
+import { GLclampf4 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -14,7 +15,9 @@ import { Text } from './text';
  * and interaction. Multiple labels might reference the same text, but could be placed at different locations or
  * rendered applying different font faces, styles etc.
  */
-export class Label {
+export abstract class Label {
+
+    private static readonly DEFAULT_COLOR: GLclampf4 = [0.1098, 0.4588, 0.7373, 1.0];
 
     private static readonly DEFAULT_ELLIPSIS = '...';
 
@@ -35,13 +38,13 @@ export class Label {
     protected _fontSize = 0.05;
 
     /** @see {@link fontSizeUnit} */
-    protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
+    protected _fontSizeUnit: Label.Unit = Label.Unit.World;
 
     /** @see {@link fontFace} */
     protected _fontFace: FontFace | undefined;
 
     /** @see {@link color} */
-    protected _color: Color;
+    protected _color: Color = new Color(Label.DEFAULT_COLOR);
 
     /** @see {@link background} */
     protected _backgroundColor: Color;
@@ -62,7 +65,7 @@ export class Label {
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, color: false, resources: false, text: false, typesetting: false,
-        staticTransform: false, dynamicTransform: false,
+        transform: false, staticTransform: false, dynamicTransform: false,
     });
 
 
@@ -97,10 +100,19 @@ export class Label {
     /**
      * Creates an Array of glyph vertices, ready to be used in the Typesetter.
      */
-    protected prepareVertexStorage(): GlyphVertices {
+    protected vertices(): GlyphVertices {
         const vertices = new GlyphVertices(this.length + this.ellipsis.length);
         return vertices;
     }
+
+
+    /**
+     * Interface intended to compute/update the label's static and dynamic transformations as well as invoking the
+     * typesetter in order to create the glyph vertices. Returns undefined, if previous vertices can be reused since no
+     * was required. Returns an empty GlyphVertices storage if label is invalid or cannot be rendered ...
+     */
+    abstract typeset(): GlyphVertices | undefined;
+
 
     /**
      * Returns the character at the specified index.
@@ -313,13 +325,13 @@ export class Label {
      * The currently used font size.
      * (@see {@link fontSizeUnit})
      */
-    set fontSize(newSize: number) {
-        if (this._fontSize === newSize) {
+    set fontSize(size: number) {
+        if (this._fontSize === size) {
             return;
         }
         this._altered.alter('typesetting');
         this._altered.alter('transform');
-        this._fontSize = newSize;
+        this._fontSize = size;
     }
     get fontSize(): number {
         return this._fontSize;
@@ -329,15 +341,15 @@ export class Label {
      * This unit is used for the font size.
      * (@see {@link fontSize})
      */
-    set fontSizeUnit(newUnit: Label.SpaceUnit) {
-        if (this._fontSizeUnit === newUnit) {
+    set fontSizeUnit(unit: Label.Unit) {
+        if (this._fontSizeUnit === unit) {
             return;
         }
         this._altered.alter('typesetting');
         this._altered.alter('transform');
-        this._fontSizeUnit = newUnit;
+        this._fontSizeUnit = unit;
     }
-    get fontSizeUnit(): Label.SpaceUnit {
+    get fontSizeUnit(): Label.Unit {
         return this._fontSizeUnit;
     }
 
@@ -476,7 +488,7 @@ export namespace Label {
     /**
      * This unit is used for the font size and related calculations.
      */
-    export enum SpaceUnit {
+    export enum Unit {
         /* abstract world unit */
         World = 'world',
         /* screen pixel */
