@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, log, LogLevel } from '../auxiliaries';
 
 import { vec3 } from 'gl-matrix';
@@ -21,6 +23,8 @@ import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
+
+/* spellchecker: enable */
 
 
 namespace debug {

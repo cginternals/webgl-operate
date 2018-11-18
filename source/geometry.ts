@@ -1,10 +1,14 @@
 
+/* spellchecker: disable */
+
 import { Bindable } from './bindable';
 import { Buffer } from './buffer';
 import { Initializable } from './initializable';
 
 import { Context } from './context';
 import { VertexArray } from './vertexarray';
+
+/* spellchecker: enable */
 
 
 /**

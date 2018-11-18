@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 export { branch, commit, version } from './version';
 
 export { Context } from './context';
@@ -70,3 +72,5 @@ export import gl_matrix_extensions = root_gl_matrix_extensions;
 
 import * as root_tuples from './tuples';
 export import tuples = root_tuples;
+
+/* spellchecker: enable */

@@ -1,7 +1,10 @@
 
+/* spellchecker: disable */
 
 import { assert, rand } from './auxiliaries';
 import { KernelF32 } from './kernel';
+
+/* spellchecker: enable */
 
 
 /**

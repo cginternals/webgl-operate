@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 
 const expect = chai.expect;
 
 import { ChangeLookup } from '../source/changelookup';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

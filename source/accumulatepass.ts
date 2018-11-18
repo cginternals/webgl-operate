@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
@@ -11,6 +13,8 @@ import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 import { Wizard } from './wizard';
+
+/* spellchecker: enable */
 
 
 /**

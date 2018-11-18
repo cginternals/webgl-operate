@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { clamp } from './gl-matrix-extensions';
+
+/* spellchecker: enable */
 
 
 /**

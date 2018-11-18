@@ -1,3 +1,5 @@
+
+/* spellchecker: disable */
 import * as chai from 'chai';
 
 const expect = chai.expect;
@@ -16,6 +18,8 @@ import {
     sign,
     v2, v3, v4,
 } from '../source/gl-matrix-extensions';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

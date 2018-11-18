@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { validate } from './properties';
+
+/* spellchecker: enable */
 
 
 /** Namespace that comprises various utils (also cleans up documentation). */

@@ -1,8 +1,12 @@
 
+/* spellchecker: disable */
+
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert, log, logIf, LogLevel, logVerbosity } from './auxiliaries';
 import { clamp } from './gl-matrix-extensions';
+
+/* spellchecker: enable */
 
 
 /**

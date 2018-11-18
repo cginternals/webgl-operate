@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert, bitInBitfield } from './auxiliaries';
+
+/* spellchecker: enable */
 
 
 export class TouchEventProvider {

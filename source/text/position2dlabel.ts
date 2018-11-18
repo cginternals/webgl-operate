@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 // import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 // import { assert, log, LogLevel } from '../auxiliaries';
@@ -10,6 +12,8 @@
 
 // import { Typesetter } from './typesetter';
 // import { type } from 'os';
+
+/* spellchecker: enable */
 
 
 // /**

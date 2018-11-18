@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
@@ -8,6 +10,8 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
+
+/* spellchecker: enable */
 
 
 /**

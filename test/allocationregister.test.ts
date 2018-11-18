@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 
 const expect = chai.expect;
 
 import { AllocationRegister } from '../source/allocationregister';
+
+/* spellchecker: enable */
 
 
 describe('AllocationRegister', () => {

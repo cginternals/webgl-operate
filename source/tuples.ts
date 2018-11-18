@@ -1,8 +1,12 @@
 
+/* spellchecker: disable */
+
 import { vec2, vec3, vec4 } from 'gl-matrix';
 import { clamp, clamp2, clamp3, clamp4 } from './gl-matrix-extensions';
 
 import { assert, logIf, LogLevel } from './auxiliaries';
+
+/* spellchecker: enable */
 
 
 namespace tuples {

@@ -1,10 +1,14 @@
 
+/* spellchecker: disable */
+
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 import { Shader } from './shader';
+
+/* spellchecker: enable */
 
 
 /**

@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert, bitInBitfield } from './auxiliaries';
 
 import { PointerLock } from './pointerlock';
+
+/* spellchecker: enable */
 
 
 export class MouseEventProvider {

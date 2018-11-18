@@ -1,14 +1,17 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 const expect = chai.expect;
 const stub = sinon.stub;
 
-
 import { AllocationRegister } from '../source/allocationregister';
 import { Context } from '../source/context';
 import { AbstractObject } from '../source/object';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:max-classes-per-file no-unused-expression */

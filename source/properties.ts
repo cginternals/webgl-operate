@@ -1,8 +1,12 @@
 
+/* spellchecker: disable */
+
 import { Validator } from 'jsonschema';
 
 import { assert, logIf, LogLevel } from './auxiliaries';
 import { ChangeLookup } from './changelookup';
+
+/* spellchecker: enable */
 
 
 namespace properties {

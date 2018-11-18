@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 export { FontFace } from './fontface';
 export { GlyphVertex, GlyphVertices } from './glyphvertices';
 export { Label } from './label';
@@ -11,3 +13,5 @@ export { Typesetter } from './typesetter';
 
 /* The following Classes are intended for internal/private use within webgl-operate. */
 // export { FontFaceLoader } from './fontfaceloader';
+
+/* spellchecker: enable */

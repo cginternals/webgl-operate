@@ -1,8 +1,12 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
 
 import { Context } from './context';
 import { WEBGL1_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+
+/* spellchecker: enable */
 
 export class ExtensionsHash {
 

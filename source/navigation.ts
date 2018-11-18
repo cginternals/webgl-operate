@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { vec2 } from 'gl-matrix';
 
 import { Camera } from './camera';
@@ -10,6 +12,8 @@ import { Invalidate } from './renderer';
 import { FirstPersonModifier } from './firstpersonmodifier';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
+
+/* spellchecker: enable */
 
 
 /**

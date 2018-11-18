@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert, prettyPrintBytes } from './auxiliaries';
+
+/* spellchecker: enable */
 
 
 /**

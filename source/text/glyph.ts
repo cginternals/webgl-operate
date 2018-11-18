@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { clampf2, GLclampf2, GLfloat2 } from '../tuples';
+
+/* spellchecker: enable */
 
 
 /**

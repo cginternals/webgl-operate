@@ -1,8 +1,11 @@
 
+/* spellchecker: disable */
 
 import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
+
+/* spellchecker: enable */
 
 
 export type TexImage2DData = GLintptr | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |

@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
@@ -8,8 +10,9 @@ chai.use(spies);
 const expect = chai.expect;
 const stub = sinon.stub;
 
-
 import * as aux from '../source/auxiliaries';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

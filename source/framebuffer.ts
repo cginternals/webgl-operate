@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, bitInBitfield, logIf, LogLevel } from './auxiliaries';
 import { GLclampf4, GLsizei2 } from './tuples';
 
@@ -8,6 +10,8 @@ import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 import { Renderbuffer } from './renderbuffer';
 import { Texture2D } from './texture2d';
+
+/* spellchecker: enable */
 
 
 /**

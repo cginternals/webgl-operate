@@ -1,3 +1,6 @@
+
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
@@ -5,6 +8,8 @@ const expect = chai.expect;
 
 import * as aux from '../source/auxiliaries';
 import { ContextMasquerade } from '../source/contextmasquerade';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

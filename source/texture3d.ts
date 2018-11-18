@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei3 } from './tuples';
@@ -7,6 +9,8 @@ import { Bindable } from './bindable';
 import { TexImage3DData } from './gl2facade';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
+
+/* spellchecker: enable */
 
 
 /**

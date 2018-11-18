@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from '../changelookup';
@@ -8,6 +10,8 @@ import { GLclampf4 } from '../tuples';
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Text } from './text';
+
+/* spellchecker: enable */
 
 
 /**

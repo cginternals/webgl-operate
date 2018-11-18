@@ -1,11 +1,14 @@
 
-import { assert } from './auxiliaries';
+/* spellchecker: disable */
 
+import { assert } from './auxiliaries';
 
 import { Buffer } from './buffer';
 import { Context } from './context';
 import { Geometry } from './geometry';
 import { Initializable } from './initializable';
+
+/* spellchecker: enable */
 
 
 /**

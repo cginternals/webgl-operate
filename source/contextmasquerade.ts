@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { assert, GETparameter } from './auxiliaries';
 
 import { ExtensionsHash } from './extensionshash';
+
+/* spellchecker: enable */
 
 
 /**

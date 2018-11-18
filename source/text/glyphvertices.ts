@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { vec3, vec4 } from 'gl-matrix';
+
+/* spellchecker: enable */
 
 
 /**
