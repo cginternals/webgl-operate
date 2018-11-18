@@ -51,7 +51,7 @@ export class Position3DLabel extends Label {
      * typesetting (static) or passed as single transform to the vertex shader during rendering (dynamic).
      */
     typeset(): GlyphVertices | undefined {
-        if (!this._altered.transform && !this._altered.dynamicTransform && !this._altered.staticTransform) {
+        if (!this._altered.transform && !this._altered.text && !this.text.altered && !this._altered.staticTransform) {
             return undefined;
         }
 
@@ -90,6 +90,8 @@ export class Position3DLabel extends Label {
         Typesetter.typeset(this, vertices);
 
         this._altered.reset();
+        this._text.altered = false;
+
         return vertices;
     }
 

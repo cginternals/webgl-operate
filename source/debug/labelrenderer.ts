@@ -5,6 +5,8 @@ import { assert, log, LogLevel } from '../auxiliaries';
 
 import { vec3 } from 'gl-matrix';
 
+import { fract } from '../gl-matrix-extensions';
+
 import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
@@ -23,6 +25,7 @@ import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
+
 
 /* spellchecker: enable */
 
@@ -51,7 +54,9 @@ namespace debug {
 
         protected _navigation: Navigation;
 
-        protected _fontFace: FontFace;
+
+        protected _hue = 0;
+        protected _pos = 0;
 
 
         /**
@@ -127,9 +132,8 @@ namespace debug {
 
             FontFace.fromFile('./data/opensansr144.fnt', context)
                 .then((fontFace) => {
-                    this._fontFace = fontFace;
                     for (const label of this._labelPass.labels) {
-                        label.fontFace = this._fontFace;
+                        label.fontFace = fontFace;
                     }
                     this.invalidate();
                 })
@@ -169,6 +173,11 @@ namespace debug {
 
             this._navigation.update();
 
+            for (const label of this._labelPass.labels) {
+                if (label.altered || label.color.altered) {
+                    return true;
+                }
+            }
             return this._altered.any || this._camera.altered;
         }
 
@@ -318,7 +327,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label1.position = [+0.1, +0.5, 0.5];
             label1.alignment = Label.Alignment.Left;
             label1.elide = Label.Elide.Right;
-            label1.color.fromHex('bc1c75');
+            label1.color.fromHex('ff8888');
 
             const label2 = new Position3DLabel(new Text(`${werther}`));
             label2.lineWidth = 1.0;
@@ -336,12 +345,27 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label3.color.fromHex('1cbc75');
 
             const label4 = new Position3DLabel(new Text(`${werther}`));
-            label4.lineWidth = 1.0;
-            label4.position = [+1.2, -0.1, 0.5];
-            label4.alignment = Label.Alignment.Right;
+            label4.lineWidth = 0.66;
+            label4.position = [+0.1, -0.1, 0.5];
+            label4.alignment = Label.Alignment.Left;
             label4.wrap = true;
-            label4.color.fromHex('751cbc');
+            label4.color.fromHex('eeeeee');
 
+
+            setInterval(() => {
+                const hsl = label1.color.hsl;
+
+                this._hue += 0.02;
+                label1.color.fromHSL(fract(this._hue), hsl[1], hsl[2]);
+
+                label4.text.text = werther.substr(this._pos, 128);
+                ++this._pos;
+                if (this._pos > werther.length) {
+                    this._pos = 0;
+                }
+
+                this.invalidate();
+            }, 100);
 
             this._labelPass.labels = [label0, label1, label2, label3, label4];
         }

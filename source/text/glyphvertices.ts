@@ -1,38 +1,10 @@
 
 /* spellchecker: disable */
 
-import { vec3, vec4 } from 'gl-matrix';
+import { vec2, vec3 } from 'gl-matrix';
 
 /* spellchecker: enable */
 
-
-/**
- * Information required for rendering a single glyph. Technical this could be denoted as a vertex of a vertex cloud.
- */
-export interface GlyphVertex {
-
-    /**
-     * Position of the glyph in normalized device coordinates.
-     */
-    origin: vec3;
-
-    /**
-     * Tangent vector (usually the label's baseline direction). The length of this vector is expected to be the advance
-     * of this glyphs geometry in baseline direction, i.e., it is used to derive the vertices using simple addition.
-     */
-    tangent: vec3;
-
-    /**
-     * Bitangent vector (orthogonal to the label's baseline). The length of this vector is expected to be the height of
-     * this glyphs geometry, i.e., it is used to derive the glyph vertices using simple addition.
-     */
-    bitangent: vec3;
-
-    /**
-     * Sub image rect of the glyph in the glyph texture (uv-coordinates).
-     */
-    uvRect: vec4;
-}
 
 
 /**
@@ -40,8 +12,11 @@ export interface GlyphVertex {
  */
 export class GlyphVertices {
 
-    /** @see {@link vertices} */
-    protected _vertices = new Array<GlyphVertex>();
+    static readonly FLOATS_PER_TEXCOORD = 4;
+    static readonly FLOATS_PER_ORIGIN = 3;
+    static readonly FLOATS_PER_TANGENT = 3;
+    static readonly FLOATS_PER_BITANGENT = 3;
+
 
     /** @see {@link origins} */
     protected _origins: Float32Array;
@@ -54,85 +29,118 @@ export class GlyphVertices {
 
 
     /**
-     * Constructs a specialized array containing GlyphVertex objects.
-     * @param numGlyphs - the number of GlyphVertex objects.
+     * Concatenates multiple glyph vertices into a single new glyph vertices object.
+     * @param array - Array of glyph vertices. Undefined glyph vertices will be ignored.
      */
-    constructor(numGlyphs: number) {
-        for (let i = 0; i < numGlyphs; ++i) {
+    static concat(array: Array<GlyphVertices | undefined>): GlyphVertices {
 
-            const vertex: GlyphVertex = {
-                origin: vec3.create(),
-                tangent: vec3.create(),
-                bitangent: vec3.create(),
-                /* vec2 lowerLeft and vec2 upperRight in glyph texture (uv) */
-                uvRect: vec4.create(),
-            };
-            this._vertices.push(vertex);
+        let length = 0;
+        array.forEach((vertices) => length += vertices ? vertices.length : 0);
+
+        const concatenated = new GlyphVertices(length);
+        let offset = 0;
+
+        /* tslint:disable-next-line:prefer-for-of */
+        for (let index = 0; index < array.length; ++index) {
+            const vertices = array[index];
+            if (vertices === undefined || vertices!.length === 0) {
+                continue;
+            }
+            concatenated._texCoords.set(vertices._texCoords, offset * GlyphVertices.FLOATS_PER_TEXCOORD);
+            concatenated._origins.set(vertices._origins, offset * GlyphVertices.FLOATS_PER_ORIGIN);
+            concatenated._tangents.set(vertices._tangents, offset * GlyphVertices.FLOATS_PER_TANGENT);
+            concatenated._bitangents.set(vertices._bitangents, offset * GlyphVertices.FLOATS_PER_BITANGENT);
+
+            offset += vertices.length;
         }
-    }
-
-    /**
-     * Updates its buffers origins, tangents, ups and texCoords. Call this to get buffers suitable for LabelGeometry.
-     */
-    update(): void {
-        const length = this.length;
-
-        this._texCoords = new Float32Array(length * 4);
-        this._origins = new Float32Array(length * 3);
-        this._tangents = new Float32Array(length * 3);
-        this._bitangents = new Float32Array(length * 3);
-
-
-        for (let i = 0; i < length; i++) {
-            const vertex = this._vertices[i];
-
-            this._texCoords[i * 4 + 0] = vertex.uvRect[0];
-            this._texCoords[i * 4 + 1] = vertex.uvRect[1];
-            this._texCoords[i * 4 + 2] = vertex.uvRect[2];
-            this._texCoords[i * 4 + 3] = vertex.uvRect[3];
-
-            this._origins[i * 3 + 0] = vertex.origin[0];
-            this._origins[i * 3 + 1] = vertex.origin[1];
-            this._origins[i * 3 + 2] = vertex.origin[2];
-
-            this._tangents[i * 3 + 0] = vertex.tangent[0];
-            this._tangents[i * 3 + 1] = vertex.tangent[1];
-            this._tangents[i * 3 + 2] = vertex.tangent[2];
-
-            this._bitangents[i * 3 + 0] = vertex.bitangent[0];
-            this._bitangents[i * 3 + 1] = vertex.bitangent[1];
-            this._bitangents[i * 3 + 2] = vertex.bitangent[2];
-        }
-    }
-
-    /**
-     * Concatenates all vertices of a glyph vertices object and calls update. If glyphs are undefined or empty nothing
-     * gets concatenated.
-     * @param glyphs - glyph vertices to concatenate.
-     */
-    concat(glyphs: GlyphVertices | undefined, update: boolean = true): void {
-        if (glyphs === undefined || glyphs.length === 0) {
-            return;
-        }
-        this._vertices = this._vertices.concat(glyphs._vertices);
-        if (update) {
-            this.update();
-        }
+        return concatenated;
     }
 
 
     /**
-     * Access to the glyph vertex array.
+     * Constructs a specialized arrays representing glyph vertex data.
+     * @param numberOfGlyphs - The number of glyph vertices required (number of glyphs).
      */
-    get vertices(): Array<GlyphVertex> {
-        return this._vertices;
+    constructor(numberOfGlyphs: number) {
+        const length = Math.max(0, numberOfGlyphs);
+
+        this._texCoords = new Float32Array(length * GlyphVertices.FLOATS_PER_TEXCOORD);
+        this._origins = new Float32Array(length * GlyphVertices.FLOATS_PER_ORIGIN);
+        this._tangents = new Float32Array(length * GlyphVertices.FLOATS_PER_TANGENT);
+        this._bitangents = new Float32Array(length * GlyphVertices.FLOATS_PER_BITANGENT);
     }
+
+    /**
+     * Efficiently reduces the size of all underlying float arrays without copying any data.
+     * @param numberOfGlyphs - Target number of glyphs to reduce the vertices to.
+     */
+    shrink(numberOfGlyphs: number): void {
+        const length = Math.max(0, numberOfGlyphs);
+
+        /* Utility that slices the underlying buffer to the required length in bytes, and then creates a new
+        float 32 array view to that buffer. */
+        const shrink = (array: Float32Array, length: number, components: number) =>
+            array = new Float32Array(
+                array.buffer.slice(0, length * array.BYTES_PER_ELEMENT * components),
+                0, length * components);
+
+        shrink(this._texCoords, length, GlyphVertices.FLOATS_PER_TEXCOORD);
+        shrink(this._origins, length, GlyphVertices.FLOATS_PER_ORIGIN);
+        shrink(this._bitangents, length, GlyphVertices.FLOATS_PER_TANGENT);
+        shrink(this._tangents, length, GlyphVertices.FLOATS_PER_BITANGENT);
+    }
+
+    /**
+     * Typed vec2 view to the lower left texture coordinate of the glyph at given index.
+     * @param index - Index of the glyph to return the lower left texture coordinate of.
+     */
+    uvLowerLeft(index: number): vec2 {
+        const begin = index * GlyphVertices.FLOATS_PER_TEXCOORD + 0;
+        return this._texCoords.subarray(begin, begin + 2) as vec2;
+    }
+
+    /**
+     * Typed vec2 view to the upper right texture coordinate of the glyph at given index.
+     * @param index - Index of the glyph to return the upper right texture coordinate of.
+     */
+    uvUpperRight(index: number): vec2 {
+        const begin = index * GlyphVertices.FLOATS_PER_TEXCOORD + 2;
+        return this._texCoords.subarray(begin, begin + 2) as vec2;
+    }
+
+    /**
+     * Typed vec3 view to the origin of the glyph at given index.
+     * @param index - Index of the glyph to return the origin of.
+     */
+    origin(index: number): vec3 {
+        const begin = index * GlyphVertices.FLOATS_PER_ORIGIN;
+        return this._origins.subarray(begin, begin + GlyphVertices.FLOATS_PER_ORIGIN) as vec3;
+    }
+
+    /**
+     * Typed vec3 view to the tangent of the glyph at given index.
+     * @param index - Index of the glyph to return the tangent of.
+     */
+    tangent(index: number): vec3 {
+        const begin = index * GlyphVertices.FLOATS_PER_TANGENT;
+        return this._tangents.subarray(begin, begin + GlyphVertices.FLOATS_PER_TANGENT) as vec3;
+    }
+
+    /**
+     * Typed vec3 view to the bitangent of the glyph at given index.
+     * @param index - Index of the glyph to return the bitangent of.
+     */
+    bitangent(index: number): vec3 {
+        const begin = index * GlyphVertices.FLOATS_PER_BITANGENT;
+        return this._bitangents.subarray(begin, begin + GlyphVertices.FLOATS_PER_BITANGENT) as vec3;
+    }
+
 
     /**
      * Number of glyph vertices.
      */
     get length(): number {
-        return this._vertices.length;
+        return this._origins.length / GlyphVertices.FLOATS_PER_ORIGIN;
     }
 
     /**

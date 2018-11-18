@@ -75,12 +75,17 @@ export class LabelRenderPass extends Initializable {
     protected _uAAStepScale: WebGLUniformLocation | undefined;
     protected _uTransform: WebGLUniformLocation | undefined;
 
-    protected _labels: Array<Label>;
+    protected _labels = new Array<Label>();
 
     /**
      * Stores for each label (same index in _labels) the range within the geometry.
      */
-    protected _ranges: Array<GLsizei2>;
+    protected _ranges = new Array<GLsizei2>();
+
+    /**
+     * Stores typeset glyph vertices data per label and is used as cache to avoid unnecessary typesetting.
+     */
+    protected _verticesPerLabel = new Array<GlyphVertices | undefined>();
 
     protected _geometry: LabelGeometry;
 
@@ -98,9 +103,6 @@ export class LabelRenderPass extends Initializable {
         this._geometry = new LabelGeometry(this._context, 'LabelGeometry');
 
         this._aaStepScale = LabelRenderPass.DEFAULT_AA_STEP_SCALE;
-
-        this._labels = new Array<Label>();
-        this._ranges = new Array<GLsizei2>();
     }
 
     /**
@@ -108,10 +110,7 @@ export class LabelRenderPass extends Initializable {
      */
     protected prepare(): void {
 
-        const glyphs = new GlyphVertices(0);
         // const frameSize = this._camera.viewport;
-
-        /** @todo cache typeset results if label was not altered. */
 
         for (let i = 0; i < this._labels.length; ++i) {
             const label = this._labels[i];
@@ -123,15 +122,19 @@ export class LabelRenderPass extends Initializable {
                 vertices = label.typeset();
             }
 
+            if (vertices === undefined) {
+                vertices = this._verticesPerLabel[i];
+            } else {
+                this._verticesPerLabel[i] = vertices;
+            }
+
             const rangeStart = i > 0 ? this._ranges[i - 1][1] : 0;
             const rangeEnd = rangeStart + (vertices === undefined ? 0 : vertices.length);
             this._ranges[i] = [rangeStart, rangeEnd];
-
-            glyphs.concat(vertices, false);
         }
-        glyphs.update();
 
-        this._geometry.update(glyphs.origins, glyphs.tangents, glyphs.bitangents, glyphs.texCoords);
+        const data: GlyphVertices = GlyphVertices.concat(this._verticesPerLabel);
+        this._geometry.update(data.origins, data.tangents, data.bitangents, data.texCoords);
     }
 
 
@@ -351,6 +354,11 @@ export class LabelRenderPass extends Initializable {
      */
     set labels(labels: Array<Label>) {
         this._labels = labels;
+
+        this._ranges.length = this._labels.length;
+        this._verticesPerLabel.length = this._labels.length;
+        this._verticesPerLabel.fill(undefined);
+
         this._altered.alter('labels');
     }
     get labels(): Array<Label> {

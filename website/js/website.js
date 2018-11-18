@@ -13,7 +13,7 @@ window.onload = function () {
     aboutCode = window.document.getElementById('context-about');
     aboutCode.innerText = context.aboutString();
 
-    canvas.controller.multiFrameNumber = 8;
+    canvas.controller.multiFrameNumber = 1;
     canvas.frameScale = [1.0, 1.0];
     renderer = new gloperate.debug.LabelRenderer();
     canvas.renderer = renderer;

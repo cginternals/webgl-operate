@@ -8,7 +8,7 @@ import { assert } from '../auxiliaries';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
-import { GlyphVertex, GlyphVertices } from './glyphvertices';
+import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 
 /* spellchecker: enable */
@@ -34,31 +34,33 @@ export class Typesetter {
      * @param fontFace - Font face to be applied for setting up the vertex.
      * @param pen - Typesetting position which is the not-yet-transformed position the glyph will be rendered at.
      * @param glyph - Glyph that is to be rendered/configured.
-     * @param vertex - Out param: Associated vertex to store data required for rendering.
+     * @param vertices - Glyph vertex store required for rendering.
+     * @param index - Glyph vertex index for store manipulation.
      */
     private static writeVertex(fontFace: FontFace, pen: vec2, glyph: Glyph,
-        vertex: GlyphVertex | undefined): void {
+        vertices: GlyphVertices | undefined, index: number): void {
 
-        if (vertex === undefined || glyph.depictable() === false) {
+        if (vertices === undefined || glyph.depictable() === false) {
             return;
         }
 
+        /* Please be aware that all vertices getter return typed views on a big float32array.
+        As a consequence do strictly rely on in-place operations only. */
+
         const padding = fontFace.glyphTexturePadding;
-        vertex.origin = vec3.fromValues(pen[0], pen[1], 0.0);
-        vertex.origin[0] += glyph.bearing[0] - padding[3];
-        vertex.origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[0];
+        const origin: vec3 = vertices.origin(index);
+        vec3.set(origin, pen[0], pen[1], 0.0);
+        origin[0] += glyph.bearing[0] - padding[3];
+        origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[0];
 
-        vertex.tangent = vec3.fromValues(glyph.extent[0], 0.0, 0.0);
-        vertex.bitangent = vec3.fromValues(0.0, glyph.extent[1], 0.0);
+        vec3.set(vertices.tangent(index), glyph.extent[0], 0.0, 0.0);
+        vec3.set(vertices.bitangent(index), 0.0, glyph.extent[1], 0.0);
 
-        vertex.uvRect[0] = glyph.subTextureOrigin[0];
-        vertex.uvRect[1] = glyph.subTextureOrigin[1];
+        const lowerLeft: vec2 = vertices.uvLowerLeft(index);
+        vec2.copy(lowerLeft, glyph.subTextureOrigin);
 
-        const upperRight = vec2.create();
+        const upperRight: vec2 = vertices.uvUpperRight(index);
         vec2.add(upperRight, glyph.subTextureOrigin, glyph.subTextureExtent);
-
-        vertex.uvRect[2] = upperRight[0];
-        vertex.uvRect[3] = upperRight[1];
     }
 
 
@@ -287,25 +289,25 @@ export class Typesetter {
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      */
-    private static transformVertex(transform: mat4,
+    private static transformVertices(transform: mat4,
         vertices: GlyphVertices | undefined, begin: number, end: number): void {
         if (vertices === undefined || mat4.equals(transform, mat4.create())) {
             return;
         }
 
-        for (let i: number = begin; i < end; ++i) {
-            const v = vertices.vertices[i];
+        for (let index: number = begin; index < end; ++index) {
+            const origin = vertices.origin(index);
 
-            const lowerLeft: vec3 = v3();
-            vec3.transformMat4(lowerLeft, v.origin, transform);
-            const lowerRight: vec3 = v3();
-            vec3.transformMat4(lowerRight, vec3.add(lowerRight, v.origin, v.tangent), transform);
-            const upperLeft: vec3 = v3();
-            vec3.transformMat4(upperLeft, vec3.add(upperLeft, v.origin, v.bitangent), transform);
+            const ll: vec3 = v3(); /* Lower Left */
+            vec3.transformMat4(ll, origin, transform);
+            const lr: vec3 = v3(); /* Lower Right */
+            vec3.transformMat4(lr, vec3.add(lr, origin, vertices.tangent(index)), transform);
+            const ul: vec3 = v3(); /* Upper Left */
+            vec3.transformMat4(ul, vec3.add(ul, origin, vertices.bitangent(index)), transform);
 
-            v.origin = lowerLeft;
-            v.tangent = vec3.sub(v3(), lowerRight, lowerLeft);
-            v.bitangent = vec3.sub(v3(), upperLeft, lowerLeft);
+            vec3.copy(vertices.origin(index), ll);
+            vec3.sub(vertices.tangent(index), lr, ll);
+            vec3.sub(vertices.bitangent(index), ul, ll);
         }
     }
 
@@ -330,8 +332,8 @@ export class Typesetter {
         }
 
         /* Origin is expected to be in typesetting space (not transformed yet). */
-        for (let i = begin; i < end; ++i) {
-            vertices.vertices[i].origin[0] += offset;
+        for (let index = begin; index < end; ++index) {
+            vertices.origin(index)[0] += offset;
         }
     }
 
@@ -344,7 +346,7 @@ export class Typesetter {
     private static transform(label: Label, vertices: GlyphVertices, lines: Array<Line>): void {
         for (const line of lines) {
             Typesetter.transformAlignment(line[2], label.alignment, vertices, line[0], line[1]);
-            Typesetter.transformVertex(label.staticTransform, vertices, line[0], line[1]);
+            Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
     }
 
@@ -445,7 +447,7 @@ export class Typesetter {
                 /* Advance forward for the next word-fragment. */
                 for (let i = fragment[0]; i < fragment[1]; ++i) {
                     if (glyphs(i).depictable()) {
-                        Typesetter.writeVertex(fontFace, pen, glyphs(i), vertices.vertices[vertexIndex]);
+                        Typesetter.writeVertex(fontFace, pen, glyphs(i), vertices, vertexIndex);
                         ++vertexIndex;
                     }
                     pen[0] += advances[i - offset] + kernings[i - offset];
@@ -499,7 +501,7 @@ export class Typesetter {
 
         /* Apply transforms (alignment and static label transform) to all written vertices. */
         Typesetter.transform(label, vertices, lines);
-        vertices.vertices.length = vertexIndex;
+        vertices.shrink(vertexIndex);
 
         return vertexIndex;
     }

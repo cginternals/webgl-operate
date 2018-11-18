@@ -2,7 +2,7 @@
 /* spellchecker: disable */
 
 export { FontFace } from './fontface';
-export { GlyphVertex, GlyphVertices } from './glyphvertices';
+export { GlyphVertices } from './glyphvertices';
 export { Label } from './label';
 export { LabelGeometry } from './labelgeometry';
 export { LabelRenderPass } from './labelrenderpass';
