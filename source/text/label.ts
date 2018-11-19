@@ -69,7 +69,7 @@ export abstract class Label {
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, color: false, resources: false, text: false, typesetting: false,
-        transform: false, staticTransform: false, dynamicTransform: false,
+        static: false, dynamic: false,
     });
 
 
@@ -84,8 +84,11 @@ export abstract class Label {
 
 
     /**
-     * Constructs an unconfigured, empty label.
+     * Constructs an unconfigured, empty label. Depending on the label type, transformations are applied
+     * once when typesetting (static) or every frame during rendering (dynamic).
      * @param text - The text that is displayed by this label.
+     * @param type - Either static or dynamic. If static is used, all transformations are baked and modifications to
+     * on any of the label's transformations are expected to occur less often.
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
     constructor(text: Text, type: Label.Type, fontFace?: FontFace) {
@@ -282,7 +285,11 @@ export abstract class Label {
      * texture atlas).
      */
     set lineWidth(lineWidth: number) {
+        if (this._lineWidth === lineWidth) {
+            return;
+        }
         this._lineWidth = lineWidth;
+        this._altered.alter('typesetting');
     }
 
     /**
@@ -303,8 +310,8 @@ export abstract class Label {
         if (this._alignment === alignment) {
             return;
         }
-        this._altered.alter('typesetting');
         this._alignment = alignment;
+        this._altered.alter('typesetting');
     }
     get alignment(): Label.Alignment {
         return this._alignment;
@@ -317,8 +324,8 @@ export abstract class Label {
         if (this._lineAnchor === anchor) {
             return;
         }
-        this._altered.alter('typesetting');
         this._lineAnchor = anchor;
+        this._altered.alter('typesetting');
     }
     get lineAnchor(): Label.LineAnchor {
         return this._lineAnchor;
@@ -333,9 +340,8 @@ export abstract class Label {
         if (this._fontSize === size) {
             return;
         }
-        this._altered.alter('typesetting');
-        this._altered.alter('transform');
         this._fontSize = size;
+        this._altered.alter('typesetting');
     }
     get fontSize(): number {
         return this._fontSize;
@@ -349,9 +355,8 @@ export abstract class Label {
         if (this._fontSizeUnit === unit) {
             return;
         }
-        this._altered.alter('typesetting');
-        this._altered.alter('transform');
         this._fontSizeUnit = unit;
+        this._altered.alter('typesetting');
     }
     get fontSizeUnit(): Label.Unit {
         return this._fontSizeUnit;
@@ -366,9 +371,9 @@ export abstract class Label {
         if (this._fontFace === fontFace) {
             return;
         }
+        this._fontFace = fontFace;
         this._altered.alter('typesetting');
         this._altered.alter('resources');
-        this._fontFace = fontFace;
     }
     get fontFace(): FontFace | undefined {
         return this._fontFace;
@@ -381,8 +386,8 @@ export abstract class Label {
         if (this._color.equals(color)) {
             return;
         }
-        this._altered.alter('color');
         this._color = color;
+        this._altered.alter('color');
     }
     get color(): Color {
         return this._color;
@@ -395,8 +400,8 @@ export abstract class Label {
         if (this._backgroundColor.equals(color)) {
             return;
         }
-        this._altered.alter('color');
         this._backgroundColor = color;
+        this._altered.alter('color');
     }
     get backgroundColor(): Color {
         return this._backgroundColor;
@@ -406,14 +411,14 @@ export abstract class Label {
     /**
      * Transformation used to move, scale, rotate, skew, etc. the label into an arbitrary coordinate space (e.g.,
      * screen space, world space, ...). This can be set either explicitly or implicitly using various transformation
-     * utility functions.
+     * utility functions. @todo review/refine this.
      */
     set staticTransform(transform: mat4) {
         if (mat4.equals(this._staticTransform, transform)) {
             return;
         }
-        this._altered.alter('staticTransform');
         this._staticTransform = transform;
+        this._altered.alter('static');
     }
     get staticTransform(): mat4 {
 
@@ -430,7 +435,7 @@ export abstract class Label {
      * (e.g., for calculations to the final transform).
      */
     set dynamicTransform(t: mat4) {
-        this._altered.alter('dynamicTransform');
+        this._altered.alter('dynamic');
         this._dynamicTransform = t;
     }
     get dynamicTransform(): mat4 {

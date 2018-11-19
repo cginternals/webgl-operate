@@ -31,12 +31,15 @@ export class Position3DLabel extends Label {
 
 
     /**
-     * Constructs a pre-configured 3D-label with given text.
+     * Constructs a pre-configured 3D-label with given text. Depending on the label type, transformations are applied
+     * once when typesetting (static) or every frame during rendering (dynamic).
      * @param text - The text that is displayed by this label.
+     * @param type - Either static or dynamic. If static is used, all transformations are baked and modifications to
+     * on any of the label's transformations are expected to occur less often.
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
-    constructor(text: Text, fontFace?: FontFace) {
-        super(text, Label.Type.Static, fontFace);
+    constructor(text: Text, type: Label.Type, fontFace?: FontFace) {
+        super(text, type, fontFace);
         this._position = vec3.fromValues(0.0, 0.0, 0.0);
         this._direction = vec3.fromValues(1.0, 0.0, 0.0);
         this._up = vec3.fromValues(0.0, 1.0, 0.0);
@@ -51,7 +54,8 @@ export class Position3DLabel extends Label {
      * typesetting (static) or passed as single transform to the vertex shader during rendering (dynamic).
      */
     typeset(): GlyphVertices | undefined {
-        if (!this._altered.transform && !this._altered.text && !this.text.altered && !this._altered.staticTransform) {
+        const typeset = this._altered.typesetting || this._altered.static || this._altered.text || this.text.altered;
+        if (!typeset && !this._altered.dynamic) {
             return undefined;
         }
 
@@ -86,12 +90,16 @@ export class Position3DLabel extends Label {
             default:
         }
 
-        const vertices = this.vertices();
-        Typesetter.typeset(this, vertices);
+        /* Check whether or not to (re)typeset and reset alterations. */
 
         this._altered.reset();
         this._text.altered = false;
 
+        if (!typeset) {
+            return undefined;
+        }
+        const vertices = this.vertices();
+        Typesetter.typeset(this, vertices);
         return vertices;
     }
 
@@ -100,7 +108,7 @@ export class Position3DLabel extends Label {
      */
     set position(position: vec3 | GLfloat3) {
         this._position = vec3.clone(position);
-        this._altered.alter('transform');
+        this._altered.alter(this._type);
     }
     get position(): vec3 | GLfloat3 {
         return this._position;
@@ -109,22 +117,22 @@ export class Position3DLabel extends Label {
     /**
      * Sets the 3D direction of the label, i.e., the direction of the baseline.
      */
-    set direction(direction: vec3) {
+    set direction(direction: vec3 | GLfloat3) {
         vec3.normalize(this._direction, direction);
-        this._altered.alter('transform');
+        this._altered.alter(this._type);
     }
-    get direction(): vec3 {
+    get direction(): vec3 | GLfloat3 {
         return this._direction;
     }
 
     /**
      * Sets the up-vector of the label. It should be orthogonal to the direction to ensure that the label is not skewed.
      */
-    set up(up: vec3) {
+    set up(up: vec3 | GLfloat3) {
         this._up = vec3.normalize(this._up, up);
-        this._altered.alter('transform');
+        this._altered.alter(this._type);
     }
-    get up(): vec3 {
+    get up(): vec3 | GLfloat3 {
         return this._up;
     }
 

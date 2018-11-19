@@ -6,7 +6,6 @@ import { vec2, vec3 } from 'gl-matrix';
 /* spellchecker: enable */
 
 
-
 /**
  * Vertex cloud that describes each glyph that is to be rendered on the screen.
  */

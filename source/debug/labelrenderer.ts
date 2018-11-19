@@ -316,35 +316,35 @@ think with longing, Oh, would I could describe these conceptions, could impress 
 and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
 
-            const label0 = new Position3DLabel(new Text(`${werther}`));
+            const label0 = new Position3DLabel(new Text(`${werther}`), Label.Type.Static);
             label0.lineWidth = 1.0;
             label0.position = [-1.2, +0.5, 0.5];
             label0.alignment = Label.Alignment.Left;
             label0.wrap = true;
 
-            const label1 = new Position3DLabel(new Text(`${werther}`));
+            const label1 = new Position3DLabel(new Text(`${werther}`), Label.Type.Static);
             label1.lineWidth = 1.0;
             label1.position = [+0.1, +0.5, 0.5];
             label1.alignment = Label.Alignment.Left;
-            label1.elide = Label.Elide.Right;
+            label1.elide = Label.Elide.Middle;
             label1.color.fromHex('ff8888');
 
-            const label2 = new Position3DLabel(new Text(`${werther}`));
+            const label2 = new Position3DLabel(new Text(`${werther}`), Label.Type.Dynamic);
             label2.lineWidth = 1.0;
             label2.position = [+0.1, +0.3, 0.5];
             label2.alignment = Label.Alignment.Left;
-            label2.elide = Label.Elide.Middle;
+            label2.elide = Label.Elide.Right;
             label2.color.fromHex('75bc1c');
 
 
-            const label3 = new Position3DLabel(new Text(`${werther}`));
+            const label3 = new Position3DLabel(new Text(`${werther}`), Label.Type.Dynamic);
             label3.lineWidth = 1.0;
             label3.position = [+0.1, +0.1, 0.5];
             label3.alignment = Label.Alignment.Left;
             label3.elide = Label.Elide.Left;
             label3.color.fromHex('1cbc75');
 
-            const label4 = new Position3DLabel(new Text(`${werther}`));
+            const label4 = new Position3DLabel(new Text(`${werther}`), Label.Type.Static);
             label4.lineWidth = 0.66;
             label4.position = [+0.1, -0.1, 0.5];
             label4.alignment = Label.Alignment.Left;
@@ -355,8 +355,14 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             setInterval(() => {
                 const hsl = label1.color.hsl;
 
-                this._hue += 0.02;
+                this._hue = performance.now() * 0.0004;
                 label1.color.fromHSL(fract(this._hue), hsl[1], hsl[2]);
+
+                label2.position = [+0.1 + Math.cos(this._hue * 16.0) * 0.05, +0.3, Math.sin(this._hue * 2.0) * 0.5];
+
+                label3.up = [0, Math.cos(this._hue * 8.0), Math.sin(this._hue * 8.0)];
+
+                label1.lineWidth = Math.sin(this._hue * 4.0) * 0.5 + 0.5;
 
                 label4.text.text = werther.substr(this._pos, 128);
                 ++this._pos;
@@ -365,7 +371,8 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 }
 
                 this.invalidate();
-            }, 100);
+            }, 33);
+
 
             this._labelPass.labels = [label0, label1, label2, label3, label4];
         }

@@ -56,7 +56,7 @@ void main(void)
     vec3 tangentDirection = a_origin + a_vertex.x * a_tangent;
     vec4 vertex = vec4(tangentDirection + a_vertex.y * a_bitangent, 1.0);
 
-    vertex = u_viewProjection * vertex;
+    vertex = u_viewProjection * u_transform * vertex;
 
     ndcOffset(vertex, u_ndcOffset);
     gl_Position = vertex;
