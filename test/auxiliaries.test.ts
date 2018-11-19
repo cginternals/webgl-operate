@@ -60,7 +60,7 @@ describe('auxiliaries log and logIf', () => {
 
     it('should use the correct log level', () => {
         let output = '';
-        const consoleLogStub = stub(console, 'log').callsFake((input: any): any => output = input);
+        const consoleLogStub = stub(console, 'log').callsFake((input: any): void => output = input);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
         expect(output).to.string('[0]');
@@ -79,7 +79,7 @@ describe('auxiliaries log and logIf', () => {
 
     it('should respect verbosity level', () => {
         let output = '';
-        const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
+        const consoleLogStub = stub(console, 'log').callsFake((input: any): void => output = input);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
         expect(output).to.string('[0]');
