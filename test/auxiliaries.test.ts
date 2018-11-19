@@ -59,51 +59,51 @@ describe('auxiliaries log and logIf', () => {
     });
 
     it('should use the correct log level', () => {
-        let output = '';
-        const consoleLogStub = stub(console, 'log').callsFake((input: any): void => output = input);
+        const fake = sinon.fake();
+        const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(output).to.string('[0]');
+        expect(fake.lastCall.lastArg).to.string('[0]');
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(output).to.string('[1]');
+        expect(fake.lastCall.lastArg).to.string('[1]');
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(output).to.string('[2]');
+        expect(fake.lastCall.lastArg).to.string('[2]');
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(output).to.string('[3]');
+        expect(fake.lastCall.lastArg).to.string('[3]');
 
         consoleLogStub.restore();
     });
 
     it('should respect verbosity level', () => {
-        let output = '';
-        const consoleLogStub = stub(console, 'log').callsFake((input: any): void => output = input);
+        const fake = sinon.fake();
+        const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(output).to.string('[0]');
+        expect(fake.lastCall.lastArg).to.string('[0]');
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(output).to.string('[1]');
+        expect(fake.lastCall.lastArg).to.string('[1]');
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(output).to.string('[2]');
+        expect(fake.lastCall.lastArg).to.string('[2]');
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(output).to.string('[3]');
+        expect(fake.lastCall.lastArg).to.string('[3]');
 
         aux.log(4, 'log level 4');
-        expect(output).to.string('[3]'); // uses previous output (nothing changed)
+        expect(fake.lastCall.lastArg).to.string('[3]'); // uses previous output (nothing changed)
 
         const thresholdRestore = aux.logVerbosity();
         aux.logVerbosity(4);
         aux.log(4, 'log level 4');
-        expect(output).to.string('[4]');
+        expect(fake.lastCall.lastArg).to.string('[4]');
 
         aux.logVerbosity(-1);
         aux.log(0, 'log level 0');
-        expect(output).to.string('[4]');
+        expect(fake.lastCall.lastArg).to.string('[4]');
 
         aux.logVerbosity(thresholdRestore);
         consoleLogStub.restore();
