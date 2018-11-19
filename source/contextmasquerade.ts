@@ -87,28 +87,21 @@ export class ContextMasquerade {
             mask._backend = tuple[0];
             mask._extensionsStrive = tuple[1];
         } else {
-            mask._backend = preset.backend;
-            mask._extensionsConceal = preset.extensions_conceal;
-            mask._extensionsStrive = preset.extensions_strive;
+            mask._backend = preset.backend!;
         }
-        mask._functionsUndefine = preset.functions_undefine;
 
         assert(mask._backend !== undefined,
             'expected backend to be included in preset');
 
-        if (mask._extensionsStrive === undefined) {
+        if (preset.extensions_strive === undefined) {
             mask._extensionsStrive = [];
+            mask._extensionsConceal = preset.extensions_conceal ? preset.extensions_conceal : [];
         } else {
-            mask._extensionsConceal = ExtensionsHash.complement(mask._backend, mask._extensionsStrive);
+            mask._extensionsStrive = preset.extensions_strive;
+            mask._extensionsConceal = ExtensionsHash.complement(mask._backend, preset.extensions_strive);
         }
 
-        if (mask._extensionsConceal === undefined) {
-            mask._extensionsConceal = [];
-        }
-
-        if (mask._functionsUndefine === undefined) {
-            mask._functionsUndefine = [];
-        }
+        mask._functionsUndefine = preset.functions_undefine ? preset.functions_undefine : [];
 
         return mask;
     }
@@ -178,11 +171,11 @@ export namespace ContextMasquerade {
      */
     export interface Preset {
         identifier: string;
-        backend: string;
-        extensions_hash: string;
-        extensions_strive: Array<string>;
-        extensions_conceal: Array<string>;
-        functions_undefine: Array<string>;
+        backend?: string;
+        extensions_hash?: string;
+        extensions_strive?: Array<string>;
+        extensions_conceal?: Array<string>;
+        functions_undefine?: Array<string>;
     }
 
 }
