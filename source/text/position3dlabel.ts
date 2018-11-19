@@ -5,8 +5,8 @@ import { mat4, vec3 } from 'gl-matrix';
 
 import { logIf, LogLevel } from '../auxiliaries';
 import { m4, v3 } from '../gl-matrix-extensions';
-
 import { GLfloat3 } from '../tuples';
+
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
@@ -71,9 +71,9 @@ export class Position3DLabel extends Label {
         const normal = vec3.cross(v3(), this._direction, this._up);
 
         const rotation = mat4.fromValues(
-            this._direction[0], this._direction[1], this._direction[2], 0,
-            this._up[0], this._up[1], this._up[2], 0,
-            normal[0], normal[1], normal[2], 0,
+            this._direction[0], this._direction[1], this._direction[2], 0.0,
+            this._up[0], this._up[1], this._up[2], 0.0,
+            normal[0], normal[1], normal[2], 0.0,
             0.0, 0.0, 0.0, 1.0);
 
         mat4.mul(transform, transform, rotation);

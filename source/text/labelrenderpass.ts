@@ -167,7 +167,6 @@ export class LabelRenderPass extends Initializable {
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_glyphs'), 0);
-        // gl.uniform4fv(this._uColor, this._color.rgbaF32);
         gl.uniform1f(this._uAAStepScale, this._aaStepScale);
         this._program.unbind();
 
@@ -264,10 +263,6 @@ export class LabelRenderPass extends Initializable {
             label.fontFace!.glyphTexture.bind(gl.TEXTURE0);
             this._geometry.draw(range[0], range[1] - range[0]);
         }
-
-
-        /* @todo for dynamic draw per label, update transform uniform, this means label bounds within geometry need
-        to be available here or somehow referenced/associated within the geometry... */
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */
         // this._geometry.unbind();

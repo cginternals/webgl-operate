@@ -2,9 +2,9 @@
 /* spellchecker: disable */
 
 import { mat4, vec2, vec3 } from 'gl-matrix';
-import { v3 } from '../gl-matrix-extensions';
 
 import { assert } from '../auxiliaries';
+import { v3 } from '../gl-matrix-extensions';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
