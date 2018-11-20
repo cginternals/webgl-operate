@@ -26,7 +26,6 @@ import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
 
-
 /* spellchecker: enable */
 
 

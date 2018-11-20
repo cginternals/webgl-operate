@@ -12,7 +12,7 @@ attribute vec2 a_vertex;
 attribute vec4 a_texCoord;
 attribute vec3 a_origin;
 attribute vec3 a_tangent;
-attribute vec3 a_bitangent;
+attribute vec3 a_up;
 
 #else
 
@@ -21,7 +21,7 @@ in vec2 a_vertex;
 in vec4 a_texCoord;
 in vec3 a_origin;
 in vec3 a_tangent;
-in vec3 a_bitangent;
+in vec3 a_up;
 
 #endif
 
@@ -29,6 +29,7 @@ in vec3 a_bitangent;
 uniform mat4 u_viewProjection;
 uniform vec2 u_ndcOffset;
 uniform mat4 u_transform;
+uniform bool u_dynamic;
 
 varying vec2 v_uv;
 
@@ -50,13 +51,16 @@ void main(void)
      * |  \    |
      * |    \  |
      * 1-------3
-     * The current vertex is calculated based on the current quad corners and the tangent / bitangent attributes.
+     * The current vertex is calculated based on the current quad corners and the tangent attributes.
      * The following lines are optimized for MAD optimization.
      */
     vec3 tangentDirection = a_origin + a_vertex.x * a_tangent;
-    vec4 vertex = vec4(tangentDirection + a_vertex.y * a_bitangent, 1.0);
+    vec4 vertex = vec4(tangentDirection + a_vertex.y * a_up, 1.0);
 
-    vertex = u_viewProjection * u_transform * vertex;
+    if(u_dynamic) {
+        vertex = u_transform * vertex;
+    }
+    vertex = u_viewProjection * vertex;
 
     ndcOffset(vertex, u_ndcOffset);
     gl_Position = vertex;

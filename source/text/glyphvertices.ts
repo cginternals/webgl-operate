@@ -14,7 +14,7 @@ export class GlyphVertices {
     static readonly FLOATS_PER_TEXCOORD = 4;
     static readonly FLOATS_PER_ORIGIN = 3;
     static readonly FLOATS_PER_TANGENT = 3;
-    static readonly FLOATS_PER_BITANGENT = 3;
+    static readonly FLOATS_PER_UP = 3;
 
 
     /** @see {@link origins} */
@@ -22,7 +22,7 @@ export class GlyphVertices {
     /** @see {@link tangents} */
     protected _tangents: Float32Array;
     /** @see {@link ups} */
-    protected _bitangents: Float32Array;
+    protected _ups: Float32Array;
     /** @see {@link texCoords} */
     protected _texCoords: Float32Array;
 
@@ -48,7 +48,7 @@ export class GlyphVertices {
             concatenated._texCoords.set(vertices._texCoords, offset * GlyphVertices.FLOATS_PER_TEXCOORD);
             concatenated._origins.set(vertices._origins, offset * GlyphVertices.FLOATS_PER_ORIGIN);
             concatenated._tangents.set(vertices._tangents, offset * GlyphVertices.FLOATS_PER_TANGENT);
-            concatenated._bitangents.set(vertices._bitangents, offset * GlyphVertices.FLOATS_PER_BITANGENT);
+            concatenated._ups.set(vertices._ups, offset * GlyphVertices.FLOATS_PER_UP);
 
             offset += vertices.length;
         }
@@ -66,7 +66,7 @@ export class GlyphVertices {
         this._texCoords = new Float32Array(length * GlyphVertices.FLOATS_PER_TEXCOORD);
         this._origins = new Float32Array(length * GlyphVertices.FLOATS_PER_ORIGIN);
         this._tangents = new Float32Array(length * GlyphVertices.FLOATS_PER_TANGENT);
-        this._bitangents = new Float32Array(length * GlyphVertices.FLOATS_PER_BITANGENT);
+        this._ups = new Float32Array(length * GlyphVertices.FLOATS_PER_UP);
     }
 
     /**
@@ -85,8 +85,8 @@ export class GlyphVertices {
 
         shrink(this._texCoords, length, GlyphVertices.FLOATS_PER_TEXCOORD);
         shrink(this._origins, length, GlyphVertices.FLOATS_PER_ORIGIN);
-        shrink(this._bitangents, length, GlyphVertices.FLOATS_PER_TANGENT);
-        shrink(this._tangents, length, GlyphVertices.FLOATS_PER_BITANGENT);
+        shrink(this._ups, length, GlyphVertices.FLOATS_PER_TANGENT);
+        shrink(this._tangents, length, GlyphVertices.FLOATS_PER_UP);
     }
 
     /**
@@ -126,12 +126,12 @@ export class GlyphVertices {
     }
 
     /**
-     * Typed vec3 view to the bitangent of the glyph at given index.
-     * @param index - Index of the glyph to return the bitangent of.
+     * Typed vec3 view to the up vector of the glyph at given index.
+     * @param index - Index of the glyph to return the up vector of.
      */
-    bitangent(index: number): vec3 {
-        const begin = index * GlyphVertices.FLOATS_PER_BITANGENT;
-        return this._bitangents.subarray(begin, begin + GlyphVertices.FLOATS_PER_BITANGENT) as vec3;
+    up(index: number): vec3 {
+        const begin = index * GlyphVertices.FLOATS_PER_UP;
+        return this._ups.subarray(begin, begin + GlyphVertices.FLOATS_PER_UP) as vec3;
     }
 
 
@@ -143,28 +143,28 @@ export class GlyphVertices {
     }
 
     /**
-     * All GlyphVertex origins gathered in one buffer. Call update() to update it.
+     * Read-access to all glyph vertices' origins in a single typed buffer.
      */
     get origins(): Float32Array {
         return this._origins;
     }
 
     /**
-     * All GlyphVertex tangent vectors gathered in one buffer. Call update() to update it.
+     * Read-access to all glyph vertices' tangent vectors in a single typed buffer.
      */
     get tangents(): Float32Array {
         return this._tangents;
     }
 
     /**
-     * All GlyphVertex up/bitangent vectors gathered in one buffer. Call update() to update it.
+     * Read-access to all glyph vertices' up vectors in a single typed buffer.
      */
-    get bitangents(): Float32Array {
-        return this._bitangents;
+    get ups(): Float32Array {
+        return this._ups;
     }
 
     /**
-     * All GlyphVertex texture coordinates gathered in one buffer. Call update() to update it.
+     * Read-access to all glyph vertices' texture coordinates (lower left and upper right) in a single typed buffer.
      */
     get texCoords(): Float32Array {
         return this._texCoords;

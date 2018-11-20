@@ -18,17 +18,23 @@ import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 // import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
+import { Color } from '../color';
+import { FontFace } from './fontface';
 
 /* spellchecker: enable */
 
 
 /**
- * The LabelRenderPass @todo
+ * This class allows rendering of multiple dynamic as well as static labels. While preparing for frame, all label
+ * geometry is packed into single buffers for the GPU and drawing is done with as few draw calls as possible. The
+ * preparation tries to reduce state changes when labels of same color and same font are provided consecutively.
+ * It might be beneficial to not render labels of large static texts and some often changing dynamic texts using the
+ * same label render pass object. Often changing texts should be out into separate passed for better performance.
  */
 export class LabelRenderPass extends Initializable {
 
     /**
-     * Default AA step scale: more crisp text rendering.
+     * Default AA step scale: more crisp text rendering (the value is optimized for multi-frame sampling).
      */
     protected static readonly DEFAULT_AA_STEP_SCALE: GLfloat = 0.6666;
 
@@ -74,6 +80,7 @@ export class LabelRenderPass extends Initializable {
     protected _uColor: WebGLUniformLocation | undefined;
     protected _uAAStepScale: WebGLUniformLocation | undefined;
     protected _uTransform: WebGLUniformLocation | undefined;
+    protected _uDynamic: WebGLUniformLocation | undefined;
 
     protected _labels = new Array<Label>();
 
@@ -134,7 +141,7 @@ export class LabelRenderPass extends Initializable {
         }
 
         const data: GlyphVertices = GlyphVertices.concat(this._verticesPerLabel);
-        this._geometry.update(data.origins, data.tangents, data.bitangents, data.texCoords);
+        this._geometry.update(data.origins, data.tangents, data.ups, data.texCoords);
     }
 
 
@@ -155,7 +162,7 @@ export class LabelRenderPass extends Initializable {
         this._program.attribute('a_texCoord', this._geometry.texCoordLocation);
         this._program.attribute('a_origin', this._geometry.originLocation);
         this._program.attribute('a_tangent', this._geometry.tangentLocation);
-        this._program.attribute('a_bitangent', this._geometry.bitangentLocation);
+        this._program.attribute('a_up', this._geometry.upLocation);
 
         this._program.link();
 
@@ -164,6 +171,7 @@ export class LabelRenderPass extends Initializable {
         this._uColor = this._program.uniform('u_color');
         this._uAAStepScale = this._program.uniform('u_aaStepScale');
         this._uTransform = this._program.uniform('u_transform');
+        this._uDynamic = this._program.uniform('u_dynamic');
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_glyphs'), 0);
@@ -182,6 +190,8 @@ export class LabelRenderPass extends Initializable {
         this._uNdcOffset = undefined;
         this._uColor = undefined;
         this._uAAStepScale = undefined;
+        this._uTransform = undefined;
+        this._uDynamic = undefined;
     }
 
 
@@ -214,9 +224,14 @@ export class LabelRenderPass extends Initializable {
         this._altered.reset();
     }
 
+    /**
+     * This invokes draw calls on all labels. Thereby it aims to avoid unnecessary binds when texture or color does
+     * not change and accumulate draw calls as long as both remain unchanged. Further more, draw calls will be
+     * accumulated as much as possible (static labels only).
+     */
     @Initializable.assert_initialized()
     frame(): void {
-        if (this._geometry.numberOfGlyphs === 0) {
+        if (this._geometry.numberOfGlyphs === 0 || this._labels.length === 0) {
             return;
         }
 
@@ -250,18 +265,50 @@ export class LabelRenderPass extends Initializable {
 
         this._geometry.bind();
 
+        /* Try to avoid unnecessary binds when texture or color does not change and accumulate draw calls as long as
+        both remain unchanged. */
+
+        const range: GLsizei2 = [0, 0];
+        let currentColor: Color | undefined;
+        let currentFontFace: FontFace | undefined;
+
         for (let i = 0; i < this._labels.length; ++i) {
-            const label = this._labels[i];
-            const range = this._ranges[i];
+            const label0 = this._labels[i];
+            range[1] = this._ranges[i][1];
+
+            /* Skip labels that have no depictable glyphs. */
             if (range[0] === range[1]) {
                 continue;
             }
 
-            gl.uniform4fv(this._uColor, label.color.rgbaF32);
-            gl.uniformMatrix4fv(this._uTransform, false, label.dynamicTransform);
+            /* If the next/subsequent label has no depictable glyphs or has the same font and color, then increase
+            draw range. */
+            const label1 = i < this._labels.length - 1 ? this._labels[i + 1] : undefined;
+            const bothStatic = label1 && label0.type === Label.Type.Static && label1.type === Label.Type.Static;
+            const sameColor = label1 && label0.color.equals(label1.color);
+            const sameFontFace = label1 && label0.fontFace === label1.fontFace;
+            if (label1 && (this._ranges[i + 1][0] === this._ranges[i + 1][1]
+                || (bothStatic && sameColor && sameFontFace))) {
+                continue;
+            }
 
-            label.fontFace!.glyphTexture.bind(gl.TEXTURE0);
+            const dynamic = label0.type === Label.Type.Dynamic;
+            gl.uniform1i(this._uDynamic, dynamic);
+            if (dynamic) {
+                gl.uniformMatrix4fv(this._uTransform, false, label0.dynamicTransform);
+            }
+
+            if (currentColor === undefined || !currentColor.equals(label0.color)) {
+                gl.uniform4fv(this._uColor, label0.color.rgbaF32);
+                currentColor = label0.color;
+            }
+            if (currentFontFace !== label0.fontFace) {
+                label0.fontFace!.glyphTexture.bind(gl.TEXTURE0);
+                currentFontFace = label0.fontFace;
+            }
             this._geometry.draw(range[0], range[1] - range[0]);
+
+            range[0] = range[1];
         }
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */

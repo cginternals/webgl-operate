@@ -88,7 +88,7 @@ export abstract class Label {
      * once when typesetting (static) or every frame during rendering (dynamic).
      * @param text - The text that is displayed by this label.
      * @param type - Either static or dynamic. If static is used, all transformations are baked and modifications to
-     * on any of the label's transformations are expected to occur less often.
+     * any of the label's transformations are expected to occur less often.
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
     constructor(text: Text, type: Label.Type, fontFace?: FontFace) {
@@ -116,7 +116,7 @@ export abstract class Label {
     /**
      * Interface intended to compute/update the label's static and dynamic transformations as well as invoking the
      * typesetter in order to create the glyph vertices. Returns undefined, if previous vertices can be reused since no
-     * was required. Returns an empty GlyphVertices storage if label is invalid or cannot be rendered ...
+     * typesetting was required. Returns an empty GlyphVertices storage if label is invalid or cannot be rendered ...
      */
     abstract typeset(): GlyphVertices | undefined;
 
@@ -281,8 +281,7 @@ export abstract class Label {
 
     /**
      * Line width used to either maximum length for elide or maximum length for line breaks due to word wrap. The line
-     * width is expected in typesetting space (the unit used while Typesetting, i.e., the unit as the font face's glyph
-     * texture atlas).
+     * width is expected in font size.
      */
     set lineWidth(lineWidth: number) {
         if (this._lineWidth === lineWidth) {

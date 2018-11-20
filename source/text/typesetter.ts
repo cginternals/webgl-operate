@@ -54,7 +54,7 @@ export class Typesetter {
         origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[0];
 
         vec3.set(vertices.tangent(index), glyph.extent[0], 0.0, 0.0);
-        vec3.set(vertices.bitangent(index), 0.0, glyph.extent[1], 0.0);
+        vec3.set(vertices.up(index), 0.0, glyph.extent[1], 0.0);
 
         const lowerLeft: vec2 = vertices.uvLowerLeft(index);
         vec2.copy(lowerLeft, glyph.subTextureOrigin);
@@ -303,11 +303,11 @@ export class Typesetter {
             const lr: vec3 = v3(); /* Lower Right */
             vec3.transformMat4(lr, vec3.add(lr, origin, vertices.tangent(index)), transform);
             const ul: vec3 = v3(); /* Upper Left */
-            vec3.transformMat4(ul, vec3.add(ul, origin, vertices.bitangent(index)), transform);
+            vec3.transformMat4(ul, vec3.add(ul, origin, vertices.up(index)), transform);
 
             vec3.copy(vertices.origin(index), ll);
             vec3.sub(vertices.tangent(index), lr, ll);
-            vec3.sub(vertices.bitangent(index), ul, ll);
+            vec3.sub(vertices.up(index), ul, ll);
         }
     }
 
@@ -339,9 +339,9 @@ export class Typesetter {
 
     /**
      * Create and transform glyph vertices for rendering.
-     * @param label -
-     * @param vertices -
-     * @param lines -
+     * @param label - Label providing transform data, e.g., alignment and static transform.
+     * @param vertices - Glyph vertices to apply transformations to.
+     * @param lines - Indices of glyph vertices on same lines to apply line-based transformations.
      */
     private static transform(label: Label, vertices: GlyphVertices, lines: Array<Line>): void {
         for (const line of lines) {
