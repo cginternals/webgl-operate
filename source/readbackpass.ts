@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import { assert } from './auxiliaries';
@@ -15,6 +17,8 @@ import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 import { GLsizei2 } from './tuples';
+
+/* spellchecker: enable */
 
 
 /**

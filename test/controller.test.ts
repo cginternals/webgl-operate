@@ -1,12 +1,15 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 const expect = chai.expect;
 const stub = sinon.stub;
 
-
 import { Controllable, Controller } from '../source/controller';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:max-classes-per-file no-unused-expression */

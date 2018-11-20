@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
@@ -8,6 +10,8 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
+
+/* spellchecker: enable */
 
 
 /**
@@ -151,6 +155,13 @@ export class BlitPass extends Initializable {
     initialize(ndcTriangle?: NdcFillingTriangle): boolean {
         const gl = this._context.gl;
 
+        if (ndcTriangle === undefined) {
+            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Blit');
+        } else {
+            this._ndcTriangle = ndcTriangle;
+            this._ndcTriangleShared = true;
+        }
+
         /* Configure program-based blit. */
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
@@ -159,19 +170,7 @@ export class BlitPass extends Initializable {
         frag.initialize(require('./shaders/blit.frag'));
 
         this._program = new Program(this._context, 'BlitProgram');
-        this._program.initialize([vert, frag]);
-
-        this._program.bind();
-        gl.uniform1i(this._program.uniform('u_texture'), 0);
-        this._program.unbind();
-
-
-        if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Blit');
-        } else {
-            this._ndcTriangle = ndcTriangle;
-            this._ndcTriangleShared = true;
-        }
+        this._program.initialize([vert, frag], false);
 
         if (!this._ndcTriangle.initialized) {
             const aVertex = this._program.attribute('a_vertex', 0);
@@ -179,6 +178,12 @@ export class BlitPass extends Initializable {
         } else {
             this._program.attribute('a_vertex', this._ndcTriangle.aVertex);
         }
+
+        this._program.link();
+
+        this._program.bind();
+        gl.uniform1i(this._program.uniform('u_texture'), 0);
+        this._program.unbind();
 
         return true;
     }

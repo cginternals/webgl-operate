@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { clamp } from './gl-matrix-extensions';
 
 import { assert } from './auxiliaries';
 import { Color } from './color';
 import { fetchJsonAsync } from './fetch';
+
+/* spellchecker: enable */
 
 
 // /**

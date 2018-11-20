@@ -1,6 +1,10 @@
 
+/* spellchecker: disable */
+
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
+
+/* spellchecker: enable */
 
 
 /**

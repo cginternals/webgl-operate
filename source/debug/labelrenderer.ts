@@ -1,22 +1,23 @@
 
+/* spellchecker: disable */
+
 import { assert, log, LogLevel } from '../auxiliaries';
 
 import { vec3 } from 'gl-matrix';
+
+import { fract } from '../gl-matrix-extensions';
 
 import { AccumulatePass } from '../accumulatepass';
 import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
-import { Color } from '../color';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
 import { Framebuffer } from '../framebuffer';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { Navigation } from '../navigation';
-import { Program } from '../program';
 import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
-import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 
 import { FontFace } from '../text/fontface';
@@ -25,7 +26,7 @@ import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
 
-import { TestNavigation } from './testnavigation';
+/* spellchecker: enable */
 
 
 namespace debug {
@@ -36,28 +37,25 @@ namespace debug {
     export class LabelRenderer extends Renderer {
 
         protected _extensions = false;
-        protected _program: Program;
 
         protected _ndcOffsetKernel: AntiAliasingKernel;
-        protected _uNdcOffset: WebGLUniformLocation;
-        protected _uFrameNumber: WebGLUniformLocation;
 
         protected _accumulate: AccumulatePass;
         protected _blit: BlitPass;
         protected _labelPass: LabelRenderPass;
 
         protected _camera: Camera;
-        protected _uViewProjection: WebGLUniformLocation;
 
         protected _defaultFBO: DefaultFramebuffer;
         protected _colorRenderTexture: Texture2D;
         protected _depthRenderbuffer: Renderbuffer;
         protected _intermediateFBO: Framebuffer;
 
-        protected _testNavigation: TestNavigation;
         protected _navigation: Navigation;
 
-        protected _fontFace: FontFace;
+
+        protected _hue = 0;
+        protected _pos = 0;
 
 
         /**
@@ -83,23 +81,6 @@ namespace debug {
                 this._context.standardDerivatives;
                 this._extensions = true;
             }
-
-            /* Create and configure program and geometry. */
-
-            const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
-            vert.initialize(require('../text/glyph.vert'));
-
-            const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
-            frag.initialize(require('../text/glyph.frag'));
-
-            this._program = new Program(this._context);
-            this._program.initialize([vert, frag]);
-
-            this._uNdcOffset = this._program.uniform('u_ndcOffset');
-            this._uFrameNumber = this._program.uniform('u_frameNumber');
-            this._uViewProjection = this._program.uniform('u_viewProjection');
-
-            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
 
             /* Create framebuffers, textures, and render buffers. */
 
@@ -147,11 +128,12 @@ namespace debug {
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
-            this._labelPass.color = new Color([1.0, 1.0, 1.0, 1.0]);
 
             FontFace.fromFile('./data/opensansr144.fnt', context)
                 .then((fontFace) => {
-                    this._labelPass.fontFace = fontFace;
+                    for (const label of this._labelPass.labels) {
+                        label.fontFace = fontFace;
+                    }
                     this.invalidate();
                 })
                 .catch((reason) => log(LogLevel.Error, reason));
@@ -166,10 +148,6 @@ namespace debug {
          */
         protected onUninitialize(): void {
             super.uninitialize();
-
-            this._uNdcOffset = -1;
-            this._uFrameNumber = -1;
-            this._program.uninitialize();
 
             this._intermediateFBO.uninitialize();
             this._defaultFBO.uninitialize();
@@ -194,6 +172,11 @@ namespace debug {
 
             this._navigation.update();
 
+            for (const label of this._labelPass.labels) {
+                if (label.altered || label.color.altered) {
+                    return true;
+                }
+            }
             return this._altered.any || this._camera.altered;
         }
 
@@ -219,12 +202,6 @@ namespace debug {
                 this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
                 this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
                 this._camera.aspect = this._frameSize[0] / this._frameSize[1];
-                /** @todo
-                 * update the geometry of the labels that use pt sizes (e.g. labels in screen space)
-                 * and/or update: labels that get too small (to be readable) should not be rendered anymore
-                 * (a.k.a. threshold for readability)
-                 */
-                this.setupScene();
             }
 
             if (this._altered.canvasSize) {
@@ -243,15 +220,8 @@ namespace debug {
                 this._intermediateFBO.clearColor(this._clearColor);
             }
 
-            this._accumulate.update();
-
-            if (this._camera.altered) {
-                this._program.bind();
-                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-                this._program.unbind();
-            }
-
             this._labelPass.update();
+            this._accumulate.update();
 
             this._altered.reset();
             this._camera.altered = false;
@@ -267,16 +237,11 @@ namespace debug {
             gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 
-            this._program.bind();
-
             const ndcOffset = this._ndcOffsetKernel.get(frameNumber) as [number, number];
             ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
             ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
 
             this._labelPass.ndcOffset = ndcOffset;
-
-            gl.uniform2fv(this._uNdcOffset, ndcOffset);
-            gl.uniform1i(this._uFrameNumber, frameNumber);
 
             this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
             this._labelPass.frame();
@@ -349,37 +314,63 @@ and heaven and earth seem to dwell in my soul and absorb its power, like the for
 think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
 and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
-            // const numbers = '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30';
 
-            const label0 = new Position3DLabel(new Text(`${werther}`));
+            const label0 = new Position3DLabel(new Text(`${werther}`), Label.Type.Static);
             label0.lineWidth = 1.0;
-            label0.setPosition(-1.2, +0.5, 0.5);
+            label0.position = [-1.2, +0.5, 0.5];
             label0.alignment = Label.Alignment.Left;
             label0.wrap = true;
 
-            const label1 = new Position3DLabel(new Text(`abcdef`));
-            label1.lineWidth = 0.01;
-            label1.setPosition(+0.1, +0.5, 0.5);
+            const label1 = new Position3DLabel(new Text(`${werther}`), Label.Type.Static);
+            label1.lineWidth = 1.0;
+            label1.position = [+0.1, +0.5, 0.5];
             label1.alignment = Label.Alignment.Left;
             label1.elide = Label.Elide.Middle;
+            label1.color.fromHex('ff8888');
 
-            const label2 = new Position3DLabel(new Text(`${werther}`));
+            const label2 = new Position3DLabel(new Text(`${werther}`), Label.Type.Dynamic);
             label2.lineWidth = 1.0;
-            label2.setPosition(+0.1, +0.3, 0.5);
+            label2.position = [+0.1, +0.3, 0.5];
             label2.alignment = Label.Alignment.Left;
-            label2.elide = Label.Elide.Middle;
+            label2.elide = Label.Elide.Right;
+            label2.color.fromHex('75bc1c');
 
-            const label3 = new Position3DLabel(new Text(`${werther}`));
+
+            const label3 = new Position3DLabel(new Text(`${werther}`), Label.Type.Dynamic);
             label3.lineWidth = 1.0;
-            label3.setPosition(+0.1, +0.1, 0.5);
+            label3.position = [+0.1, +0.1, 0.5];
             label3.alignment = Label.Alignment.Left;
             label3.elide = Label.Elide.Left;
+            label3.color.fromHex('1cbc75');
 
-            const label4 = new Position3DLabel(new Text(`${werther}`));
-            label4.lineWidth = 1.0;
-            label4.setPosition(+1.2, -0.1, 0.5);
-            label4.alignment = Label.Alignment.Right;
+            const label4 = new Position3DLabel(new Text(`${werther}`), Label.Type.Static);
+            label4.lineWidth = 0.66;
+            label4.position = [+0.1, -0.1, 0.5];
+            label4.alignment = Label.Alignment.Left;
             label4.wrap = true;
+            label4.color.fromHex('eeeeee');
+
+
+            setInterval(() => {
+                const hsl = label1.color.hsl;
+
+                this._hue = performance.now() * 0.0004;
+                label1.color.fromHSL(fract(this._hue), hsl[1], hsl[2]);
+
+                label2.position = [+0.1 + Math.cos(this._hue * 16.0) * 0.05, +0.3, Math.sin(this._hue * 2.0) * 0.5];
+
+                label3.up = [0, Math.cos(this._hue * 8.0), Math.sin(this._hue * 8.0)];
+
+                label1.lineWidth = Math.sin(this._hue * 4.0) * 0.5 + 0.5;
+
+                label4.text.text = werther.substr(this._pos, 128);
+                ++this._pos;
+                if (this._pos > werther.length) {
+                    this._pos = 0;
+                }
+
+                this.invalidate();
+            }, 33);
 
 
             this._labelPass.labels = [label0, label1, label2, label3, label4];

@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert } from '../auxiliaries';
 import { GLfloat2, GLfloat4, GLsizei2 } from '../tuples';
 
@@ -9,6 +11,8 @@ import { Wizard } from '../wizard';
 import { fetchAsync } from '../fetch';
 import { FontFaceLoader } from './fontfaceloader';
 import { Glyph } from './glyph';
+
+/* spellchecker: enable */
 
 
 /**

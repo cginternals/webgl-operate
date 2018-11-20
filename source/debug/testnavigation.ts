@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { EventHandler } from '../eventhandler';
 import { MouseEventProvider } from '../mouseeventprovider';
 import { Invalidate } from '../renderer';
+
+/* spellchecker: enable */
 
 
 export class TestNavigation {

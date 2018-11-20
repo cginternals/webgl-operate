@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { vec2 } from 'gl-matrix';
 
 import { Camera } from './camera';
+
+/* spellchecker: enable */
 
 
 export abstract class CameraModifier {

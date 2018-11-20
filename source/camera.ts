@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3 } from 'gl-matrix';
 import { m4 } from './gl-matrix-extensions';
 
 import { DEG2RAD, log, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
+
+/* spellchecker: enable */
 
 
 /**

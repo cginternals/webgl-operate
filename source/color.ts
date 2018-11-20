@@ -1,9 +1,14 @@
 
+/* spellchecker: disable */
+
 import { vec4 } from 'gl-matrix';
 import { clamp, mix } from './gl-matrix-extensions';
 
 import { assert, log, LogLevel } from './auxiliaries';
 import { clampf, clampf3, clampf4, duplicate4, equals4, GLclampf3, GLclampf4, GLclampf5 } from './tuples';
+
+/* spellchecker: enable */
+
 
 /** @todo remove this when webgl types are working again. */
 export type GLubyte = number;

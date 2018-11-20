@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 
 const expect = chai.expect;
 
 import { AntiAliasingKernel } from '../source/antialiasingkernel';
+
+/* spellchecker: enable */
 
 
 describe('AntiAliasingKernel', () => {

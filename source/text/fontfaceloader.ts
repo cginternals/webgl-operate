@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { log, logIf, LogLevel } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
+
+/* spellchecker: enable */
 
 
 /** @todo replace path */

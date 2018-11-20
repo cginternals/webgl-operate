@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
+
+/* spellchecker: enable */
 
 
 interface MethodDecorator { (target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor; }

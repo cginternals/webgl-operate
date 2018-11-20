@@ -1,8 +1,12 @@
 
+/* spellchecker: disable */
+
 import { assert, log, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
 import { AbstractObject } from './object';
+
+/* spellchecker: enable */
 
 
 /**

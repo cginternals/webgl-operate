@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { vec2, vec4 } from 'gl-matrix';
@@ -16,6 +18,8 @@ import { Renderer } from './renderer';
 import { Resizable } from './resizable';
 import { TouchEventProvider } from './toucheventprovider';
 import { Wizard } from './wizard';
+
+/* spellchecker: enable */
 
 
 /**

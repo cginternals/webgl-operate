@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
 
 import { GLsizei3 } from './tuples';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:max-classes-per-file */

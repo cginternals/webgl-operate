@@ -1,12 +1,17 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from '../changelookup';
 import { Color } from '../color';
+import { GLclampf4 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Text } from './text';
+
+/* spellchecker: enable */
 
 
 /**
@@ -14,7 +19,9 @@ import { Text } from './text';
  * and interaction. Multiple labels might reference the same text, but could be placed at different locations or
  * rendered applying different font faces, styles etc.
  */
-export class Label {
+export abstract class Label {
+
+    private static readonly DEFAULT_COLOR: GLclampf4 = [0.1098, 0.4588, 0.7373, 1.0];
 
     private static readonly DEFAULT_ELLIPSIS = '...';
 
@@ -35,13 +42,13 @@ export class Label {
     protected _fontSize = 0.05;
 
     /** @see {@link fontSizeUnit} */
-    protected _fontSizeUnit: Label.SpaceUnit = Label.SpaceUnit.World;
+    protected _fontSizeUnit: Label.Unit = Label.Unit.World;
 
     /** @see {@link fontFace} */
     protected _fontFace: FontFace | undefined;
 
     /** @see {@link color} */
-    protected _color: Color;
+    protected _color: Color = new Color(Label.DEFAULT_COLOR);
 
     /** @see {@link background} */
     protected _backgroundColor: Color;
@@ -62,7 +69,7 @@ export class Label {
     /** @see {@link altered} */
     protected readonly _altered = Object.assign(new ChangeLookup(), {
         any: false, color: false, resources: false, text: false, typesetting: false,
-        staticTransform: false, dynamicTransform: false,
+        static: false, dynamic: false,
     });
 
 
@@ -77,8 +84,11 @@ export class Label {
 
 
     /**
-     * Constructs an unconfigured, empty label.
+     * Constructs an unconfigured, empty label. Depending on the label type, transformations are applied
+     * once when typesetting (static) or every frame during rendering (dynamic).
      * @param text - The text that is displayed by this label.
+     * @param type - Either static or dynamic. If static is used, all transformations are baked and modifications to
+     * any of the label's transformations are expected to occur less often.
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
     constructor(text: Text, type: Label.Type, fontFace?: FontFace) {
@@ -97,10 +107,19 @@ export class Label {
     /**
      * Creates an Array of glyph vertices, ready to be used in the Typesetter.
      */
-    protected prepareVertexStorage(): GlyphVertices {
+    protected vertices(): GlyphVertices {
         const vertices = new GlyphVertices(this.length + this.ellipsis.length);
         return vertices;
     }
+
+
+    /**
+     * Interface intended to compute/update the label's static and dynamic transformations as well as invoking the
+     * typesetter in order to create the glyph vertices. Returns undefined, if previous vertices can be reused since no
+     * typesetting was required. Returns an empty GlyphVertices storage if label is invalid or cannot be rendered ...
+     */
+    abstract typeset(): GlyphVertices | undefined;
+
 
     /**
      * Returns the character at the specified index.
@@ -262,11 +281,14 @@ export class Label {
 
     /**
      * Line width used to either maximum length for elide or maximum length for line breaks due to word wrap. The line
-     * width is expected in typesetting space (the unit used while Typesetting, i.e., the unit as the font face's glyph
-     * texture atlas).
+     * width is expected in font size.
      */
     set lineWidth(lineWidth: number) {
+        if (this._lineWidth === lineWidth) {
+            return;
+        }
         this._lineWidth = lineWidth;
+        this._altered.alter('typesetting');
     }
 
     /**
@@ -287,8 +309,8 @@ export class Label {
         if (this._alignment === alignment) {
             return;
         }
-        this._altered.alter('typesetting');
         this._alignment = alignment;
+        this._altered.alter('typesetting');
     }
     get alignment(): Label.Alignment {
         return this._alignment;
@@ -301,8 +323,8 @@ export class Label {
         if (this._lineAnchor === anchor) {
             return;
         }
-        this._altered.alter('typesetting');
         this._lineAnchor = anchor;
+        this._altered.alter('typesetting');
     }
     get lineAnchor(): Label.LineAnchor {
         return this._lineAnchor;
@@ -313,13 +335,12 @@ export class Label {
      * The currently used font size.
      * (@see {@link fontSizeUnit})
      */
-    set fontSize(newSize: number) {
-        if (this._fontSize === newSize) {
+    set fontSize(size: number) {
+        if (this._fontSize === size) {
             return;
         }
+        this._fontSize = size;
         this._altered.alter('typesetting');
-        this._altered.alter('transform');
-        this._fontSize = newSize;
     }
     get fontSize(): number {
         return this._fontSize;
@@ -329,29 +350,29 @@ export class Label {
      * This unit is used for the font size.
      * (@see {@link fontSize})
      */
-    set fontSizeUnit(newUnit: Label.SpaceUnit) {
-        if (this._fontSizeUnit === newUnit) {
+    set fontSizeUnit(unit: Label.Unit) {
+        if (this._fontSizeUnit === unit) {
             return;
         }
+        this._fontSizeUnit = unit;
         this._altered.alter('typesetting');
-        this._altered.alter('transform');
-        this._fontSizeUnit = newUnit;
     }
-    get fontSizeUnit(): Label.SpaceUnit {
+    get fontSizeUnit(): Label.Unit {
         return this._fontSizeUnit;
     }
 
     /**
-     * Font face used for typesetting, transformation, and rendering. The font face is usually set by the
-     * LabelRenderPass.
+     * Font face used for typesetting, transformation, and rendering. To avoid unnecessary state changes when rendering,
+     * prefer to add labels of the same font face consecutively (since this specifies draw sequence and state change
+     * occurs whenever font face changes between two subsequent labels).
      */
     set fontFace(fontFace: FontFace | undefined) {
         if (this._fontFace === fontFace) {
             return;
         }
+        this._fontFace = fontFace;
         this._altered.alter('typesetting');
         this._altered.alter('resources');
-        this._fontFace = fontFace;
     }
     get fontFace(): FontFace | undefined {
         return this._fontFace;
@@ -364,8 +385,8 @@ export class Label {
         if (this._color.equals(color)) {
             return;
         }
-        this._altered.alter('color');
         this._color = color;
+        this._altered.alter('color');
     }
     get color(): Color {
         return this._color;
@@ -378,8 +399,8 @@ export class Label {
         if (this._backgroundColor.equals(color)) {
             return;
         }
-        this._altered.alter('color');
         this._backgroundColor = color;
+        this._altered.alter('color');
     }
     get backgroundColor(): Color {
         return this._backgroundColor;
@@ -389,14 +410,14 @@ export class Label {
     /**
      * Transformation used to move, scale, rotate, skew, etc. the label into an arbitrary coordinate space (e.g.,
      * screen space, world space, ...). This can be set either explicitly or implicitly using various transformation
-     * utility functions.
+     * utility functions. @todo review/refine this.
      */
     set staticTransform(transform: mat4) {
         if (mat4.equals(this._staticTransform, transform)) {
             return;
         }
-        this._altered.alter('staticTransform');
         this._staticTransform = transform;
+        this._altered.alter('static');
     }
     get staticTransform(): mat4 {
 
@@ -413,7 +434,7 @@ export class Label {
      * (e.g., for calculations to the final transform).
      */
     set dynamicTransform(t: mat4) {
-        this._altered.alter('dynamicTransform');
+        this._altered.alter('dynamic');
         this._dynamicTransform = t;
     }
     get dynamicTransform(): mat4 {
@@ -475,7 +496,7 @@ export namespace Label {
     /**
      * This unit is used for the font size and related calculations.
      */
-    export enum SpaceUnit {
+    export enum Unit {
         /* abstract world unit */
         World = 'world',
         /* screen pixel */

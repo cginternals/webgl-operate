@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { GLsizei2 } from './tuples';
 
@@ -11,6 +13,8 @@ import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 import { Wizard } from './wizard';
+
+/* spellchecker: enable */
 
 
 /**
@@ -103,6 +107,13 @@ export class AccumulatePass extends Initializable {
             new Texture2D(this._context, 'AccumPingTexture'),
             new Texture2D(this._context, 'AccumPongTexture')];
 
+        if (ndcTriangle === undefined) {
+            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Accumulate');
+        } else {
+            this._ndcTriangle = ndcTriangle;
+            this._ndcTriangleShared = true;
+        }
+
         /* Configure program-based accumulate. */
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (accumulate)');
@@ -111,22 +122,7 @@ export class AccumulatePass extends Initializable {
         frag.initialize(require('./shaders/accumulate.frag'));
 
         this._program = new Program(this._context, 'AccumulateProgram');
-        this._program.initialize([vert, frag]);
-
-        this._uWeight = this._program.uniform('u_weight');
-        this._program.bind();
-        gl.uniform1f(this._uWeight, 0.0);
-        gl.uniform1i(this._program.uniform('u_accumulationTexture'), 0);
-        gl.uniform1i(this._program.uniform('u_currentFrameTexture'), 1);
-        this._program.unbind();
-
-
-        if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Accumulate');
-        } else {
-            this._ndcTriangle = ndcTriangle;
-            this._ndcTriangleShared = true;
-        }
+        this._program.initialize([vert, frag], false);
 
         if (!this._ndcTriangle.initialized) {
             const aVertex = this._program.attribute('a_vertex', 0);
@@ -134,6 +130,15 @@ export class AccumulatePass extends Initializable {
         } else {
             this._program.attribute('a_vertex', this._ndcTriangle.aVertex);
         }
+
+        this._program.link();
+
+        this._uWeight = this._program.uniform('u_weight');
+        this._program.bind();
+        gl.uniform1f(this._uWeight, 0.0);
+        gl.uniform1i(this._program.uniform('u_accumulationTexture'), 0);
+        gl.uniform1i(this._program.uniform('u_currentFrameTexture'), 1);
+        this._program.unbind();
 
         return true;
     }

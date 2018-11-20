@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { vec2, vec4 } from 'gl-matrix';
@@ -15,8 +17,7 @@ import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
 
-
-// export interface IdCallback { (id: number, x?: number, y?: number): void; }
+/* spellchecker: enable */
 
 
 /**
