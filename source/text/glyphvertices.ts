@@ -70,11 +70,14 @@ export class GlyphVertices {
     }
 
     /**
-     * Efficiently reduces the size of all underlying float arrays without copying any data.
+     * Efficiently reduces the size of all underlying float arrays (copies data if reduced).
      * @param numberOfGlyphs - Target number of glyphs to reduce the vertices to.
      */
     shrink(numberOfGlyphs: number): void {
         const length = Math.max(0, numberOfGlyphs);
+        if (this.length === length) {
+            return;
+        }
 
         /* Utility that slices the underlying buffer to the required length in bytes, and then creates a new
         float 32 array view to that buffer. */
