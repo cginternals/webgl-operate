@@ -14,12 +14,12 @@ import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 import { GlyphVertices } from './glyphvertices';
 
+import { Color } from '../color';
+import { FontFace } from './fontface';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 // import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
-import { Color } from '../color';
-import { FontFace } from './fontface';
 
 /* spellchecker: enable */
 
