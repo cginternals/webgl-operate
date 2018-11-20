@@ -226,7 +226,7 @@ export class Typesetter {
      * @param labelAdvances - Advances in order to reduce lookups.
      * @param labelKernings - Kernings in order to reduce lookups.
      * @param reverse -If enabled, the right side elide fragments will be collected and adjusted. Left side otherwise.
-     * @returns - A new fragment and fragment-weights array for elide advancing.
+     * @returns - A new fragment and fragment-widths array for elide advancing.
      */
     private static elideFragments(threshold: number,
         labelFragments: Array<Fragment>, labelFragmentWidths: Float32Array,
@@ -249,30 +249,31 @@ export class Typesetter {
             }
 
             /* If next fragment fits as a whole, put it in. */
-
             if (width + labelFragmentWidths[i0] < threshold) {
-                width += labelFragmentWidths[i0];
+                width += labelFragmentWidths[i0] + labelKernings[fragment[1] - 1];
 
                 fragments.push(fragment);
                 fragmentWidths.push(labelFragmentWidths[i0]);
                 continue;
             }
-            /* If the single delimiter didn't fit, then break. */
-            if (fragment[2] === Typesetter.FragmentType.Delimiter) {
+            /* If the single delimiter didn't fit or first/last character of word, then break. */
+            if (fragment[2] === Typesetter.FragmentType.Delimiter ||
+                width + labelAdvances[reverse ? fragment[1] - 1 : fragment[0]] > threshold) {
                 break;
             }
 
             /* Try to cramp as many characters of the fragment (word) as possible. */
+            let lastLabelFragmentWidth = 0.0;
             for (let i1 = reverse ? fragment[1] - 1 : fragment[0];
                 reverse ? i1 >= fragment[0] : i1 < fragment[1]; reverse ? --i1 : ++i1) {
 
-                if (width + labelAdvances[i1] + labelKernings[i1] < threshold) {
-                    width += labelAdvances[i1] + labelKernings[i1];
+                if (width + lastLabelFragmentWidth + labelAdvances[i1] + labelKernings[i1] < threshold) {
+                    lastLabelFragmentWidth += labelAdvances[i1] + labelKernings[i1];
                     continue;
                 }
 
                 fragments.push([reverse ? i1 : fragment[0], reverse ? fragment[1] : i1, fragment[2]]);
-                fragmentWidths.push(width + labelAdvances[i1]);
+                fragmentWidths.push(lastLabelFragmentWidth);
                 break;
             }
             break;
@@ -491,6 +492,12 @@ export class Typesetter {
                 ellipsisAdvances, ellipsisKernings, label.length);
 
             advance(rightFragments.reverse(), new Float32Array(rightFragmentWidths.reverse()));
+
+            /* Accumulate all lines into a single line. */
+            assert(lines.length < 4, `expected at most 3-line-yield from advance, given ${lines}`);
+            lines[0][1] = lines[lines.length - 1][1];
+            lines[0][2] = pen[0];
+            lines.length = 1;
 
         } else {
 
