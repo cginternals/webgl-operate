@@ -59,7 +59,7 @@ export class Position3DLabel extends Label {
             return undefined;
         }
 
-        if (this._fontFace === undefined || this._text.length === 0) {
+        if (!this.valid) {
             return new GlyphVertices(0);
         }
 
@@ -92,8 +92,10 @@ export class Position3DLabel extends Label {
 
         /* Check whether or not to (re)typeset and reset alterations. */
 
+
         this._altered.reset();
         this._text.altered = false;
+        this._color.altered = false;
 
         if (!typeset) {
             return undefined;

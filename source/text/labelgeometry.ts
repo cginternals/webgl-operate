@@ -142,7 +142,6 @@ export class LabelGeometry extends Geometry {
      */
     protected unbindBuffers(/*indices: Array<GLuint>*/): void {
         /* Please note the implicit unbind in attribEnable is skipped */
-
         this._vertices.attribDisable(this._vertexLocation, false, false);
         this._texCoords.attribDisable(this._texCoordLocation, false, false);
         this._origins.attribDisable(this._originLocation, false, false);
@@ -183,20 +182,6 @@ export class LabelGeometry extends Geometry {
         this._vertices.data(LabelGeometry.VERTICES, gl.STATIC_DRAW);
 
         return valid;
-    }
-
-    /**
-     * Specializes the uninitialization by invoking uninitialize on each buffer explicitly.
-     * The base class then uninitializes the vertex array.
-     */
-    uninitialize(): void {
-        this._vertices.uninitialize();
-        this._texCoords.uninitialize();
-        this._origins.uninitialize();
-        this._tangents.uninitialize();
-        this._ups.uninitialize();
-
-        super.uninitialize();
     }
 
     /**

@@ -459,7 +459,15 @@ export abstract class Label {
     * The alteration status can be reset using `reset` (@see {@link reset}).
     */
     get altered(): boolean {
-        return this._altered.any || (this._text instanceof Text ? this._text.altered : false);
+        return this._altered.any || this._text.altered || this._color.altered;
+    }
+
+    /**
+     * Returns whether or not this label is ready to be rendered (aka has a font face with valid texture
+     * as well as a text with a length > 0).
+     */
+    get valid(): boolean {
+        return this._fontFace !== undefined && this._fontFace.glyphTexture.valid && this._text.length > 0;
     }
 
 }

@@ -125,12 +125,9 @@ export class AccumulatePass extends Initializable {
         this._program.initialize([vert, frag], false);
 
         if (!this._ndcTriangle.initialized) {
-            const aVertex = this._program.attribute('a_vertex', 0);
-            this._ndcTriangle.initialize(aVertex);
-        } else {
-            this._program.attribute('a_vertex', this._ndcTriangle.aVertex);
+            this._ndcTriangle.initialize();
         }
-
+        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
         this._program.link();
 
         this._uWeight = this._program.uniform('u_weight');

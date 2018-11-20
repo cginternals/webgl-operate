@@ -277,7 +277,7 @@ export class LabelRenderPass extends Initializable {
             range[1] = this._ranges[i][1];
 
             /* Skip labels that have no depictable glyphs. */
-            if (range[0] === range[1]) {
+            if (range[0] === range[1] || (i < this._labels.length - 1 && !label0.valid)) {
                 continue;
             }
 

@@ -1,8 +1,6 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
-
 import { Buffer } from './buffer';
 import { Context } from './context';
 import { Geometry } from './geometry';
@@ -43,8 +41,8 @@ export class NdcFillingTriangle extends Geometry {
     protected static readonly VERTICES = new Float32Array(
         [-1.0, -3.0, 3.0, 1.0, -1.0, 1.0]);
 
-    /** @see {@link aVertex} */
-    protected _aVertex: GLuint;
+    /** @see {@link vertexLocation} */
+    protected _vertexLocation: GLuint;
 
 
     /**
@@ -64,33 +62,34 @@ export class NdcFillingTriangle extends Geometry {
 
 
     /**
-     * Binds the vertex buffer object (VBO) to an attribute binding point of a given, pre-defined index.
+     * Binds all vertex buffer objects (VBOs) to pre-set attribute binding points.
+     * @param indices - Unused, since pre-set locations are used.
      */
-    protected bindBuffers(indices: Array<GLuint>): void {
+    protected bindBuffers(/*indices: Array<GLuint>*/): void {
         /* Please note the implicit bind in attribEnable */
-        this._buffers[0].attribEnable(indices[0], 2, this.context.gl.FLOAT, false, 0, 0, true, false);
-        this._aVertex = indices[0];
+        this._buffers[0].attribEnable(this._vertexLocation,
+            2, this.context.gl.FLOAT, false, 0, 0, true, false);
     }
 
     /**
-     * Unbinds the vertex buffer object (VBO) and disables the binding point.
+     * Unbinds all vertex buffer objects (VBOs) and disables their attribute binding points.
+     * @param indices - Unused, since pre-set locations are used.
      */
-    protected unbindBuffers(indices: Array<GLuint>): void {
+    protected unbindBuffers(/*indices: Array<GLuint>*/): void {
         /* Please note the implicit unbind in attribEnable is skipped */
-        this._buffers[0].attribDisable(indices[0], true, true);
+        this._buffers[0].attribDisable(this._vertexLocation, true, true);
     }
 
 
     /**
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
-     * @param aVertex - Attribute binding point for vertices.
+     * @param vertexLocation - Attribute binding point for vertices.
      */
-    initialize(aVertex: GLuint): boolean {
-        const gl = this.context.gl;
-        const valid = super.initialize([gl.ARRAY_BUFFER], [aVertex]);
+    initialize(vertexLocation: GLuint = 0): boolean {
+        this._vertexLocation = vertexLocation;
 
-        assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
-            `expected valid WebGLBuffer`);
+        const gl = this.context.gl;
+        const valid = super.initialize([gl.ARRAY_BUFFER]);
 
         this._buffers[0].data(NdcFillingTriangle.VERTICES, gl.STATIC_DRAW);
 
@@ -108,10 +107,10 @@ export class NdcFillingTriangle extends Geometry {
 
 
     /**
-     * Attribute location this geometries vertices are bound to.
+     * Attribute location to which this geometry's vertices are bound to.
      */
-    get aVertex(): GLint {
-        return this._aVertex;
+    get vertexLocation(): GLint {
+        return this._vertexLocation;
     }
 
 }
