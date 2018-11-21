@@ -148,5 +148,8 @@ export class Position3DLabel extends Label {
         logIf(unit !== Label.Unit.World, LogLevel.Warning,
             `font size unit other than 'world' are not supported in position-3d-label, given ${unit}`);
     }
+    get fontSizeUnit(): Label.Unit {
+        return this._fontSizeUnit;
+    }
 
 }

@@ -60,7 +60,7 @@ void main(void)
     if(u_dynamic) {
         vertex = u_transform * vertex;
     }
-    // vertex = u_viewProjection * vertex;
+    vertex = u_viewProjection * vertex;
 
     ndcOffset(vertex, u_ndcOffset);
     gl_Position = vertex;

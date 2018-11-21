@@ -58,12 +58,10 @@ export class Position2DLabel extends Label {
             return undefined;
         }
 
-        console.log('asking for valid');
         if (!this.valid) {
             return new GlyphVertices(0);
         }
 
-        console.log('seems valid');
         /** @todo meaningful margins from label.margins or config.margins ? */
         const margins: vec4 = vec4.create();
         /** @todo meaningful ppiScale from label.ppiScale or config.ppiScale ? */
@@ -75,8 +73,6 @@ export class Position2DLabel extends Label {
         if (this._frameSize[0] === 0 || this._frameSize[1] === 0) {
             console.warn('Framesize is zero!', this._frameSize[0], this._frameSize[1]);
         }
-        console.log('framesize obviosly not zero');
-
 
         /* translate to lower left in NDC */
         mat4.translate(transform, m4(), vec3.fromValues(-1.0, -1.0, 0.0));
@@ -111,9 +107,6 @@ export class Position2DLabel extends Label {
 
         mat4.rotateZ(transform, transform, angle);
 
-        console.log('this would be the transform:', transform);
-
-
         switch (this._type) {
             case Label.Type.Static:
                 this.staticTransform = mat4.clone(transform);
@@ -131,13 +124,10 @@ export class Position2DLabel extends Label {
         this._color.altered = false;
 
         if (!typeset) {
-            console.warn('what the f...?');
             return undefined;
         }
         const vertices = this.vertices();
-        console.log(vertices);
         Typesetter.typeset(this, vertices);
-        console.log(vertices);
         return vertices;
     }
 
@@ -187,6 +177,9 @@ export class Position2DLabel extends Label {
     set fontSizeUnit(unit: Label.Unit) {
         logIf(unit !== Label.Unit.Px, LogLevel.Warning,
             `font size unit other than 'px' are not supported in position-2d-label, given ${unit}`);
+    }
+    get fontSizeUnit(): Label.Unit {
+        return this._fontSizeUnit;
     }
 
 }

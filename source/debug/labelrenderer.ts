@@ -351,10 +351,8 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label4.wrap = true;
             label4.color.fromHex('eeeeee');
 
-            const label2D = new Position2DLabel(new Text(`Hello Again! 2D`), Label.Type.Static);
-            console.log(label2D);
+            const label2D = new Position2DLabel(new Text(`Hello Again, 2D!`), Label.Type.Static);
             label2D.frameSize = [1110, 555]; /** @todo!!! */
-            label2D.color.fromHex('ff1122');
 
             setInterval(() => {
                 const hsl = label1.color.hsl;
