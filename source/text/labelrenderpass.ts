@@ -18,7 +18,7 @@ import { Color } from '../color';
 import { FontFace } from './fontface';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
-// import { Position2DLabel } from './position2dlabel';
+import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
 
 /* spellchecker: enable */
@@ -122,10 +122,8 @@ export class LabelRenderPass extends Initializable {
         for (let i = 0; i < this._labels.length; ++i) {
             const label = this._labels[i];
             let vertices: GlyphVertices | undefined;
-            // if (label instanceof Position2DLabel) {
-            //     glyphs.concat(label.typeset(frameSize));
-            // } else
-            if (label instanceof Position3DLabel) {
+            if (label instanceof Position2DLabel
+                || label instanceof Position3DLabel) {
                 vertices = label.typeset();
             }
 

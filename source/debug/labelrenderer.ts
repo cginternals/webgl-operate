@@ -25,6 +25,7 @@ import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
+import { Position2DLabel } from '../text/position2dlabel';
 
 /* spellchecker: enable */
 
@@ -350,6 +351,10 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label4.wrap = true;
             label4.color.fromHex('eeeeee');
 
+            const label2D = new Position2DLabel(new Text(`Hello Again! 2D`), Label.Type.Static);
+            console.log(label2D);
+            label2D.frameSize = [1110, 555]; /** @todo!!! */
+            label2D.color.fromHex('ff1122');
 
             setInterval(() => {
                 const hsl = label1.color.hsl;
@@ -373,7 +378,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             }, 33);
 
 
-            this._labelPass.labels = [label0, label1, label2, label3, label4];
+            this._labelPass.labels = [label0, label1, label2, label3, label4, label2D];
         }
     }
 }
