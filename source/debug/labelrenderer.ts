@@ -23,9 +23,9 @@ import { Texture2D } from '../texture2d';
 import { FontFace } from '../text/fontface';
 import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
+import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
-import { Position2DLabel } from '../text/position2dlabel';
 
 /* spellchecker: enable */
 
@@ -351,8 +351,34 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label4.wrap = true;
             label4.color.fromHex('eeeeee');
 
-            const label2D = new Position2DLabel(new Text(`Hello Again, 2D!`), Label.Type.Static);
+            const label2D = new Position2DLabel(new Text(`Hello Again, 2D!`), Label.Type.Dynamic);
             label2D.frameSize = [1110, 555]; /** @todo!!! */
+            label2D.fontSize = 50;
+            label2D.alignment = Label.Alignment.Center;
+            label2D.elide = Label.Elide.Middle;
+            label2D.color.fromHex('f0ba42');
+
+            const labelOrder1 = new Position2DLabel(new Text(`Currently,`), Label.Type.Static);
+            labelOrder1.frameSize = [1110, 555]; /** @todo!!! */
+            labelOrder1.fontSize = 185;
+            labelOrder1.position = [0, 185];
+            labelOrder1.alignment = Label.Alignment.Center;
+            labelOrder1.lineAnchor = Label.LineAnchor.Center;
+            labelOrder1.color.fromHex('330000');
+            const labelOrder2 = new Position2DLabel(new Text(`drawing order`), Label.Type.Static);
+            labelOrder2.frameSize = [1110, 555]; /** @todo!!! */
+            labelOrder2.fontSize = 165;
+            labelOrder2.position = [0, 0];
+            labelOrder2.alignment = Label.Alignment.Center;
+            labelOrder2.lineAnchor = Label.LineAnchor.Center;
+            labelOrder2.color.fromHex('330000');
+            const labelOrder3 = new Position2DLabel(new Text(`is important!`), Label.Type.Static);
+            labelOrder3.frameSize = [1110, 555]; /** @todo!!! */
+            labelOrder3.fontSize = 185;
+            labelOrder3.position = [0, -185];
+            labelOrder3.alignment = Label.Alignment.Center;
+            labelOrder3.lineAnchor = Label.LineAnchor.Center;
+            labelOrder3.color.fromHex('330000');
 
             setInterval(() => {
                 const hsl = label1.color.hsl;
@@ -361,6 +387,9 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 label1.color.fromHSL(fract(this._hue), hsl[1], hsl[2]);
 
                 label2.position = [+0.1 + Math.cos(this._hue * 16.0) * 0.05, +0.3, Math.sin(this._hue * 2.0) * 0.5];
+
+                label2D.position = [Math.cos(this._hue * 4.0) * 40, Math.sin(this._hue * 4.0) * 40];
+                label2D.lineWidth = (Math.sin(this._hue * 4.0) * 0.5 + 0.5) * 400;
 
                 label3.up = [0, Math.cos(this._hue * 8.0), Math.sin(this._hue * 8.0)];
 
@@ -376,7 +405,8 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             }, 33);
 
 
-            this._labelPass.labels = [label0, label1, label2, label3, label4, label2D];
+            this._labelPass.labels = [labelOrder1, label2D, label0, label1, labelOrder2, label2, label3, label4,
+                labelOrder3];
         }
     }
 }
