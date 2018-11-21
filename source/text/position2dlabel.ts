@@ -70,10 +70,6 @@ export class Position2DLabel extends Label {
         /* compute transform matrix */
         const transform = mat4.create();
 
-        if (this._frameSize[0] === 0 || this._frameSize[1] === 0) {
-            console.warn('Framesize is zero!', this._frameSize[0], this._frameSize[1]);
-        }
-
         /* translate to lower left in NDC */
         mat4.translate(transform, m4(), vec3.fromValues(-1.0, -1.0, 0.0));
         /* scale glyphs to NDC size, this._frameSize should be the viewport size */

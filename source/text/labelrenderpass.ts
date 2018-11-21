@@ -118,14 +118,15 @@ export class LabelRenderPass extends Initializable {
      * Typesets and renders 2D and 3D labels.
      */
     protected prepare(): void {
-
-        // const frameSize = this._camera.viewport;
+        const frameSize = this._camera.viewport;
 
         for (let i = 0; i < this._labels.length; ++i) {
             const label = this._labels[i];
             let vertices: GlyphVertices | undefined;
-            if (label instanceof Position2DLabel
-                || label instanceof Position3DLabel) {
+            if (label instanceof Position2DLabel) {
+                label.frameSize = frameSize;
+                vertices = label.typeset();
+            } else if (label instanceof Position3DLabel) {
                 vertices = label.typeset();
             }
 
