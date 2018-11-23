@@ -58,6 +58,7 @@ namespace debug {
         protected _hue = 0;
         protected _pos = 0;
 
+        protected _fontFace: FontFace | undefined;
 
         /**
          * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -129,12 +130,14 @@ namespace debug {
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
+            this._labelPass.depthMask = true;
 
             FontFace.fromFile('./data/opensansr144.fnt', context)
                 .then((fontFace) => {
                     for (const label of this._labelPass.labels) {
                         label.fontFace = fontFace;
                     }
+                    this._fontFace = fontFace;
                     this.invalidate();
                 })
                 .catch((reason) => log(LogLevel.Error, reason));
@@ -367,13 +370,13 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             labelOrder2.position = [0, 0];
             labelOrder2.alignment = Label.Alignment.Center;
             labelOrder2.lineAnchor = Label.LineAnchor.Center;
-            labelOrder2.color.fromHex('330000');
+            labelOrder2.color.fromHex('003300');
             const labelOrder3 = new Position2DLabel(new Text(`is important!`), Label.Type.Static);
             labelOrder3.fontSize = 185;
             labelOrder3.position = [0, -185];
             labelOrder3.alignment = Label.Alignment.Center;
             labelOrder3.lineAnchor = Label.LineAnchor.Center;
-            labelOrder3.color.fromHex('330000');
+            labelOrder3.color.fromHex('000033');
 
             setInterval(() => {
                 const hsl = label1.color.hsl;
@@ -393,6 +396,21 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 ++this._pos;
                 if (this._pos > werther.length) {
                     this._pos = 0;
+                }
+
+                if (this._pos % 10 === 0) {
+                    const newLabel = new Position3DLabel(new Text('trololo'), Label.Type.Static);
+                    newLabel.position = [0.0, 0.0, this._pos * 0.01];
+                    newLabel.color.fromHex('ff0000');
+                    newLabel.alignment = Label.Alignment.Center;
+                    newLabel.lineAnchor = Label.LineAnchor.Center;
+
+                    if (this._fontFace) {
+                        newLabel.fontFace = this._fontFace;
+                    }
+                    const asdf = this._labelPass.labels;
+                    asdf.push(newLabel);
+                    this._labelPass.labels = asdf;
                 }
 
                 this.invalidate();

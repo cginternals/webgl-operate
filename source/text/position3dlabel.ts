@@ -53,9 +53,10 @@ export class Position3DLabel extends Label {
      * typesetting. Depending on the label's type (static or dynamic) the transform is stored and applied either during
      * typesetting (static) or passed as single transform to the vertex shader during rendering (dynamic).
      */
-    typeset(): GlyphVertices | undefined {
-        const typeset = this._altered.typesetting || this._altered.static || this._altered.text || this.text.altered;
-        if (!typeset && !this._altered.dynamic) {
+    typeset(force = false): GlyphVertices | undefined {
+        const typeset = force || this._altered.typesetting || this._altered.static || this._altered.text
+            || this.text.altered;
+        if (!typeset && !this._altered.dynamic && !force) {
             return undefined;
         }
 

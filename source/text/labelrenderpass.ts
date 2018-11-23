@@ -123,11 +123,14 @@ export class LabelRenderPass extends Initializable {
         for (let i = 0; i < this._labels.length; ++i) {
             const label = this._labels[i];
             let vertices: GlyphVertices | undefined;
+
+            const forceTypeset = this._altered.labels && this._verticesPerLabel[i] === undefined;
+
             if (label instanceof Position2DLabel) {
                 label.frameSize = frameSize;
-                vertices = label.typeset();
+                vertices = label.typeset(forceTypeset);
             } else if (label instanceof Position3DLabel) {
-                vertices = label.typeset();
+                vertices = label.typeset(forceTypeset);
             }
 
             if (vertices === undefined) {
