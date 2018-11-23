@@ -361,22 +361,22 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
 
             const labelOrder1 = new Position2DLabel(new Text(`Currently,`), Label.Type.Static);
             labelOrder1.fontSize = 185;
-            labelOrder1.position = [0, 185];
+            labelOrder1.position = [0, 85];
             labelOrder1.alignment = Label.Alignment.Center;
             labelOrder1.lineAnchor = Label.LineAnchor.Center;
-            labelOrder1.color.fromHex('330000');
+            labelOrder1.color.fromHex('660000');
             const labelOrder2 = new Position2DLabel(new Text(`drawing order`), Label.Type.Static);
             labelOrder2.fontSize = 165;
             labelOrder2.position = [0, 0];
             labelOrder2.alignment = Label.Alignment.Center;
             labelOrder2.lineAnchor = Label.LineAnchor.Center;
-            labelOrder2.color.fromHex('003300');
+            labelOrder2.color.fromHex('006600');
             const labelOrder3 = new Position2DLabel(new Text(`is important!`), Label.Type.Static);
             labelOrder3.fontSize = 185;
-            labelOrder3.position = [0, -185];
+            labelOrder3.position = [0, -85];
             labelOrder3.alignment = Label.Alignment.Center;
             labelOrder3.lineAnchor = Label.LineAnchor.Center;
-            labelOrder3.color.fromHex('000033');
+            labelOrder3.color.fromHex('000066');
 
             setInterval(() => {
                 const hsl = label1.color.hsl;
@@ -408,9 +408,11 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                     if (this._fontFace) {
                         newLabel.fontFace = this._fontFace;
                     }
-                    const asdf = this._labelPass.labels;
-                    asdf.push(newLabel);
-                    this._labelPass.labels = asdf;
+                    if (this._labelPass.labels.length <= 30) {
+                        const asdf = this._labelPass.labels;
+                        asdf.push(newLabel);
+                        this._labelPass.labels = asdf;
+                    }
                 }
 
                 this.invalidate();
