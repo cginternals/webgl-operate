@@ -509,6 +509,8 @@ export namespace Label {
         World = 'world',
         /* screen pixel */
         Px = 'px',
+        /* mixed: world unit for positioning, px unit for font size*/
+        Mixed = 'mixed',
         /** @todo Pt for point unit */
     }
 

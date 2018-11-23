@@ -319,10 +319,15 @@ export class LabelRenderPass extends Initializable {
                 currentFontFace = label0.fontFace;
             }
 
-            if (label0.fontSizeUnit === Label.Unit.World) {
-                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-            } else /** if (label0.fontSizeUnit === Label.Unit.Px) */ {
-                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+            switch (label0.fontSizeUnit) {
+                case Label.Unit.Mixed:
+                case Label.Unit.Px:
+                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+                    break;
+
+                case Label.Unit.World:
+                default:
+                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
             }
 
             this._geometry.draw(range[0], range[1] - range[0]);
