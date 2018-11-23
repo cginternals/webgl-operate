@@ -22,6 +22,7 @@ import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
+import { Projected3DLabel } from './projected3dlabel';
 
 /* spellchecker: enable */
 
@@ -128,6 +129,9 @@ export class LabelRenderPass extends Initializable {
 
             if (label instanceof Position2DLabel) {
                 label.frameSize = frameSize;
+                vertices = label.typeset(forceTypeset);
+            } else if (label instanceof Projected3DLabel) {
+                label.camera = this._camera;
                 vertices = label.typeset(forceTypeset);
             } else if (label instanceof Position3DLabel) {
                 vertices = label.typeset(forceTypeset);

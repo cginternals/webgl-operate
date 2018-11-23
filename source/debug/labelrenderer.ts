@@ -26,6 +26,7 @@ import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
+import { Projected3DLabel } from '../text';
 
 /* spellchecker: enable */
 
@@ -300,6 +301,9 @@ namespace debug {
             // pos2Dlabel.setPosition(-100, 0);
             // pos2Dlabel.setDirection(0.5, -0.5);
 
+            const projectedLabel = new Projected3DLabel(new Text('Hello Projected!'), Label.Type.Static);
+
+
 
             /** Wrapped labels, showcasing Ellipsis and NewLine */
 
@@ -401,7 +405,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 if (this._pos % 10 === 0) {
                     const newLabel = new Position3DLabel(new Text('trololo'), Label.Type.Static);
                     newLabel.position = [0.0, 0.0, this._pos * 0.01];
-                    newLabel.color.fromHex('ff0000');
+                    newLabel.color.fromHex('440000');
                     newLabel.alignment = Label.Alignment.Center;
                     newLabel.lineAnchor = Label.LineAnchor.Center;
 
@@ -419,8 +423,10 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             }, 33);
 
 
-            this._labelPass.labels = [labelOrder1, label2D, label0, label1, labelOrder2, label2, label3, label4,
-                labelOrder3];
+            // this._labelPass.labels = [labelOrder1, label2D, label0, label1, labelOrder2, label2, label3, label4,
+            //     labelOrder3, projectedLabel];
+
+            this._labelPass.labels = [label2D, label0, label1, label3, label4, projectedLabel];
         }
     }
 }
