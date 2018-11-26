@@ -20,13 +20,13 @@ import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
 import { Texture2D } from '../texture2d';
 
+import { Projected3DLabel } from '../text';
 import { FontFace } from '../text/fontface';
 import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
 import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
-import { Projected3DLabel } from '../text';
 
 /* spellchecker: enable */
 

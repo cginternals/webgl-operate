@@ -3,7 +3,7 @@ import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 import { logIf, LogLevel } from '../auxiliaries';
 import { Camera } from '../camera';
-import { m4, v3 } from '../gl-matrix-extensions';
+import { m4 } from '../gl-matrix-extensions';
 import { GLfloat2, GLfloat3 } from '../tuples';
 
 import { FontFace } from './fontface';
