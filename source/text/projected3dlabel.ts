@@ -91,81 +91,33 @@ export class Projected3DLabel extends Label {
         vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
         mat4.translate(transform, transform, v3);
 
+        const anchor = vec4.fromValues(this._position[0], this._position[1], this._position[2], 1);
 
-        ///////////
+        vec4.transformMat4(anchor, anchor, this._camera.viewProjection);
+
+        const translationM = mat4.create();
+        const w = anchor[3];
+        mat4.translate(translationM, translationM, vec3.fromValues(anchor[0] / w, anchor[1] / w, anchor[2] / w));
+
+        mat4.mul(transform, translationM, transform);
+
+
+        const n: vec2 = vec2.fromValues(1.0, 0.0);
+        let angle = vec2.angle(n, this._direction);
+
+        /* perp dot product for signed angle */
+        if (n[0] * this._direction[1] - n[1] * this._direction[0] < 0.0) {
+            angle = -angle;
+        }
+
+        mat4.rotateZ(transform, transform, angle);
+
         if (this._camera.viewProjectionInverse) {
-
-            const anchor = vec4.fromValues(this._position[0], this._position[1], this._position[2], 1);
-
-            vec4.transformMat4(anchor, anchor, this._camera.viewProjectionInverse);
-
-            const translationM = mat4.create();
-            const w = anchor[3];
-            mat4.translate(translationM, translationM, vec3.fromValues(anchor[0] / w, anchor[1] / w, anchor[2] / w));
-
+            mat4.mul(transform, this._camera.viewProjectionInverse, transform);
         } else {
             console.warn('viewProjectionInverse is null');
         }
 
-
-
-        // label.userTransform = translationM;
-
-        ///////////
-        // const direction = vec3.fromValues(this._direction[0], this._direction[1], 0);
-        // const up = vec3.create();
-        // const normal = vec3.fromValues(0, 0, 1);
-        // if (this._camera.viewProjectionInverse) {
-
-        //     vec3.transformMat4(direction, direction, this._camera.viewProjectionInverse);
-        //     vec3.transformMat4(normal, normal, this._camera.viewProjectionInverse);
-        //     vec3.cross(up, normal, direction);
-
-        //     mat4.translate(transform, m4(), this._position);
-
-        //     const rotation = mat4.fromValues(
-        //         direction[0], direction[1], direction[2], 0.0,
-        //         up[0], up[1], up[2], 0.0,
-        //         normal[0], normal[1], normal[2], 0.0,
-        //         0.0, 0.0, 0.0, 1.0);
-
-        //     mat4.mul(transform, transform, rotation);
-
-
-        // } else {
-        //     console.warn('viewProjectionInverse is null');
-        // }
-
-        /////////////////
-
-        /* apply user transformations (position, direction) */
-
-        // const screenPosition = vec4.create();
-
-        // vec4.transformMat4(screenPosition,
-        //     vec4.fromValues(this._position[0], this._position[1], this._position[2], 1.0),
-        //     this._camera.viewProjection);
-
-        // vec4.multiply(screenPosition, screenPosition, vec4.fromValues(0.5, 0.5, 0.5, 1.0));
-
-        // // mind homogenous coordinate
-        // const w = screenPosition[3];
-        // vec4.div(screenPosition, screenPosition, vec4.fromValues(w, w, w, w));
-
-        // const posX = screenPosition[0] * this._camera.viewport[0] / window.devicePixelRatio;
-        // const posY = screenPosition[1] * this._camera.viewport[1] / window.devicePixelRatio;
-
-        // mat4.translate(transform, transform, vec3.fromValues(posX, posY, this._position[2]));
-
-        // const n: vec2 = vec2.fromValues(1.0, 0.0);
-        // let angle = vec2.angle(n, this._direction);
-
-        // /* perp dot product for signed angle */
-        // if (n[0] * this._direction[1] - n[1] * this._direction[0] < 0.0) {
-        //     angle = -angle;
-        // }
-
-        // mat4.rotateZ(transform, transform, angle);
 
         switch (this._type) {
             case Label.Type.Static:

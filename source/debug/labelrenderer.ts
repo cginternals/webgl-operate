@@ -133,7 +133,7 @@ namespace debug {
             this._labelPass.target = this._intermediateFBO;
             this._labelPass.depthMask = true;
 
-            FontFace.fromFile('./data/opensansr144.fnt', context)
+            FontFace.fromFile('./data/opensans.fnt', context)
                 .then((fontFace) => {
                     for (const label of this._labelPass.labels) {
                         label.fontFace = fontFace;
@@ -346,9 +346,6 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             labelOrder3.lineAnchor = Label.LineAnchor.Center;
             labelOrder3.color.fromHex('000066');
 
-            // const projectedLabel = new Projected3DLabel(new Text('Hello Projected!'), Label.Type.Static);
-            // projectedLabel.position = [+0.1, 0.0, 0.5];
-
             setInterval(() => {
                 const hsl = label1.color.hsl;
 
@@ -356,9 +353,6 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 label1.color.fromHSL(fract(this._hue), hsl[1], hsl[2]);
 
                 label2.position = [+0.1 + Math.cos(this._hue * 16.0) * 0.05, +0.3, Math.sin(this._hue * 2.0) * 0.5];
-                // projectedLabel.position = [+0.1 + Math.cos(this._hue * 16.0) * 0.05,
-                //     0,
-                // Math.sin(this._hue * 2.0) * 0.5];
 
                 label2D.position = [Math.cos(this._hue * 4.0) * 40, Math.sin(this._hue * 4.0) * 40];
 
@@ -372,24 +366,25 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                     this._pos = 0;
                 }
 
-                if (this._pos % 10 === 0) {
-                    const newLabel = new Position3DLabel(new Text('trololo'), Label.Type.Static);
-                    newLabel.position = [0.0, 0.0, this._pos * 0.01];
-                    newLabel.color.fromHex('440000');
-                    newLabel.alignment = Label.Alignment.Center;
-                    newLabel.lineAnchor = Label.LineAnchor.Center;
+                if (this._pos % 5 === 0) {
+                    const label3D = new Position3DLabel(new Text('Hello 3D!'), Label.Type.Static);
+                    label3D.position = [0.0, 0.0, this._pos * 0.01];
+                    label3D.color.fromHex('440000');
+                    label3D.alignment = Label.Alignment.Center;
+                    label3D.lineAnchor = Label.LineAnchor.Center;
 
-                    const projectedLabel = new Projected3DLabel(new Text('Hello Projected!'), Label.Type.Static);
+                    const projectedLabel = new Projected3DLabel(new Text('Hello Projected!'), Label.Type.Dynamic);
                     projectedLabel.position = [0.0, 0.0, this._pos * 0.01];
-                    projectedLabel.color.fromHex('005500');
+                    projectedLabel.color.fromHex('00ff00');
+                    projectedLabel.direction = [1.0, 1.0];
 
                     if (this._fontFace) {
-                        newLabel.fontFace = this._fontFace;
+                        label3D.fontFace = this._fontFace;
                         projectedLabel.fontFace = this._fontFace;
                     }
-                    if (this._labelPass.labels.length <= 30) {
+                    if (this._labelPass.labels.length <= 400) {
                         const asdf = this._labelPass.labels;
-                        asdf.push(newLabel);
+                        asdf.push(label3D);
                         asdf.push(projectedLabel);
                         this._labelPass.labels = asdf;
                     }
@@ -398,11 +393,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 this.invalidate();
             }, 33);
 
-
-            // this._labelPass.labels = [labelOrder1, label2D, label0, label1, labelOrder2, label2, label3, label4,
-            //     labelOrder3, projectedLabel];
-
-            this._labelPass.labels = [label0, label1, label2, label3, label4];
+            this._labelPass.labels = [label0, label1, label2, label3, label4, label2D];
         }
     }
 }
