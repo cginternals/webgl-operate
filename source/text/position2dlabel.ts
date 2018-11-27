@@ -169,7 +169,7 @@ export class Position2DLabel extends Label {
 
     /**
      * This unit is used for the font size. This method overrides the super.fontSizeUnit, since `Position2DLabel` only
-     * supports px, for now.
+     * supports Pixel, for now.
      * (@see {@link fontSize})
      * @param newUnit - Unit to be used, though, this label type only supports pixel units (px).
      */

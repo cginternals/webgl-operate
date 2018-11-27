@@ -47,7 +47,7 @@ export class Projected3DLabel extends Label {
     }
 
     /**
-     * If altered, creates a position, direction, and up-vector, then prepares the vertex storage and invokes
+     * If altered, creates a position and direction-vector, then prepares the vertex storage and invokes
      * typesetting. Depending on the label's type (static or dynamic) the transform is stored and applied either during
      * typesetting (static) or passed as single transform to the vertex shader during rendering (dynamic).
      */
@@ -185,7 +185,7 @@ export class Projected3DLabel extends Label {
 
     /**
      * This unit is used for the font size. This method overrides the super.fontSizeUnit, since `Projected3DLabel` only
-     * supports px, for now.
+     * supports Pixel, for now.
      * (@see {@link fontSize})
      * @param newUnit - Unit to be used, though, this label type only supports pixel units (px).
      */
