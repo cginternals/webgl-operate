@@ -321,7 +321,7 @@ export class LabelRenderPass extends Initializable {
             }
 
             switch (label0.fontSizeUnit) {
-                case Label.Unit.Px:
+                case Label.Unit.Pixel:
                     gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
                     break;
 

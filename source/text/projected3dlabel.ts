@@ -19,6 +19,8 @@ import { Typesetter } from './typesetter';
  */
 export class Projected3DLabel extends Label {
 
+    private static readonly DEFAULT_FONTSIZE_PX = 20;
+
     /** @see {@link position} */
     protected _position: vec3;
     /** @see {@link direction} */
@@ -40,7 +42,7 @@ export class Projected3DLabel extends Label {
         this._position = vec3.fromValues(0.0, 0.0, 0.0);
         this._direction = vec2.fromValues(1.0, 0.0);
 
-        this._fontSize = 20;
+        this._fontSize = Projected3DLabel.DEFAULT_FONTSIZE_PX;
         this._fontSizeUnit = Label.Unit.Mixed;
     }
 

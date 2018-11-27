@@ -382,7 +382,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                         label3D.fontFace = this._fontFace;
                         projectedLabel.fontFace = this._fontFace;
                     }
-                    if (this._labelPass.labels.length <= 400) {
+                    if (this._labelPass.labels.length <= 40) {
                         const asdf = this._labelPass.labels;
                         asdf.push(label3D);
                         asdf.push(projectedLabel);
