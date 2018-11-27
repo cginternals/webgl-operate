@@ -23,6 +23,7 @@ import { Texture2D } from '../texture2d';
 import { FontFace } from '../text/fontface';
 import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
+import { Position2DLabel } from '../text/position2dlabel';
 import { Position3DLabel } from '../text/position3dlabel';
 import { Text } from '../text/text';
 
@@ -57,6 +58,7 @@ namespace debug {
         protected _hue = 0;
         protected _pos = 0;
 
+        protected _fontFace: FontFace | undefined;
 
         /**
          * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -128,12 +130,14 @@ namespace debug {
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
             this._labelPass.target = this._intermediateFBO;
+            this._labelPass.depthMask = true;
 
             FontFace.fromFile('./data/opensansr144.fnt', context)
                 .then((fontFace) => {
                     for (const label of this._labelPass.labels) {
                         label.fontFace = fontFace;
                     }
+                    this._fontFace = fontFace;
                     this.invalidate();
                 })
                 .catch((reason) => log(LogLevel.Error, reason));
@@ -350,6 +354,29 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             label4.wrap = true;
             label4.color.fromHex('eeeeee');
 
+            const label2D = new Position2DLabel(new Text(`Hello Again, 2D!`), Label.Type.Dynamic);
+            label2D.fontSize = 50;
+            label2D.alignment = Label.Alignment.Center;
+            label2D.color.fromHex('f0ba42');
+
+            const labelOrder1 = new Position2DLabel(new Text(`Currently,`), Label.Type.Static);
+            labelOrder1.fontSize = 185;
+            labelOrder1.position = [0, 85];
+            labelOrder1.alignment = Label.Alignment.Center;
+            labelOrder1.lineAnchor = Label.LineAnchor.Center;
+            labelOrder1.color.fromHex('660000');
+            const labelOrder2 = new Position2DLabel(new Text(`drawing order`), Label.Type.Static);
+            labelOrder2.fontSize = 165;
+            labelOrder2.position = [0, 0];
+            labelOrder2.alignment = Label.Alignment.Center;
+            labelOrder2.lineAnchor = Label.LineAnchor.Center;
+            labelOrder2.color.fromHex('006600');
+            const labelOrder3 = new Position2DLabel(new Text(`is important!`), Label.Type.Static);
+            labelOrder3.fontSize = 185;
+            labelOrder3.position = [0, -85];
+            labelOrder3.alignment = Label.Alignment.Center;
+            labelOrder3.lineAnchor = Label.LineAnchor.Center;
+            labelOrder3.color.fromHex('000066');
 
             setInterval(() => {
                 const hsl = label1.color.hsl;
@@ -358,6 +385,8 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 label1.color.fromHSL(fract(this._hue), hsl[1], hsl[2]);
 
                 label2.position = [+0.1 + Math.cos(this._hue * 16.0) * 0.05, +0.3, Math.sin(this._hue * 2.0) * 0.5];
+
+                label2D.position = [Math.cos(this._hue * 4.0) * 40, Math.sin(this._hue * 4.0) * 40];
 
                 label3.up = [0, Math.cos(this._hue * 8.0), Math.sin(this._hue * 8.0)];
 
@@ -369,11 +398,29 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                     this._pos = 0;
                 }
 
+                if (this._pos % 10 === 0) {
+                    const newLabel = new Position3DLabel(new Text('trololo'), Label.Type.Static);
+                    newLabel.position = [0.0, 0.0, this._pos * 0.01];
+                    newLabel.color.fromHex('ff0000');
+                    newLabel.alignment = Label.Alignment.Center;
+                    newLabel.lineAnchor = Label.LineAnchor.Center;
+
+                    if (this._fontFace) {
+                        newLabel.fontFace = this._fontFace;
+                    }
+                    if (this._labelPass.labels.length <= 30) {
+                        const asdf = this._labelPass.labels;
+                        asdf.push(newLabel);
+                        this._labelPass.labels = asdf;
+                    }
+                }
+
                 this.invalidate();
             }, 33);
 
 
-            this._labelPass.labels = [label0, label1, label2, label3, label4];
+            this._labelPass.labels = [labelOrder1, label2D, label0, label1, labelOrder2, label2, label3, label4,
+                labelOrder3];
         }
     }
 }

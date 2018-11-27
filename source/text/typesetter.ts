@@ -50,8 +50,8 @@ export class Typesetter {
         const padding = fontFace.glyphTexturePadding;
         const origin: vec3 = vertices.origin(index);
         vec3.set(origin, pen[0], pen[1], 0.0);
-        origin[0] += glyph.bearing[0] - padding[3];
-        origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[0];
+        origin[0] += glyph.bearing[0] + padding[3];
+        origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[2];
 
         vec3.set(vertices.tangent(index), glyph.extent[0], 0.0, 0.0);
         vec3.set(vertices.up(index), 0.0, glyph.extent[1], 0.0);
@@ -69,21 +69,27 @@ export class Typesetter {
      * @param label - Label to adjust the y-positions for.
      */
     private static lineAnchorOffset(label: Label): number {
+        let offset = 0.0;
         switch (label.lineAnchor) {
             case Label.LineAnchor.Ascent:
-                return label.fontFace!.ascent;
+                offset = label.fontFace!.ascent;
+                break;
             case Label.LineAnchor.Center:
-                return label.fontFace!.size * 0.5 + label.fontFace!.descent;
+                offset = label.fontFace!.size * 0.5 + label.fontFace!.descent;
+                break;
             case Label.LineAnchor.Descent:
-                return label.fontFace!.descent;
+                offset = label.fontFace!.descent;
+                break;
             case Label.LineAnchor.Top:
-                return label.fontFace!.base;
+                offset = label.fontFace!.base;
+                break;
             case Label.LineAnchor.Bottom:
-                return label.fontFace!.base - label.fontFace!.lineHeight;
+                offset = label.fontFace!.base - label.fontFace!.lineHeight;
+                break;
             case Label.LineAnchor.Baseline:
             default:
-                return 0.0;
         }
+        return offset;
     }
 
 
@@ -226,17 +232,18 @@ export class Typesetter {
      * @param labelAdvances - Advances in order to reduce lookups.
      * @param labelKernings - Kernings in order to reduce lookups.
      * @param reverse -If enabled, the right side elide fragments will be collected and adjusted. Left side otherwise.
-     * @returns - A new fragment and fragment-widths array for elide advancing.
+     * @returns - A new fragment, fragment-widths array for elide advancing, and overall width.
      */
     private static elideFragments(threshold: number,
         labelFragments: Array<Fragment>, labelFragmentWidths: Float32Array,
         labelAdvances: Float32Array, labelKernings: Float32Array,
-        reverse: boolean): [Array<Fragment>, Array<number>] {
+        reverse: boolean): [Array<Fragment>, Array<number>, number] {
 
         const fragments = new Array<Fragment>();
         const fragmentWidths = new Array<number>();
 
         let width = 0.0;
+        let lastLabelFragmentWidth = 0.0;
 
         // tslint:disable-next-line:prefer-for-of
         for (let i0 = reverse ? labelFragments.length - 1 : 0;
@@ -249,7 +256,7 @@ export class Typesetter {
             }
 
             /* If next fragment fits as a whole, put it in. */
-            if (width + labelFragmentWidths[i0] < threshold) {
+            if (width + labelFragmentWidths[i0] + labelKernings[fragment[1] - 1] < threshold) {
                 width += labelFragmentWidths[i0] + labelKernings[fragment[1] - 1];
 
                 fragments.push(fragment);
@@ -263,7 +270,6 @@ export class Typesetter {
             }
 
             /* Try to cramp as many characters of the fragment (word) as possible. */
-            let lastLabelFragmentWidth = 0.0;
             for (let i1 = reverse ? fragment[1] - 1 : fragment[0];
                 reverse ? i1 >= fragment[0] : i1 < fragment[1]; reverse ? --i1 : ++i1) {
 
@@ -272,14 +278,14 @@ export class Typesetter {
                     continue;
                 }
 
-                fragments.push([reverse ? i1 : fragment[0], reverse ? fragment[1] : i1, fragment[2]]);
+                fragments.push([reverse ? i1 + 1 : fragment[0], reverse ? fragment[1] : i1, fragment[2]]);
                 fragmentWidths.push(lastLabelFragmentWidth);
                 break;
             }
             break;
         }
 
-        return [fragments, fragmentWidths];
+        return [fragments, fragmentWidths, width + lastLabelFragmentWidth];
     }
 
 
@@ -479,12 +485,16 @@ export class Typesetter {
             }
             const thresholds = Typesetter.elideThresholds(label, ellipsisWidth);
 
-            const [leftFragments, leftFragmentWidths] = Typesetter.elideFragments(
+            const [leftFragments, leftFragmentWidths, leftWidth] = Typesetter.elideFragments(
                 thresholds[0], labelFragments, labelFragmentWidths, labelAdvances, labelKernings, false);
+
+            /* Pass the unused width (delta to left-side threshold) to the right-side threshold. */
+            if (label.elide === Label.Elide.Middle) {
+                thresholds[1] += thresholds[0] - leftWidth;
+            }
 
             const [rightFragments, rightFragmentWidths] = Typesetter.elideFragments(
                 thresholds[1], labelFragments, labelFragmentWidths, labelAdvances, labelKernings, true);
-
 
             advance(leftFragments, new Float32Array(leftFragmentWidths));
 

@@ -22,6 +22,8 @@ import { Typesetter } from './typesetter';
  */
 export class Position3DLabel extends Label {
 
+    private static readonly DEFAULT_FONTSIZE_WORLD = 0.05;
+
     /** @see {@link position} */
     protected _position: vec3;
     /** @see {@link direction} */
@@ -44,7 +46,7 @@ export class Position3DLabel extends Label {
         this._direction = vec3.fromValues(1.0, 0.0, 0.0);
         this._up = vec3.fromValues(0.0, 1.0, 0.0);
 
-        this._fontSize = 0.05;
+        this._fontSize = Position3DLabel.DEFAULT_FONTSIZE_WORLD;
         this._fontSizeUnit = Label.Unit.World;
     }
 
@@ -53,9 +55,10 @@ export class Position3DLabel extends Label {
      * typesetting. Depending on the label's type (static or dynamic) the transform is stored and applied either during
      * typesetting (static) or passed as single transform to the vertex shader during rendering (dynamic).
      */
-    typeset(): GlyphVertices | undefined {
-        const typeset = this._altered.typesetting || this._altered.static || this._altered.text || this.text.altered;
-        if (!typeset && !this._altered.dynamic) {
+    typeset(force = false): GlyphVertices | undefined {
+        const typeset = force || this._altered.typesetting || this._altered.static || this._altered.text
+            || this.text.altered;
+        if (!typeset && !this._altered.dynamic && !force) {
             return undefined;
         }
 
@@ -147,6 +150,9 @@ export class Position3DLabel extends Label {
     set fontSizeUnit(unit: Label.Unit) {
         logIf(unit !== Label.Unit.World, LogLevel.Warning,
             `font size unit other than 'world' are not supported in position-3d-label, given ${unit}`);
+    }
+    get fontSizeUnit(): Label.Unit {
+        return this._fontSizeUnit;
     }
 
 }

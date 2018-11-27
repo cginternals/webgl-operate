@@ -1,6 +1,8 @@
 
 /* spellchecker: disable */
 
+import { mat4 } from 'gl-matrix';
+
 import { assert } from '../auxiliaries';
 import { GLfloat2, GLsizei2 } from '../tuples';
 
@@ -18,7 +20,7 @@ import { Color } from '../color';
 import { FontFace } from './fontface';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
-// import { Position2DLabel } from './position2dlabel';
+import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
 
 /* spellchecker: enable */
@@ -116,17 +118,19 @@ export class LabelRenderPass extends Initializable {
      * Typesets and renders 2D and 3D labels.
      */
     protected prepare(): void {
-
-        // const frameSize = this._camera.viewport;
+        const frameSize = this._camera.viewport;
 
         for (let i = 0; i < this._labels.length; ++i) {
             const label = this._labels[i];
             let vertices: GlyphVertices | undefined;
-            // if (label instanceof Position2DLabel) {
-            //     glyphs.concat(label.typeset(frameSize));
-            // } else
-            if (label instanceof Position3DLabel) {
-                vertices = label.typeset();
+
+            const forceTypeset = this._altered.labels && this._verticesPerLabel[i] === undefined;
+
+            if (label instanceof Position2DLabel) {
+                label.frameSize = frameSize;
+                vertices = label.typeset(forceTypeset);
+            } else if (label instanceof Position3DLabel) {
+                vertices = label.typeset(forceTypeset);
             }
 
             if (vertices === undefined) {
@@ -272,6 +276,8 @@ export class LabelRenderPass extends Initializable {
         let currentColor: Color | undefined;
         let currentFontFace: FontFace | undefined;
 
+        const identity = mat4.create();
+
         for (let i = 0; i < this._labels.length; ++i) {
             const label0 = this._labels[i];
             range[1] = this._ranges[i][1];
@@ -287,8 +293,10 @@ export class LabelRenderPass extends Initializable {
             const bothStatic = label1 && label0.type === Label.Type.Static && label1.type === Label.Type.Static;
             const sameColor = label1 && label0.color.equals(label1.color);
             const sameFontFace = label1 && label0.fontFace === label1.fontFace;
+            const sameUnit = label1 && label0.fontSizeUnit === label1.fontSizeUnit;
+
             if (label1 && (this._ranges[i + 1][0] === this._ranges[i + 1][1]
-                || (bothStatic && sameColor && sameFontFace))) {
+                || (bothStatic && sameColor && sameFontFace && sameUnit))) {
                 continue;
             }
 
@@ -306,6 +314,13 @@ export class LabelRenderPass extends Initializable {
                 label0.fontFace!.glyphTexture.bind(gl.TEXTURE0);
                 currentFontFace = label0.fontFace;
             }
+
+            if (label0.fontSizeUnit === Label.Unit.World) {
+                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+            } else /** if (label0.fontSizeUnit === Label.Unit.Px) */ {
+                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+            }
+
             this._geometry.draw(range[0], range[1] - range[0]);
 
             range[0] = range[1];
