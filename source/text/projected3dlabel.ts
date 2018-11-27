@@ -1,7 +1,7 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { logIf, LogLevel } from '../auxiliaries';
+import { log, logIf, LogLevel } from '../auxiliaries';
 import { Camera } from '../camera';
 import { m4 } from '../gl-matrix-extensions';
 import { GLfloat2, GLfloat3 } from '../tuples';
@@ -117,7 +117,7 @@ export class Projected3DLabel extends Label {
         if (this._camera.viewProjectionInverse) {
             mat4.mul(transform, this._camera.viewProjectionInverse, transform);
         } else {
-            console.warn('viewProjectionInverse is null');
+            log(LogLevel.Warning, `camera.viewProjectionInverse is null`);
         }
 
 
