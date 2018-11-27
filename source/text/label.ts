@@ -39,7 +39,7 @@ export abstract class Label {
     protected _lineWidth = NaN;
 
     /** @see {@link fontSize} */
-    protected _fontSize = 0.05;
+    protected _fontSize: number;
 
     /** @see {@link fontSizeUnit} */
     protected _fontSizeUnit: Label.Unit = Label.Unit.World;

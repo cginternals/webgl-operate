@@ -23,6 +23,8 @@ import { Typesetter } from './typesetter';
  */
 export class Position2DLabel extends Label {
 
+    private static readonly DEFAULT_FONTSIZE_PX = 20;
+
     /** @see {@link position} */
     protected _position: vec2;
     /** @see {@link direction} */
@@ -43,7 +45,7 @@ export class Position2DLabel extends Label {
 
         this._frameSize = vec2.create();
 
-        this._fontSize = 20;
+        this._fontSize = Position2DLabel.DEFAULT_FONTSIZE_PX;
         this._fontSizeUnit = Label.Unit.Pixel;
     }
 
