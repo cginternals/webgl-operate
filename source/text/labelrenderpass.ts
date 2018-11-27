@@ -22,6 +22,7 @@ import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
+import { Projected3DLabel } from './projected3dlabel';
 
 /* spellchecker: enable */
 
@@ -129,6 +130,9 @@ export class LabelRenderPass extends Initializable {
             if (label instanceof Position2DLabel) {
                 label.frameSize = frameSize;
                 vertices = label.typeset(forceTypeset);
+            } else if (label instanceof Projected3DLabel) {
+                label.camera = this._camera;
+                vertices = label.typeset(forceTypeset);
             } else if (label instanceof Position3DLabel) {
                 vertices = label.typeset(forceTypeset);
             }
@@ -215,7 +219,8 @@ export class LabelRenderPass extends Initializable {
             gl.uniform1f(this._uAAStepScale, this._aaStepScale);
         }
 
-        let labelsAltered = override || this._altered.labels;
+        /* Some labels need the camera to update their font size and position. */
+        let labelsAltered = override || this._altered.labels || this._altered.camera || this._camera.altered;
         let i = 0;
         while (labelsAltered === false && i < this._labels.length) {
             labelsAltered = this._labels[i].altered;
@@ -315,10 +320,15 @@ export class LabelRenderPass extends Initializable {
                 currentFontFace = label0.fontFace;
             }
 
-            if (label0.fontSizeUnit === Label.Unit.World) {
-                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-            } else /** if (label0.fontSizeUnit === Label.Unit.Px) */ {
-                gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+            switch (label0.fontSizeUnit) {
+                case Label.Unit.Pixel:
+                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+                    break;
+
+                case Label.Unit.World:
+                case Label.Unit.Mixed:
+                default:
+                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
             }
 
             this._geometry.draw(range[0], range[1] - range[0]);

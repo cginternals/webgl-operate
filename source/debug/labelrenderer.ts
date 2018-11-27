@@ -20,6 +20,7 @@ import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
 import { Texture2D } from '../texture2d';
 
+import { Projected3DLabel } from '../text';
 import { FontFace } from '../text/fontface';
 import { Label } from '../text/label';
 import { LabelRenderPass } from '../text/labelrenderpass';
@@ -132,7 +133,7 @@ namespace debug {
             this._labelPass.target = this._intermediateFBO;
             this._labelPass.depthMask = true;
 
-            FontFace.fromFile('./data/opensansr144.fnt', context)
+            FontFace.fromFile('./data/opensans.fnt', context)
                 .then((fontFace) => {
                     for (const label of this._labelPass.labels) {
                         label.fontFace = fontFace;
@@ -270,39 +271,6 @@ namespace debug {
          */
         protected setupScene(): void {
 
-            /** OpenLL 3D Labels */
-
-            // const pos3Dlabel = new Position3DLabel(new Text('Hello Position 3D!'));
-            // pos3Dlabel.fontSize = 0.1;
-
-            // /* position values in world, since fontSizeUnit is set to SpaceUnit.World */
-            // pos3Dlabel.setPosition(0.0, 0.1, -0.5);
-            // pos3Dlabel.setDirection(0.0, 1.0, 0.0);
-            // pos3Dlabel.setUp(-1.0, 0.0, 0.0);
-
-            // const shadowPos3Dlabel = new Position3DLabel(new Text('Hello Position Shadow'));
-            // shadowPos3Dlabel.setPosition(0.0, 0.1, -0.5);
-            // shadowPos3Dlabel.fontSize = 0.1;
-            // shadowPos3Dlabel.setDirection(0.0, 1.0, 0.0);
-            // shadowPos3Dlabel.setUp(0.0, 0.0, -1.0);
-
-            // const anotherPos3Dlabel = new Position3DLabel(new Text('Yet another 3D Label'));
-            // anotherPos3Dlabel.setPosition(0.2, -0.1, 0.0);
-            // anotherPos3Dlabel.setDirection(-1.0, 0.0, 0.0);
-            // anotherPos3Dlabel.setUp(0.0, -1.0, 0.0);
-
-            // /** OpenLL 2D Labels */
-
-            // const pos2Dlabel = new Position2DLabel(new Text('Hello Position 2D!'));
-            // pos2Dlabel.fontSize = 40;
-
-            // /* position values in px, since fontSizeUnit is set to SpaceUnit.Px */
-            // pos2Dlabel.setPosition(-100, 0);
-            // pos2Dlabel.setDirection(0.5, -0.5);
-
-
-            /** Wrapped labels, showcasing Ellipsis and NewLine */
-
             const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
 of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was \
 created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere \
@@ -398,19 +366,26 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                     this._pos = 0;
                 }
 
-                if (this._pos % 10 === 0) {
-                    const newLabel = new Position3DLabel(new Text('trololo'), Label.Type.Static);
-                    newLabel.position = [0.0, 0.0, this._pos * 0.01];
-                    newLabel.color.fromHex('ff0000');
-                    newLabel.alignment = Label.Alignment.Center;
-                    newLabel.lineAnchor = Label.LineAnchor.Center;
+                if (this._pos % 5 === 0) {
+                    const label3D = new Position3DLabel(new Text('Hello 3D!'), Label.Type.Static);
+                    label3D.position = [0.0, 0.0, this._pos * 0.01];
+                    label3D.color.fromHex('440000');
+                    label3D.alignment = Label.Alignment.Center;
+                    label3D.lineAnchor = Label.LineAnchor.Center;
+
+                    const projectedLabel = new Projected3DLabel(new Text('Hello Projected!'), Label.Type.Dynamic);
+                    projectedLabel.position = [0.0, 0.0, this._pos * 0.01];
+                    projectedLabel.color.fromHex('00ff00');
+                    projectedLabel.direction = [1.0, 1.0];
 
                     if (this._fontFace) {
-                        newLabel.fontFace = this._fontFace;
+                        label3D.fontFace = this._fontFace;
+                        projectedLabel.fontFace = this._fontFace;
                     }
-                    if (this._labelPass.labels.length <= 30) {
+                    if (this._labelPass.labels.length <= 40) {
                         const asdf = this._labelPass.labels;
-                        asdf.push(newLabel);
+                        asdf.push(label3D);
+                        asdf.push(projectedLabel);
                         this._labelPass.labels = asdf;
                     }
                 }
@@ -418,9 +393,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
                 this.invalidate();
             }, 33);
 
-
-            this._labelPass.labels = [labelOrder1, label2D, label0, label1, labelOrder2, label2, label3, label4,
-                labelOrder3];
+            this._labelPass.labels = [label0, label1, label2, label3, label4, label2D];
         }
     }
 }

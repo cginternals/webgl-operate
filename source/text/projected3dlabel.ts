@@ -3,49 +3,51 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { logIf, LogLevel } from '../auxiliaries';
-import { m4, v2 } from '../gl-matrix-extensions';
-import { GLfloat2 } from '../tuples';
+import { log, logIf, LogLevel } from '../auxiliaries';
+import { Camera } from '../camera';
+import { m4 } from '../gl-matrix-extensions';
+import { GLfloat2, GLfloat3 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { Text } from './text';
-
 import { Typesetter } from './typesetter';
 
 /* spellchecker: enable */
 
 
 /**
- * A Label that can be positioned in 2D space. The unit for positions, size and transformations, is pixel (px).
+ * A Label that can be positioned in 3D space, but projected onto a 2D plane (a.k.a. screen).
+ * The unit for positioning is world space, the unit for size is pixel (px).
  */
-export class Position2DLabel extends Label {
+export class Projected3DLabel extends Label {
 
     private static readonly DEFAULT_FONTSIZE_PX = 20;
 
     /** @see {@link position} */
-    protected _position: vec2;
+    protected _position: vec3;
     /** @see {@link direction} */
     protected _direction: vec2;
-    /** @see {@link frameSize} */
-    protected _frameSize: vec2;
+    /** @see {@link camera} */
+    protected _camera: Camera | undefined;
 
 
     /**
-     * Constructs a pre-configured 2D-label with given text
+     * Constructs a pre-configured projected 3D-label with given text. Depending on the label type, transformations are
+     * applied once when typesetting (static) or every frame during rendering (dynamic).
      * @param text - The text that is displayed by this label.
+     * @param type - Either static or dynamic. If static is used, all transformations are baked and modifications to
+     * on any of the label's transformations are expected to occur less often.
      * @param fontFace - The font face that should be used for that label, or undefined if set later.
      */
     constructor(text: Text, type: Label.Type, fontFace?: FontFace) {
         super(text, type, fontFace);
-        this._position = vec2.fromValues(0.0, 0.0);
+        this._position = vec3.fromValues(0.0, 0.0, 0.0);
         this._direction = vec2.fromValues(1.0, 0.0);
 
-        this._frameSize = vec2.create();
-
-        this._fontSize = Position2DLabel.DEFAULT_FONTSIZE_PX;
-        this._fontSizeUnit = Label.Unit.Pixel;
+        this._fontSize = Projected3DLabel.DEFAULT_FONTSIZE_PX;
+        this._fontSizeUnit = Label.Unit.Mixed;
     }
 
     /**
@@ -60,9 +62,11 @@ export class Position2DLabel extends Label {
             return undefined;
         }
 
-        if (!this.valid) {
+        if (!this.valid || this._camera === undefined) {
             return new GlyphVertices(0);
         }
+
+        /* Compute position and direction transform. */
 
         /** @todo meaningful margins from label.margins or config.margins ? */
         const margins: vec4 = vec4.create();
@@ -73,9 +77,10 @@ export class Position2DLabel extends Label {
         const transform = mat4.create();
 
         /* translate to lower left in NDC */
-        mat4.translate(transform, m4(), vec3.fromValues(-1.0, -1.0, 0.0));
-        /* scale glyphs to NDC size, this._frameSize should be the viewport size */
-        mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
+        mat4.translate(transform, transform, vec3.fromValues(-1.0, -1.0, 0.0));
+        /* scale glyphs to NDC size */
+        mat4.scale(transform, transform,
+            vec3.fromValues(2.0 / this._camera.viewport[0], 2.0 / this._camera.viewport[1], 1.0));
 
         /* scale glyphs to pixel size with respect to the displays ppi */
         mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
@@ -83,17 +88,23 @@ export class Position2DLabel extends Label {
         /* translate to origin in point space - scale origin within margined extend
          * (i.e., viewport with margined areas removed)
          */
-        const marginedExtent = vec2.sub(v2(), vec2.fromValues(
-            this._frameSize[0] / ppiScale, this._frameSize[1] / ppiScale),
+        const marginedExtent: vec2 = vec2.create();
+        vec2.sub(marginedExtent, vec2.fromValues(
+            this._camera.viewport[0] / ppiScale, this._camera.viewport[1] / ppiScale),
             vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
 
         const v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
         vec3.add(v3, v3, vec3.fromValues(margins[3], margins[2], 0.0));
         mat4.translate(transform, transform, v3);
 
+        const anchor = vec4.fromValues(this._position[0], this._position[1], this._position[2], 1);
 
-        /* apply user transformations (position, direction) */
-        mat4.translate(transform, transform, vec3.fromValues(this._position[0], this._position[1], 0));
+        vec4.transformMat4(anchor, anchor, this._camera.viewProjection);
+
+        const translation = mat4.create();
+        const w = anchor[3];
+        mat4.translate(translation, translation, vec3.fromValues(anchor[0] / w, anchor[1] / w, anchor[2] / w));
+        mat4.mul(transform, translation, transform);
 
         const n: vec2 = vec2.fromValues(1.0, 0.0);
         let angle = vec2.angle(n, this._direction);
@@ -104,6 +115,12 @@ export class Position2DLabel extends Label {
         }
 
         mat4.rotateZ(transform, transform, angle);
+
+        if (this._camera.viewProjectionInverse) {
+            mat4.mul(transform, this._camera.viewProjectionInverse, transform);
+        } else {
+            log(LogLevel.Warning, `camera.viewProjectionInverse is null`);
+        }
 
         switch (this._type) {
             case Label.Type.Static:
@@ -116,6 +133,8 @@ export class Position2DLabel extends Label {
                 break;
             default:
         }
+
+        /* Check whether or not to (re)typeset and reset alterations. */
 
         this._altered.reset();
         this._text.altered = false;
@@ -130,28 +149,26 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * Width and height of targeted frame used to account for font size in px or pt units. Changing the frame size
-     * invalidates the transform.
+     * The camera is used to retrieve (1) the view projection matrix, and (2) the width and height of targeted frame.
+     * (1) is used to project the 3D label as a 2D label, (2) is used to calculate the font size in px units.
+     * Setting the camera invalidates the transform.
      */
-    set frameSize(size: vec2 | GLfloat2) {
-        if (vec2.equals(this._frameSize, size)) {
-            return;
-        }
-        vec2.max(this._frameSize, size, [1.0, 1.0]);
+    set camera(camera: Camera | undefined) {
+        this._camera = camera;
         this._altered.alter(this._type);
     }
-    get frameSize(): vec2 | GLfloat2 {
-        return this._frameSize;
+    get camera(): Camera | undefined {
+        return this._camera;
     }
 
     /**
-     * Sets the 2D position of the label's reference point.
+     * Sets the 3D position of the label's reference point.
      */
-    set position(position: vec2 | GLfloat2) {
-        this._position = vec2.clone(position);
+    set position(position: vec3 | GLfloat3) {
+        this._position = vec3.clone(position);
         this._altered.alter(this._type);
     }
-    get position(): vec2 | GLfloat2 {
+    get position(): vec3 | GLfloat3 {
         return this._position;
     }
 
@@ -167,17 +184,16 @@ export class Position2DLabel extends Label {
     }
 
     /**
-     * This unit is used for the font size. This method overrides the super.fontSizeUnit, since `Position2DLabel` only
+     * This unit is used for the font size. This method overrides the super.fontSizeUnit, since `Projected3DLabel` only
      * supports Pixel, for now.
      * (@see {@link fontSize})
      * @param newUnit - Unit to be used, though, this label type only supports pixel units (px).
      */
     set fontSizeUnit(unit: Label.Unit) {
-        logIf(unit !== Label.Unit.Pixel, LogLevel.Warning,
-            `font size unit other than 'px' are not supported in position-2d-label, given ${unit}`);
+        logIf(unit !== Label.Unit.Mixed, LogLevel.Warning,
+            `font size unit other than 'px' are not supported in projected-3d-label, given ${unit}`);
     }
     get fontSizeUnit(): Label.Unit {
         return this._fontSizeUnit;
     }
-
 }
