@@ -508,8 +508,9 @@ export namespace Label {
         /* abstract world unit */
         World = 'world',
         /* screen pixel */
-        Px = 'px',
+        Pixel = 'pixel',
         /** @todo Pt for point unit */
+        /* Point = 'point', */
     }
 
 }
