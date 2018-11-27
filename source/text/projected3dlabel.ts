@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 import { log, logIf, LogLevel } from '../auxiliaries';
@@ -11,6 +13,8 @@ import { GlyphVertices } from './glyphvertices';
 import { Label } from './label';
 import { Text } from './text';
 import { Typesetter } from './typesetter';
+
+/* spellchecker: enable */
 
 
 /**
@@ -100,9 +104,7 @@ export class Projected3DLabel extends Label {
         const translationM = mat4.create();
         const w = anchor[3];
         mat4.translate(translationM, translationM, vec3.fromValues(anchor[0] / w, anchor[1] / w, anchor[2] / w));
-
         mat4.mul(transform, translationM, transform);
-
 
         const n: vec2 = vec2.fromValues(1.0, 0.0);
         let angle = vec2.angle(n, this._direction);
@@ -120,7 +122,6 @@ export class Projected3DLabel extends Label {
             log(LogLevel.Warning, `camera.viewProjectionInverse is null`);
         }
 
-
         switch (this._type) {
             case Label.Type.Static:
                 this.staticTransform = mat4.clone(transform);
@@ -134,7 +135,6 @@ export class Projected3DLabel extends Label {
         }
 
         /* Check whether or not to (re)typeset and reset alterations. */
-
 
         this._altered.reset();
         this._text.altered = false;

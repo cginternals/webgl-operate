@@ -14,7 +14,6 @@ import { Text } from './text';
 
 import { Typesetter } from './typesetter';
 
-
 /* spellchecker: enable */
 
 
