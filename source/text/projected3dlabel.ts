@@ -147,8 +147,9 @@ export class Projected3DLabel extends Label {
     }
 
     /**
-     * Width and height of targeted frame used to account for font size in px or pt units. Changing the frame size
-     * invalidates the transform.
+     * The camera is used to retrieve (1) the view projection matrix, and (2) the width and height of targeted frame.
+     * (1) is used to project the 3D label as a 2D label, (2) is used to calculate the font size in px units.
+     * Setting the camera invalidates the transform.
      */
     set camera(camera: Camera | undefined) {
         this._camera = camera;

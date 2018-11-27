@@ -219,7 +219,8 @@ export class LabelRenderPass extends Initializable {
             gl.uniform1f(this._uAAStepScale, this._aaStepScale);
         }
 
-        let labelsAltered = override || this._altered.labels;
+        /** Some labels need the camera to update their font size and position */
+        let labelsAltered = override || this._altered.labels || this._altered.camera || this._camera.altered;
         let i = 0;
         while (labelsAltered === false && i < this._labels.length) {
             labelsAltered = this._labels[i].altered;
