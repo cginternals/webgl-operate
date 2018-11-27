@@ -18,7 +18,7 @@ import { Typesetter } from './typesetter';
 
 
 /**
- * A Label that can be positioned in 3D space, but projected onto a 2D plane (a.k.a. scrren).
+ * A Label that can be positioned in 3D space, but projected onto a 2D plane (a.k.a. screen).
  * The unit for positioning is world space, the unit for size is pixel (px).
  */
 export class Projected3DLabel extends Label {
@@ -101,10 +101,10 @@ export class Projected3DLabel extends Label {
 
         vec4.transformMat4(anchor, anchor, this._camera.viewProjection);
 
-        const translationM = mat4.create();
+        const translation = mat4.create();
         const w = anchor[3];
-        mat4.translate(translationM, translationM, vec3.fromValues(anchor[0] / w, anchor[1] / w, anchor[2] / w));
-        mat4.mul(transform, translationM, transform);
+        mat4.translate(translation, translation, vec3.fromValues(anchor[0] / w, anchor[1] / w, anchor[2] / w));
+        mat4.mul(transform, translation, transform);
 
         const n: vec2 = vec2.fromValues(1.0, 0.0);
         let angle = vec2.angle(n, this._direction);
