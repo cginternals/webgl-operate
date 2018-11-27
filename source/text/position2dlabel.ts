@@ -23,6 +23,8 @@ import { Typesetter } from './typesetter';
  */
 export class Position2DLabel extends Label {
 
+    private static readonly DEFAULT_FONTSIZE_PX = 20;
+
     /** @see {@link position} */
     protected _position: vec2;
     /** @see {@link direction} */
@@ -43,8 +45,8 @@ export class Position2DLabel extends Label {
 
         this._frameSize = vec2.create();
 
-        this._fontSize = 20;
-        this._fontSizeUnit = Label.Unit.Px;
+        this._fontSize = Position2DLabel.DEFAULT_FONTSIZE_PX;
+        this._fontSizeUnit = Label.Unit.Pixel;
     }
 
     /**
@@ -172,7 +174,7 @@ export class Position2DLabel extends Label {
      * @param newUnit - Unit to be used, though, this label type only supports pixel units (px).
      */
     set fontSizeUnit(unit: Label.Unit) {
-        logIf(unit !== Label.Unit.Px, LogLevel.Warning,
+        logIf(unit !== Label.Unit.Pixel, LogLevel.Warning,
             `font size unit other than 'px' are not supported in position-2d-label, given ${unit}`);
     }
     get fontSizeUnit(): Label.Unit {

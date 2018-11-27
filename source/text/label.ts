@@ -39,7 +39,7 @@ export abstract class Label {
     protected _lineWidth = NaN;
 
     /** @see {@link fontSize} */
-    protected _fontSize = 0.05;
+    protected _fontSize: number;
 
     /** @see {@link fontSizeUnit} */
     protected _fontSizeUnit: Label.Unit = Label.Unit.World;
@@ -508,10 +508,11 @@ export namespace Label {
         /* abstract world unit */
         World = 'world',
         /* screen pixel */
-        Px = 'px',
+        Pixel = 'pixel',
         /* mixed: world unit for positioning, px unit for font size*/
         Mixed = 'mixed',
         /** @todo Pt for point unit */
+        /* Point = 'point', */
     }
 
 }

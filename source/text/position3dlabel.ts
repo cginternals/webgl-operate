@@ -22,6 +22,8 @@ import { Typesetter } from './typesetter';
  */
 export class Position3DLabel extends Label {
 
+    private static readonly DEFAULT_FONTSIZE_WORLD = 0.05;
+
     /** @see {@link position} */
     protected _position: vec3;
     /** @see {@link direction} */
@@ -44,7 +46,7 @@ export class Position3DLabel extends Label {
         this._direction = vec3.fromValues(1.0, 0.0, 0.0);
         this._up = vec3.fromValues(0.0, 1.0, 0.0);
 
-        this._fontSize = 0.05;
+        this._fontSize = Position3DLabel.DEFAULT_FONTSIZE_WORLD;
         this._fontSizeUnit = Label.Unit.World;
     }
 
