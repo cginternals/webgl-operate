@@ -192,7 +192,8 @@ export class FontFace {
     setKerning(index: GLsizei, subsequentIndex: GLsizei, kerning: number): void {
         const glyph = this._glyphs.get(index);
         if (!glyph || !this.hasGlyph(subsequentIndex)) {
-            assert(false, 'expected glyph or glyph of subsequent index to exist.');
+            assert(false, `expected glyph or glyph of subsequent index to exist, \
+                given ${index} and ${subsequentIndex} respectively`);
             return;
         }
         glyph.setKerning(subsequentIndex, kerning);
