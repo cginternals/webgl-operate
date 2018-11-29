@@ -215,7 +215,7 @@ export class FontFace {
      * @param base - The distance from the baseline to the top of the line in pt.
      */
     set base(base: number) {
-        assert(base > 0.0, 'base should be larger than zero.');
+        assert(base > 0.0, `expected base to be greater than 0.0, given ${base}`);
         this._base = base;
     }
     get base(): number {
@@ -228,7 +228,7 @@ export class FontFace {
      * @param ascent - The distance from the baseline to the topmost ascenders in pt.
      */
     set ascent(ascent: number) {
-        assert(ascent > 0.0, 'ascent should be larger than zero.');
+        assert(ascent > 0.0, `expected ascent to be greater than 0.0, given ${ascent}`);
         this._ascent = ascent;
     }
     get ascent(): number {
@@ -299,8 +299,8 @@ export class FontFace {
      * @param extent - The texture extent in px
      */
     set glyphTextureExtent(extent: GLsizei2) {
-        assert(extent[0] > 0, 'expected extent.x to be larger than zero.');
-        assert(extent[1] > 0, 'expected extent.y to be larger than zero.');
+        assert(extent[0] > 0, `expected extent.x to be greater than 0.0, given ${extent[0]}`);
+        assert(extent[1] > 0, `expected extent.y to be greater than 0.0, given ${extent[1]}`);
         this._glyphTextureExtent = extent;
     }
     /**
@@ -317,10 +317,10 @@ export class FontFace {
      * px.
      */
     set glyphTexturePadding(padding: GLfloat4) {
-        assert(padding[0] >= 0.0, 'expected padding[0] to be larger than zero.');
-        assert(padding[1] >= 0.0, 'expected padding[1] to be larger than zero.');
-        assert(padding[2] >= 0.0, 'expected padding[2] to be larger than zero.');
-        assert(padding[3] >= 0.0, 'expected padding[3] to be larger than zero.');
+        assert(padding[0] >= 0.0, `expected padding[0] to be greater than 0.0, given ${padding[0]}`);
+        assert(padding[1] >= 0.0, `expected padding[1] to be greater than 0.0, given ${padding[1]}`);
+        assert(padding[2] >= 0.0, `expected padding[2] to be greater than 0.0, given ${padding[2]}`);
+        assert(padding[3] >= 0.0, `expected padding[3] to be greater than 0.0, given ${padding[3]}`);
         this._glyphTexturePadding = padding;
     }
     get glyphTexturePadding(): GLfloat4 {

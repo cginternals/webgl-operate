@@ -5,18 +5,10 @@ import { assert, log, LogLevel } from '../auxiliaries';
 
 import { vec3 } from 'gl-matrix';
 
-import { AccumulatePass } from '../accumulatepass';
-import { AntiAliasingKernel } from '../antialiasingkernel';
-import { BlitPass } from '../blitpass';
 import { Camera } from '../camera';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
-import { Framebuffer } from '../framebuffer';
-import { MouseEventProvider } from '../mouseeventprovider';
-import { Navigation } from '../navigation';
-import { Renderbuffer } from '../renderbuffer';
 import { Invalidate, Renderer } from '../renderer';
-import { Texture2D } from '../texture2d';
 
 import { FontFace } from '../text/fontface';
 import { Label } from '../text/label';
@@ -36,20 +28,11 @@ namespace debug {
 
         protected _extensions = false;
 
-        protected _ndcOffsetKernel: AntiAliasingKernel;
-
-        protected _accumulate: AccumulatePass;
-        protected _blit: BlitPass;
         protected _labelPass: LabelRenderPass;
 
         protected _camera: Camera;
 
         protected _defaultFBO: DefaultFramebuffer;
-        protected _colorRenderTexture: Texture2D;
-        protected _depthRenderbuffer: Renderbuffer;
-        protected _intermediateFBO: Framebuffer;
-
-        protected _navigation: Navigation;
 
 
         protected _fontFace: FontFace | undefined;
@@ -62,7 +45,7 @@ namespace debug {
          * @returns - whether initialization was successful
          */
         protected onInitialize(context: Context, callback: Invalidate,
-            mouseEventProvider: MouseEventProvider,
+        /* mouseEventProvider: MouseEventProvider, */
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
@@ -83,28 +66,6 @@ namespace debug {
             this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
             this._defaultFBO.initialize();
 
-            this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
-            this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
-
-            this._intermediateFBO = new Framebuffer(this._context, 'IntermediateFBO');
-
-            /* Create and configure accumulation pass. */
-
-            this._accumulate = new AccumulatePass(this._context);
-            this._accumulate.initialize();
-            this._accumulate.precision = this._framePrecision;
-            this._accumulate.texture = this._colorRenderTexture;
-            // this._accumulate.depthStencilAttachment = this._depthRenderbuffer;
-
-            /* Create and configure blit pass. */
-
-            this._blit = new BlitPass(this._context);
-            this._blit.initialize();
-            this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
-            this._blit.drawBuffer = gl.BACK;
-            this._blit.target = this._defaultFBO;
-
-
             /* Create and configure test navigation. */
 
             this._camera = new Camera();
@@ -114,19 +75,15 @@ namespace debug {
             this._camera.near = 0.1;
             this._camera.far = 8.0;
 
-            /* Initialize navigation */
-            this._navigation = new Navigation(callback, mouseEventProvider);
-            this._navigation.camera = this._camera;
-
             /* Create and configure label pass. */
 
             this._labelPass = new LabelRenderPass(context);
             this._labelPass.initialize();
             this._labelPass.camera = this._camera;
-            this._labelPass.target = this._intermediateFBO;
+            this._labelPass.target = this._defaultFBO;
             this._labelPass.depthMask = true;
 
-            FontFace.fromFile('./data/testfont.fnt', context)
+            FontFace.fromFile('./data/opensans128-hiero.fnt', context)
                 .then((fontFace) => {
                     for (const label of this._labelPass.labels) {
                         label.fontFace = fontFace;
@@ -147,12 +104,7 @@ namespace debug {
         protected onUninitialize(): void {
             super.uninitialize();
 
-            this._intermediateFBO.uninitialize();
             this._defaultFBO.uninitialize();
-            this._colorRenderTexture.uninitialize();
-            this._depthRenderbuffer.uninitialize();
-
-            this._blit.uninitialize();
             this._labelPass.uninitialize();
         }
 
@@ -165,10 +117,6 @@ namespace debug {
          * @returns whether to redraw
          */
         protected onUpdate(): boolean {
-
-            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
-
-            this._navigation.update();
 
             for (const label of this._labelPass.labels) {
                 if (label.altered || label.color.altered) {
@@ -184,42 +132,15 @@ namespace debug {
          */
         protected onPrepare(): void {
 
-            const gl = this._context.gl;
-            const gl2facade = this._context.gl2facade;
-
-            if (!this._intermediateFBO.initialized) {
-                this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
-                    this._context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
-                this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
-                this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
-                    , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
-
-                this._camera.aspect = this._frameSize[0] / this._frameSize[1];
-
-            } else if (this._altered.frameSize) {
-                this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
-                this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
-                this._camera.aspect = this._frameSize[0] / this._frameSize[1];
-            }
-
             if (this._altered.canvasSize) {
                 this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
             }
 
-            if (this._altered.multiFrameNumber) {
-                this._ndcOffsetKernel.width = this._multiFrameNumber;
-            }
-
-            if (this._altered.framePrecision) {
-                this._accumulate.precision = this._framePrecision;
-            }
-
             if (this._altered.clearColor) {
-                this._intermediateFBO.clearColor(this._clearColor);
+                this._defaultFBO.clearColor(this._clearColor);
             }
 
             this._labelPass.update();
-            this._accumulate.update();
 
             this._altered.reset();
             this._camera.altered = false;
@@ -235,27 +156,14 @@ namespace debug {
             gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 
-            const ndcOffset = this._ndcOffsetKernel.get(frameNumber) as [number, number];
-            ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
-            ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
-
-            this._labelPass.ndcOffset = ndcOffset;
-
-            this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+            this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
             this._labelPass.frame();
-            this._intermediateFBO.unbind();
-
-            this._accumulate.frame(frameNumber);
-
         }
 
         /**
          * After (1) update, (2) preparation, and (3) frame are invoked, a swap is invoked for multi-frame rendering.
          */
         protected onSwap(): void {
-            this._blit.framebuffer = this._accumulate.framebuffer ?
-                this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
-            this._blit.frame();
         }
 
         /**
@@ -281,8 +189,8 @@ and heaven and earth seem to dwell in my soul and absorb its power, like the for
 think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
 and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
-            const label = new Position2DLabel(new Text(`ABABgAgB A B g '  'g'B'`), Label.Type.Dynamic);
-            label.fontSize = 144
+            const label = new Position2DLabel(new Text(`ABVAg'^|`), Label.Type.Dynamic);
+            label.fontSize = 128;
             label.fontSizeUnit = Label.Unit.Pixel;
             label.alignment = Label.Alignment.Left;
             label.lineAnchor = Label.LineAnchor.Baseline;

@@ -388,7 +388,7 @@ export class Typesetter {
         const labelFragmentWidths = Typesetter.fragmentWidths(labelFragments, labelAdvances, labelKernings);
 
 
-        const pen: vec2 = vec2.fromValues(0.0, -Typesetter.lineAnchorOffset(label));
+        const pen: vec2 = vec2.fromValues(-fontFace.glyphTexturePadding[3], -Typesetter.lineAnchorOffset(label));
 
         const lines = new Array<Line>();
         let vertexIndex = 0;

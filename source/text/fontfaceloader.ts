@@ -53,26 +53,39 @@ export class FontFaceLoader {
     }
 
     /**
+     * Parses the info field's size value.
+     * @param stream - The stream of the 'info' identifier.
+     */
+    protected static processInfoSize(stream: Array<string>): number {
+        const pairs: StringPairs = new Map<string, string>();
+        const success = this.readKeyValuePairs(stream, ['size'], pairs);
+        if (!success) {
+            return NaN;
+        }
+        return parseFloat(pairs.get('size')!);
+    }
+
+    /**
      * Parses the common fields for lineHeight, base, ascent, descent, scaleW and scaleH to store them
-     * in the font face.
+     * in the font face. If ascent and/or descent are not available, they can be computed using the largest y-offset
+     * (ascent = baseline - max_yoffset) and descent can be derived as well (descent = - fontsize + ascent).
      * @param stream - The stream of the 'common' identifier.
      * @param fontFace - The font face in which the parsed values are stored.
      */
     protected static processCommon(stream: Array<string>, fontFace: FontFace): boolean {
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream,
-            ['lineHeight', 'base', 'ascent', 'descent', 'scaleW', 'scaleH'], pairs);
+            ['lineHeight', 'base', 'scaleW', 'scaleH'], pairs);
         if (!success) {
             return false;
         }
 
         fontFace.base = parseFloat(pairs.get('base')!);
-        fontFace.ascent = parseFloat(pairs.get('ascent')!);
-        fontFace.descent = parseFloat(pairs.get('descent')!);
-
-        if (fontFace.size <= 0.0) {
-            log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
-            return false;
+        if (pairs.has('ascent')) {
+            fontFace.ascent = parseFloat(pairs.get('ascent')!);
+        }
+        if (pairs.has('descent')) {
+            fontFace.descent = parseFloat(pairs.get('descent')!);
         }
 
         fontFace.lineHeight = parseFloat(pairs.get('lineHeight')!);
@@ -219,6 +232,39 @@ export class FontFaceLoader {
     }
 
     /**
+     * Derives ascent and descent data for the font face. Since the computation is based on the available glyphs and
+     * not all of the font's glyphs might be included in the font face, the ascent/descent might be off (based on
+     * minimum y-offset).
+     * @param fontFace - Font face to find ascent and/or descent for (if missing).
+     * @param size - Suggested size of the font face as read from the font file. Note that the actual size of the font
+     * face is determined by the sum of ascent and descent (which should equal the font files info size).
+     */
+    protected static findAscentAndDescentIfNoneProvided(fontFace: FontFace, size: number): void {
+        if (fontFace.ascent > 0.0 && fontFace.descent < 0.0) {
+            return;
+        }
+
+        if (fontFace.ascent > 0.0) {
+            fontFace.descent = fontFace.ascent - size;
+        }
+
+        if (fontFace.descent < 0.0) {
+            fontFace.ascent = fontFace.descent - size;
+        }
+
+        let maximumYBearing = Number.MIN_VALUE;
+        for (const i of fontFace.arrayOfGlyphIndices()) {
+            if (fontFace.glyph(i).extent[1] === 0.0) {
+                continue;
+            }
+            maximumYBearing = Math.max(fontFace.glyph(i).bearing[1], maximumYBearing);
+        }
+        fontFace.ascent = maximumYBearing;
+        fontFace.descent = fontFace.ascent - size;
+        log(LogLevel.Debug, `ascent not specified, derived ${fontFace.ascent} from maximum y-offset`);
+    }
+
+    /**
      * Asynchronously loads a fnt-file and referenced pages to create a font face from them.
      * @param fontFace - Font face object to transform data into.
      * @param data - Font face data, probably fetched from an URL.
@@ -229,6 +275,7 @@ export class FontFaceLoader {
         Promise<FontFace | undefined> {
 
         const lines = data.split('\n');
+        let suggestedSize = NaN;
 
         const promises = new Array<Promise<void>>();
         let status = true;
@@ -240,6 +287,7 @@ export class FontFaceLoader {
             switch (identifier) {
                 case 'info':
                     status = this.processInfo(attributes, fontFace);
+                    suggestedSize = this.processInfoSize(attributes);
                     break;
 
                 case 'common':
@@ -271,6 +319,11 @@ export class FontFaceLoader {
             if (status === false) {
                 break;
             }
+        }
+
+        FontFaceLoader.findAscentAndDescentIfNoneProvided(fontFace, suggestedSize);
+        if (fontFace.size <= 0.0) {
+            log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
         }
 
         /* Multiple promises might be invoked (one per page due to async texture2D load). Since this is a non async
