@@ -65,7 +65,7 @@ export class LabelRenderPass extends Initializable {
     protected _camera: Camera;
 
     /** @see {@link ndcOffset} */
-    protected _ndcOffset: GLfloat2;
+    protected _ndcOffset: GLfloat2 = [0.0, 0.0];
 
     /** @see {@link depthMask} */
     protected _depthMask = false;

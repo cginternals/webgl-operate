@@ -189,11 +189,11 @@ and heaven and earth seem to dwell in my soul and absorb its power, like the for
 think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
 and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
-            const label = new Position2DLabel(new Text(`ABVAg'^|`), Label.Type.Dynamic);
+            const label = new Position2DLabel(new Text(`ABVAg'^|\nAAVAVAVA`), Label.Type.Dynamic);
             label.fontSize = 128;
             label.fontSizeUnit = Label.Unit.Pixel;
             label.alignment = Label.Alignment.Left;
-            label.lineAnchor = Label.LineAnchor.Baseline;
+            label.lineAnchor = Label.LineAnchor.Center;
             label.position = [-555.0, +0.0];
 
             this._labelPass.labels = [label];

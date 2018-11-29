@@ -42,10 +42,10 @@ export class FontFaceLoader {
         }
 
         const padding: GLfloat4 = [
-            parseFloat(values[2]), /* top */
+            parseFloat(values[0]), /* top */
             parseFloat(values[1]), /* right */
-            parseFloat(values[3]), /* bottom */
-            parseFloat(values[0]), /* left */
+            parseFloat(values[2]), /* bottom */
+            parseFloat(values[3]), /* left */
         ];
         fontFace.glyphTexturePadding = padding;
 

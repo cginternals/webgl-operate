@@ -140,6 +140,7 @@ export class Position2DLabel extends Label {
         }
         vec2.max(this._frameSize, size, [1.0, 1.0]);
         this._altered.alter(this._type);
+        console.log(this._altered.dynamic, this._altered.static);
     }
     get frameSize(): vec2 | GLfloat2 {
         return this._frameSize;
