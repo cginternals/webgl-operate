@@ -174,7 +174,8 @@ namespace debug {
 
             /** Wrapped labels, showcasing Ellipsis and NewLine */
 
-            //             const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
+            // const werther = 'A wonderful serenity has taken possession of my entire soul, like these sweet mornings \
+            // tslint:disable:max-line-length
             // of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was \
             // created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere \
             // tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present \
@@ -188,6 +189,7 @@ namespace debug {
             // and heaven and earth seem to dwell in my soul and absorb its power, like the form of a beloved mistress, then I often \
             // think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
             // and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
+            // tslint:enable:max-line-length
 
             const label = new Position2DLabel(new Text(`ABVAg'^|\nAAVAVAVA`), Label.Type.Dynamic);
             label.fontSize = 128;
