@@ -1,0 +1,11 @@
+include authors.pug
+
+mixin thumbnail(source, title, authors, caption)
+  div.card
+    a(href = source + '.html').card-img-top #[img(src = 'img/' + source + '.jpg').img-fluid]
+    div.card-body
+      h5.card-title.text-info #[a(href = source + '.html') #{title.toUpperCase()}]
+      p.card-text #{caption}
+    div.card-footer.text-right
+      small.text-muted by 
+        +authors(authors)

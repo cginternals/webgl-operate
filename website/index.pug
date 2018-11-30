@@ -1,24 +1,25 @@
 extends partials/site.pug
 
-block vars
-  - var navLinks = []
-  - navLinks.push({ href: 'https://github.com/cginternals/webgl-operate', text: 'GitHub' })
-  - navLinks.push({ href: 'https://webgl-operate.org/doc', text: 'Documentation' })
-
 
 block head
-
-  // link(rel = 'stylesheet' href = 'css/template.css')
-  // script(src = 'js/tempalte.js')
 
 
 block header
 
-  section.container
-   header.jumbatron
-    img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-50.d-none.d-md-block
-    img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.d-block.d-md-none
-    p.lead webgl-operate (or gloperate for WebGL) is a TypeScript based WebGL rendering framework.
+  header.container.mb-4
+    .row
+      .col-6
+        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-100.d-none.d-md-block
+        img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.d-block.d-md-none
+
+        p.lead Build high-performance rendering applications with this use case agnostic, TypeScript based WebGL engine.
+        p.lead.mb-4 webgl-operate is an open source engine that enables hardware-accelerated 2D and 3D rendering and computation. It is highly extensible and facilitates arbitrary rendering approaches such as forward rendering, offscreen computing, multi-frame sampling, raymarching raytracing, or progressive pathtracing.
+
+        a(href = '/doc/' role = 'button').btn.btn-lg.btn-primary.ml-4.mr-2 Get Started
+        a(href = 'https://github.com/cginternals/webgl-operate/archive/v0.4.2-beta.zip' role = 'button').btn.btn-lg.btn-primary.ml-2 Download
+
+      .col-6
+        canvas(id = 'showcase', data-backend = 'auto', data-accumulation-format = 'byte', data-clear-color = '0.0, 0.0, 0.0, 0.0').w-100.h-100
 
 
 block content
@@ -26,12 +27,39 @@ block content
   section.container
     div.row
       div.col
-        canvas(id = 'test-canvas', data-backend = 'auto', data-accumulation-format = 'half').img-fluid.w-100
+        h2 Installation
+
+        include partials/code.pug
+        +code('jsdelivr', '<script src="https://cdn.jsdelivr.net/npm/webgl-operate@latest/dist/webgl-operate.min.js"></script>'
+          , 'You can integrate webgl-operate as bundled JavaScript in your HTML:')
+        +code('npm', 'npm install webgl-operate'
+          , 'Or you can use webgl-operate as JavaScript or TypeScript library (types included) via npm:', 'language-sh')
+
+
+  section.container#demos
+    div.row
+      div.col
+        h2 Demos
+
+        include partials/thumbnail.pug
+        div.card-columns
+          each demo, index in demos
+            +thumbnail(demo.target, demo.title, demo.authors, demo.caption)
+
 
   section.container
     div.row
       div.col
+        h2 Your WebGL Status
+
         include partials/code.pug
         +code('context-about', ' ', 'context.about:')
 
         p Please refer to the #[a(href = '/about.html') Plain About Page] when used for support.
+
+
+  script(src = 'js/webgl-operate.js')
+  script(src = 'demos/cubescape.js')
+
+  script(src = 'js/website.js')
+

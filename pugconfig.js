@@ -15,13 +15,15 @@ const copy = require('./copy.js');
 const websiteDir = './website';
 const buildDir = './build';
 
+const demos = require(websiteDir + '/demos.json');
 const entries = ['index.pug', 'about.pug'];
 
 const assets = [
-    [websiteDir, buildDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
+    [websiteDir, buildDir, ['css/*.css', 'js/*.js', 'img/*.{svg,png,jpg}', 'fonts/*', '*.{svg,png,ico,xml,json}'], [], false],
     ['./source', buildDir, ['data/{colorbrewer,smithwalt}.json'], [], false],
     ['./node_modules/rxjs/bundles/', `${buildDir}/js`, ['rxjs.umd.min.js'], [], false],
     ['./source/data/', `${buildDir}/data`, ['*'], [], false],
+    ['./demos/data/', `${buildDir}/demos/data`, ['*'], [], false],
 ];
 
 
@@ -39,7 +41,7 @@ function build() {
             return;
         }
 
-        const html = pug.renderFile(src);
+        const html = pug.renderFile(src, { 'demos': demos });
         fs.writeFileSync(dst, html);
 
         console.log('emitted:', dst);

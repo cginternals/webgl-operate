@@ -45,6 +45,13 @@
             ]
         },
         {
+            "taskName": "build demos",
+            "args": [
+                "run-script",
+                "build-demos"
+            ]
+        },
+        {
             "taskName": "lint",
             "isTestCommand": true,
             "args": [

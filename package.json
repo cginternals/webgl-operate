@@ -71,6 +71,7 @@
         "start-watch": "run-p build-watch pug-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
+        "build-demos": "webpack-cli --mode production --config webpack.config.demos.js",
         "pug-watch": "node pugconfig.js --watch",
         "cleanup": "rimraf ./dist ./lib ./build",
         "lint": "tslint --project tsconfig.json --format stylish --config tslint.json",
