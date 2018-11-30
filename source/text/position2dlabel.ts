@@ -13,7 +13,6 @@ import { Label } from './label';
 import { Text } from './text';
 
 import { Typesetter } from './typesetter';
-import { config } from 'shelljs';
 
 /* spellchecker: enable */
 
