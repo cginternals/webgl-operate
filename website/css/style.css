@@ -140,7 +140,7 @@ ul.features li:last-child:after {
     border-radius: .25rem;
 }
 
-canvas.example {
+canvas {
     border: 1px solid #d6d8db;
     background: #e2e3e5;
 }

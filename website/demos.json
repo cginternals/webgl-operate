@@ -17,6 +17,16 @@
         "caption": "glTF support with physical-based rendering and multi-frame sampling."
     },
     {
+        "target": "volume-vis",
+        "title": "Volume Visualizer",
+        "authors": [
+            "tobi",
+            "sbusch42",
+            "cgcostume"
+        ],
+        "caption": "Basic volume rendering using ray-marching with simple shading, coloring and more."
+    },
+    {
         "target": "treemap",
         "title": "2.5D Treemap",
         "authors": [
@@ -27,14 +37,21 @@
         "caption": "Interactive visualization of tree-structured, massive data for software analytics."
     },
     {
-        "target": "volume-vis",
-        "title": "Volume Visualizer",
+        "target": "metaballs",
+        "title": "Metaballs",
         "authors": [
-            "tobi",
-            "sbusch42",
+            "cgcostume",
+            "bwasty"
+        ],
+        "caption": "Raymarched Metaballs with 3D force field, reflections, and some post processing."
+    },
+    {
+        "target": "cubescape",
+        "title": "Landscape of Cubes",
+        "authors": [
             "cgcostume"
         ],
-        "caption": "Basic volume rendering using ray-marching with simple shading, coloring and more."
+        "caption": "WebGL port of the initial glbinding cubescape demo using instanced rendering."
     },
     {
         "target": "openll-showcase",

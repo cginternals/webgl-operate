@@ -1,11 +1,13 @@
 
+/* spellchecker: disable */
+
 import { vec3 } from 'webgl-operate';
 
 import {
     Camera,
+    Canvas,
     Context,
     DefaultFramebuffer,
-    EventHandler,
     Invalidate,
     MouseEventProvider,
     Navigation,
@@ -15,45 +17,41 @@ import {
     Texture2D,
     Wizard,
 } from 'webgl-operate';
-//     BlitPass, Camera, Context, DefaultFramebuffer, EventHandler, Framebuffer, Invalidate,
-//     MouseEventProvider, Navigation, Program, Renderbuffer, Renderer, Shader, Texture2, Wizard,
-// } from 'webgl-operate';
 
-import { Cube } from './cube';
+import { Demo } from '../demo';
+
+import { CubeGeometry } from './cubegeometry';
+
+/* spellchecker: enable */
+
+// tslint:disable:max-classes-per-file
 
 
-// camera constants
 const _gEye = vec3.fromValues(1.0, -0.5, -1.0);
 const _gCenter = vec3.fromValues(0.0, -1.0, 0.0);
 const _gUp = vec3.fromValues(0.0, 1.0, 0.0);
 
-export class CubescapeRenderer extends Renderer {
 
-    // FBO and Blit
+class CubescapeRenderer extends Renderer {
+
     protected _defaultFBO: DefaultFramebuffer;
 
-    // camera
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    //     // cubes
-    protected _cube: Cube;
+    protected _cube: CubeGeometry;
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
     protected _aVertex: GLuint;
     protected _numCubes = 128;
 
-    // skyBox and skyTriangle use the same cubeMap
     protected _patches: Texture2D;
     protected _terrain: Texture2D;
-
-    protected _eventHandler: EventHandler;
 
 
     protected onUpdate(): boolean {
 
         this._navigation.update();
-        this._eventHandler.update();
 
         return this._altered.any || this._camera.altered;
     }
@@ -94,8 +92,7 @@ export class CubescapeRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_patches'), 1);
 
         this._cube.bind();
-        this._cube.numCubes = this._numCubes;
-        this._cube.draw();
+        this._cube.draw(this._numCubes);
         this._cube.unbind();
 
         this._program.unbind();
@@ -112,13 +109,6 @@ export class CubescapeRenderer extends Renderer {
         mouseEventProvider: MouseEventProvider): boolean {
         const gl = this._context.gl;
 
-        this._eventHandler = new EventHandler(callback, mouseEventProvider, undefined);
-        // this._eventHandler.pushMouseWheelHandler((latests: Array<WheelEvent>, previous: Array<WheelEvent>) => {
-        //     this._numCubes = this._numCubes + ((latests[latests.length - 1].wheelDeltaY > 0) ? +1 : -1);
-        //     this._numCubes = Math.min(1024, Math.max(8, this._numCubes));
-        // });
-
-        // load images
         const internalFormatAndType = Wizard.queryInternalTextureFormat(this._context, gl.RGB, Wizard.Precision.byte);
         this._terrain = new Texture2D(this._context);
         this._terrain.initialize(64, 64, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
@@ -132,19 +122,22 @@ export class CubescapeRenderer extends Renderer {
         this._patches.filter(gl.NEAREST, gl.NEAREST);
         this._patches.load('demos/data/cubescape-patches.png');
 
+        // init cube geometry
+        this._cube = new CubeGeometry(this._context, 'cubes'); // TODO not 16 every time
+        this._cube.initialize();
+
         // init program
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'cube.vert');
         vert.initialize(require('./cube.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'cube.frag');
         frag.initialize(require('./cube.frag'));
-        this._program = new Program(this._context);
-        this._program.initialize([vert, frag]);
-        this._aVertex = this._program.attribute('a_vertex', 0);
-        this._uViewProjection = this._program.uniform('u_viewProjection');
 
-        // init cube geometry
-        this._cube = new Cube(this._context, 'cubes'); // TODO not 16 every time
-        this._cube.initialize(this._aVertex);
+        this._program = new Program(this._context);
+        this._program.initialize([vert, frag], false);
+        this._program.attribute('a_vertex', this._cube.vertexLocation);
+        this._program.link();
+
+        this._uViewProjection = this._program.uniform('u_viewProjection');
 
         // init camera
         this._camera = new Camera();
@@ -174,3 +167,36 @@ export class CubescapeRenderer extends Renderer {
 
 }
 
+
+export class CubescapeDemo extends Demo {
+
+    private _canvas: Canvas;
+    private _renderer: CubescapeRenderer;
+
+    initialize(element: HTMLCanvasElement | string): boolean {
+
+        this._canvas = new Canvas(element, { antialias: true });
+        this._canvas.controller.multiFrameNumber = 1;
+        this._canvas.framePrecision = Wizard.Precision.byte;
+        this._canvas.frameScale = [1.0, 1.0];
+
+        this._renderer = new CubescapeRenderer();
+        this._canvas.renderer = this._renderer;
+
+        return true;
+    }
+
+    uninitialize(): void {
+        this._canvas.dispose();
+        (this._renderer as Renderer).uninitialize();
+    }
+
+    get canvas(): Canvas {
+        return this._canvas;
+    }
+
+    get renderer(): CubescapeRenderer {
+        return this._renderer;
+    }
+
+}

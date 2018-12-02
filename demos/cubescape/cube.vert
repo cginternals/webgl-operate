@@ -8,7 +8,7 @@ precision lowp int;
 #if __VERSION__ == 100
     attribute vec3 a_vertex;
 #else
-    layout(location = 0) in vec3 a_vertex;
+    in vec3 a_vertex;
 #endif
 
 

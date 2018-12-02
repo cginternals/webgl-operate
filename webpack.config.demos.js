@@ -6,7 +6,8 @@ module.exports = {
     context: __dirname + '/demos',
     cache: true,
     entry: {
-        'cubescape': ['cubescape/cubescaperenderer.ts']
+        'cornell-box': ['cornell-box/cornellboxdemo.ts'],
+        'cubescape': ['cubescape/cubescapedemo.ts']
     },
     devtool: 'source-map',
     output: {
