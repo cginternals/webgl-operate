@@ -43,7 +43,7 @@ class CubescapeRenderer extends Renderer {
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
     protected _aVertex: GLuint;
-    protected _numCubes = 128;
+    protected _numCubes = 256;
 
     protected _patches: Texture2D;
     protected _terrain: Texture2D;

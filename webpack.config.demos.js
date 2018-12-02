@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
 
     context: __dirname + '/demos',
-    cache: true,
+    cache: false,
     entry: {
         'cornell-box': ['cornell-box/cornellboxdemo.ts'],
         'cubescape': ['cubescape/cubescapedemo.ts']
