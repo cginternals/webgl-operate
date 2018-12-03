@@ -75,6 +75,13 @@
             ]
         },
         {
+            "taskName": "website",
+            "args": [
+                "run-script",
+                "website"
+            ]
+        },
+        {
             "taskName": "cleanup",
             "args": [
                 "run-script",

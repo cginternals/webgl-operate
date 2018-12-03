@@ -8,7 +8,7 @@ block header
 
   header.container.mb-4
     .row
-      .col-6
+      .col-lg-6.col-12.pb-5
         img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.w-100.d-none.d-md-block
         img(src = 'img/webgl-operate-logo.svg' alt = 'webgl-operate logo').mb-2.d-block.d-md-none
 
@@ -18,13 +18,13 @@ block header
         a(href = '/doc/' role = 'button').btn.btn-lg.btn-primary.ml-4.mr-2 Get Started
         a(href = 'https://github.com/cginternals/webgl-operate/archive/v0.4.2-beta.zip' role = 'button').btn.btn-lg.btn-primary.ml-2 Download
 
-      .col-6
+      .col-lg-6.col-12.pb-5
         canvas(id = 'showcase', data-backend = 'auto', data-accumulation-format = 'byte', data-clear-color = '0.0, 0.0, 0.0, 0.0').w-100.h-100
 
 
 block content
 
-  section.container
+  section.container.mt-0.pt-0
     div.row
       div.col
         h2 Installation
@@ -41,10 +41,10 @@ block content
       div.col
         h2 Demos
 
-        include partials/thumbnail.pug
+        include partials/demo-thumbnail.pug
         div.card-columns
           each demo, index in demos
-            +thumbnail(demo.target, demo.title, demo.authors, demo.caption)
+            +demo-thumbnail(demo.target, demo.title, demo.authors, demo.caption, demo.disabled)
 
 
   section.container
@@ -58,7 +58,8 @@ block content
         p Please refer to the #[a(href = '/about.html') Plain About Page] when used for support.
 
 
-  script(src = 'js/webgl-operate.js')
-  script(src = 'demos/cubescape.js')
+  script(src = '/js/webgl-operate.js')
+  script(src = '/js/website.js')
 
-  script(src = 'js/website.js')
+  script(src = 'demos/cubescape.js')
+  script window.onload = function () { clipboard(); demo(new CubescapeDemo(), 'showcase'); about(); }

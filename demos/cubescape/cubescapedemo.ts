@@ -114,13 +114,13 @@ class CubescapeRenderer extends Renderer {
         this._terrain.initialize(64, 64, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
         this._terrain.wrap(gl.REPEAT, gl.REPEAT);
         this._terrain.filter(gl.LINEAR, gl.LINEAR);
-        this._terrain.load('demos/data/cubescape-terrain.png');
+        this._terrain.load('/demos/data/cubescape-terrain.png');
 
         this._patches = new Texture2D(this._context);
         this._patches.initialize(64, 16, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
         this._patches.wrap(gl.REPEAT, gl.REPEAT);
         this._patches.filter(gl.NEAREST, gl.NEAREST);
-        this._patches.load('demos/data/cubescape-patches.png');
+        this._patches.load('/demos/data/cubescape-patches.png');
 
         // init cube geometry
         this._cube = new CubeGeometry(this._context, 'cubes'); // TODO not 16 every time

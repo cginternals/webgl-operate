@@ -6,7 +6,8 @@
             "cgcostume",
             "chistopher"
         ],
-        "caption": "Progressive path tracing of the classic Cornell Box in GLSL for WebGL as well as WebGL2."
+        "caption": "Progressive path tracing of the classic Cornell Box in GLSL for WebGL as well as WebGL2.",
+        "disabled": false
     },
     {
         "target": "gltf-support",
@@ -14,7 +15,8 @@
         "authors": [
             "bwasty"
         ],
-        "caption": "glTF support with physical-based rendering and multi-frame sampling."
+        "caption": "glTF support with physical-based rendering and multi-frame sampling.",
+        "disabled": true
     },
     {
         "target": "volume-vis",
@@ -24,7 +26,8 @@
             "sbusch42",
             "cgcostume"
         ],
-        "caption": "Basic volume rendering using ray-marching with simple shading, coloring and more."
+        "caption": "Basic volume rendering using ray-marching with simple shading, coloring and more.",
+        "disabled": true
     },
     {
         "target": "treemap",
@@ -34,7 +37,8 @@
             "bwasty",
             "scheibel"
         ],
-        "caption": "Interactive visualization of tree-structured, massive data for software analytics."
+        "caption": "Interactive visualization of tree-structured, massive data for software analytics.",
+        "disabled": true
     },
     {
         "target": "metaballs",
@@ -43,7 +47,8 @@
             "cgcostume",
             "bwasty"
         ],
-        "caption": "Raymarched Metaballs with 3D force field, reflections, and some post processing."
+        "caption": "Raymarched Metaballs with 3D force field, reflections, and some post processing.",
+        "disabled": true
     },
     {
         "target": "cubescape",
@@ -51,7 +56,8 @@
         "authors": [
             "cgcostume"
         ],
-        "caption": "WebGL port of the initial glbinding cubescape demo using instanced rendering."
+        "caption": "WebGL port of the initial glbinding cubescape demo using instanced rendering.",
+        "disabled": false
     },
     {
         "target": "openll-showcase",
@@ -60,7 +66,8 @@
             "anne-gropler",
             "cgcostume"
         ],
-        "caption": "High-performance, text placement, typesetting, and rendering of in 2D and 3D."
+        "caption": "High-performance, text placement, typesetting, and rendering of in 2D and 3D.",
+        "disabled": true
     },
     {
         "target": "webvr-support",
@@ -68,6 +75,7 @@
         "authors": [
             "bwasty"
         ],
-        "caption": "Simple demo showcasing how WebVR and XR can be utilized with webgl-operate."
+        "caption": "Simple demo showcasing how WebVR and XR can be utilized with webgl-operate.",
+        "disabled": true
     }
 ]

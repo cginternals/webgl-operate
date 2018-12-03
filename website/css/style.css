@@ -120,8 +120,36 @@ ul.features li:last-child:after {
 
 #demos .card {
     margin-bottom: 1.25rem;
+    overflow: hidden;
 }
 
+#demos .card.disabled img {
+    filter: grayscale();
+    overflow: hidden;
+}
+
+#demos .card.disabled .badge-parent {
+    position: absolute;
+    z-index: 1;
+    top: 0.5em;
+    right: 0;
+}
+
+#demos .card:hover img {
+    -webkit-transition: all 0.5s ease; /* Safari and Chrome */
+    -moz-transition: all 0.5s ease; /* Firefox */
+    -o-transition: all 0.5s ease; /* IE 9 */
+    -ms-transition: all 0.5s ease; /* Opera */
+    transition: all 0.5s ease;
+}
+
+#demos .card:hover img {
+    -webkit-transform:scale(1.02) translate(0%,-1%); /* Safari and Chrome */
+    -moz-transform:scale(1.02) translate(0%,-1%); /* Firefox */
+    -ms-transform:scale(1.02) translate(0%,-1%); /* IE 9 */
+    -o-transform:scale(1.02) translate(0%,-1%); /* Opera */
+     transform:scale(1.02) translate(0%,-1%);
+}
 
 
 .btn-clipboard-parent {

@@ -1,6 +1,6 @@
 - var navLinks = []
 - navLinks.push({ href: '/', text: 'webgl-operate' })
-- navLinks.push({ href: '/examples/', text: 'Examples' })
+- navLinks.push({ href: '/examples/', text: 'Examples', disabled: true })
 - navLinks.push({ href: '/doc/', text: 'Documentation' })
 - navLinks.push({ href: 'https://github.com/cginternals/webgl-operate', text: 'GitHub' })
 
@@ -9,18 +9,24 @@ nav.navbar.fixed-top.navbar-expand-md.navbar-dark.bg-dark
   div.container
     a(href = 'https://cginternals.gmbh').nav-link.px-0
       span.d-none.d-md-block
-        img(src = 'img/cginternals.svg' alt = 'cginternals logo').img-fluid.mt-0
+        img(src = '/img/cginternals.svg' alt = 'cginternals logo').img-fluid.mt-0
       span.d-block.d-md-none
-        img(src = 'img/navicon.svg' alt = 'cginternals icon').img-fluid.mt-0
+        img(src = '/img/navicon.svg' alt = 'cginternals icon').img-fluid.mt-0
 
     button(type = 'button' data-toggle = 'dropdown' id = 'navbarDropdown' aria-expanded = 'false' aria-haspopup = 'true').navbar-toggler.ml-auto &#9776;
 
     div(aria-labelledby = 'navbarDropdown').dropdown-menu.dropdown-menu-right.dropdown-dark.bg-dark
       each link, index in navLinks
-        a(href = link.href).dropdown-item #{link.text.toUpperCase()}
+        if link.disabled
+          a.dropdown-item.disabled #{link.text.toUpperCase()}
+        else
+          a(href = link.href class = link.disabled ? 'disabled' : '').dropdown-item #{link.text.toUpperCase()}
 
     div.collapse.navbar-collapse
       ul#nav.navbar-nav.ml-auto
         each link, index in navLinks
-          li.nav-item #[a(href = link.href).nav-link #{link.text.toUpperCase()}]
+          if link.disabled
+            li.nav-item #[a.nav-link.disabled #{link.text.toUpperCase()}]
+          else
+            li.nav-item #[a(href = link.href).nav-link #{link.text.toUpperCase()}]
 
