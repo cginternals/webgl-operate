@@ -6,7 +6,9 @@
     ],
     "exclude": [
         "**/*.d.ts",
-        "**/website/**"
+        "**/website/**",
+        "**/demos/**",
+        "**/test/**"
     ],
     "extension": [
         ".ts"

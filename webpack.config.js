@@ -39,7 +39,7 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 include: /source/,
-                exclude: /(source\/shaders|website|node_modules)/,
+                exclude: /(source\/shaders|demos|website|node_modules)/,
                 use: {
                     loader: 'ts-loader',
                     options: {

@@ -82,7 +82,7 @@
         "doc": "typedoc source/webgl-operate.ts",
         "pug": "node pugconfig.js",
         "pug-watch": "node pugconfig.js --watch",
-        "ci": "run-p build-dist build-lib lint demos test-nyc",
+        "ci": "run-p build-dist build-lib lint test-nyc website",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
         "website": "run-s build-dist demos doc pug",
         "postversion": "git push && git push --tags",
