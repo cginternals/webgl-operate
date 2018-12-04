@@ -10,7 +10,7 @@ import {
 /* spellchecker: enable */
 
 
-export abstract class Demo extends Initializable {
+export abstract class Example extends Initializable {
 
     abstract initialize(element: HTMLCanvasElement | string): boolean;
 

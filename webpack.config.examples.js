@@ -1,17 +1,21 @@
+const glob = require('glob');
 const path = require('path');
 const webpack = require('webpack');
 
+// Create named entries for each example.
+let entries = {};
+for (const entry of glob.sync('\./examples/*[!example]*.ts')) {
+    entries[path.parse(entry).name] = entry.replace('./examples/', './');
+}
+
 module.exports = {
 
-    context: __dirname + '/demos',
+    context: __dirname + '/examples',
     cache: false,
-    entry: {
-        'cornell-box': ['cornell-box/cornellbox.ts'],
-        'cubescape': ['cubescape/cubescape.ts']
-    },
+    entry: entries,
     devtool: 'source-map',
     output: {
-        path: __dirname + '/build/demos',
+        path: __dirname + '/build/examples',
         filename: '[name].js',
         library: undefined,
         libraryTarget: 'umd'
@@ -27,8 +31,8 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                include: /(demos|dist)/,
-                exclude: /(source|test|examples|website|node_modules)/,
+                include: /(examples|dist)/,
+                exclude: /(source|test|demos|website|node_modules)/,
                 use: {
                     loader: 'ts-loader',
                     options: {

@@ -1,4 +1,3 @@
-
 precision lowp float;
 precision lowp int;
 
@@ -7,8 +6,10 @@ precision lowp int;
 
 #if __VERSION__ == 100
     attribute vec3 a_vertex;
+    attribute vec3 a_instance;
 #else
     in vec3 a_vertex;
+	in vec3 a_instance;
 #endif
 
 
@@ -27,11 +28,15 @@ void main()
 	float oneovernumcubes = 1.0 / float(u_numcubes);
 	float cubeHeight = 2.0 / float(u_numcubes);
 
-	vec2 gridOffset = vec2(gl_InstanceID % u_numcubes, floor(float(gl_InstanceID) * oneovernumcubes)) * 2.0 * oneovernumcubes;
-	vec3 vertex = a_vertex * oneovernumcubes - (1.0 - oneovernumcubes);
-	vertex.xz += gridOffset;
+	float instanceID = dot(a_instance, vec3(1.0,  256.0, 256.0 * 256.0));
 
-	float heightAddition = 0.5 * texture(u_terrain, gridOffset * 0.5 + vec2(sin(u_time * 0.04), u_time * 0.02)).r * 2.0 / 3.0;
+	vec2 offset = vec2(
+		mod(floor(instanceID), float(u_numcubes)),
+		floor(floor(instanceID) * oneovernumcubes)) * 2.0 * oneovernumcubes;
+	vec3 vertex = a_vertex * oneovernumcubes - (1.0 - oneovernumcubes);
+	vertex.xz += offset;
+
+	float heightAddition = 0.5 * texture(u_terrain, offset * 0.5 + vec2(sin(u_time * 0.04), u_time * 0.02)).r * 2.0 / 3.0;
 	if(a_vertex.y > 0.0)
 	    vertex.y += cubeHeight * floor(heightAddition / cubeHeight);
 

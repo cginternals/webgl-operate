@@ -1,0 +1,15 @@
+[
+    {
+        "target": "position2dlabel-example",
+        "title": "Position 2D Label",
+        "object": "Position2DLabelExample",
+        "caption": "Static/dynamic text that can be positioned in 2D space."
+    },
+    {
+        "target": "position3dlabel-example",
+        "title": "Position 3D Label",
+        "object": "Position3DLabelExample",
+        "caption": "Static/dynamic text that can be positioned in 3D space.",
+        "disabled": true
+    }
+]

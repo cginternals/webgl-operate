@@ -302,6 +302,28 @@ export class Context {
     }
 
     /**
+     * Enable provided extensions. Each extension is only enabled if it is supported. Alternatively the extension can
+     * be queried for support and accessed (thereby enabled) directly. Thus, this function only acts as convenience
+     * interface for something like a mandatory extension configuration etc. Also, some extensions only effect GLSL
+     * capabilities and must be enabled explicitly without accessing the extension object.
+     * @param extensions - Array of extensions identifier that are to be enabled.
+     */
+    enable(extensions: Array<string>): void {
+        for (const extension of extensions) {
+            if (this.isWebGL1 && WEBGL1_EXTENSIONS.indexOf(extension) === -1) {
+                continue;
+            }
+            if (this.isWebGL2 && WEBGL2_EXTENSIONS.indexOf(extension) === -1) {
+                continue;
+            }
+            if (this.supports(extension) === false) {
+                continue;
+            }
+            this.extension(undefined, extension);
+        }
+    }
+
+    /**
      * Queries all extensions for the current context and stores the result (supported or not supported). This is
      * relevant to avoid continuous searches or regexp matching or substring queries in the complete extension string.
      * Instead, the support is queried once and can be explicitly request in the public interface using properties.

@@ -15,6 +15,14 @@ function demo(demo, element) {
     renderer = demo.renderer;
 }
 
+function example(example, element) {
+    example.initialize(element)
+
+    canvas = example.canvas;
+    context = example.canvas.context;
+    renderer = example.renderer;
+}
+
 function about() {
     aboutCode = window.document.getElementById('context-about');
     aboutCode.innerText = context.aboutString();

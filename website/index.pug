@@ -1,5 +1,6 @@
 extends partials/site.pug
-
+block vars
+  - var active = 'index'
 
 block head
 
@@ -19,7 +20,8 @@ block header
         a(href = 'https://github.com/cginternals/webgl-operate/archive/v0.4.2-beta.zip' role = 'button').btn.btn-lg.btn-primary.ml-2 Download
 
       .col-lg-6.col-12.pb-5
-        canvas(id = 'showcase', data-backend = 'auto', data-accumulation-format = 'byte', data-clear-color = '0.0, 0.0, 0.0, 0.0').w-100.h-100
+        .embed-responsive.embed-responsive-4by3
+          canvas(id = 'showcase', data-backend = 'auto', data-clear-color = '0.0, 0.0, 0.0, 0.0').embed-responsive-item
 
 
 block content
@@ -58,8 +60,14 @@ block content
         p Please refer to the #[a(href = '/about.html') Plain About Page] when used for support.
 
 
+  script(src = '/js/rxjs.umd.min.js')
   script(src = '/js/webgl-operate.js')
   script(src = '/js/website.js')
 
   script(src = 'demos/cubescape.js')
-  script window.onload = function () { clipboard(); demo(new CubescapeDemo(), 'showcase'); about(); }
+  script.
+    window.onload = function () {
+      clipboard();
+      demo(new CubescapeDemo(), 'showcase');
+      about();
+    }

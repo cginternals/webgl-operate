@@ -39,7 +39,7 @@ class CubescapeRenderer extends Renderer {
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _cube: CubeGeometry;
+    protected _geometry: CubeGeometry;
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
     protected _aVertex: GLuint;
@@ -66,6 +66,8 @@ class CubescapeRenderer extends Renderer {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        this._geometry.count = this._numCubes;
+
         this._altered.reset();
     }
 
@@ -84,16 +86,16 @@ class CubescapeRenderer extends Renderer {
 
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-        gl.uniform1i(this._program.uniform('u_numcubes'), this._numCubes);
+        gl.uniform1i(this._program.uniform('u_numcubes'), this._geometry.count);
         gl.uniform1f(this._program.uniform('u_time'), window.performance.now() * 0.0002);
         this._terrain.bind(gl.TEXTURE0);
         this._patches.bind(gl.TEXTURE1);
         gl.uniform1i(this._program.uniform('u_terrain'), 0);
         gl.uniform1i(this._program.uniform('u_patches'), 1);
 
-        this._cube.bind();
-        this._cube.draw(this._numCubes);
-        this._cube.unbind();
+        this._geometry.bind();
+        this._geometry.draw();
+        this._geometry.unbind();
 
         this._program.unbind();
 
@@ -109,6 +111,8 @@ class CubescapeRenderer extends Renderer {
         mouseEventProvider: MouseEventProvider): boolean {
         const gl = this._context.gl;
 
+        context.enable(['ANGLE_instanced_arrays']);
+
         const internalFormatAndType = Wizard.queryInternalTextureFormat(this._context, gl.RGB, Wizard.Precision.byte);
         this._terrain = new Texture2D(this._context);
         this._terrain.initialize(64, 64, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
@@ -123,8 +127,8 @@ class CubescapeRenderer extends Renderer {
         this._patches.load('/demos/data/cubescape-patches.png');
 
         // init cube geometry
-        this._cube = new CubeGeometry(this._context, 'cubes'); // TODO not 16 every time
-        this._cube.initialize();
+        this._geometry = new CubeGeometry(this._context, 'cubes'); // TODO not 16 every time
+        this._geometry.initialize();
 
         // init program
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'cube.vert');
@@ -134,7 +138,8 @@ class CubescapeRenderer extends Renderer {
 
         this._program = new Program(this._context);
         this._program.initialize([vert, frag], false);
-        this._program.attribute('a_vertex', this._cube.vertexLocation);
+        this._program.attribute('a_vertex', this._geometry.vertexLocation);
+        this._program.attribute('a_instances', this._geometry.instanceLocation);
         this._program.link();
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
@@ -157,7 +162,7 @@ class CubescapeRenderer extends Renderer {
     }
 
     protected onUninitialize(): void {
-        this._cube.uninitialize();
+        this._geometry.uninitialize();
 
         this._patches.uninitialize();
         this._terrain.uninitialize();

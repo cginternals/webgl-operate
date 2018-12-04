@@ -5,6 +5,7 @@
 
 body {
     font-family: 'Source Sans Pro', sans-serif !important;
+    overflow-y: scroll;
 }
 
 h1, h2, h3, h4, h5, h6, a {
@@ -149,6 +150,11 @@ ul.features li:last-child:after {
     -ms-transform:scale(1.02) translate(0%,-1%); /* IE 9 */
     -o-transform:scale(1.02) translate(0%,-1%); /* Opera */
      transform:scale(1.02) translate(0%,-1%);
+}
+
+
+#examples ul {
+    list-style: none;
 }
 
 

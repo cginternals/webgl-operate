@@ -3,15 +3,15 @@ include authors.pug
 mixin demo-thumbnail(source, title, authors, caption, disabled)
   div(class = disabled ? 'disabled text-muted' : '').card
     if disabled
-      img(src = 'img/' + source + '.jpg').img-fluid
+      img(src = `img/${source}.jpg`).img-fluid
       h4.badge-parent #[span.badge.badge-dark in progress]
     else
-      a(href = '/demos/' + source + '.html').card-img-top #[img(src = 'img/' + source + '.jpg').img-fluid]
+      a(href = `/demos/${source}.html`).card-img-top #[img(src = `img/${source}.jpg`).img-fluid]
     .card-body
       if disabled
         h5.card-title.text-muted #{title.toUpperCase()}
       else
-        h5.card-title #[a(href = '/demos/' + source + '.html') #{title.toUpperCase()}]
+        h5.card-title #[a(href = `/demos/${source}.html`) #{title.toUpperCase()}]
       p.card-text #{caption}
       p.card-text.text-right
         small by&nbsp;
