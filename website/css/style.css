@@ -136,12 +136,16 @@ ul.features li:last-child:after {
     right: 0;
 }
 
+#demos .card:hover {
+    border-color: #27aae1;
+}
+
 #demos .card:hover img {
-    -webkit-transition: all 0.5s ease; /* Safari and Chrome */
-    -moz-transition: all 0.5s ease; /* Firefox */
-    -o-transition: all 0.5s ease; /* IE 9 */
-    -ms-transition: all 0.5s ease; /* Opera */
-    transition: all 0.5s ease;
+    -webkit-transition: all 0.3s ease-out ; /* Safari and Chrome */
+    -moz-transition: all 0.3s ease-out ; /* Firefox */
+    -o-transition: all 0.3s ease-out ; /* IE 9 */
+    -ms-transition: all 0.3s ease-out ; /* Opera */
+    transition: all 0.3s ease-out ;
 }
 
 #demos .card:hover img {
