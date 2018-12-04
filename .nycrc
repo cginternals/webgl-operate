@@ -8,6 +8,7 @@
         "**/*.d.ts",
         "**/website/**",
         "**/demos/**",
+        "**/examples/**",
         "**/test/**"
     ],
     "extension": [
