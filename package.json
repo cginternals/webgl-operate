@@ -71,6 +71,7 @@
         "start-watch": "run-p build-watch pug-watch demos-watch examples-watch start",
         "build-dist": "webpack-cli --mode production --config webpack.config.dist.js",
         "build-lib": "webpack-cli --mode production --config webpack.config.lib.js",
+        "build-lib-watch": "webpack-cli --mode development --config webpack.config.lib.js --watch",
         "demos": "webpack-cli --mode production --config webpack.config.demos.js",
         "demos-watch": "webpack-cli --mode production --config webpack.config.demos.js --watch",
         "examples": "webpack-cli --mode production --config webpack.config.examples.js",
