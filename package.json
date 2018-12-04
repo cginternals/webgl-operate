@@ -85,11 +85,12 @@
         "pug": "node pugconfig.js",
         "pug-watch": "node pugconfig.js --watch",
         "ci": "run-p build-dist build-lib lint test-nyc website",
+        "pack": "run-p build-dist build-lib",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
         "website": "run-s build-dist demos examples doc pug",
         "postversion": "git push && git push --tags",
         "prepack": "npm run preversion",
-        "preversion": "npm install && npm run ci"
+        "preversion": "npm install && npm run build-dist && npm run build-lib"
     },
     "keywords": [
         "webgl",
