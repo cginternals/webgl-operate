@@ -117,7 +117,7 @@ export class Glyph {
      * The x and y offsets w.r.t. to the pen-position on the baseline. The horizontal bearing does not comprise the
      * glyph-texture's padding provided by the owning font face (@see {@link FontFace}). The vertical bearing also does
      * not comprises the glyph texture's padding and is the measured w.r.t. baseline.
-     * @param bearing  - Horizontal and vertical bearing based on the glyph's origin/pen-position placed on the
+     * @param bearing - Horizontal and vertical bearing based on the glyph's origin/pen-position placed on the
      * baseline in pt.
      */
     set bearing(bearing: GLfloat2) {

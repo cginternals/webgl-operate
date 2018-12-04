@@ -68,6 +68,27 @@
             ]
         },
         {
+            "taskName": "demos",
+            "args": [
+                "run-script",
+                "demos"
+            ]
+        },
+        {
+            "taskName": "examples",
+            "args": [
+                "run-script",
+                "examples"
+            ]
+        },
+        {
+            "taskName": "website",
+            "args": [
+                "run-script",
+                "website"
+            ]
+        },
+        {
             "taskName": "cleanup",
             "args": [
                 "run-script",

@@ -84,6 +84,17 @@ export abstract class Label {
 
 
     /**
+     * Returns the window device pixel ratio. If this is not available/undefined 1.0 is returned.
+     */
+    static devicePixelRatio(): number {
+        if (window === undefined || typeof window.devicePixelRatio !== 'number') {
+            return 1.0;
+        }
+        return window.devicePixelRatio as number;
+    }
+
+
+    /**
      * Constructs an unconfigured, empty label. Depending on the label type, transformations are applied
      * once when typesetting (static) or every frame during rendering (dynamic).
      * @param text - The text that is displayed by this label.
@@ -103,6 +114,7 @@ export abstract class Label {
             this._fontFace = fontFace;
         }
     }
+
 
     /**
      * Creates an Array of glyph vertices, ready to be used in the Typesetter.

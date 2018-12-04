@@ -1,5 +1,6 @@
 
 #if __VERSION__ == 100
-#else 
+    #define texture(sampler, coord) texture2D(sampler, coord)
+#else
     #define varying out
 #endif

@@ -1,0 +1,81 @@
+[
+    {
+        "target": "cornell-box",
+        "title": "Cornell Box",
+        "authors": [
+            "cgcostume",
+            "chistopher"
+        ],
+        "caption": "Progressive path tracing of the classic Cornell Box in GLSL for WebGL as well as WebGL2.",
+        "disabled": false
+    },
+    {
+        "target": "gltf-support",
+        "title": "glTF Support",
+        "authors": [
+            "bwasty"
+        ],
+        "caption": "glTF support with physical-based rendering and multi-frame sampling.",
+        "disabled": true
+    },
+    {
+        "target": "volume-vis",
+        "title": "Volume Visualizer",
+        "authors": [
+            "tobi",
+            "sbusch42",
+            "cgcostume"
+        ],
+        "caption": "Basic volume rendering using ray-marching with simple shading, coloring and more.",
+        "disabled": true
+    },
+    {
+        "target": "treemap",
+        "title": "2.5D Treemap",
+        "authors": [
+            "cgcostume",
+            "bwasty",
+            "scheibel"
+        ],
+        "caption": "Interactive visualization of tree-structured, massive data for software analytics.",
+        "disabled": true
+    },
+    {
+        "target": "metaballs",
+        "title": "Metaballs",
+        "authors": [
+            "cgcostume",
+            "bwasty"
+        ],
+        "caption": "Raymarched Metaballs with 3D force field, reflections, and some post processing.",
+        "disabled": true
+    },
+    {
+        "target": "cubescape",
+        "title": "Landscape of Cubes",
+        "authors": [
+            "cgcostume"
+        ],
+        "caption": "WebGL port of the initial glbinding cubescape demo using instanced rendering.",
+        "disabled": false
+    },
+    {
+        "target": "openll-showcase",
+        "title": "OpenLL Text Rendering",
+        "authors": [
+            "anne-gropler",
+            "cgcostume"
+        ],
+        "caption": "High-performance, text placement, typesetting, and rendering of in 2D and 3D.",
+        "disabled": true
+    },
+    {
+        "target": "webxr-support",
+        "title": "WebXR Support",
+        "authors": [
+            "bwasty"
+        ],
+        "caption": "Simple demo showcasing how WebXR can be utilized with webgl-operate.",
+        "disabled": true
+    }
+]

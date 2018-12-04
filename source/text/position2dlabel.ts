@@ -66,8 +66,8 @@ export class Position2DLabel extends Label {
 
         /** @todo meaningful margins from label.margins or config.margins ? */
         const margins: vec4 = vec4.create();
-        /** @todo meaningful ppiScale from label.ppiScale or config.ppiScale ? */
-        const ppiScale = 1;
+
+        const ppiScale = Label.devicePixelRatio();
 
         /* compute transform matrix */
         const transform = mat4.create();

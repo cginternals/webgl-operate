@@ -17,6 +17,6 @@ float uint8x3_to_float24x1(const in vec3 v) {
 }
 
 const vec4 premultUint8x4 = vec4(255.0 / 256.0, 255.0 / 65536.0, 255.0 / 16777216.0, 255.0 / 4294967296.0);
-float uint8x4_to_float24x1(const in vec4 v) {
+float uint8x4_to_float32x1(const in vec4 v) {
     return dot(v, premultUint8x4); // a1 * b1 + a2 * b2 + a3 * b3 + a4 * b4  ;)
 }

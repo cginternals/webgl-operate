@@ -47,11 +47,11 @@ export class Typesetter {
         /* Please be aware that all vertices getter return typed views on a big float32array.
         As a consequence do strictly rely on in-place operations only. */
 
-        const padding = fontFace.glyphTexturePadding;
+        // const padding = fontFace.glyphTexturePadding;
         const origin: vec3 = vertices.origin(index);
         vec3.set(origin, pen[0], pen[1], 0.0);
-        origin[0] += glyph.bearing[0] + padding[3];
-        origin[1] += glyph.bearing[1] - glyph.extent[1] + padding[2];
+        origin[0] += glyph.bearing[0]; // + padding[3];
+        origin[1] += glyph.bearing[1] - glyph.extent[1]; // + padding[2];
 
         vec3.set(vertices.tangent(index), glyph.extent[0], 0.0, 0.0);
         vec3.set(vertices.up(index), 0.0, glyph.extent[1], 0.0);
@@ -70,21 +70,22 @@ export class Typesetter {
      */
     private static lineAnchorOffset(label: Label): number {
         let offset = 0.0;
+        const padding = label.fontFace!.glyphTexturePadding;
         switch (label.lineAnchor) {
             case Label.LineAnchor.Ascent:
-                offset = label.fontFace!.ascent;
+                offset = label.fontFace!.ascent - padding[0];
                 break;
             case Label.LineAnchor.Center:
-                offset = label.fontFace!.size * 0.5 + label.fontFace!.descent;
+                offset = label.fontFace!.size * 0.5 + label.fontFace!.descent - padding[0];
                 break;
             case Label.LineAnchor.Descent:
-                offset = label.fontFace!.descent;
+                offset = label.fontFace!.descent - padding[0];
                 break;
             case Label.LineAnchor.Top:
-                offset = label.fontFace!.base;
+                offset = label.fontFace!.base - padding[0];
                 break;
             case Label.LineAnchor.Bottom:
-                offset = label.fontFace!.base - label.fontFace!.lineHeight;
+                offset = label.fontFace!.size - label.fontFace!.lineHeight + padding[0];
                 break;
             case Label.LineAnchor.Baseline:
             default:
@@ -388,7 +389,9 @@ export class Typesetter {
         const labelFragmentWidths = Typesetter.fragmentWidths(labelFragments, labelAdvances, labelKernings);
 
 
+        // const pen: vec2 = vec2.fromValues(-fontFace.glyphTexturePadding[3], -Typesetter.lineAnchorOffset(label));
         const pen: vec2 = vec2.fromValues(0.0, -Typesetter.lineAnchorOffset(label));
+        console.log(pen);
 
         const lines = new Array<Line>();
         let vertexIndex = 0;

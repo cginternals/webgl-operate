@@ -7,7 +7,7 @@ function copy(base, dest, assets, ignore, force) {
 
     assets.forEach(asset => {
         if (!fs.existsSync(dest)) {
-            fs.mkdirSync(dest);
+            fs.mkdirSync(dest, { recursive: true });
         }
 
         var files = glob.sync(asset, { cwd: base, strict: true });

@@ -10,7 +10,9 @@ const rxjsExternals = require('webpack-rxjs-externals');
 module.exports = {
     context: __dirname + '/source',
     cache: true,
-    entry: { 'webgl-operate': ['polyfill.ts', 'webgl-operate.ts'] },
+    entry: {
+        'webgl-operate': ['polyfill.ts', 'webgl-operate.ts'],
+    },
     devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
@@ -37,7 +39,7 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 include: /source/,
-                exclude: /(source\/shaders|website|node_modules)/,
+                exclude: /(source\/shaders|demos|website|node_modules)/,
                 use: {
                     loader: 'ts-loader',
                     options: {
