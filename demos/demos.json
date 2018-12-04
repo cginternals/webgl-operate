@@ -70,12 +70,12 @@
         "disabled": true
     },
     {
-        "target": "webvr-support",
-        "title": "WebVR Support",
+        "target": "webxr-support",
+        "title": "WebXR Support",
         "authors": [
             "bwasty"
         ],
-        "caption": "Simple demo showcasing how WebVR and XR can be utilized with webgl-operate.",
+        "caption": "Simple demo showcasing how WebXR can be utilized with webgl-operate.",
         "disabled": true
     }
 ]
