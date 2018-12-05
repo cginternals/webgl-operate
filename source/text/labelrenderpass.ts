@@ -355,6 +355,18 @@ export class LabelRenderPass extends Initializable {
     }
 
     /**
+     * Unbind the label geometry.
+     */
+    @Initializable.assert_initialized()
+    unbind(): void {
+        if (this._geometry.valid === false) {
+            return;
+        }
+        this._geometry.unbind();
+    }
+
+
+    /**
      * Sets the framebuffer the quads are rendered to.
      * @param target - Framebuffer to render into.
      */
@@ -450,5 +462,12 @@ export class LabelRenderPass extends Initializable {
         return this._aaStepScale;
     }
 
+
+    /**
+     * Read-only access to the actual label geometry (VAO) used to draw this pass's labels.
+     */
+    get geometry(): LabelGeometry {
+        return this._geometry;
+    }
 
 }
