@@ -250,7 +250,8 @@ export class LabelRenderPass extends Initializable {
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
 
-        gl.disable(gl.CULL_FACE);
+        /* CULL FACE is expected to be disabled. */
+        // gl.disable(gl.CULL_FACE);
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(this._depthFunc);
@@ -361,10 +362,12 @@ export class LabelRenderPass extends Initializable {
      */
     @Initializable.assert_initialized()
     unbind(): void {
-        if (this._geometry.valid === false) {
-            return;
+        if (this._geometry.valid) {
+            this._geometry.unbind();
         }
-        this._geometry.unbind();
+        if (this._program.valid) {
+            this._program.unbind();
+        }
     }
 
 
@@ -466,10 +469,18 @@ export class LabelRenderPass extends Initializable {
 
 
     /**
-     * Read-only access to the actual label geometry (VAO) used to draw this pass's labels.
+     * Read-only access (leaky) to the actual label geometry (VAO) used to draw this pass's labels.
      */
     get geometry(): LabelGeometry {
         return this._geometry;
     }
+
+    /**
+     * Read-only access (leaky) to the actual label geometry (VAO) used to draw this pass's labels.
+     */
+    get program(): Program {
+        return this._program;
+    }
+
 
 }
