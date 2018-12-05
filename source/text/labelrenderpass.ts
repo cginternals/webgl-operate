@@ -250,6 +250,8 @@ export class LabelRenderPass extends Initializable {
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
 
+        gl.disable(gl.CULL_FACE);
+
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(this._depthFunc);
 

@@ -391,7 +391,6 @@ export class Typesetter {
 
         // const pen: vec2 = vec2.fromValues(-fontFace.glyphTexturePadding[3], -Typesetter.lineAnchorOffset(label));
         const pen: vec2 = vec2.fromValues(0.0, -Typesetter.lineAnchorOffset(label));
-        console.log(pen);
 
         const lines = new Array<Line>();
         let vertexIndex = 0;

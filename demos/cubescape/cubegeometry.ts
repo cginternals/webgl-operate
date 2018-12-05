@@ -137,7 +137,6 @@ export class CubeGeometry extends Geometry {
             instances[i + 2] = vec[2];
         }
 
-        console.log(instances);
         const gl = this.context.gl;
         this._buffers[1].data(instances, gl.DYNAMIC_DRAW);
     }
