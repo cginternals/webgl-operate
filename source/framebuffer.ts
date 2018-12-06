@@ -289,6 +289,12 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             gl.clear(gl.STENCIL_BUFFER_BIT);
         }
 
+        /**
+         * Unfortunately, the id buffer is not cleared in Chrome when this line is missing.
+         * @todo This fixed the Chrome-issue, but does it break other things?
+         */
+        gl.clear(mask);
+
         if (unbind) {
             this.unbind();
         }
