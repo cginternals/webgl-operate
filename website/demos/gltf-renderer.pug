@@ -1,0 +1,15 @@
+extends demo.pug
+
+
+block canvas
+
+  canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
+
+  //block breakdown
+  //  p This should describe the demo in much more detail, e.g., referring to relevant code snippets and resources
+  //
+  //  include ../partials/code.pug
+  //  +code('demo-code', 'const demo.code.for.breakdown = here;', 'Some demo code for source break down:')
+
+block onload
+  script window.onload = function () { clipboard(); demo(new CornellBoxDemo(), 'demo-canvas'); }

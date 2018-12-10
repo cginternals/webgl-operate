@@ -7,7 +7,8 @@ module.exports = {
     cache: false,
     entry: {
         'cornell-box': ['cornell-box/cornellbox.ts'],
-        'cubescape': ['cubescape/cubescape.ts']
+        'cubescape': ['cubescape/cubescape.ts'],
+        'gltf-renderer': ['gltf-renderer/gltfrendererdemo.ts'],
     },
     devtool: 'source-map',
     output: {
@@ -24,8 +25,7 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js']
     },
     module: {
-        rules: [
-            {
+        rules: [{
                 test: /\.tsx?$/,
                 include: /(demos|dist)/,
                 exclude: /(source|test|examples|website|node_modules)/,
@@ -42,7 +42,17 @@ module.exports = {
             },
             {
                 test: /\.(glsl|vert|frag)$/,
-                use: { loader: 'webpack-glsl-loader' },
-            }]
+                use: {
+                    loader: 'webpack-glsl-loader'
+                },
+            },
+            {
+                test: /\.(glb|fnt|png)$/,
+                use: [{
+                    loader: 'file-loader',
+                    options: {}
+                }]
+            }
+        ]
     },
 };

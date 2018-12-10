@@ -1,5 +1,14 @@
 [
     {
+        "target": "gltf-renderer",
+        "title": "GLTF Renderer",
+        "authors": [
+            "milanpro"
+        ],
+        "caption": "GLTF format rendering with labels attached.",
+        "disabled": false
+    },
+    {
         "target": "cornell-box",
         "title": "Cornell Box",
         "authors": [

@@ -35,6 +35,7 @@
         "chai-spies": "~1.0.0",
         "coveralls": "~3.0.2",
         "cross-env": "~5.2.0",
+        "file-loader": "^2.0.0",
         "git-revision-webpack-plugin": "~3.0.3",
         "gl-matrix": "~2.8.1",
         "glob": "~7.1.3",
@@ -107,5 +108,8 @@
         "voxel",
         "glTF",
         "viewer"
-    ]
+    ],
+    "dependencies": {
+        "gltf-loader-ts": "^0.3.1"
+    }
 }
