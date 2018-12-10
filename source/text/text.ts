@@ -21,11 +21,11 @@ export class Text {
 
     /**
      * Constructs a Text to be used for a Label.
-     * @param str - the actual content of this Text.
+     * @param text - the actual content of this Text.
      * @param lineFeed - char for lineFeed, default is LF.
      */
-    constructor(str: string, lineFeed?: string) {
-        this._text = str;
+    constructor(text: string, lineFeed?: string) {
+        this._text = text;
 
         this._lineFeed = lineFeed !== undefined ? lineFeed : this._lineFeed;
     }

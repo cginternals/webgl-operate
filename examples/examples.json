@@ -1,9 +1,16 @@
 [
     {
+        "target": "labelelide-example",
+        "title": "Label Elide",
+        "object": "LabelElideExample",
+        "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
+    },
+    {
         "target": "position2dlabel-example",
         "title": "Position 2D Label",
         "object": "Position2DLabelExample",
-        "caption": "Static/dynamic text that can be positioned in 2D space."
+        "caption": "Static/dynamic text that can be positioned in 2D space.",
+        "disabled": true
     },
     {
         "target": "position3dlabel-example",
