@@ -262,6 +262,11 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             for (const drawBuffer of colorClearQueue ? colorClearQueue : this._colorClearQueue) {
                 gl.clearBufferfv(gl.COLOR, drawBuffer, this._clearColors[drawBuffer]);
             }
+            /**
+             * Unfortunately, the above code doesn't work in Chrome (symptome: ID buffer is not cleared), so
+             * fallback to this line.
+             */
+            gl.clear(gl.COLOR_BUFFER_BIT);
         }
 
         if (clearDepth && clearStencil) {
@@ -288,12 +293,6 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             gl.clearStencil(this._clearStencil);
             gl.clear(gl.STENCIL_BUFFER_BIT);
         }
-
-        /**
-         * Unfortunately, the id buffer is not cleared in Chrome when this line is missing.
-         * @todo This fixed the Chrome-issue, but does it break other things?
-         */
-        gl.clear(mask);
 
         if (unbind) {
             this.unbind();
