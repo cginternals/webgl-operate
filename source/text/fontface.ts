@@ -37,6 +37,9 @@ import { Glyph } from './glyph';
  */
 export class FontFace {
 
+    /** @see {@link size} */
+    protected _size: number;
+
     /** @see {@link base} */
     protected _base: number;
 
@@ -202,12 +205,15 @@ export class FontFace {
 
     /**
      * The size of the font in pt. The font size is the measure from the tops of the tallest glyphs (ascenders) to
-     * the bottom of the lowest descenders in pt. It is derived via the sum of ascent and descent.
-     * @returns - The font size in pt (ascent + descent).
+     * the bottom of the lowest descenders in pt.
+     * @returns - The font size in pt.
      */
+    set size(size: number) {
+        assert(size > 0.0, `expected size to be greater than 0.0, given ${size}`);
+        this._size = size;
+    }
     get size(): number {
-        /* Note: this._descent is usually negative. */
-        return this._ascent - this._descent;
+        return this._size;
     }
 
     /**
@@ -268,6 +274,7 @@ export class FontFace {
      * @param lineHeight - The line height (baseline-to-baseline distance) in pt.
      */
     set lineHeight(lineHeight: number) {
+        assert(this.size > 0, `expected size to be greater than zero to derive line gap from line height`);
         this._lineGap = lineHeight - this.size;
     }
     get lineHeight(): number {

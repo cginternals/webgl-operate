@@ -30,10 +30,13 @@ export class FontFaceLoader {
      */
     protected static processInfo(stream: Array<string>, fontFace: FontFace): boolean {
         const pairs: StringPairs = new Map<string, string>();
-        const success = this.readKeyValuePairs(stream, ['padding'], pairs);
+        const success = this.readKeyValuePairs(stream,
+            ['size', 'padding'], pairs);
         if (!success) {
             return false;
         }
+
+        fontFace.size = parseFloat(pairs.get('size')!);
 
         const values = pairs.get('padding')!.split(',');
         if (values.length !== 4) {
@@ -50,19 +53,6 @@ export class FontFaceLoader {
         fontFace.glyphTexturePadding = padding;
 
         return true;
-    }
-
-    /**
-     * Parses the info field's size value.
-     * @param stream - The stream of the 'info' identifier.
-     */
-    protected static processInfoSize(stream: Array<string>): number {
-        const pairs: StringPairs = new Map<string, string>();
-        const success = this.readKeyValuePairs(stream, ['size'], pairs);
-        if (!success) {
-            return NaN;
-        }
-        return parseFloat(pairs.get('size')!);
     }
 
     /**
@@ -275,7 +265,6 @@ export class FontFaceLoader {
         Promise<FontFace | undefined> {
 
         const lines = data.split('\n');
-        let suggestedSize = NaN;
 
         const promises = new Array<Promise<void>>();
         let status = true;
@@ -287,7 +276,6 @@ export class FontFaceLoader {
             switch (identifier) {
                 case 'info':
                     status = this.processInfo(attributes, fontFace);
-                    suggestedSize = this.processInfoSize(attributes);
                     break;
 
                 case 'common':
@@ -321,7 +309,7 @@ export class FontFaceLoader {
             }
         }
 
-        FontFaceLoader.findAscentAndDescentIfNoneProvided(fontFace, suggestedSize);
+        FontFaceLoader.findAscentAndDescentIfNoneProvided(fontFace, fontFace.size);
         if (fontFace.size <= 0.0) {
             log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
         }

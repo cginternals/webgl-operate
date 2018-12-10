@@ -47,10 +47,10 @@ export class Typesetter {
         /* Please be aware that all vertices getter return typed views on a big float32array.
         As a consequence do strictly rely on in-place operations only. */
 
-        // const padding = fontFace.glyphTexturePadding;
+        const padding = fontFace.glyphTexturePadding;
         const origin: vec3 = vertices.origin(index);
         vec3.set(origin, pen[0], pen[1], 0.0);
-        origin[0] += glyph.bearing[0]; // + padding[3];
+        origin[0] += glyph.bearing[0] - padding[3]; // + padding[3];
         origin[1] += glyph.bearing[1] - glyph.extent[1]; // + padding[2];
 
         vec3.set(vertices.tangent(index), glyph.extent[0], 0.0, 0.0);
@@ -70,25 +70,29 @@ export class Typesetter {
      */
     private static lineAnchorOffset(label: Label): number {
         let offset = 0.0;
+
         const padding = label.fontFace!.glyphTexturePadding;
+        const fontFace = label.fontFace!;
         switch (label.lineAnchor) {
-            case Label.LineAnchor.Ascent:
-                offset = label.fontFace!.ascent - padding[0];
-                break;
-            case Label.LineAnchor.Center:
-                offset = label.fontFace!.size * 0.5 + label.fontFace!.descent - padding[0];
-                break;
-            case Label.LineAnchor.Descent:
-                offset = label.fontFace!.descent - padding[0];
-                break;
-            case Label.LineAnchor.Top:
-                offset = label.fontFace!.base - padding[0];
-                break;
-            case Label.LineAnchor.Bottom:
-                offset = label.fontFace!.size - label.fontFace!.lineHeight + padding[0];
-                break;
             case Label.LineAnchor.Baseline:
             default:
+                offset = - padding[0];
+                break;
+            case Label.LineAnchor.Ascent:
+                offset = fontFace.ascent - padding[0];
+                break;
+            case Label.LineAnchor.Descent:
+                offset = fontFace.descent * (1.0 + padding[0] / fontFace.ascent);
+                break;
+            case Label.LineAnchor.Center:
+                offset = fontFace.ascent - padding[0] - 0.5 * fontFace.size;
+                break;
+            case Label.LineAnchor.Top:
+                offset = fontFace.ascent - padding[0] + 0.5 * fontFace.lineGap;
+                break;
+            case Label.LineAnchor.Bottom:
+                offset = fontFace.ascent - padding[0] + 0.5 * fontFace.lineGap - fontFace.lineHeight;
+                break;
         }
         return offset;
     }
@@ -197,7 +201,7 @@ export class Typesetter {
         for (let i = 0; i < fragments.length; ++i) {
             const fragment = fragments[i];
             widths[i] = advances.subarray(fragment[0], fragment[1]).reduce((width, advance, index) =>
-                width + advance + (index < fragment[1] ? kernings[index] : 0.0), 0.0);
+                width + advance + (index < fragment[1] ? kernings[index + fragment[0]] : 0.0), 0.0);
         }
         return widths;
     }
@@ -257,8 +261,8 @@ export class Typesetter {
             }
 
             /* If next fragment fits as a whole, put it in. */
-            if (width + labelFragmentWidths[i0] + labelKernings[fragment[1] - 1] < threshold) {
-                width += labelFragmentWidths[i0] + labelKernings[fragment[1] - 1];
+            if (width + labelFragmentWidths[i0] < threshold) {
+                width += labelFragmentWidths[i0];
 
                 fragments.push(fragment);
                 fragmentWidths.push(labelFragmentWidths[i0]);
