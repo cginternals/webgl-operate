@@ -161,6 +161,10 @@ ul.features li:last-child:after {
     list-style: none;
 }
 
+#examples a.active {
+    font-weight: bold;
+}
+
 
 .btn-clipboard-parent {
     position: relative;

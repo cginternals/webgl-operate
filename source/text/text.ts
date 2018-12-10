@@ -24,8 +24,8 @@ export class Text {
      * @param text - the actual content of this Text.
      * @param lineFeed - char for lineFeed, default is LF.
      */
-    constructor(text: string, lineFeed?: string) {
-        this._text = text;
+    constructor(text?: string, lineFeed?: string) {
+        this._text = text ? text : '';
 
         this._lineFeed = lineFeed !== undefined ? lineFeed : this._lineFeed;
     }

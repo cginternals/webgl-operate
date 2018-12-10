@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries, vec3 } from 'webgl-operate';
+import { auxiliaries } from 'webgl-operate';
 
 import {
     Camera,
@@ -66,11 +66,6 @@ class LabelElideRenderer extends Renderer {
         /* Create and configure test navigation. */
 
         this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
-        this._camera.near = 0.1;
-        this._camera.far = 8.0;
 
         /* Create and configure label pass. */
 
@@ -132,6 +127,8 @@ class LabelElideRenderer extends Renderer {
 
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+            this._camera.viewport = this._canvasSize;
+
             this.updateLabels();
         }
 
@@ -152,8 +149,7 @@ class LabelElideRenderer extends Renderer {
     protected onFrame(/*frameNumber: number*/): void {
         const gl = this._context.gl;
 
-        gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
-        this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
+        gl.viewport(0, 0, this._camera.viewport[0], this._camera.viewport[1]);
 
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
         this._labelPass.frame();
@@ -188,7 +184,7 @@ and heaven and earth seem to dwell in my soul and absorb its power, like the for
 think with longing, Oh, would I could describe these conceptions, could impress upon paper all that is living so full \
 and warm within me, that it might be the mirror of my soul, as my soul is the mirror of the infinite God!';
 
-        this._labelSize = new Position2DLabel(new Text('asdasd'), Label.Type.Dynamic);
+        this._labelSize = new Position2DLabel(new Text(), Label.Type.Dynamic);
         this._labelSize.fontSize = 20;
         this._labelSize.fontSizeUnit = Label.Unit.Pixel;
         this._labelSize.alignment = Label.Alignment.Left;

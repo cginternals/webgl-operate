@@ -148,6 +148,9 @@ export class Position2DLabel extends Label {
      * Sets the 2D position of the label's reference point.
      */
     set position(position: vec2 | GLfloat2) {
+        if (vec2.equals(this._position, position)) {
+            return;
+        }
         this._position = vec2.clone(position);
         this._altered.alter(this._type);
     }

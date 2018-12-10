@@ -6,16 +6,22 @@
         "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
     },
     {
-        "target": "position2dlabel-example",
-        "title": "Position 2D Label",
-        "object": "Position2DLabelExample",
+        "target": "labelanchor-example",
+        "title": "Label Anchor",
+        "object": "LabelAnchorExample",
+        "caption": "Label placement with anchors top, bottom, ascent, descent, and center. "
+    },
+    {
+        "target": "label2d-example",
+        "title": "Label 2D",
+        "object": "Label2DExample",
         "caption": "Static/dynamic text that can be positioned in 2D space.",
         "disabled": true
     },
     {
-        "target": "position3dlabel-example",
-        "title": "Position 3D Label",
-        "object": "Position3DLabelExample",
+        "target": "label3d-example",
+        "title": "Label 3D",
+        "object": "Label3DExample",
         "caption": "Static/dynamic text that can be positioned in 3D space.",
         "disabled": true
     }
