@@ -67,7 +67,8 @@ export class Position2DLabel extends Label {
         /** @todo meaningful margins from label.margins or config.margins ? */
         const margins: vec4 = vec4.create();
 
-        const ppiScale = Label.devicePixelRatio();
+        /** @todo this will be required for point units */
+        // const ppiScale = Label.devicePixelRatio();
 
         /* compute transform matrix */
         const transform = mat4.create();
@@ -78,13 +79,13 @@ export class Position2DLabel extends Label {
         mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
 
         /* scale glyphs to pixel size with respect to the displays ppi */
-        mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
+        // mat4.scale(transform, transform, vec3.fromValues(ppiScale, ppiScale, ppiScale));
 
         /* translate to origin in point space - scale origin within margined extend
          * (i.e., viewport with margined areas removed)
          */
         const marginedExtent = vec2.sub(v2(), vec2.fromValues(
-            this._frameSize[0] / ppiScale, this._frameSize[1] / ppiScale),
+            this._frameSize[0], this._frameSize[1]),
             vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
 
         const v3 = vec3.fromValues(0.5 * marginedExtent[0], 0.5 * marginedExtent[1], 0);
