@@ -10,6 +10,7 @@ import { clampf2, GLclampf2, GLfloat2 } from '../tuples';
  * Glyph related data for glyph based text rendering. Most of the glyph data (except the advance) refers to the font
  * face's glyph-texture. This class does not provide dpi awareness. This has to be handled outside of this class, e.g.,
  * during layouting and rendering.
+ * The following definitions are applied: http://chanae.walon.org/pub/ttf/ttf_glyphs.htm
  */
 export class Glyph {
 
@@ -130,9 +131,9 @@ export class Glyph {
     /**
      * Convenience setter for the x and y bearings. The horizontal bearing does not comprise the glyph-texture's
      * padding provided by the owning font face (see FontFace). The vertical bearing also does not comprise the glyph-
-     * texture's padding and is the measured w.r.t. baseline.
-     * The vertical bearing is computed as follows: bearingY = fontBase - (yOffset - top padding)
-     * The horizontal bearing equals the xOffset: bearingX = xOffset - left padding:
+     * texture's padding and is the measured w.r.t. baseline. Padding is expected to be handled by the typesetter.
+     * The vertical bearing is computed as follows: bearingY = fontBase - yOffset
+     * The horizontal bearing equals the xOffset: bearingX = xOffset:
      * @param fontBase - The font face's (FontFace) base-to-top distance in pt.
      * @param xOffset - The glyphs horizontal offset without left padding.
      * @param yOffset - The glyphs vertical offset w.r.t. the font's topmost ascenders, without the font's top

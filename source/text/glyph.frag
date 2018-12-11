@@ -22,8 +22,11 @@ precision mediump float;
 uniform sampler2D u_glyphs;
 uniform vec4 u_color;
 uniform float u_aaStepScale;
+uniform int u_aaSampling;
 
 varying vec2 v_uv;
+
+const int channel = 0;
 
 
 float aastep(float t, float value)
@@ -42,105 +45,103 @@ float aastep(float t, float value)
 }
 
 
-// float tex(float t, vec2 uv)
-// {
-// 	return aastep(t, texture(glyphs, uv)[channel]);
-// }
+float tex(float t, vec2 uv)
+{
+ 	return aastep(t, texture(u_glyphs, uv)[channel]);
+}
 
-// float aastep3(float t, vec2 uv)
-// {
-// 	float y = dFdy(uv.y) * 1.0 / 3.0;
+#ifdef AASTEP
 
-// 	float v = tex(t, uv + vec2( 0,-y))
-//           	+ tex(t, uv + vec2( 0, 0))
-//           	+ tex(t, uv + vec2( 0,+y));
+float aastep3h(float t, vec2 uv)
+{
+	float x = dFdy(uv.x) * 1.0 / 3.0;
 
-// 	return v / 3.0;
-// }
+	float v = tex(t, uv + vec2( -x, 0.0))
+          	+ tex(t, uv + vec2(0.0, 0.0))
+          	+ tex(t, uv + vec2( +x, 0.0));
 
-// float aastep8(float t, vec2 uv)
-// {
-// 	float x1 = dFdx(uv.x) * 1.0 / 8.0;
-// 	float y1 = dFdy(uv.y) * 1.0 / 8.0;
-// 	float y2 = dFdy(uv.y) * 3.0 / 8.0;
+	return v / 3.0;
+}
 
-// 	float v = tex(t, uv + vec2(-x1,-y2))
-//           	+ tex(t, uv + vec2(-x1,-y1))
-//           	+ tex(t, uv + vec2(-x1,+y1))
-//           	+ tex(t, uv + vec2(-x1,+y2))
+float aastep3v(float t, vec2 uv)
+{
+	float y = dFdy(uv.y) * 1.0 / 3.0;
 
-//           	+ tex(t, uv + vec2(+x1,-y2))
-//           	+ tex(t, uv + vec2(+x1,-y1))
-//           	+ tex(t, uv + vec2(+x1,+y1))
-//           	+ tex(t, uv + vec2(+x1,+y2));
+	float v = tex(t, uv + vec2( 0.0,  -y))
+          	+ tex(t, uv + vec2( 0.0, 0.0))
+          	+ tex(t, uv + vec2( 0.0,  +y));
 
-// 	return v / 8.0;
-// }
+	return v / 3.0;
+}
 
-// float aastep3x3(float t, vec2 uv)
-// {
-// 	float x = dFdx(uv.x) * 1.0 / 3.0;
-// 	float y = dFdy(uv.y) * 1.0 / 3.0;
+float aastep3x3(float t, vec2 uv)
+{
+	float x = dFdx(uv.x) * 1.0 / 3.0;
+	float y = dFdy(uv.y) * 1.0 / 3.0;
 
-// 	float v = tex(t, uv + vec2(-x,-y))
-// 	        + tex(t, uv + vec2(-x, 0))
-// 	        + tex(t, uv + vec2(-x,+y))
+	float v = tex(t, uv + vec2(  -x, -y)) + tex(t, uv + vec2(  -x, 0.0)) + tex(t, uv + vec2(  -x, +y))
+	      	+ tex(t, uv + vec2( 0.0, -y)) + tex(t, uv + vec2( 0.0, 0.0)) + tex(t, uv + vec2( 0.0, +y))
+            + tex(t, uv + vec2(  +x, -y)) + tex(t, uv + vec2(  +x, 0.0)) + tex(t, uv + vec2(  +x, +y));
 
-// 	      	+ tex(t, uv + vec2( 0,-y))
-// 	      	+ tex(t, uv + vec2( 0, 0))
-// 	      	+ tex(t, uv + vec2( 0,+y))
+	return v / 9.0;
+}
 
-// 	      	+ tex(t, uv + vec2(+x,-y))
-// 	      	+ tex(t, uv + vec2(+x, 0))
-// 	      	+ tex(t, uv + vec2(+x,+y));
+float aastep4x4(float t, vec2 uv)
+{
+    float x0 = dFdx(uv.x);
+    float y0 = dFdx(uv.y);
+	float x1 = x0 * 1.0 / 8.0;
+	float y1 = y0 * 1.0 / 8.0;
+	float x2 = x0 * 3.0 / 8.0;
+	float y2 = y0 * 3.0 / 8.0;
 
-// 	return v / 9.0;
-// }
+	float v = tex(t, uv + vec2(-x2,-y2)) + tex(t, uv + vec2(-x2,-y1))
+            + tex(t, uv + vec2(-x2,+y1)) + tex(t, uv + vec2(-x2,+y2))
 
-// float aastep4x4s(float t, vec2 uv)
-// {
-// 	float x1 = dFdx(uv.x) * 1.0 / 8.0;
-// 	float y1 = dFdy(uv.y) * 1.0 / 8.0;
-// 	float x2 = dFdx(uv.x) * 3.0 / 8.0;
-// 	float y2 = dFdy(uv.y) * 3.0 / 8.0;
+	        + tex(t, uv + vec2(-x1,-y2)) + tex(t, uv + vec2(-x1,-y1))
+	        + tex(t, uv + vec2(-x1,+y1)) + tex(t, uv + vec2(-x1,+y2))
 
-// 	float v = tex(t, uv + vec2(-x2,-y2))
-// 	        + tex(t, uv + vec2(-x2,-y1))
-// 	        + tex(t, uv + vec2(-x2,+y1))
-// 	        + tex(t, uv + vec2(-x2,+y2))
+	      	+ tex(t, uv + vec2(+x1,-y2)) + tex(t, uv + vec2(+x1,-y1))
+	        + tex(t, uv + vec2(+x1,+y1)) + tex(t, uv + vec2(+x1,+y2))
 
-// 	        + tex(t, uv + vec2(-x1,-y2))
-// 	        + tex(t, uv + vec2(-x1,-y1))
-// 	        + tex(t, uv + vec2(-x1,+y1))
-// 	        + tex(t, uv + vec2(-x1,+y2))
+	        + tex(t, uv + vec2(+x2,-y2)) + tex(t, uv + vec2(+x2,-y1))
+	        + tex(t, uv + vec2(+x2,+y1)) + tex(t, uv + vec2(+x2,+y2));
 
-// 	      	+ tex(t, uv + vec2(+x1,-y2))
-// 	        + tex(t, uv + vec2(+x1,-y1))
-// 	        + tex(t, uv + vec2(+x1,+y1))
-// 	        + tex(t, uv + vec2(+x1,+y2))
-
-// 	        + tex(t, uv + vec2(+x2,-y2))
-// 	        + tex(t, uv + vec2(+x2,-y1))
-// 	        + tex(t, uv + vec2(+x2,+y1))
-// 	        + tex(t, uv + vec2(+x2,+y2));
-
-// 	return v / 16.0;
-// }
+	return v / 16.0;
+}
 
 // vec4 subpix(float r, float g, float b, vec4 fore, vec4 back)
 // {
 // 	return vec4(mix(back.rgb, fore.rgb, vec3(r, g, b)), mix(back.a, fore.a, (r + b + g) / 3.0));
 // }
 
+#endif
 
 void main(void)
 {
-    float dist = texture(u_glyphs, v_uv).r;
-
-
     /** @todo mipmap access? */
+
+    float a = 0.0;
     /* When using multiframe sampling, might not be necessary and even tends to add more blur */
-    float a = aastep(0.5, dist);
+#ifdef AASTEP
+    if(u_aaSampling == 0) {         // LabelRenderPass.Sampling.None
+#endif
+
+        a = step   (0.5, texture(u_glyphs, v_uv)[channel]);
+
+#ifdef AASTEP
+    } else if(u_aaSampling == 1) {  // LabelRenderPass.Sampling.Smooth
+        a = tex    (0.5, v_uv);
+    } else if(u_aaSampling == 2) {  // LabelRenderPass.Sampling.Horizontal3
+        a = aastep3h(0.5, v_uv);
+    } else if(u_aaSampling == 3) {  // LabelRenderPass.Sampling.Vertical3
+        a = aastep3v(0.5, v_uv);
+    } else if(u_aaSampling == 4) {  // LabelRenderPass.Sampling.Grid3x3
+        a = aastep3x3(0.5, v_uv);
+    } else if(u_aaSampling == 5) {  // LabelRenderPass.Sampling.Grid4x4
+        a = aastep4x4(0.5, v_uv);
+    }
+#endif
 
     /**
      * @todo - design decision: Don't discard fragments?, as we might need them for an id-buffer for

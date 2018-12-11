@@ -121,6 +121,9 @@ ul.features li:last-child:after {
 
 #demos .card {
     margin-bottom: 1.25rem;
+}
+
+#demos .card-img-top {
     overflow: hidden;
 }
 
@@ -149,16 +152,20 @@ ul.features li:last-child:after {
 }
 
 #demos .card:hover img {
-    -webkit-transform:scale(1.02) translate(0%,-1%); /* Safari and Chrome */
-    -moz-transform:scale(1.02) translate(0%,-1%); /* Firefox */
-    -ms-transform:scale(1.02) translate(0%,-1%); /* IE 9 */
-    -o-transform:scale(1.02) translate(0%,-1%); /* Opera */
-     transform:scale(1.02) translate(0%,-1%);
+    -webkit-transform:scale(1.02); /* Safari and Chrome */
+    -moz-transform:scale(1.02); /* Firefox */
+    -ms-transform:scale(1.02); /* IE 9 */
+    -o-transform:scale(1.02); /* Opera */
+     transform:scale(1.02);
 }
 
 
 #examples ul {
     list-style: none;
+}
+
+#examples a.active {
+    font-weight: bold;
 }
 
 

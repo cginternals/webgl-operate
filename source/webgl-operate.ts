@@ -19,14 +19,10 @@ export import ray_math = root_raymath;
 // /* DEBUG facilities */
 
 // import * as debug_LabelRenderer from './debug/labelrenderer';
-import * as debug_LabelRenderer from './debug/labelrenderer';
-import * as debug_LabelTestRenderer from './debug/labeltestrenderer';
 import * as debug_TestNavigation from './debug/testnavigation';
 import * as debug_TestRenderer from './debug/testrenderer';
 
 export namespace debug {
-    export import LabelRenderer = debug_LabelRenderer.LabelRenderer;
-    export import LabelTestRenderer = debug_LabelTestRenderer.LabelTestRenderer;
     export import TestRenderer = debug_TestRenderer.TestRenderer;
     export import TestNavigation = debug_TestNavigation.TestNavigation;
 }

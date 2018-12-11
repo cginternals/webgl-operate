@@ -192,7 +192,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * might be invoked. In case of experimental batch rendering when using multi-frame a swap might be withhold for
      * multiple frames.
      */
-    protected abstract onSwap(): void;
+    protected onSwap(): void { /* default empty impl. */ }
 
 
     /**
