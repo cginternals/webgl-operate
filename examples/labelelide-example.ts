@@ -106,7 +106,6 @@ class LabelElideRenderer extends Renderer {
      * evaluation (e.g., lazy non continuous rendering). Regardless of the return value a new frame (preparation,
      * frame, swap) might be invoked anyway, e.g., when update is forced or canvas or context properties have
      * changed or the renderer was invalidated @see{@link invalidate}.
-     * Updates the navigaten and the AntiAliasingKernel.
      * @returns whether to redraw
      */
     protected onUpdate(): boolean {
@@ -153,12 +152,6 @@ class LabelElideRenderer extends Renderer {
 
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
         this._labelPass.frame();
-    }
-
-    /**
-     * After (1) update, (2) preparation, and (3) frame are invoked, a swap is invoked for multi-frame rendering.
-     */
-    protected onSwap(): void {
     }
 
     /**
