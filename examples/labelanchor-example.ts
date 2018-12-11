@@ -252,7 +252,14 @@ export class LabelAnchorExample extends Example {
         const hr5 = document.createElement('hr');
         hr5.setAttribute('style', `${hrStyle} top: 91.6666%;`);
 
-        (this._canvas.element!.parentElement as any).prepend(hr0, hr1, hr2, hr3, hr4, hr5);
+        const parent = this._canvas.element!.parentElement!;
+        const reference = this._canvas.element!;
+        parent.insertBefore(hr0, reference);
+        parent.insertBefore(hr1, reference);
+        parent.insertBefore(hr2, reference);
+        parent.insertBefore(hr3, reference);
+        parent.insertBefore(hr4, reference);
+        parent.insertBefore(hr5, reference);
 
         return true;
     }

@@ -189,7 +189,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
         this._labelSize.fontSizeUnit = Label.Unit.Pixel;
         this._labelSize.alignment = Label.Alignment.Left;
         this._labelSize.lineAnchor = Label.LineAnchor.Baseline;
-        this._labelSize.color.fromHex('#888');
+        this._labelSize.color.fromHex('#27aae1');
 
         this._labelLeft = new Position2DLabel(
             new Text(`Label.Elide.Right |  ${werther}`), Label.Type.Dynamic);
@@ -224,7 +224,9 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
         this._labelCustom.color.fromHex('#fff');
 
 
-        this._labelPass.aaStepScale = 0.8;
+        this._labelPass.aaStepScale = 1.0;
+        // this._labelPass.sampling = LabelRenderPass.Sampling.
+
         this._labelPass.labels = [this._labelSize
             , this._labelLeft, this._labelRight, this._labelMiddle, this._labelCustom];
 
