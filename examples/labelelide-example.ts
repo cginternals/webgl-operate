@@ -218,7 +218,6 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
 
 
         this._labelPass.aaStepScale = 1.0;
-        // this._labelPass.sampling = LabelRenderPass.Sampling.
 
         this._labelPass.labels = [this._labelSize
             , this._labelLeft, this._labelRight, this._labelMiddle, this._labelCustom];
@@ -233,8 +232,6 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
 
             this._labelCustom.ellipsis = '.'.repeat(Math.floor(Math.sin(performance.now() * 0.001) * 4.0) + 5);
 
-            // this._labelLeft.text.text = `${werther}  | ${this._labelLeft.fontSize.toFixed(2)}`
-            //     + `${this._labelLeft.fontSizeUnit}`;
             this.invalidate();
         }, 1000.0 / 60.0);
 
