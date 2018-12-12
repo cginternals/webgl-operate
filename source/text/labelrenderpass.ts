@@ -51,6 +51,7 @@ export class LabelRenderPass extends Initializable {
         geometry: false,
         labels: false,
         aaStepScale: false,
+        aaSampling: false,
     });
 
     /**
@@ -76,6 +77,9 @@ export class LabelRenderPass extends Initializable {
     /** @see {@link aaStepScale} */
     protected _aaStepScale: GLfloat;
 
+    /** @see {@link aaSampling} */
+    protected _aaSampling: LabelRenderPass.Sampling = LabelRenderPass.Sampling.Smooth1;
+
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation | undefined;
@@ -84,6 +88,7 @@ export class LabelRenderPass extends Initializable {
     protected _uAAStepScale: WebGLUniformLocation | undefined;
     protected _uTransform: WebGLUniformLocation | undefined;
     protected _uDynamic: WebGLUniformLocation | undefined;
+    protected _uAASampling: WebGLUniformLocation | undefined;
 
     protected _labels = new Array<Label>();
 
@@ -159,6 +164,8 @@ export class LabelRenderPass extends Initializable {
 
         this._geometry.initialize();
 
+        this._context.enable(['OES_standard_derivatives']);
+
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
         vert.initialize(require(`./glyph.vert`));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
@@ -178,12 +185,14 @@ export class LabelRenderPass extends Initializable {
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uColor = this._program.uniform('u_color');
         this._uAAStepScale = this._program.uniform('u_aaStepScale');
+        this._uAASampling = this._program.uniform('u_aaSampling');
         this._uTransform = this._program.uniform('u_transform');
         this._uDynamic = this._program.uniform('u_dynamic');
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_glyphs'), 0);
         gl.uniform1f(this._uAAStepScale, this._aaStepScale);
+        gl.uniform1i(this._uAASampling, this._aaSampling);
         this._program.unbind();
 
         return true;
@@ -198,6 +207,7 @@ export class LabelRenderPass extends Initializable {
         this._uNdcOffset = undefined;
         this._uColor = undefined;
         this._uAAStepScale = undefined;
+        this._uAASampling = undefined;
         this._uTransform = undefined;
         this._uDynamic = undefined;
     }
@@ -217,6 +227,10 @@ export class LabelRenderPass extends Initializable {
 
         if (override || this._altered.aaStepScale) {
             gl.uniform1f(this._uAAStepScale, this._aaStepScale);
+        }
+
+        if (override || this._altered.aaSampling) {
+            gl.uniform1i(this._uAASampling, this._aaSampling);
         }
 
         /* Some labels need the camera to update their font size and position. */
@@ -249,6 +263,9 @@ export class LabelRenderPass extends Initializable {
 
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
+
+        /* CULL FACE is expected to be disabled. */
+        // gl.disable(gl.CULL_FACE);
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(this._depthFunc);
@@ -359,10 +376,12 @@ export class LabelRenderPass extends Initializable {
      */
     @Initializable.assert_initialized()
     unbind(): void {
-        if (this._geometry.valid === false) {
-            return;
+        if (this._geometry.valid) {
+            this._geometry.unbind();
         }
-        this._geometry.unbind();
+        if (this._program.valid) {
+            this._program.unbind();
+        }
     }
 
 
@@ -454,7 +473,6 @@ export class LabelRenderPass extends Initializable {
         if (this._aaStepScale === scale) {
             return;
         }
-
         this._aaStepScale = scale;
         this._altered.alter('aaStepScale');
     }
@@ -464,10 +482,48 @@ export class LabelRenderPass extends Initializable {
 
 
     /**
-     * Read-only access to the actual label geometry (VAO) used to draw this pass's labels.
+     * Specify the sampling pattern/mode (anti-aliasing / no anti-aliasing) for glyph rendering. The sampling should be
+     * increased when rendering small text, e.g., starting at font size of 16px or less. With larger text, there is no
+     * perceptual benefit with more than one derivative sample, i.e., LabelRenderPass.Sampling.Smooth1.
+     */
+    set aaSampling(sampling: LabelRenderPass.Sampling) {
+        if (this._aaSampling === sampling) {
+            return;
+        }
+        this._aaSampling = sampling;
+        this._altered.alter('aaSampling');
+    }
+    get aaSampling(): LabelRenderPass.Sampling {
+        return this._aaSampling;
+    }
+
+
+    /**
+     * Read-only access (leaky) to the actual label geometry (VAO) used to draw this pass's labels.
      */
     get geometry(): LabelGeometry {
         return this._geometry;
+    }
+
+    /**
+     * Read-only access (leaky) to the actual label geometry (VAO) used to draw this pass's labels.
+     */
+    get program(): Program {
+        return this._program;
+    }
+
+}
+
+
+export namespace LabelRenderPass {
+
+    export enum Sampling {
+        None = 0,        //  1 sample,  no derivatives
+        Smooth1 = 1,     //  1 sample,  requires derivatives
+        Horizontal3 = 2, //  3 samples, requires derivatives
+        Vertical3 = 3,   //  3 samples, requires derivatives
+        Grid3x3 = 4,     //  9 samples, requires derivatives
+        Grid4x4 = 5,     // 16 samples, requires derivatives
     }
 
 }

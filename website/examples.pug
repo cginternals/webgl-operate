@@ -16,9 +16,9 @@ block content
           each example, index in examples
             li
               if example.disabled
-                span.text-muted #{example.title}
+                span.text-black-50 #{example.title}
               else
-                a(href = `/examples/${example.target}.html` target = 'example') #{example.title}
+                a(href = `/examples/${example.target}.html` target = 'example' class = index == 0 ? 'active' : '').example-link #{example.title}
 
       .col-lg-9.col-md-9.col-sm-8
         .embed-responsive.embed-responsive-16by9
@@ -26,3 +26,8 @@ block content
             frameborder = 0 marginwidth = 0 marginheight = 0
             allow-scripts allowfullscreen).embed-responsive-item
 
+  script.
+    $('a.example-link').click(function() {
+      $('a.example-link').removeClass('active');
+      $(this).addClass('active');
+    });

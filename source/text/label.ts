@@ -285,7 +285,13 @@ export abstract class Label {
      * Allows to override/customize the ellipsis string used for text elide (@see {@link elide}).
      */
     set ellipsis(ellipsis: string) {
+        if (this._ellipsis === ellipsis) {
+            return;
+        }
         this._ellipsis = ellipsis;
+        if (this._elide !== Label.Elide.None) {
+            this._altered.alter('typesetting');
+        }
     }
     get ellipsis(): string {
         return this._ellipsis;

@@ -44,14 +44,14 @@ export class Typesetter {
             return;
         }
 
-        /* Please be aware that all vertices getter return typed views on a big float32array.
-        As a consequence do strictly rely on in-place operations only. */
+        // Please be aware that all vertices getter return typed views on a big float32array.
+        // As a consequence do strictly rely on in-place operations only.
 
-        // const padding = fontFace.glyphTexturePadding;
+        const padding = fontFace.glyphTexturePadding;
         const origin: vec3 = vertices.origin(index);
         vec3.set(origin, pen[0], pen[1], 0.0);
-        origin[0] += glyph.bearing[0]; // + padding[3];
-        origin[1] += glyph.bearing[1] - glyph.extent[1]; // + padding[2];
+        origin[0] += glyph.bearing[0] - padding[3];
+        origin[1] += glyph.bearing[1] - glyph.extent[1];
 
         vec3.set(vertices.tangent(index), glyph.extent[0], 0.0, 0.0);
         vec3.set(vertices.up(index), 0.0, glyph.extent[1], 0.0);
@@ -70,25 +70,29 @@ export class Typesetter {
      */
     private static lineAnchorOffset(label: Label): number {
         let offset = 0.0;
+
         const padding = label.fontFace!.glyphTexturePadding;
+        const fontFace = label.fontFace!;
         switch (label.lineAnchor) {
-            case Label.LineAnchor.Ascent:
-                offset = label.fontFace!.ascent - padding[0];
-                break;
-            case Label.LineAnchor.Center:
-                offset = label.fontFace!.size * 0.5 + label.fontFace!.descent - padding[0];
-                break;
-            case Label.LineAnchor.Descent:
-                offset = label.fontFace!.descent - padding[0];
-                break;
-            case Label.LineAnchor.Top:
-                offset = label.fontFace!.base - padding[0];
-                break;
-            case Label.LineAnchor.Bottom:
-                offset = label.fontFace!.size - label.fontFace!.lineHeight + padding[0];
-                break;
             case Label.LineAnchor.Baseline:
             default:
+                offset = - padding[0];
+                break;
+            case Label.LineAnchor.Ascent:
+                offset = fontFace.ascent - padding[0];
+                break;
+            case Label.LineAnchor.Descent:
+                offset = fontFace.descent * (1.0 + padding[0] / fontFace.ascent);
+                break;
+            case Label.LineAnchor.Center:
+                offset = fontFace.ascent - padding[0] - 0.5 * fontFace.size;
+                break;
+            case Label.LineAnchor.Top:
+                offset = fontFace.ascent - padding[0] + 0.5 * fontFace.lineGap;
+                break;
+            case Label.LineAnchor.Bottom:
+                offset = fontFace.ascent - padding[0] + 0.5 * fontFace.lineGap - fontFace.lineHeight;
+                break;
         }
         return offset;
     }
@@ -168,14 +172,14 @@ export class Typesetter {
             }
 
             if (currentWordIndex < i) {
-                /* Add previous word fragment (indicated by word index below current index). */
+                // Add previous word fragment (indicated by word index below current index).
                 fragments.push([currentWordIndex, i, Typesetter.FragmentType.Word]);
             }
             const type = label.lineFeedAt(i) ? Typesetter.FragmentType.LineFeed : Typesetter.FragmentType.Delimiter;
             fragments.push([i, i + 1, type]);
             currentWordIndex = i + 1;
         }
-        /* Account for last fragment that does not end with delimiter. */
+        // Account for last fragment that does not end with delimiter.
         if (!isDelimiter!) {
             fragments.push([currentWordIndex, label.length, Typesetter.FragmentType.Word]);
         }
@@ -197,7 +201,7 @@ export class Typesetter {
         for (let i = 0; i < fragments.length; ++i) {
             const fragment = fragments[i];
             widths[i] = advances.subarray(fragment[0], fragment[1]).reduce((width, advance, index) =>
-                width + advance + (index < fragment[1] ? kernings[index] : 0.0), 0.0);
+                width + advance + (index < fragment[1] ? kernings[index + fragment[0]] : 0.0), 0.0);
         }
         return widths;
     }
@@ -256,21 +260,21 @@ export class Typesetter {
                 continue;
             }
 
-            /* If next fragment fits as a whole, put it in. */
-            if (width + labelFragmentWidths[i0] + labelKernings[fragment[1] - 1] < threshold) {
-                width += labelFragmentWidths[i0] + labelKernings[fragment[1] - 1];
+            // If next fragment fits as a whole, put it in.
+            if (width + labelFragmentWidths[i0] < threshold) {
+                width += labelFragmentWidths[i0];
 
                 fragments.push(fragment);
                 fragmentWidths.push(labelFragmentWidths[i0]);
                 continue;
             }
-            /* If the single delimiter didn't fit or first/last character of word, then break. */
+            // If the single delimiter didn't fit or first/last character of word, then break.
             if (fragment[2] === Typesetter.FragmentType.Delimiter ||
                 width + labelAdvances[reverse ? fragment[1] - 1 : fragment[0]] > threshold) {
                 break;
             }
 
-            /* Try to cramp as many characters of the fragment (word) as possible. */
+            // Try to cramp as many characters of the fragment (word) as possible.
             for (let i1 = reverse ? fragment[1] - 1 : fragment[0];
                 reverse ? i1 >= fragment[0] : i1 < fragment[1]; reverse ? --i1 : ++i1) {
 
@@ -306,11 +310,11 @@ export class Typesetter {
         for (let index: number = begin; index < end; ++index) {
             const origin = vertices.origin(index);
 
-            const ll: vec3 = v3(); /* Lower Left */
+            const ll: vec3 = v3(); // Lower Left
             vec3.transformMat4(ll, origin, transform);
-            const lr: vec3 = v3(); /* Lower Right */
+            const lr: vec3 = v3(); // Lower Right
             vec3.transformMat4(lr, vec3.add(lr, origin, vertices.tangent(index)), transform);
-            const ul: vec3 = v3(); /* Upper Left */
+            const ul: vec3 = v3(); // Upper Left
             vec3.transformMat4(ul, vec3.add(ul, origin, vertices.up(index)), transform);
 
             vec3.copy(vertices.origin(index), ll);
@@ -339,7 +343,7 @@ export class Typesetter {
             offset *= 0.5;
         }
 
-        /* Origin is expected to be in typesetting space (not transformed yet). */
+        // Origin is expected to be in typesetting space (not transformed yet).
         for (let index = begin; index < end; ++index) {
             vertices.origin(index)[0] += offset;
         }
@@ -374,11 +378,11 @@ export class Typesetter {
         assert(label.fontFace !== undefined, `expected a font face for label before typesetting`);
         const fontFace = label.fontFace!;
 
-        /* Retrieve advances, kernings, as well as line feed and delimiter indices. */
+        // Retrieve advances, kernings, as well as line feed and delimiter indices.
 
-        /* Utility to query glyphs by index. If the index exceeds the label's text length, the ellipsis is queried
-        instead of the text. Due to pre-fetching kernings and advances, additional/optional ellipsis data is appended
-        and later access via offset @see {@link advance}. */
+        // Utility to query glyphs by index. If the index exceeds the label's text length, the ellipsis is queried
+        // instead of the text. Due to pre-fetching kernings and advances, additional/optional ellipsis data is appended
+        // and later access via offset @see {@link advance}.
         const glyphs = (index: number): Glyph => index < label.length ? fontFace.glyph(label.charCodeAt(index)) :
             fontFace.glyph(label.ellipsis.charCodeAt(index - label.length));
 
@@ -391,7 +395,6 @@ export class Typesetter {
 
         // const pen: vec2 = vec2.fromValues(-fontFace.glyphTexturePadding[3], -Typesetter.lineAnchorOffset(label));
         const pen: vec2 = vec2.fromValues(0.0, -Typesetter.lineAnchorOffset(label));
-        console.log(pen);
 
         const lines = new Array<Line>();
         let vertexIndex = 0;
@@ -399,9 +402,9 @@ export class Typesetter {
         const elide = label.elide !== Label.Elide.None;
 
 
-        /* Typeset Lines. A line is a 3-tuple of start-index, end-index, and line width. The indices are referencing
-        vertices of the glyph vertices. They cannot be reused for further typesetting. For it a local advance function
-        is defined (easier to maintain without need of so many arguments). */
+        // Typeset Lines. A line is a 3-tuple of start-index, end-index, and line width. The indices are referencing
+        // vertices of the glyph vertices. They cannot be reused for further typesetting. For it a local advance
+        // function is defined (easier to maintain without need of so many arguments).
         const advance = (fragments: Array<Fragment>, fragmentWidths: Float32Array, threshold: number = NaN,
             advances: Float32Array = labelAdvances, kernings: Float32Array = labelKernings, offset: number = 0) => {
 
@@ -414,24 +417,24 @@ export class Typesetter {
                     continue;
                 }
 
-                /* Elide takes precedence, since full line width is used, so every line break is omitted. */
+                // Elide takes precedence, since full line width is used, so every line break is omitted.
                 const lineFeed = !elide && fragment[2] === Typesetter.FragmentType.LineFeed;
                 let wordWrap = false;
 
-                /* If word wrap is desired (no elide, no line feed already and label enabled), then take words with
-                subsequent delimiters into account. These should be moved to the next line together (not split). */
+                // If word wrap is desired (no elide, no line feed already and label enabled), then take words with
+                // subsequent delimiters into account. These should be moved to the next line together (not split).
                 if (!elide && !lineFeed && label.wrap) {
-                    /* If this fragment is a non depictable delimiter don't break. Non depictable fragments/characters
-                    will not be visible at the end of a line, but would increase the indent for the subsequent line.
-                    This, however, is only applied for the first non depictable delimiter, since, e.g., multiple spaces
-                    are probably expected to indent the next line instead of trim-like behavior.
-                    Example: 'A wonderful serenity has taken place'. If line breaks is required after 'taken' it will
-                    ignore the subsequent space. For 'A wonderful serenity has taken     place' four spaces will occur
-                    on the next new line: '    place' instead of 'place'. */
+                    // If this fragment is a non depictable delimiter don't break. Non depictable fragments/characters
+                    // will not be visible at the end of a line, but would increase the indent for the subsequent line.
+                    // This, however, is only applied for the first non depictable delimiter, since, e.g., multiple
+                    // spaces are probably expected to indent the next line instead of trim-like behavior.
+                    // Example: 'A wonderful serenity has taken place'. If line breaks is required after 'taken' it will
+                    // ignore the subsequent space. For 'A wonderful serenity has    taken place' four spaces will occur
+                    // on the next new line: '    place' instead of 'place'.
                     const depictable = fragment[2] !== Typesetter.FragmentType.Delimiter ||
                         glyphs(fragment[0]).depictable();
 
-                    /* If this fragment is a word then take next depictable delimiter into account. */
+                    // If this fragment is a word then take next depictable delimiter into account.
                     const lookAhead = fragment[2] === Typesetter.FragmentType.Word &&
                         i < fragments.length - 1 && fragments[i + 1][2] === Typesetter.FragmentType.Delimiter;
                     const depictableAhead = lookAhead && glyphs(fragments[i + 1][0]).depictable();
@@ -440,7 +443,7 @@ export class Typesetter {
                         + (depictableAhead ? fragmentWidths[i + 1] : 0.0) > label.lineWidth;
                 }
 
-                /* New line! Either line feed or word wrap made it. */
+                // New line! Either line feed or word wrap made it.
                 if (lineFeed || wordWrap) {
                     lines.push([firstIndexOfLine, vertexIndex, pen[0]]);
                     firstIndexOfLine = vertexIndex;
@@ -448,13 +451,13 @@ export class Typesetter {
                     pen[0] = 0.0;
                     pen[1] -= fontFace.lineHeight;
 
-                    /* In case of line feed, no additional vertex needs to be written. */
+                    // In case of line feed, no additional vertex needs to be written.
                     if (lineFeed) {
                         continue;
                     }
                 }
 
-                /* Advance forward for the next word-fragment. */
+                // Advance forward for the next word-fragment.
                 for (let i = fragment[0]; i < fragment[1]; ++i) {
                     if (glyphs(i).depictable()) {
                         Typesetter.writeVertex(fontFace, pen, glyphs(i), vertices, vertexIndex);
@@ -472,7 +475,7 @@ export class Typesetter {
         const fullApproximatedWidth = labelFragmentWidths.reduce((accumulate, width) => accumulate + width, 0.0);
         if (elide && fullApproximatedWidth > label.lineWidth) {
 
-            /* Compute width of ellipsis (reuse default advances, kernings and fragment widths functions). */
+            // Compute width of ellipsis (reuse default advances, kernings and fragment widths functions).
             const ellipsisFragments: Array<Fragment> =
                 [[label.length, label.length + label.ellipsis.length, Typesetter.FragmentType.Word]];
 
@@ -482,7 +485,7 @@ export class Typesetter {
                 [[0, label.ellipsis.length, Typesetter.FragmentType.Word]], ellipsisAdvances, ellipsisKernings);
 
             const ellipsisWidth = ellipsisFragmentWidths[0];
-            /* If even the ellipsis does not fit within line width, then skip typesetting. */
+            // If even the ellipsis does not fit within line width, then skip typesetting.
             if (label.lineWidth < ellipsisWidth) {
                 return 0;
             }
@@ -491,7 +494,7 @@ export class Typesetter {
             const [leftFragments, leftFragmentWidths, leftWidth] = Typesetter.elideFragments(
                 thresholds[0], labelFragments, labelFragmentWidths, labelAdvances, labelKernings, false);
 
-            /* Pass the unused width (delta to left-side threshold) to the right-side threshold. */
+            // Pass the unused width (delta to left-side threshold) to the right-side threshold.
             if (label.elide === Label.Elide.Middle) {
                 thresholds[1] += thresholds[0] - leftWidth;
             }
@@ -506,7 +509,7 @@ export class Typesetter {
 
             advance(rightFragments.reverse(), new Float32Array(rightFragmentWidths.reverse()));
 
-            /* Accumulate all lines into a single line. */
+            // Accumulate all lines into a single line.
             assert(lines.length < 4, `expected at most 3-line-yield from advance, given ${lines}`);
             lines[0][1] = lines[lines.length - 1][1];
             lines[0][2] = pen[0];
@@ -519,7 +522,7 @@ export class Typesetter {
         }
 
 
-        /* Apply transforms (alignment and static label transform) to all written vertices. */
+        // Apply transforms (alignment and static label transform) to all written vertices.
         Typesetter.transform(label, vertices, lines);
         vertices.shrink(vertexIndex);
 
