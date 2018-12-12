@@ -49,6 +49,26 @@ describe('LabelAlignment', () => {
     });
 
     describe('#hungarianMinimumWeightPerfectMatching', () => {
-        // TODO
+        const test = [
+            [4, 2, 8],
+            [4, 3, 7],
+            [3, 1, 6]];
+        const edges = [];
+        for (let i = 0; i < test.length; i++) {
+            const leftCosts = test[i];
+            for (let j = 0; j < leftCosts.length; j++) {
+                const cost = leftCosts[j];
+                if (cost !== 0) {
+                    edges.push({
+                        left: i,
+                        right: j,
+                        cost,
+                    });
+                }
+            }
+        }
+        const result = LabelAlignment.hungarianMinimumWeightPerfectMatching(edges, 3);
+        console.log(result);
+        should.exist(result);
     });
 });

@@ -173,6 +173,25 @@ export class LabelAlignment {
     public static positionLabels(border: Array<vec2>, labelsAndPosition: Array<LabelPositionRelation>): void {
         if (!this.isConvexHull(border)) { throw new Error('Border is not a convex hull'); }
         const ports = this.calculateLabelPortsOnConvexHull(border, labelsAndPosition.length);
+        const hungarianInput: Array<WeightedBipartiteEdge> = [];
+        for (let i = 0; i < labelsAndPosition.length; i++) {
+            const label = labelsAndPosition[i];
+            for (let j = 0; j < ports.length; j++) {
+                const port = ports[j];
+                const cost = vec2.dist(label.position, port);
+                hungarianInput.push({
+                    left: i,
+                    right: j,
+                    cost,
+                });
+            }
+        }
+        const result = this.hungarianMinimumWeightPerfectMatching(hungarianInput, labelsAndPosition.length);
+
+        for (let i = 0; i < labelsAndPosition.length; i++) {
+            const label = labelsAndPosition[i].label;
+            label.position = ports[result[i]];
+        }
     }
 
     /**
@@ -180,7 +199,7 @@ export class LabelAlignment {
      * @param edges Array containing all edges with their corresponding cost.
      * @param n Number of points on each side of the bipartite graph
      */
-    public hungarianMinimumWeightPerfectMatching(edges: Array<WeightedBipartiteEdge>, n: number)
+    public static hungarianMinimumWeightPerfectMatching(edges: Array<WeightedBipartiteEdge>, n: number)
         : Array<number> {
         const leftEdges: Array<Array<LeftEdge>> = new Array(n).fill([]);
 
@@ -277,12 +296,13 @@ export class LabelAlignment {
         const leftMatchedTo: Array<number> = new Array(n).fill(-1);
         const rightMatchedTo: Array<number> = leftMatchedTo.slice();
 
+        console.log(leftEdges);
         for (let i = 0; i < n; i++) {
             const costEdges = leftEdges[i];
             for (const edge of costEdges) {
                 const j = edge.right;
                 if (rightMatchedTo[j] === -1) {
-                    currentMatchingCardinality++;
+                    ++currentMatchingCardinality;
                     rightMatchedTo[j] = i;
                     leftMatchedTo[i] = j;
                     break;
