@@ -49,33 +49,6 @@ const pointsToLines = (points: Readonly<Array<vec2>>): Array<vec2> => {
     return lines;
 };
 
-// /**
-//  * calculates intersection point between (p0 -> p1) and (p2 -> p3). If none is found returns undefined.
-//  * @param p0
-//  * @param p1
-//  * @param p2
-//  * @param p3
-//  */
-// const getLineIntersection = (p0: vec2, p1: vec2, p2: vec2, p3: vec2): vec2 | undefined => {
-//     const r = vec2.normalize(vec2.create(), vec2.sub(vec2.create(), p1, p0));
-//     const s = vec2.normalize(vec2.create(), vec2.sub(vec2.create(), p3, p2));
-
-//     const p = p0;
-//     const q = p2;
-
-//     const p2SubP0 = vec2.subtract(vec2.create(), q, p);
-//     const crossS12 = crossProduct(r, s);
-
-//     const u = crossProduct(p2SubP0, r) / crossS12;
-//     const t = crossProduct(p2SubP0, s) / crossS12;
-
-//     let out: vec2 | undefined;
-//     if (crossS12 !== 0 && 0 <= t && t <= 1 && 0 <= u && u <= 1) {
-//         out = vec2.scaleAndAdd(vec2.create(), p0, r, t);
-//     }
-//     return out;
-// };
-
 /**
  * calculates intersection point between (p0 -> p1) and (p2 -> p3). If none is found returns undefined.
  * @param p0
@@ -83,7 +56,7 @@ const pointsToLines = (points: Readonly<Array<vec2>>): Array<vec2> => {
  * @param p2
  * @param p3
  */
-const getLineIntersection1 = (p0: vec2, p1: vec2, p2: vec2, p3: vec2): vec2 | undefined => {
+const getLineIntersection = (p0: vec2, p1: vec2, p2: vec2, p3: vec2): vec2 | undefined => {
     const line1 = vec2.sub(vec2.create(), p0, p1);
     const line2 = vec2.sub(vec2.create(), p2, p3);
     const crossLines = crossProduct(line1, line2);
@@ -130,7 +103,7 @@ const calculateLabelPortsOnConvexHull = (border: Readonly<Array<vec2>>, labelcou
         const p0 = vec2.fromValues(minX - 1, leftHeight);
         const p1 = vec2.fromValues(maxX + 1, leftHeight);
         for (let i = 0; i < border.length; i++) {
-            const intersection = getLineIntersection1(p0, p1, border[i],
+            const intersection = getLineIntersection(p0, p1, border[i],
                 border[i + 1 === border.length ? 0 : i + 1]);
             if (intersection) { intersections.push(intersection); }
         }
@@ -143,7 +116,7 @@ const calculateLabelPortsOnConvexHull = (border: Readonly<Array<vec2>>, labelcou
         const p0 = vec2.fromValues(minX - 1, rightHeight);
         const p1 = vec2.fromValues(maxX + 1, rightHeight);
         for (let i = 0; i < border.length; i++) {
-            const intersection = getLineIntersection1(p0, p1, border[i],
+            const intersection = getLineIntersection(p0, p1, border[i],
                 border[i + 1 === border.length ? 0 : i + 1]);
             if (intersection) { intersections.push(intersection); }
         }
