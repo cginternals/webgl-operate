@@ -2,6 +2,7 @@ import { mat3, mat4, quat, vec3 } from 'gl-matrix';
 import { gltf as GLTF } from 'gltf-loader-ts';
 import { Context } from 'webgl-operate';
 
+import { Position2DLabel } from 'webgl-operate';
 import { Aabb3 } from './aabb3';
 import { Asset } from './asset';
 import { Mesh } from './mesh';
@@ -16,6 +17,8 @@ export class Node {
   public translation: vec3 | undefined;
   public rotation: quat | undefined;
   public scale: vec3 | undefined;
+  public labelText: string | undefined;
+  public label: Position2DLabel | undefined;
   // TODO: weights
   // TODO!: camera
   // camera: Camera;
@@ -28,6 +31,8 @@ export class Node {
     const node = new Node();
     node.name = gNode.name;
     node.context = asset.context;
+
+    node.labelText = gNode.extras && gNode.extras.label ? gNode.extras.label : undefined;
 
     if (gNode.matrix !== undefined) {
       node.matrix = mat4.fromValues.apply(undefined, gNode.matrix);

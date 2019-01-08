@@ -63,7 +63,7 @@ export class CornellBoxDemo extends Demo {
     this._canvas.renderer = this._renderer;
     // const modelUri = require('./data/glTF/DamagedHelmet.gltf');
     const loader = new GltfLoader();
-    this.loadGltf(loader, require('./data/FarmLandDiorama.glb'), this._renderer);
+    this.loadGltf(loader, require('./data/scene.glb'), this._renderer);
 
     return true;
   }
