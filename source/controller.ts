@@ -441,7 +441,7 @@ export class Controller {
 
     /**
      * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
-     * If updates where blocked using `block`, block updates is disabled.
+     * If updates were blocked using `block`, block updates is disabled.
      */
     update(force: boolean = false): void {
         if (this.reset()) {
