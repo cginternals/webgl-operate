@@ -168,7 +168,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Actual update call specified by inheritor. This is invoked in order to check if rendering of a frame is required
      * by means of implementation specific evaluation (e.g., lazy non continuous rendering). Regardless of the return
-     * value a new frame (preparation, frame, swap) might be invoked anyway, e.g., when update is forced or canvas or
+     * value, a new frame (preparation, frame, swap) might be invoked anyway, e.g., when update is forced or canvas or
      * context properties have changed or the renderer was invalidated @see{@link invalidate}.
      * @returns - Whether to redraw
      */
