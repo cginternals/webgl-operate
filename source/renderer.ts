@@ -262,7 +262,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Controllable interface intended to trigger rendering of a full pass of the renderer that results in either an
-     * intermediate frame for accumulation to a full multi-frame or full frame for itself.  The inheritor should invoke
+     * intermediate frame for accumulation to a full multi-frame or full frame for itself. The inheritor should invoke
      * frames of relevant rendering and processing stages.
      * @param frameNumber - The current frame number forwarded to onFrame.
      */

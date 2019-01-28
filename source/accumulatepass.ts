@@ -231,7 +231,7 @@ export class AccumulatePass extends Initializable {
     @Initializable.assert_initialized()
     frame(frameNumber: number, viewport?: GLsizei2): void {
         assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
-            `valid framebuffer objects for accumulation expected (initialize or update was probably not be called`);
+            `valid framebuffer objects for accumulation expected (initialize or update was probably not called`);
 
         if (this._passThrough || this._texture === undefined) {
             return;
