@@ -260,13 +260,13 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         if (clearColor) {
             /* Multiple color attachments either by WebGL2 or WEBGL_draw_buffers can be expected. */
 
-            // const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+            // https://stackoverflow.com/a/48182999
             const isChrome = !!(window as any)['chrome'] &&
                 (!!(window as any)['chrome']['webstore'] || !!(window as any)['chrome']['runtime']);
 
             if (isChrome) {
                 /**
-                 * Unfortunately, the clearBufferfv doesn't work in Chrome (symptome: ID buffer is not cleared), so
+                 * Unfortunately, the clearBufferfv doesn't work in Chrome (symptom: ID buffer is not cleared), so
                  * clear every color buffer with the first clear color.
                  */
                 const color = this._clearColors[0] ? this._clearColors[0] : [0.0, 0.0, 0.0, 1.0];
