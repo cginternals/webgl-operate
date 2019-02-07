@@ -269,8 +269,8 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
                  * Unfortunately, the clearBufferfv doesn't work in Chrome (symptome: ID buffer is not cleared), so
                  * clear every color buffer with the first clear color.
                  */
-                gl.clearColor(
-                    this._clearColors[0][0], this._clearColors[0][1], this._clearColors[0][2], this._clearColors[0][3]);
+                const color = this._clearColors[0] ? this._clearColors[0] : [0.0, 0.0, 0.0, 1.0];
+                gl.clearColor(color[0], color[1], color[2], color[3]);
                 gl.clear(gl.COLOR_BUFFER_BIT);
             }
 
