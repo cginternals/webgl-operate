@@ -57,7 +57,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
     /**
      * Depending on the webgl version and provided bitmask, clears attachments of the framebuffer. Note that this
-     * function is set/unset to gl1Clear or gl2Clear on initialization/uninitialization.
+     * function is set/unset to es2Clear or es3Clear on initialization/uninitialization.
      * @param mask - Bitmask specifying which bits are to be cleared (and thereby which attachments).
      * @param bind - Allows to skip binding the framebuffer (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the framebuffer (e.g., when binding is handled outside).
@@ -259,14 +259,31 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
         if (clearColor) {
             /* Multiple color attachments either by WebGL2 or WEBGL_draw_buffers can be expected. */
+
+            // const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+            const isChrome = !!(window as any)['chrome'] &&
+                (!!(window as any)['chrome']['webstore'] || !!(window as any)['chrome']['runtime']);
+
+            if (isChrome) {
+                /**
+                 * Unfortunately, the clearBufferfv doesn't work in Chrome (symptome: ID buffer is not cleared), so
+                 * clear every color buffer with the first clear color.
+                 */
+                gl.clearColor(
+                    this._clearColors[0][0], this._clearColors[0][1], this._clearColors[0][2], this._clearColors[0][3]);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+
+            /**
+             * Since for chrome, the above code cleared every color buffer with the same color, we clear again, but now
+             * with the corresponding color.
+             * NOTE: In chrome, we are double-clearing here. Be aware that if we remove the code above, some color
+             * bufferes are not cleared at all, while using ONLY the above code would clear them with the wrong color.
+             */
             for (const drawBuffer of colorClearQueue ? colorClearQueue : this._colorClearQueue) {
                 gl.clearBufferfv(gl.COLOR, drawBuffer, this._clearColors[drawBuffer]);
             }
-            /**
-             * Unfortunately, the above code doesn't work in Chrome (symptome: ID buffer is not cleared), so
-             * fallback to this line.
-             */
-            gl.clear(gl.COLOR_BUFFER_BIT);
+
         }
 
         if (clearDepth && clearStencil) {
