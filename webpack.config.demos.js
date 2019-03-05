@@ -7,7 +7,8 @@ module.exports = {
     cache: false,
     entry: {
         'cornell-box': ['cornell-box/cornellbox.ts'],
-        'cubescape': ['cubescape/cubescape.ts']
+        'cubescape': ['cubescape/cubescape.ts'],
+        'shadow-mapping': ['shadow-mapping/shadowmapping.ts']
     },
     devtool: 'source-map',
     output: {

@@ -77,5 +77,14 @@
         ],
         "caption": "Simple demo showcasing how WebXR can be utilized with webgl-operate.",
         "disabled": true
+    },
+    {
+        "target": "shadow-mapping",
+        "title": "Variance Shadow Mapping",
+        "authors": [
+            "asd"
+        ],
+        "caption": "VSM",
+        "disabled": false
     }
 ]
