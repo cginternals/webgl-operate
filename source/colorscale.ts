@@ -318,7 +318,7 @@ export class ColorScale {
             bits[i * stride + 0] = color[0] * 255;
             bits[i * stride + 1] = color[1] * 255;
             bits[i * stride + 2] = color[2] * 255;
-            if (alpha) {
+            if (alpha && color.length === 4) {
                 bits[i * stride + 3] = color[3] * 255;
             }
         }
@@ -340,7 +340,7 @@ export class ColorScale {
             bits[i * stride + 0] = color[0];
             bits[i * stride + 1] = color[1];
             bits[i * stride + 2] = color[2];
-            if (alpha) {
+            if (alpha && color.length === 4) {
                 bits[i * stride + 3] = color[3];
             }
         }

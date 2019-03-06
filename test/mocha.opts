@@ -8,5 +8,4 @@
 --no-timeouts
 --reporter mocha-multi-reporters
 --reporter-options configFile=test/mocha-reporter-options.json
---inspect
 test/**/*.test.ts
