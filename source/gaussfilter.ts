@@ -9,12 +9,6 @@ import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 
 
-// This should be part of GaussFilter, but seems to be not possible in typescript
-export enum Direction {
-  Horizontal = 0,
-  Vertical = 1,
-}
-
 export class GaussFilter extends Initializable {
   protected _kernelSize: GLsizei = 7;
   protected _standardDeviation: GLfloat = 1.0;
@@ -89,7 +83,7 @@ export class GaussFilter extends Initializable {
   }
 
   @Initializable.assert_initialized()
-  filter(texture: Texture2D, direction: Direction): void {
+  filter(texture: Texture2D, direction: GaussFilter.Direction): void {
     const gl = this._context.gl;
     const directionVectors: [vec2, vec2] = [vec2.fromValues(1.0, 0.0), vec2.fromValues(0.0, 1.0)];
 
@@ -98,7 +92,7 @@ export class GaussFilter extends Initializable {
 
     gl.uniform1i(this._uKernelSize, this._kernelSize);
     gl.uniform2iv(this._uTextureSize, texture.size);
-    gl.uniform1f(this._uSigma, this._sigma);
+    gl.uniform1f(this._uSigma, this._standardDeviation);
     gl.uniform1i(this._uRedistribute, this.redistribute ? 1 : 0);
     gl.uniform2fv(this._uDirection, directionVectors[direction]);
 
@@ -109,4 +103,13 @@ export class GaussFilter extends Initializable {
     texture.unbind(gl.TEXTURE0);
     this._program.unbind();
   }
+}
+
+export namespace GaussFilter {
+
+  export enum Direction {
+    Horizontal = 0,
+    Vertical = 1,
+  }
+
 }
