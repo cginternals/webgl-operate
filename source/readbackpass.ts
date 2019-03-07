@@ -29,55 +29,6 @@ import { GLsizei2 } from './tuples';
  */
 export class ReadbackPass extends Initializable {
 
-
-    /**
-     * Whether or not caching of requested depths and ids should be used to reduce performance impact.
-     */
-    set cache(value: boolean) {
-        this._cache = value;
-    }
-
-
-    /**
-     * Sets the framebuffer object that is to be used for depth readback.
-     * @param framebuffer - Framebuffer that is to be used for depth readback.
-     */
-    set depthFBO(framebuffer: Framebuffer) {
-        this._depthFBO = framebuffer;
-    }
-
-    /**
-     * Sets the framebuffer's {@link depthFBO} depth attachment that is to be used for depth readback.
-     * @param attachment - Depth attachment that is to be used for depth readback.
-     */
-    set depthAttachment(attachment: GLenum) {
-        this._depthAttachment = attachment;
-    }
-
-    /**
-     * Sets the framebuffer object that is to be used for id readback.
-     * @param framebuffer - Framebuffer that is to be used for id readback.
-     */
-    set idFBO(framebuffer: Framebuffer) {
-        this._idFBO = framebuffer;
-    }
-
-    /**
-     * Sets the framebuffer's {@link idFBO} id attachment that is to be used for id readback.
-     * @param attachment - ID attachment that is to be used for id readback.
-     */
-    set idAttachment(attachment: GLenum) {
-        this._idAttachment = attachment;
-    }
-
-    /**
-     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
-     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
-     */
-    set coordinateReferenceSize(size: GLsizei2 | undefined) {
-        this._referenceSize = size;
-    }
-
     /**
      * Read-only access to the objects context, used to get context information and WebGL API access.
      */
@@ -451,6 +402,55 @@ export class ReadbackPass extends Initializable {
      */
     frame(): void {
         this.onFrame();
+    }
+
+
+    /**
+     * Whether or not caching of requested depths and ids should be used to reduce performance impact.
+     */
+    set cache(value: boolean) {
+        this._cache = value;
+    }
+
+
+    /**
+     * Sets the framebuffer object that is to be used for depth readback.
+     * @param framebuffer - Framebuffer that is to be used for depth readback.
+     */
+    set depthFBO(framebuffer: Framebuffer) {
+        this._depthFBO = framebuffer;
+    }
+
+    /**
+     * Sets the framebuffer's {@link depthFBO} depth attachment that is to be used for depth readback.
+     * @param attachment - Depth attachment that is to be used for depth readback.
+     */
+    set depthAttachment(attachment: GLenum) {
+        this._depthAttachment = attachment;
+    }
+
+    /**
+     * Sets the framebuffer object that is to be used for id readback.
+     * @param framebuffer - Framebuffer that is to be used for id readback.
+     */
+    set idFBO(framebuffer: Framebuffer) {
+        this._idFBO = framebuffer;
+    }
+
+    /**
+     * Sets the framebuffer's {@link idFBO} id attachment that is to be used for id readback.
+     * @param attachment - ID attachment that is to be used for id readback.
+     */
+    set idAttachment(attachment: GLenum) {
+        this._idAttachment = attachment;
+    }
+
+    /**
+     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
+     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
+     */
+    set coordinateReferenceSize(size: GLsizei2 | undefined) {
+        this._referenceSize = size;
     }
 
 }
