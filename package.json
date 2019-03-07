@@ -62,7 +62,7 @@
         "webpack-rxjs-externals": "~2.0.0"
     },
     "peerDependencies": {
-        "rxjs": "~6.3.3"
+        "rxjs": "~6.4.0"
     },
     "scripts": {
         "build": "webpack-cli --mode development && node pugconfig.js",
