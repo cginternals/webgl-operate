@@ -203,9 +203,8 @@ export class Camera {
         if (this._near === near) {
             return;
         }
-        if (this._near >= this._far) {
+        if (near >= this._far) {
             log(LogLevel.Warning, `near expected to be smaller than far (${this._far}), given ${near}`);
-            return;
         }
         this._near = near;
         this.invalidate(false, true);
@@ -225,9 +224,8 @@ export class Camera {
         if (this._far === far) {
             return;
         }
-        if (this._near >= this._far) {
+        if (this._near >= far) {
             log(LogLevel.Warning, `far expected to be greater than near (${this._near}), given ${far}`);
-            return;
         }
         this._far = far;
         this.invalidate(false, true);
