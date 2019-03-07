@@ -63,7 +63,6 @@ export class MouseEventProvider {
 
         this._element.addEventListener('click', () => this.processPointerLockRequests());
 
-        console.log(IS_IE11);
         /* Prevent unintentional drag content detection by Microsoft Edge, e.g., when processing mouse move events
         during mouse down and up. */
         if (IS_EDGE || IS_IE11) {
