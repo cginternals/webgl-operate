@@ -138,8 +138,13 @@ export class Canvas extends Resizable {
      */
     constructor(element: HTMLCanvasElement | string, attributes?: WebGLContextAttributes) {
         super(); // setup resize event handling
+
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
+
+        /* Register element for style mutation changes to invoke resize events. */
+        this.observe(this._element);
+
         this._mouseEventProvider = new MouseEventProvider(this._element, 200);
         this._touchEventProvider = new TouchEventProvider(this._element, 200);
 

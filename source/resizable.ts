@@ -2,7 +2,7 @@
 /* spellchecker: disable */
 
 import { assert, log, logIf, LogLevel } from './auxiliaries';
-import { GLsizei2 } from './tuples';
+import { GLfloat2, GLsizei2 } from './tuples';
 
 /* spellchecker: enable */
 
@@ -29,11 +29,20 @@ export abstract class Resizable {
     private static eventSupported = false;
 
 
+    private static readonly MUTATION_OBSERVER_CONFIG = {
+        attributes: true,
+        attributeFilter: ['style', 'class'],
+        childList: true,
+        subtree: true,
+    };
+
+    private _mutationObserver: MutationObserver;
+
     /**
      * This function is called when the window is resized (and the event listener was successfully registered). The
      * event is forwarded to each registered resizable object.
      */
-    protected static resize(): void {
+    private static resize(): void {
         assert(Resizable.instances.length > 0, `resize event received without a single resizable registered`);
         Resizable.instances.forEach((item) => item.onResize());
     }
@@ -60,10 +69,8 @@ export abstract class Resizable {
             log(LogLevel.Debug, `computed element size expected in 'px', given ${style.width} ${style.height}`);
             return undefined;
         }
-        const size: GLsizei2 = [parseInt(style.width as string, 10), parseInt(style.height as string, 10)];
-
-        size[0] = Math.round(size[0] * scale);
-        size[1] = Math.round(size[1] * scale);
+        const sizef: GLfloat2 = [parseFloat(style.width as string), parseFloat(style.height as string)];
+        const size: GLsizei2 = [Math.round(sizef[0] * scale), Math.round(sizef[1] * scale)];
 
         return size;
     }
@@ -92,6 +99,31 @@ export abstract class Resizable {
     /* istanbul ignore next */
     protected _resizeEventListener = () => Resizable.resize();
 
+    /* istanbul ignore next */
+    protected _mutationEventListener = () => {
+        this._mutationObserver.takeRecords();
+        /* At this point, a test for actual change could be made, either by comparing to the previous size of the
+        computed style, or by comparing the style for differences in various style attributes... In both cases,
+        the implementation overhead seems huge. For now, the worst thing that might happen is a resize call, that does
+        not actually require to resize anything. In this case, all resize event invocations are expected to lazy-check
+        for changes, e.g., with previous frame or canvas size anyway. Skipping for now. */
+        Resizable.resize();
+    }
+
+
+    /**
+     * Observe a certain element for style or class mutations. Any mutation invokes the resize event.
+     * @param element - element that can be observed for style mutations (style mutation will trigger resize).
+     */
+    protected observe(element: HTMLElement): void {
+        /* Create mutation observer if none was created yet. */
+        if (element !== undefined) {
+            this._mutationObserver = new MutationObserver(this._mutationEventListener);
+        }
+        this._mutationObserver.observe(element, Resizable.MUTATION_OBSERVER_CONFIG);
+    }
+
+
     /**
      * Unregister this instance from the global list of resizable instances. On destruction of the last instance, the
      * resize event handle is removed. Please note that destruction needs to be invoked explicitly.
@@ -105,6 +137,11 @@ export abstract class Resizable {
         /* istanbul ignore next */
         if (Resizable.instances.length === 0 && Resizable.eventSupported) {
             window.removeEventListener(Resizable.EVENT_IDENTIFIER, this._resizeEventListener);
+        }
+
+        /* istanbul ignore next */
+        if (this._mutationObserver) {
+            this._mutationObserver.disconnect();
         }
     }
 
