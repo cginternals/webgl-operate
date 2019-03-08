@@ -36,13 +36,16 @@ export abstract class Resizable {
         subtree: true,
     };
 
+    /**
+     * Mutation observer for listening on element style changes.
+     */
     private _mutationObserver: MutationObserver;
 
     /**
      * This function is called when the window is resized (and the event listener was successfully registered). The
      * event is forwarded to each registered resizable object.
      */
-    private static resize(): void {
+    protected static resize(): void {
         assert(Resizable.instances.length > 0, `resize event received without a single resizable registered`);
         Resizable.instances.forEach((item) => item.onResize());
     }
