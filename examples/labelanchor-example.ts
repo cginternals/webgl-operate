@@ -230,8 +230,8 @@ export class LabelAnchorExample extends Example {
         this._canvas.renderer = this._renderer;
 
         // Create some horizontal rules/lines as reference for the different anchors.
-        const hrStyle = 'z-index: 1; position: absolute; width: 99%; margin: 0;'
-            + 'border-color: #27aae1; border-style: dashed; border-width: 1px;';
+        const hrStyle = 'z-index: 1; position: absolute; width: 98%; margin: 0; margin-left: 1%;'
+            + 'border: none; border-top: 1pt solid #1c75bc;';
 
         const hr0 = document.createElement('hr');
         hr0.setAttribute('style', `${hrStyle} top:  8.3333%;`);
