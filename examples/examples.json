@@ -1,5 +1,11 @@
 [
     {
+        "target": "canvassize-example",
+        "title": "Canvas Size",
+        "object": "CanvasSizeExample",
+        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+    },
+    {
         "target": "labelelide-example",
         "title": "Label Elide",
         "object": "LabelElideExample",

@@ -221,7 +221,7 @@ export class LabelAnchorExample extends Example {
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
-        this._canvas = new Canvas(element, { antialias: true });
+        this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
