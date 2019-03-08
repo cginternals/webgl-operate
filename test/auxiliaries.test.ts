@@ -239,3 +239,24 @@ describe('auxiliaries GETparameter', () => {
     // });
 
 });
+
+
+describe('auxiliaries path', () => {
+
+    it('should return the directory name of a file path', () => {
+        expect(aux.dirname('https://localhost/file.ext')).to.equal('https://localhost');
+        expect(aux.dirname('file.ext')).to.equal('');
+
+        expect(aux.dirname('localhost/file')).to.equal('localhost');
+        expect(aux.dirname('localhost/dir/')).to.equal('localhost/dir');
+    });
+
+    it('should return the base name of a file path', () => {
+        expect(aux.basename('https://localhost/file.ext')).to.equal('file.ext');
+        expect(aux.basename('file.ext')).to.equal('file.ext');
+
+        expect(aux.basename('localhost/file')).to.equal('file');
+        expect(aux.basename('localhost/dir/')).to.equal('');
+    });
+
+});

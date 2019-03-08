@@ -295,6 +295,33 @@ namespace auxiliaries {
         return match[1];
     }
 
+    /**
+     * Path separator used for path related functions such as dirname and basename.
+     */
+    export const PATH_SEPARATOR = '/';
+
+    /**
+     * Returns the directory name of a given (file) path. If no path separator is found, an empty dir name is returned.
+     * @param path - Path string the directory name should be returned of.
+     */
+    export function dirname(path: string): string {
+        if (path.includes(PATH_SEPARATOR) === false) {
+            return '';
+        }
+        return path.substr(0, path.lastIndexOf(PATH_SEPARATOR)).trimLeft();
+    }
+
+    /**
+     * Returns the base name of a given file path. If no path separator is found, the input path is returned.
+     * @param path - Path string the file/base name should be returned of.
+     */
+    export function basename(path: string): string {
+        if (path.includes(PATH_SEPARATOR) === false) {
+            return path;
+        }
+        return path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1).trimRight();
+    }
+
 }
 
 export = auxiliaries;
