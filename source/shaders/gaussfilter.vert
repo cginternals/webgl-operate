@@ -2,7 +2,7 @@
 precision lowp float;
 precision lowp int;
 
-@import ./shaders/facade.vert;
+@import ./facade.vert;
 
 #if __VERSION__ == 100
   attribute vec2 a_vertex;

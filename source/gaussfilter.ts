@@ -58,9 +58,9 @@ export class GaussFilter extends Initializable {
     const gl = this._context.gl;
 
     const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gauss.vert');
-    vert.initialize('');
+    vert.initialize(require('./shaders/gaussfilter.vert'));
     const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gauss.frag');
-    frag.initialize('');
+    frag.initialize(require('./shaders/gaussfilter.frag'));
     this._program = new Program(this._context);
     this._program.initialize([vert, frag]);
 
@@ -71,6 +71,7 @@ export class GaussFilter extends Initializable {
     this._uDirection = this._program.uniform('u_direction');
 
     const aVertex = this._program.attribute('a_vertex', 0);
+    this._ndcQuad = new NdcFillingRectangle(this._context, 'GaussFilterQuad');
     this._ndcQuad.initialize(aVertex);
 
     return true;

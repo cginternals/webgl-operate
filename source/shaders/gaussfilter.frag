@@ -2,7 +2,7 @@
 precision lowp float;
 precision lowp int;
 
-@import ../../source/shaders/facade.frag;
+@import ./facade.frag;
 
 #if __VERSION__ == 100
   #define fragColor gl_FragColor
@@ -37,8 +37,8 @@ void main()
 
   for (int i = 0; i <= u_kernelSize / 2; i++)
   {
-    weights[i] = v_first * pow(E, -(pow(float(i), 2.0) / v_second)));
-    summed_weight[i] += i > 0 ? 2.0 * weights[i] : weights[i];
+    weights[i] = v_first * pow(E, -(pow(float(i), 2.0) / v_second));
+    summed_weight += i > 0 ? 2.0 * weights[i] : weights[i];
   }
 
   if (u_redistribute)
