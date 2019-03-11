@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec2, vec3 } from 'gl-matrix';
+import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 import { assert } from '../auxiliaries';
 import { v3 } from '../gl-matrix-extensions';
@@ -216,7 +216,6 @@ export class Typesetter {
         switch (label.elide) {
             case Label.Elide.Right:
                 return [label.lineWidth - ellipsisWidth, 0.0];
-                break;
             case Label.Elide.Middle:
                 const threshold = label.lineWidth / 2 - ellipsisWidth / 2;
                 return [threshold, threshold];
@@ -396,6 +395,16 @@ export class Typesetter {
         // const pen: vec2 = vec2.fromValues(-fontFace.glyphTexturePadding[3], -Typesetter.lineAnchorOffset(label));
         const pen: vec2 = vec2.fromValues(0.0, -Typesetter.lineAnchorOffset(label));
 
+        const penMin = vec2.create();
+        const penMax = vec2.create();
+        console.log('line pen start', pen[1]);
+        const setMinMaxPen = (p: vec2) => {
+            penMax[0] = Math.max(p[0], penMax[0]);
+            penMax[1] = Math.max(p[1], penMax[1]);
+            penMin[0] = Math.min(p[0], penMin[0]);
+            penMin[1] = Math.min(p[1], penMin[1]);
+        };
+
         const lines = new Array<Line>();
         let vertexIndex = 0;
 
@@ -448,6 +457,7 @@ export class Typesetter {
                     lines.push([firstIndexOfLine, vertexIndex, pen[0]]);
                     firstIndexOfLine = vertexIndex;
 
+                    setMinMaxPen(pen);
                     pen[0] = 0.0;
                     pen[1] -= fontFace.lineHeight;
 
@@ -464,6 +474,7 @@ export class Typesetter {
                         ++vertexIndex;
                     }
                     pen[0] += advances[i - offset] + kernings[i - offset];
+                    setMinMaxPen(pen);
                 }
             }
             if (firstIndexOfLine < vertexIndex) {
@@ -525,6 +536,24 @@ export class Typesetter {
         // Apply transforms (alignment and static label transform) to all written vertices.
         Typesetter.transform(label, vertices, lines);
         vertices.shrink(vertexIndex);
+
+
+        const extent = vec2.fromValues(penMax[0] - penMin[0], penMax[1] - penMin[1]);
+        console.log('line anchor' + label.lineAnchor, extent, Typesetter.lineAnchorOffset(label));
+        // vec2.sub(extent, extent, vec2.fromValues(0.0, Typesetter.lineAnchorOffset(label)));
+        // console.log('done: line anchor?', extent);
+
+        // transform extent
+        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), label.staticTransform);
+        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(extent[0], 0, 0, 1), label.staticTransform);
+        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, extent[1], 0, 1), label.staticTransform);
+
+        vec2.set(extent, vec4.distance(lr, ll), vec4.distance(ul, ll));
+
+
+        console.log('line set', extent);
+        label.extent = [extent[0], extent[1]];
+
 
         return vertexIndex;
     }

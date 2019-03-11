@@ -56,7 +56,7 @@ export abstract class Label {
     /** @see {@link type} */
     protected _type: Label.Type;
 
-    /** @see {@link transform} */
+    /** @see {@link staticTransform} */
     protected _staticTransform: mat4;
 
     /** @see {@link dynamicTransform} */
@@ -460,15 +460,32 @@ export abstract class Label {
     }
 
     /**
-     * The typesetter sets this extent after typesetting and applying the transform.
+     * The typesetter sets this extent after typesetting and applying the static transform.
      */
     set extent(e: [number, number]) {
+        console.log('set extent', e);
+        // console.log('transforms:', this._type, this._staticTransform, this._dynamicTransform);
         this._extent = e;
+
+        // const w = vec4.fromValues(this._extent[0], 0, 0, 0);
+        // // vec3.scale(w, w, mat4.getScaling(vec3.create(), this._dynamicTransform)[0]);
+        // vec4.transformMat4(w, w, this._dynamicTransform);
+        // const h = vec4.fromValues(0, this._extent[1], 0, 0);
+        // // vec3.scale(h, h, mat4.getScaling(vec3.create(), this._dynamicTransform)[1]);
+        // vec4.transformMat4(h, h, this._dynamicTransform);
+        // console.log('get extent:', vec4.length(w), vec4.length(h));
     }
     /**
      * Returns the width and height of the typset label. Both are zero if not typeset yet.
      */
     get extent(): [number, number] {
+        // console.log('get extent: dynami scale is', mat4.getScaling(vec3.create(), this._dynamicTransform));
+
+        // const w = vec3.fromValues(this._extent[0], 0, 0);
+        // vec3.scale(w, w, mat4.getScaling(vec3.create(), this._dynamicTransform)[0]);
+        // const h = vec3.fromValues(0, this._extent[1], 0);
+        // vec3.scale(h, h, mat4.getScaling(vec3.create(), this._dynamicTransform)[1]);
+        // console.log('get extent:', w[0], h[1]);
         return this._extent;
     }
 
