@@ -1,7 +1,6 @@
 
 import { vec3 } from 'webgl-operate';
 
-import { GaussFilter } from '../../source/gaussfilter';
 import { Cube } from './cube';
 import { Plane } from './plane';
 
@@ -11,7 +10,7 @@ import {
   Context,
   DefaultFramebuffer,
   Framebuffer,
-  //GaussFilter,
+  GaussFilter,
   Invalidate,
   MouseEventProvider,
   Navigation,
