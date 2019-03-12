@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import { ChangeLookup } from '../changelookup';
 import { Color } from '../color';
@@ -460,33 +460,30 @@ export abstract class Label {
     }
 
     /**
-     * The typesetter sets this extent after typesetting and applying the static transform.
+     * The typesetter sets this extent after typesetting and applying the static transform. Don't set this manually
+     * without typesetting.
      */
     set extent(e: [number, number]) {
         console.log('set extent', e);
-        // console.log('transforms:', this._type, this._staticTransform, this._dynamicTransform);
         this._extent = e;
 
-        // const w = vec4.fromValues(this._extent[0], 0, 0, 0);
-        // // vec3.scale(w, w, mat4.getScaling(vec3.create(), this._dynamicTransform)[0]);
-        // vec4.transformMat4(w, w, this._dynamicTransform);
-        // const h = vec4.fromValues(0, this._extent[1], 0, 0);
-        // // vec3.scale(h, h, mat4.getScaling(vec3.create(), this._dynamicTransform)[1]);
-        // vec4.transformMat4(h, h, this._dynamicTransform);
-        // console.log('get extent:', vec4.length(w), vec4.length(h));
+        // TODO I don't understand these values for labels in screen space
+        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this._dynamicTransform);
+        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(e[0], 0, 0, 1), this._dynamicTransform);
+        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, e[1], 0, 1), this._dynamicTransform);
+        console.log('get extent:', vec4.distance(lr, ll), vec4.distance(ul, ll));
+
     }
     /**
      * Returns the width and height of the typset label. Both are zero if not typeset yet.
+     * The static transform and the dynamic transform are already applied.
      */
     get extent(): [number, number] {
-        // console.log('get extent: dynami scale is', mat4.getScaling(vec3.create(), this._dynamicTransform));
 
-        // const w = vec3.fromValues(this._extent[0], 0, 0);
-        // vec3.scale(w, w, mat4.getScaling(vec3.create(), this._dynamicTransform)[0]);
-        // const h = vec3.fromValues(0, this._extent[1], 0);
-        // vec3.scale(h, h, mat4.getScaling(vec3.create(), this._dynamicTransform)[1]);
-        // console.log('get extent:', w[0], h[1]);
-        return this._extent;
+        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this._dynamicTransform);
+        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(this._extent[0], 0, 0, 1), this._dynamicTransform);
+        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, this._extent[1], 0, 1), this._dynamicTransform);
+        return [vec4.distance(lr, ll), vec4.distance(ul, ll)];
     }
 
     /*

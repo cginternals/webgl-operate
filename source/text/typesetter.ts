@@ -427,8 +427,10 @@ export class Typesetter {
 
         for (const line of lines) {
             Typesetter.transformAlignment(line[2], label.alignment, vertices, line[0], line[1]);
+
             Typesetter.updateRectangleMinMax(boundingRectangle,
                 Typesetter.getMinMaxVertices(vertices, line[0], line[1]));
+
             Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
 
