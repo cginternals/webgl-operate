@@ -339,69 +339,49 @@ export class Typesetter {
     }
 
     /**
+     * Returns a vec2 [min, max] containing the minimum and the maximum of the given values.
+     * @param currentMin - the current minimum (e.g., initialized to +Infinity)
+     * @param currentMax - the current maximum (e.g., initialized to -Infinity)
+     * @param values - find the maximum and minimum of the given values
+     */
+    private static minMax(currentMin: number, currentMax: number, values: number[]): vec2 {
+        const min = Math.min(currentMin, ...values);
+        const max = Math.max(currentMax, ...values);
+        return vec2.fromValues(min, max);
+    }
+
+    /**
      * Returns [minX, minY, minZ, maxX, maxY, maxZ] of the vertices coordinates, i.e., origins,
      * origins + tangents, origins + ups, from which a bounding rectangle can be calculated.
      * @param vertices - Glyph vertices to be transformed (expected untransformed, in typesetting space).
      * @param begin - Vertex index to start alignment at.
      * @param end - Vertex index to stop alignment at.
      */
-    private static getMinMax(vertices: GlyphVertices, begin: number, end: number)
+    private static getMinMaxVertices(vertices: GlyphVertices, begin: number, end: number)
         : [number, number, number, number, number, number] {
 
-        let minX = Math.min(
-            vertices.origin(begin)[0],
-            vertices.origin(begin)[0], + vertices.up(begin)[0],
-            vertices.origin(begin)[0], + vertices.tangent(begin)[0]);
-        let maxX = Math.max(
-            vertices.origin(begin)[0],
-            vertices.origin(begin)[0] + vertices.up(begin)[0],
-            vertices.origin(begin)[0] + vertices.tangent(begin)[0]);
+        let minX = Number.POSITIVE_INFINITY;
+        let maxX = Number.NEGATIVE_INFINITY;
+        let minY = Number.POSITIVE_INFINITY;
+        let maxY = Number.NEGATIVE_INFINITY;
+        let minZ = Number.POSITIVE_INFINITY;
+        let maxZ = Number.NEGATIVE_INFINITY;
 
-        let minY = Math.min(
-            vertices.origin(begin)[1],
-            vertices.origin(begin)[1] + vertices.up(begin)[1],
-            vertices.origin(begin)[1] + vertices.tangent(begin)[1]);
-        let maxY = Math.max(
-            vertices.origin(begin)[1],
-            vertices.origin(begin)[1] + vertices.up(begin)[1],
-            vertices.origin(begin)[1] + vertices.tangent(begin)[1]);
+        for (let i: number = begin; i < end; ++i) {
+            const x = Typesetter.minMax(minX, maxX, [vertices.origin(i)[0], vertices.origin(i)[0] + vertices.up(i)[0],
+            vertices.origin(i)[0] + vertices.tangent(i)[0]]);
+            minX = x[0];
+            maxX = x[1];
 
-        let minZ = Math.min(
-            vertices.origin(begin)[2],
-            vertices.origin(begin)[2] + vertices.up(begin)[2],
-            vertices.origin(begin)[2] + vertices.tangent(begin)[2]);
-        let maxZ = Math.max(
-            vertices.origin(begin)[2],
-            vertices.origin(begin)[2] + vertices.up(begin)[2],
-            vertices.origin(begin)[2] + vertices.tangent(begin)[2]);
+            const y = Typesetter.minMax(minY, maxY, [vertices.origin(i)[1], vertices.origin(i)[1] + vertices.up(i)[1],
+            vertices.origin(i)[1] + vertices.tangent(i)[1]]);
+            minY = y[0];
+            maxY = y[1];
 
-        for (let i: number = begin + 1; i < end; ++i) {
-            minX = Math.min(minX,
-                vertices.origin(i)[0],
-                vertices.origin(i)[0] + vertices.up(i)[0],
-                vertices.origin(i)[0] + vertices.tangent(i)[0]);
-            maxX = Math.max(maxX,
-                vertices.origin(i)[0],
-                vertices.origin(i)[0] + vertices.up(i)[0],
-                vertices.origin(i)[0] + vertices.tangent(i)[0]);
-
-            minY = Math.min(minY,
-                vertices.origin(i)[1],
-                vertices.origin(i)[1] + vertices.up(i)[1],
-                vertices.origin(i)[1] + vertices.tangent(i)[1]);
-            maxY = Math.max(maxY,
-                vertices.origin(i)[1],
-                vertices.origin(i)[1] + vertices.up(i)[1],
-                vertices.origin(i)[1] + vertices.tangent(i)[1]);
-
-            minZ = Math.min(minZ,
-                vertices.origin(i)[2],
-                vertices.origin(i)[2] + vertices.up(i)[2],
-                vertices.origin(i)[2] + vertices.tangent(i)[2]);
-            maxZ = Math.max(maxZ,
-                vertices.origin(i)[2],
-                vertices.origin(i)[2] + vertices.up(i)[2],
-                vertices.origin(i)[2] + vertices.tangent(i)[2]);
+            const z = Typesetter.minMax(minZ, maxZ, [vertices.origin(i)[2], vertices.origin(i)[2] + vertices.up(i)[2],
+            vertices.origin(i)[2] + vertices.tangent(i)[2]]);
+            minZ = z[0];
+            maxZ = z[1];
         }
 
         return [minX, minY, minZ, maxX, maxY, maxZ];
@@ -442,12 +422,13 @@ export class Typesetter {
     private static transform(label: Label, vertices: GlyphVertices, lines: Array<Line>): void {
 
         const boundingRectangle = [
-            Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE,
-            -Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE];
+            Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
+            Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
 
         for (const line of lines) {
             Typesetter.transformAlignment(line[2], label.alignment, vertices, line[0], line[1]);
-            Typesetter.updateRectangleMinMax(boundingRectangle, Typesetter.getMinMax(vertices, line[0], line[1]));
+            Typesetter.updateRectangleMinMax(boundingRectangle,
+                Typesetter.getMinMaxVertices(vertices, line[0], line[1]));
             Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
 
