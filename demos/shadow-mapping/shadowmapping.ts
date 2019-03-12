@@ -1,8 +1,10 @@
 
-import { vec3 } from 'webgl-operate';
+import { vec2, vec3 } from 'webgl-operate';
 
 import { Cube } from './cube';
 import { Plane } from './plane';
+
+//import { ShadowMappingPass } from '../../source/shadowmappingpass';
 
 import {
   Camera,
@@ -18,6 +20,7 @@ import {
   Renderbuffer,
   Renderer,
   Shader,
+  ShadowMappingPass,
   Texture2D,
   Wizard,
 } from 'webgl-operate';
@@ -40,24 +43,18 @@ class ShadowMappingRenderer extends Renderer {
   protected _camera: Camera;
   protected _light: Camera;
 
-  protected _shadowMapFBO: Framebuffer;
-  protected _shadowMapTexture: Texture2D;
-  protected _shadowMapRenderbuffer: Renderbuffer;
-
   protected _intermediateBlurFBO: Framebuffer;
   protected _intermediateBlurTexture: Texture2D;
   protected _intermediateBlurRenderbuffer: Renderbuffer;
+
   protected _blurFBO: Framebuffer;
   protected _blurTexture: Texture2D;
   protected _blurRenderbuffer: Renderbuffer;
+
   protected _gaussFilter: GaussFilter;
+  protected _shadowMappingPass: ShadowMappingPass;
 
-  protected _shadowProgram: Program;
   protected _shadowMappingProgram: Program;
-
-  protected _uLightViewMatrix: WebGLUniformLocation;
-  protected _uLightProjectionMatrix: WebGLUniformLocation;
-  protected _uLightFarPlane: WebGLUniformLocation;
 
   protected _uCameraViewProjectionMatrix: WebGLUniformLocation;
   protected _uShadowViewMatrix: WebGLUniformLocation;
@@ -76,10 +73,6 @@ class ShadowMappingRenderer extends Renderer {
       this._extensions = true;
     }
 
-    this._shadowMapTexture = new Texture2D(this._context, 'ShadowMapTexture');
-    this._shadowMapRenderbuffer = new Renderbuffer(this._context, 'ShadowMapRenderbuffer');
-    this._shadowMapFBO = new Framebuffer(this._context, 'ShadowMapFramebuffer');
-
     this._intermediateBlurTexture = new Texture2D(this._context, 'IntermediateBlurTexture');
     this._intermediateBlurRenderbuffer = new Renderbuffer(this._context, 'IntermediateBlurRenderbuffer');
     this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
@@ -90,14 +83,6 @@ class ShadowMappingRenderer extends Renderer {
     this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
     this._defaultFBO.initialize();
 
-    const shadowVert = new Shader(this._context, gl.VERTEX_SHADER, 'shadow.vert');
-    shadowVert.initialize(require('./shadow.vert'));
-    const shadowFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadow.frag');
-    shadowFrag.initialize(require('./shadow.frag'));
-
-    this._shadowProgram = new Program(this._context);
-    this._shadowProgram.initialize([shadowVert, shadowFrag]);
-
     const shadowMappingVert = new Shader(this._context, gl.VERTEX_SHADER, 'shadowMapping.vert');
     shadowMappingVert.initialize(require('./shadowMapping.vert'));
     const shadowMappingFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadowMapping.frag');
@@ -105,11 +90,6 @@ class ShadowMappingRenderer extends Renderer {
 
     this._shadowMappingProgram = new Program(this._context);
     this._shadowMappingProgram.initialize([shadowMappingVert, shadowMappingFrag]);
-    const aVertex = this._shadowMappingProgram.attribute('a_vertex', 0);
-
-    this._uLightViewMatrix = this._shadowProgram.uniform('u_LightViewMatrix');
-    this._uLightProjectionMatrix = this._shadowProgram.uniform('u_LightProjectionMatrix');
-    this._uLightFarPlane = this._shadowProgram.uniform('u_LightFarPlane');
 
     this._uShadowViewMatrix = this._shadowMappingProgram.uniform('u_LightViewMatrix');
     this._uShadowProjectionMatrix = this._shadowMappingProgram.uniform('u_LightProjectionMatrix');
@@ -134,13 +114,15 @@ class ShadowMappingRenderer extends Renderer {
     this._navigation.camera = this._camera;
 
     this._cube = new Cube(this._context, 'cube');
-    this._cube.initialize(aVertex);
+    this._cube.initialize(0);
 
     this._plane = new Plane(this._context, 'plane');
-    this._plane.initialize(aVertex);
+    this._plane.initialize(0);
 
     this._gaussFilter = new GaussFilter(this._context);
     this._gaussFilter.initialize();
+
+    this._shadowMappingPass = new ShadowMappingPass(this._context);
 
     return true;
   }
@@ -158,14 +140,11 @@ class ShadowMappingRenderer extends Renderer {
 
     this._defaultFBO.uninitialize();
 
-    this._shadowMapFBO.uninitialize();
-    this._shadowMapTexture.uninitialize();
-    this._shadowMapRenderbuffer.uninitialize();
-
     this._cube.uninitialize();
     this._plane.uninitialize();
 
     this._gaussFilter.uninitialize();
+    this._shadowMappingPass.uninitialize();
   }
 
   protected onUpdate(): boolean {
@@ -200,23 +179,17 @@ class ShadowMappingRenderer extends Renderer {
       this._blurFBO.clearDepth(1.0);
     }
 
-    if (!this._shadowMapFBO.initialized) {
-      this._shadowMapTexture.initialize(this._frameSize[0], this._frameSize[1], gl.RG16F, gl.RG, gl.FLOAT);
-      this._shadowMapTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-      this._shadowMapTexture.filter(gl.LINEAR, gl.LINEAR);
-      this._shadowMapRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
-      this._shadowMapFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._shadowMapTexture]
-        , [gl.DEPTH_ATTACHMENT, this._shadowMapRenderbuffer]]);
-      this._shadowMapFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
-      this._shadowMapFBO.clearDepth(1.0);
+    if (!this._shadowMappingPass.initialized) {
+      this._shadowMappingPass.initialize(
+        vec2.fromValues(this._frameSize[0], this._frameSize[1]), this._light, 0);
     }
 
     if (this._altered.frameSize) {
       this._intermediateBlurFBO.resize(this._frameSize[0], this._frameSize[1]);
       this._blurFBO.resize(this._frameSize[0], this._frameSize[1]);
-      this._shadowMapFBO.resize(this._frameSize[0], this._frameSize[1]);
       this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
       this._light.viewport = [this._frameSize[0], this._frameSize[1]];
+      this._shadowMappingPass.resize(vec2.fromValues(this._frameSize[0], this._frameSize[1]));
     }
     if (this._altered.canvasSize) {
       this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
@@ -233,42 +206,29 @@ class ShadowMappingRenderer extends Renderer {
   protected onFrame(frameNumber: number): void {
     const gl = this._context.gl;
 
-    gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.FRONT);
-
-    this._shadowMapFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-    this._shadowProgram.bind();
-
-    gl.uniformMatrix4fv(this._uLightViewMatrix, gl.GL_FALSE, this._light.view);
-    gl.uniformMatrix4fv(this._uLightProjectionMatrix, gl.GL_FALSE, this._light.projection);
-    gl.uniform1f(this._uLightFarPlane, this._light.far);
+    this._shadowMappingPass.begin();
 
     this._cube.bind();
     this._cube.draw();
     this._plane.bind();
     this._plane.draw();
 
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.CULL_FACE);
+    this._shadowMappingPass.end();
 
     this._intermediateBlurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-    this._gaussFilter.filter(this._shadowMapTexture, GaussFilter.Direction.Horizontal);
+    this._gaussFilter.filter(this._shadowMappingPass.shadowMapTexture, GaussFilter.Direction.Horizontal);
 
     this._blurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
     this._gaussFilter.filter(this._intermediateBlurTexture, GaussFilter.Direction.Vertical);
 
     gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 
     this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
     this._shadowMappingProgram.bind();
 
-    this._shadowMapTexture.bind(gl.TEXTURE0);
+    this._blurTexture.bind(gl.TEXTURE0);
     gl.uniformMatrix4fv(this._uCameraViewProjectionMatrix, gl.GL_FALSE, this._camera.viewProjection);
     gl.uniformMatrix4fv(this._uShadowViewMatrix, gl.GL_FALSE, this._light.view);
     gl.uniformMatrix4fv(this._uShadowProjectionMatrix, gl.GL_FALSE, this._light.projection);
@@ -280,8 +240,8 @@ class ShadowMappingRenderer extends Renderer {
     this._plane.draw();
 
     this._plane.unbind();
-    this._shadowMapTexture.unbind(gl.TEXTURE0);
-    this._shadowProgram.unbind();
+    this._shadowMappingPass.shadowMapTexture.unbind(gl.TEXTURE0);
+    this._shadowMappingProgram.unbind();
 
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.DEPTH_TEST);
