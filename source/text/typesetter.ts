@@ -329,8 +329,6 @@ export class Typesetter {
     private static updateRectangleMinMax(currentRectangle: number[], newRectangle: number[]): void {
         assert(currentRectangle.length === 6 && newRectangle.length === 6, `expected the rectangles to have 6 values!`);
 
-        console.log('>>>', currentRectangle[1], newRectangle[1], currentRectangle[4], newRectangle[4]);
-
         let i = 0;
         for (; i < 3; i++) {
             currentRectangle[i] = Math.min(currentRectangle[i], newRectangle[i]);
@@ -351,59 +349,59 @@ export class Typesetter {
         : [number, number, number, number, number, number] {
 
         let minX = Math.min(
-            vertices.origins[begin],
-            vertices.origins[begin] + vertices.ups[begin],
-            vertices.origins[begin] + vertices.tangents[begin]);
+            vertices.origin(begin)[0],
+            vertices.origin(begin)[0], + vertices.up(begin)[0],
+            vertices.origin(begin)[0], + vertices.tangent(begin)[0]);
         let maxX = Math.max(
-            vertices.origins[begin],
-            vertices.origins[begin] + vertices.ups[begin],
-            vertices.origins[begin] + vertices.tangents[begin]);
+            vertices.origin(begin)[0],
+            vertices.origin(begin)[0] + vertices.up(begin)[0],
+            vertices.origin(begin)[0] + vertices.tangent(begin)[0]);
 
         let minY = Math.min(
-            vertices.origins[begin + 1],
-            vertices.origins[begin + 1] + vertices.ups[begin + 1],
-            vertices.origins[begin + 1] + vertices.tangents[begin + 1]);
+            vertices.origin(begin)[1],
+            vertices.origin(begin)[1] + vertices.up(begin)[1],
+            vertices.origin(begin)[1] + vertices.tangent(begin)[1]);
         let maxY = Math.max(
-            vertices.origins[begin + 1],
-            vertices.origins[begin + 1] + vertices.ups[begin + 1],
-            vertices.origins[begin + 1] + vertices.tangents[begin + 1]);
+            vertices.origin(begin)[1],
+            vertices.origin(begin)[1] + vertices.up(begin)[1],
+            vertices.origin(begin)[1] + vertices.tangent(begin)[1]);
 
         let minZ = Math.min(
-            vertices.origins[begin + 2],
-            vertices.origins[begin + 2] + vertices.ups[begin + 2],
-            vertices.origins[begin + 2] + vertices.tangents[begin + 2]);
+            vertices.origin(begin)[2],
+            vertices.origin(begin)[2] + vertices.up(begin)[2],
+            vertices.origin(begin)[2] + vertices.tangent(begin)[2]);
         let maxZ = Math.max(
-            vertices.origins[begin + 2],
-            vertices.origins[begin + 2] + vertices.ups[begin + 2],
-            vertices.origins[begin + 2] + vertices.tangents[begin + 2]);
+            vertices.origin(begin)[2],
+            vertices.origin(begin)[2] + vertices.up(begin)[2],
+            vertices.origin(begin)[2] + vertices.tangent(begin)[2]);
 
-        for (let i = begin + 3; i < end; i += 3) {
+        for (let i: number = begin + 1; i < end; ++i) {
             minX = Math.min(minX,
-                vertices.origins[i],
-                vertices.origins[i] + vertices.ups[i],
-                vertices.origins[i] + vertices.tangents[i]);
+                vertices.origin(i)[0],
+                vertices.origin(i)[0] + vertices.up(i)[0],
+                vertices.origin(i)[0] + vertices.tangent(i)[0]);
             maxX = Math.max(maxX,
-                vertices.origins[i],
-                vertices.origins[i] + vertices.ups[i],
-                vertices.origins[i] + vertices.tangents[i]);
+                vertices.origin(i)[0],
+                vertices.origin(i)[0] + vertices.up(i)[0],
+                vertices.origin(i)[0] + vertices.tangent(i)[0]);
 
             minY = Math.min(minY,
-                vertices.origins[i + 1],
-                vertices.origins[i + 1] + vertices.ups[i + 1],
-                vertices.origins[i + 1] + vertices.tangents[i + 1]);
+                vertices.origin(i)[1],
+                vertices.origin(i)[1] + vertices.up(i)[1],
+                vertices.origin(i)[1] + vertices.tangent(i)[1]);
             maxY = Math.max(maxY,
-                vertices.origins[i + 1],
-                vertices.origins[i + 1] + vertices.ups[i + 1],
-                vertices.origins[i + 1] + vertices.tangents[i + 1]);
+                vertices.origin(i)[1],
+                vertices.origin(i)[1] + vertices.up(i)[1],
+                vertices.origin(i)[1] + vertices.tangent(i)[1]);
 
             minZ = Math.min(minZ,
-                vertices.origins[i + 2],
-                vertices.origins[i + 2] + vertices.ups[i + 2],
-                vertices.origins[i + 2] + vertices.tangents[i + 2]);
+                vertices.origin(i)[2],
+                vertices.origin(i)[2] + vertices.up(i)[2],
+                vertices.origin(i)[2] + vertices.tangent(i)[2]);
             maxZ = Math.max(maxZ,
-                vertices.origins[i + 2],
-                vertices.origins[i + 2] + vertices.ups[i + 2],
-                vertices.origins[i + 2] + vertices.tangents[i + 2]);
+                vertices.origin(i)[2],
+                vertices.origin(i)[2] + vertices.up(i)[2],
+                vertices.origin(i)[2] + vertices.tangent(i)[2]);
         }
 
         return [minX, minY, minZ, maxX, maxY, maxZ];
@@ -453,13 +451,10 @@ export class Typesetter {
             Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
 
-        console.log('>bb rect', boundingRectangle);
-
-        // transform extent
+        // transform extent from Typesetting Space to label space (depending on the label, e.g. screen space (px) or
+        // world space)
         const width = boundingRectangle[3] - boundingRectangle[0];
         const height = boundingRectangle[4] - boundingRectangle[1];
-
-        console.log('>>bb w h', width, height);
 
         const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), label.staticTransform);
         const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(width, 0, 0, 1), label.staticTransform);
@@ -467,7 +462,6 @@ export class Typesetter {
 
         const extent = vec2.fromValues(vec4.distance(lr, ll), vec4.distance(ul, ll));
 
-        console.log('>>bb extent', extent);
         label.extent = [extent[0], extent[1]];
     }
 
@@ -504,16 +498,6 @@ export class Typesetter {
 
         // const pen: vec2 = vec2.fromValues(-fontFace.glyphTexturePadding[3], -Typesetter.lineAnchorOffset(label));
         const pen: vec2 = vec2.fromValues(0.0, -Typesetter.lineAnchorOffset(label));
-
-        const penMin = vec2.create();
-        const penMax = vec2.create();
-        console.log('line pen start', pen[1]);
-        const setMinMaxPen = (p: vec2) => {
-            penMax[0] = Math.max(p[0], penMax[0]);
-            penMax[1] = Math.max(p[1], penMax[1]);
-            penMin[0] = Math.min(p[0], penMin[0]);
-            penMin[1] = Math.min(p[1], penMin[1]);
-        };
 
         const lines = new Array<Line>();
         let vertexIndex = 0;
@@ -567,7 +551,6 @@ export class Typesetter {
                     lines.push([firstIndexOfLine, vertexIndex, pen[0]]);
                     firstIndexOfLine = vertexIndex;
 
-                    setMinMaxPen(pen);
                     pen[0] = 0.0;
                     pen[1] -= fontFace.lineHeight;
 
@@ -584,7 +567,6 @@ export class Typesetter {
                         ++vertexIndex;
                     }
                     pen[0] += advances[i - offset] + kernings[i - offset];
-                    setMinMaxPen(pen);
                 }
             }
             if (firstIndexOfLine < vertexIndex) {
@@ -646,24 +628,6 @@ export class Typesetter {
         // Apply transforms (alignment and static label transform) to all written vertices.
         Typesetter.transform(label, vertices, lines);
         vertices.shrink(vertexIndex);
-
-
-        const extent = vec2.fromValues(penMax[0] - penMin[0], penMax[1] - penMin[1]);
-        console.log('line anchor' + label.lineAnchor, extent, Typesetter.lineAnchorOffset(label));
-        // vec2.sub(extent, extent, vec2.fromValues(0.0, Typesetter.lineAnchorOffset(label)));
-        // console.log('done: line anchor?', extent);
-
-        // transform extent
-        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), label.staticTransform);
-        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(extent[0], 0, 0, 1), label.staticTransform);
-        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, extent[1], 0, 1), label.staticTransform);
-
-        vec2.set(extent, vec4.distance(lr, ll), vec4.distance(ul, ll));
-
-
-        console.log('>>pen extent', extent);
-        label.extent = [extent[0], extent[1]];
-
 
         return vertexIndex;
     }
