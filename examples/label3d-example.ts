@@ -219,6 +219,24 @@ export class Label3DExample extends Example {
         this._renderer = new Label3DRenderer();
         this._canvas.renderer = this._renderer;
 
+        // Create a target cross as reference for coordinate origin [0,0,0]
+
+        const hlStyle = 'z-index: 1; position: absolute; width: 100%; margin: 0; margin-left: 0%;'
+            + 'border: none; border-bottom: 1pt solid #1c75bc; border-top: 1pt solid #1c75bc;';
+        const vlStyle = 'z-index: 1; position: absolute; height: 100%; margin: 0; margin-top: 0%;'
+            + 'border: none; border-left: 1pt solid #1cbc75; border-right: 1pt solid #1cbc75;';
+
+        const hl = document.createElement('hl');
+        hl.setAttribute('style', `${hlStyle} top: 50%;`);
+        const vl = document.createElement('vl');
+        vl.setAttribute('style', `${vlStyle} left: 50%;`);
+
+
+        const parent = this._canvas.element!.parentElement!;
+        const reference = this._canvas.element!;
+        parent.insertBefore(hl, reference);
+        parent.insertBefore(vl, reference);
+
         return true;
     }
 
