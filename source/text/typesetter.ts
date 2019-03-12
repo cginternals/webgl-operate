@@ -323,6 +323,93 @@ export class Typesetter {
     }
 
     /**
+     * @param currentRectangle - [minX, minY, minZ, maxX, maxY, maxZ] is updated in-place
+     * @param newRectangle - [minX, minY, minZ, maxX, maxY, maxZ] used to update currentRectangle
+     */
+    private static updateRectangleMinMax(currentRectangle: number[], newRectangle: number[]): void {
+        assert(currentRectangle.length === 6 && newRectangle.length === 6, `expected the rectangles to have 6 values!`);
+
+        console.log('>>>', currentRectangle[1], newRectangle[1], currentRectangle[4], newRectangle[4]);
+
+        let i = 0;
+        for (; i < 3; i++) {
+            currentRectangle[i] = Math.min(currentRectangle[i], newRectangle[i]);
+        }
+        for (; i < 6; i++) {
+            currentRectangle[i] = Math.max(currentRectangle[i], newRectangle[i]);
+        }
+    }
+
+    /**
+     * Returns [minX, minY, minZ, maxX, maxY, maxZ] of the vertices coordinates, i.e., origins,
+     * origins + tangents, origins + ups, from which a bounding rectangle can be calculated.
+     * @param vertices - Glyph vertices to be transformed (expected untransformed, in typesetting space).
+     * @param begin - Vertex index to start alignment at.
+     * @param end - Vertex index to stop alignment at.
+     */
+    private static getMinMax(vertices: GlyphVertices, begin: number, end: number)
+        : [number, number, number, number, number, number] {
+
+        let minX = Math.min(
+            vertices.origins[begin],
+            vertices.origins[begin] + vertices.ups[begin],
+            vertices.origins[begin] + vertices.tangents[begin]);
+        let maxX = Math.max(
+            vertices.origins[begin],
+            vertices.origins[begin] + vertices.ups[begin],
+            vertices.origins[begin] + vertices.tangents[begin]);
+
+        let minY = Math.min(
+            vertices.origins[begin + 1],
+            vertices.origins[begin + 1] + vertices.ups[begin + 1],
+            vertices.origins[begin + 1] + vertices.tangents[begin + 1]);
+        let maxY = Math.max(
+            vertices.origins[begin + 1],
+            vertices.origins[begin + 1] + vertices.ups[begin + 1],
+            vertices.origins[begin + 1] + vertices.tangents[begin + 1]);
+
+        let minZ = Math.min(
+            vertices.origins[begin + 2],
+            vertices.origins[begin + 2] + vertices.ups[begin + 2],
+            vertices.origins[begin + 2] + vertices.tangents[begin + 2]);
+        let maxZ = Math.max(
+            vertices.origins[begin + 2],
+            vertices.origins[begin + 2] + vertices.ups[begin + 2],
+            vertices.origins[begin + 2] + vertices.tangents[begin + 2]);
+
+        for (let i = begin + 3; i < end; i += 3) {
+            minX = Math.min(minX,
+                vertices.origins[i],
+                vertices.origins[i] + vertices.ups[i],
+                vertices.origins[i] + vertices.tangents[i]);
+            maxX = Math.max(maxX,
+                vertices.origins[i],
+                vertices.origins[i] + vertices.ups[i],
+                vertices.origins[i] + vertices.tangents[i]);
+
+            minY = Math.min(minY,
+                vertices.origins[i + 1],
+                vertices.origins[i + 1] + vertices.ups[i + 1],
+                vertices.origins[i + 1] + vertices.tangents[i + 1]);
+            maxY = Math.max(maxY,
+                vertices.origins[i + 1],
+                vertices.origins[i + 1] + vertices.ups[i + 1],
+                vertices.origins[i + 1] + vertices.tangents[i + 1]);
+
+            minZ = Math.min(minZ,
+                vertices.origins[i + 2],
+                vertices.origins[i + 2] + vertices.ups[i + 2],
+                vertices.origins[i + 2] + vertices.tangents[i + 2]);
+            maxZ = Math.max(maxZ,
+                vertices.origins[i + 2],
+                vertices.origins[i + 2] + vertices.ups[i + 2],
+                vertices.origins[i + 2] + vertices.tangents[i + 2]);
+        }
+
+        return [minX, minY, minZ, maxX, maxY, maxZ];
+    }
+
+    /**
      * Adjusts the vertices for a line after typesetting (done due to line feed, word wrap, or end of line) w.r.t.
      * the targeted line alignment.
      * @param width - Width of the line (e.g., typesetting position at the end of the line in typesetting space).
@@ -355,10 +442,33 @@ export class Typesetter {
      * @param lines - Indices of glyph vertices on same lines to apply line-based transformations.
      */
     private static transform(label: Label, vertices: GlyphVertices, lines: Array<Line>): void {
+
+        const boundingRectangle = [
+            Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE,
+            -Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE];
+
         for (const line of lines) {
             Typesetter.transformAlignment(line[2], label.alignment, vertices, line[0], line[1]);
+            Typesetter.updateRectangleMinMax(boundingRectangle, Typesetter.getMinMax(vertices, line[0], line[1]));
             Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
+
+        console.log('>bb rect', boundingRectangle);
+
+        // transform extent
+        const width = boundingRectangle[3] - boundingRectangle[0];
+        const height = boundingRectangle[4] - boundingRectangle[1];
+
+        console.log('>>bb w h', width, height);
+
+        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), label.staticTransform);
+        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(width, 0, 0, 1), label.staticTransform);
+        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, height, 0, 1), label.staticTransform);
+
+        const extent = vec2.fromValues(vec4.distance(lr, ll), vec4.distance(ul, ll));
+
+        console.log('>>bb extent', extent);
+        label.extent = [extent[0], extent[1]];
     }
 
 
@@ -551,7 +661,7 @@ export class Typesetter {
         vec2.set(extent, vec4.distance(lr, ll), vec4.distance(ul, ll));
 
 
-        console.log('line set', extent);
+        console.log('>>pen extent', extent);
         label.extent = [extent[0], extent[1]];
 
 
