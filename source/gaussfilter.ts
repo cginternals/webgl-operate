@@ -10,25 +10,56 @@ import { Texture2D } from './texture2d';
 
 
 export class GaussFilter extends Initializable {
+  protected static readonly _maxKernelSizeHalf = 32;
+
   protected _kernelSize: GLsizei = 7;
   protected _standardDeviation: GLfloat = 1.0;
+  protected _redistribute: GLboolean = true;
+
+  protected _weights: [number, ...number[]] & { length: 32 } | undefined;
 
   protected _uKernelSize: WebGLUniformLocation;
   protected _uTextureSize: WebGLUniformLocation;
-  protected _uSigma: WebGLUniformLocation;
-  protected _uRedistribute: WebGLUniformLocation;
   protected _uDirection: WebGLUniformLocation;
+  protected _uWeights: WebGLUniformLocation;
 
   protected _context: Context;
   protected _program: Program;
   protected _ndcQuad: NdcFillingRectangle;
 
-  public redistribute: GLboolean = true;
-
 
   constructor(context: Context) {
     super();
     this._context = context;
+  }
+
+  protected recalculateWeights(): void {
+    if (this._weights) {
+      return;
+    }
+
+    const first = 1.0 / Math.sqrt(2.0 * Math.PI) * this._standardDeviation;
+    const second = 2.0 * this._standardDeviation * this._standardDeviation;
+
+    this._weights = [
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    ];
+    let summedWeight = 0.0;
+
+    for (let i = 0; i <= Math.floor(this._kernelSize / 2); i++) {
+      this._weights[i] = first * Math.pow(Math.E, -(Math.pow(i, 2.0) / second));
+      summedWeight += i > 0 ? 2.0 * this._weights[i] : this._weights[i];
+    }
+
+    if (this._redistribute) {
+      const remainder = 1.0 - summedWeight;
+      for (let i = 0; i <= Math.floor(this._kernelSize / 2); i++) {
+        this._weights[i] += this._weights[i] / summedWeight * remainder;
+      }
+    }
   }
 
   get kernelSize(): GLsizei {
@@ -37,10 +68,13 @@ export class GaussFilter extends Initializable {
 
   set kernelSize(kernelSize: GLsizei) {
     assert(kernelSize > 0, 'Kernel size has to be positive.');
+    assert(kernelSize <= (GaussFilter._maxKernelSizeHalf - 1) * 2 + 1,
+      'Kernel size has to be smaller than ' + ((GaussFilter._maxKernelSizeHalf - 1) * 2 + 2) + '.');
     assert(Number.isInteger(kernelSize), 'Kernel size has to be an integer.');
     assert(kernelSize % 2 === 1, 'Kernel size has to be odd.');
 
     this._kernelSize = kernelSize;
+    this._weights = undefined;
   }
 
   get standardDeviation(): GLfloat {
@@ -51,6 +85,16 @@ export class GaussFilter extends Initializable {
     assert(standardDeviation > 0.0, 'Standard deviation has to be positive.');
 
     this._standardDeviation = standardDeviation;
+    this._weights = undefined;
+  }
+
+  get redistribute(): GLboolean {
+    return this._redistribute;
+  }
+
+  set redistribute(redistribute: GLboolean) {
+    this._redistribute = redistribute;
+    this._weights = undefined;
   }
 
   @Initializable.initialize()
@@ -58,19 +102,19 @@ export class GaussFilter extends Initializable {
     const gl = this._context.gl;
 
     const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gauss.vert');
-    vert.initialize('');
+    vert.initialize(require('./shaders/gaussfilter.vert'));
     const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gauss.frag');
-    frag.initialize('');
+    frag.initialize(require('./shaders/gaussfilter.frag'));
     this._program = new Program(this._context);
     this._program.initialize([vert, frag]);
 
     this._uKernelSize = this._program.uniform('u_kernelSize');
     this._uTextureSize = this._program.uniform('u_textureSize');
-    this._uSigma = this._program.uniform('u_sigma');
-    this._uRedistribute = this._program.uniform('u_redistribute');
     this._uDirection = this._program.uniform('u_direction');
+    this._uWeights = this._program.uniform('u_weights');
 
     const aVertex = this._program.attribute('a_vertex', 0);
+    this._ndcQuad = new NdcFillingRectangle(this._context, 'GaussFilterQuad');
     this._ndcQuad.initialize(aVertex);
 
     return true;
@@ -87,14 +131,15 @@ export class GaussFilter extends Initializable {
     const gl = this._context.gl;
     const directionVectors: [vec2, vec2] = [vec2.fromValues(1.0, 0.0), vec2.fromValues(0.0, 1.0)];
 
+    this.recalculateWeights();
+
     this._program.bind();
     texture.bind(gl.TEXTURE0);
 
     gl.uniform1i(this._uKernelSize, this._kernelSize);
     gl.uniform2iv(this._uTextureSize, texture.size);
-    gl.uniform1f(this._uSigma, this._standardDeviation);
-    gl.uniform1i(this._uRedistribute, this.redistribute ? 1 : 0);
     gl.uniform2fv(this._uDirection, directionVectors[direction]);
+    gl.uniform1fv(this._uWeights, this._weights);
 
     this._ndcQuad.bind();
     this._ndcQuad.draw();
