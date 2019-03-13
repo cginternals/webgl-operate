@@ -464,26 +464,14 @@ export abstract class Label {
      * without typesetting.
      */
     set extent(e: [number, number]) {
-        console.log('set extent', e);
         this._extent = e;
-
-        // TODO I don't understand these values for labels in screen space
-        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this._dynamicTransform);
-        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(e[0], 0, 0, 1), this._dynamicTransform);
-        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, e[1], 0, 1), this._dynamicTransform);
-        console.log('get extent:', vec4.distance(lr, ll), vec4.distance(ul, ll));
-
     }
     /**
-     * Returns the width and height of the typset label. Both are zero if not typeset yet.
-     * The static transform and the dynamic transform are already applied.
+     * Returns the width and height of the typset label in fontSizeUnit. Both are zero if not typeset yet. The static
+     * transform is already applied.
      */
     get extent(): [number, number] {
-
-        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this._dynamicTransform);
-        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(this._extent[0], 0, 0, 1), this._dynamicTransform);
-        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, this._extent[1], 0, 1), this._dynamicTransform);
-        return [vec4.distance(lr, ll), vec4.distance(ul, ll)];
+        return this._extent;
     }
 
     /*
