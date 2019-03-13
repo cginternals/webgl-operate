@@ -434,8 +434,8 @@ export class Typesetter {
             Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
 
-        // transform extent from Typesetting Space to label space (depending on the label, e.g. screen space (px) or
-        // world space)
+        // transform extent from Typesetting Space to the label's fontUnitSize space (depending on the label, e.g.
+        // screen space (px) or world space)
         const width = boundingRectangle[3] - boundingRectangle[0];
         const height = boundingRectangle[4] - boundingRectangle[1];
 
