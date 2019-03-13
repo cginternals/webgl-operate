@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec3, vec4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from '../changelookup';
 import { Color } from '../color';
