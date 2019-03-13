@@ -51,7 +51,7 @@ class Label3DRenderer extends Renderer {
      * @param mouseEventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
-    protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider
+    protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
