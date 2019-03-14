@@ -24,11 +24,5 @@
         "object": "Label3DExample",
         "caption": "Static/dynamic text that can be positioned in 3D space.",
         "disabled": true
-    },
-    {
-        "target": "gaussfilter-example",
-        "title": "Gauss Filter",
-        "object": "GaussFilterExample",
-        "caption": "Gauss Filter"
     }
 ]
