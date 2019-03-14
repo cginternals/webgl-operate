@@ -1,4 +1,3 @@
-import { vec2 } from 'gl-matrix';
 
 import { assert } from './auxiliaries';
 import { Camera } from './camera';
@@ -10,12 +9,14 @@ import { Renderbuffer } from './renderbuffer';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 
+import { GLsizei2 } from './tuples';
+
 
 export class ShadowMappingPass extends Initializable {
   protected _context: Context;
 
   protected _light: Camera;
-  protected _size: vec2;
+  protected _size: GLsizei2;
 
   protected _shadowMapFBO: Framebuffer;
   protected _shadowMapTexture: Texture2D;
@@ -36,23 +37,17 @@ export class ShadowMappingPass extends Initializable {
   }
 
   @Initializable.assert_initialized()
-  resize(size: vec2): void {
-    assert(size[0] >= 0 && size[1] >= 0, 'Both width and height have to be positive.');
-
-    if (this._size === size) {
-      return;
-    }
-
-    this._size = size;
+  protected _resize(): void {
+    this._size = this._light.viewport;
     this._shadowMapFBO.resize(this._size[0], this._size[1], true, true);
   }
 
   @Initializable.initialize()
-  initialize(size: vec2, light: Camera, vertexLocation: number): boolean {
-    console.log(size[0], size[1]);
+  initialize(light: Camera): boolean {
+    assert(light.width > 0 && light.height > 0, 'Width and Height of the lights viewport have to be > 0.');
 
-    this._size = size;
     this._light = light;
+    this._size = this._light.viewport;
 
     const gl = this._context.gl;
     const gl2facade = this._context.gl2facade;
@@ -75,7 +70,7 @@ export class ShadowMappingPass extends Initializable {
     vert.initialize(require('./shaders/shadowmap.vert'));
     const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadowMap.frag');
     frag.initialize(require('./shaders/shadowmap.frag'));
-    //frag.replace('VERTEXLOCATION', vertexLocation.toString());
+
     this._program = new Program(this._context);
     this._program.initialize([vert, frag]);
 
@@ -104,6 +99,10 @@ export class ShadowMappingPass extends Initializable {
     gl.depthFunc(gl.LEQUAL);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
+
+    if (this._size !== this._light.viewport) {
+      this._resize();
+    }
 
     this._shadowMapFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
     this._program.bind();

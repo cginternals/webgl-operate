@@ -1,5 +1,5 @@
 
-import { vec2, vec3 } from 'webgl-operate';
+import { vec3 } from 'webgl-operate';
 
 import { Cube } from './cube';
 import { Plane } from './plane';
@@ -32,7 +32,8 @@ import { Demo } from '../demo';
 
 class ShadowMappingRenderer extends Renderer {
 
-  protected _extensions = false;
+  private static readonly SHADOWMAP_SIZE: [number, number] = [1024, 1024];
+  private static readonly BLURRED_SHADOWMAP_SIZE: [number, number] = [512, 512];
 
   protected _cube: Cube;
   protected _plane: Plane;
@@ -64,25 +65,55 @@ class ShadowMappingRenderer extends Renderer {
 
   protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider): boolean {
     const gl = this._context.gl;
-    //const gl2facade = this._context.gl2facade;
+    const gl2facade = this._context.gl2facade;
 
-    if (this._extensions === false && this._context.isWebGL1) {
-      //assert(this._context.supportsStandardDerivatives, `expected OES_standard_derivatives support`);
-      /* tslint:disable-next-line:no-unused-expression */
-      this._context.standardDerivatives;
-      this._extensions = true;
-    }
-
+    // ------------------------ Setup Blur (Intermediate) ------------------------
     this._intermediateBlurTexture = new Texture2D(this._context, 'IntermediateBlurTexture');
-    this._intermediateBlurRenderbuffer = new Renderbuffer(this._context, 'IntermediateBlurRenderbuffer');
-    this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
-    this._blurTexture = new Texture2D(this._context, 'BlurTexture');
-    this._blurRenderbuffer = new Renderbuffer(this._context, 'BlurRenderbuffer');
-    this._blurFBO = new Framebuffer(this._context, 'BlurFramebuffer');
+    this._intermediateBlurTexture.initialize(
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[1],
+      gl.RG16F, gl.RG, gl.FLOAT);
+    this._intermediateBlurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
+    this._intermediateBlurTexture.filter(gl.LINEAR, gl.LINEAR);
 
+    this._intermediateBlurRenderbuffer = new Renderbuffer(this._context, 'IntermediateBlurRenderbuffer');
+    this._intermediateBlurRenderbuffer.initialize(
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[1],
+      gl.DEPTH_COMPONENT16);
+
+    this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
+    this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]
+      , [gl.DEPTH_ATTACHMENT, this._intermediateBlurRenderbuffer]]);
+    this._intermediateBlurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
+    this._intermediateBlurFBO.clearDepth(1.0);
+
+    // ------------------------ Setup Blur (Final) ------------------------
+    this._blurTexture = new Texture2D(this._context, 'BlurTexture');
+    this._blurTexture.initialize(
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[1],
+      gl.RG16F, gl.RG, gl.FLOAT);
+    this._blurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
+    this._blurTexture.filter(gl.LINEAR, gl.LINEAR);
+
+    this._blurRenderbuffer = new Renderbuffer(this._context, 'BlurRenderbuffer');
+    this._blurRenderbuffer.initialize(
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
+      ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[1],
+      gl.DEPTH_COMPONENT16);
+
+    this._blurFBO = new Framebuffer(this._context, 'BlurFramebuffer');
+    this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]
+      , [gl.DEPTH_ATTACHMENT, this._blurRenderbuffer]]);
+    this._blurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
+    this._blurFBO.clearDepth(1.0);
+
+    // ------------------------ Setup DefaultFBO ------------------------
     this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
     this._defaultFBO.initialize();
 
+    // ------------------------ Setup Program ------------------------
     const shadowMappingVert = new Shader(this._context, gl.VERTEX_SHADER, 'shadowMapping.vert');
     shadowMappingVert.initialize(require('./shadowMapping.vert'));
     const shadowMappingFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadowMapping.frag');
@@ -96,6 +127,7 @@ class ShadowMappingRenderer extends Renderer {
     this._uShadowFarPlane = this._shadowMappingProgram.uniform('u_LightFarPlane');
     this._uCameraViewProjectionMatrix = this._shadowMappingProgram.uniform('u_CameraViewProjectionMatrix');
 
+    // ------------------------ Setup Cameras ------------------------
     this._camera = new Camera();
     this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
     vec3.normalize(this._camera.up, vec3.fromValues(-1.0, 1.0, 0.0));
@@ -109,22 +141,29 @@ class ShadowMappingRenderer extends Renderer {
     this._light.eye = vec3.fromValues(0.0, 6.0, 6.0);
     this._light.near = 3.0;
     this._light.far = 16.0;
+    this._light.viewport = ShadowMappingRenderer.SHADOWMAP_SIZE;
+    this._light.aspect = 1;
 
+    // ------------------------ Setup Navigation ------------------------
     this._navigation = new Navigation(callback, mouseEventProvider);
     this._navigation.camera = this._camera;
 
+    // ------------------------ Setup Geometry
     this._cube = new Cube(this._context, 'cube');
     this._cube.initialize(0);
 
     this._plane = new Plane(this._context, 'plane');
     this._plane.initialize(0);
 
+    // ------------------------ Setup GaussFilter ------------------------
     this._gaussFilter = new GaussFilter(this._context);
-    this._gaussFilter.kernelSize = 31;
-    this._gaussFilter.standardDeviation = 7;
+    this._gaussFilter.kernelSize = 21;
+    this._gaussFilter.standardDeviation = 4;
     this._gaussFilter.initialize();
 
+    // ------------------------ Setup ShadowMappingPass ------------------------
     this._shadowMappingPass = new ShadowMappingPass(this._context);
+    this._shadowMappingPass.initialize(this._light);
 
     return true;
   }
@@ -156,46 +195,11 @@ class ShadowMappingRenderer extends Renderer {
   }
 
   protected onPrepare(): void {
-    const gl = this._context.gl;
-    const gl2facade = this._context.gl2facade;
-
-    if (!this._intermediateBlurFBO.initialized) {
-      this._intermediateBlurTexture.initialize(this._frameSize[0], this._frameSize[1], gl.RG16F, gl.RG, gl.FLOAT);
-      this._intermediateBlurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-      this._intermediateBlurTexture.filter(gl.LINEAR, gl.LINEAR);
-      this._intermediateBlurRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
-      this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]
-        , [gl.DEPTH_ATTACHMENT, this._intermediateBlurRenderbuffer]]);
-      this._intermediateBlurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
-      this._intermediateBlurFBO.clearDepth(1.0);
-    }
-
-    if (!this._blurFBO.initialized) {
-      this._blurTexture.initialize(this._frameSize[0], this._frameSize[1], gl.RG16F, gl.RG, gl.FLOAT);
-      this._blurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-      this._blurTexture.filter(gl.LINEAR, gl.LINEAR);
-      this._blurRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
-      this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]
-        , [gl.DEPTH_ATTACHMENT, this._blurRenderbuffer]]);
-      this._blurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
-      this._blurFBO.clearDepth(1.0);
-    }
-
-    if (!this._shadowMappingPass.initialized) {
-      this._shadowMappingPass.initialize(
-        vec2.fromValues(this._frameSize[0], this._frameSize[1]), this._light, 0);
-    }
-
     if (this._altered.frameSize) {
-      this._intermediateBlurFBO.resize(this._frameSize[0], this._frameSize[1]);
-      this._blurFBO.resize(this._frameSize[0], this._frameSize[1]);
       this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
-      this._light.viewport = [this._frameSize[0], this._frameSize[1]];
-      this._shadowMappingPass.resize(vec2.fromValues(this._frameSize[0], this._frameSize[1]));
     }
     if (this._altered.canvasSize) {
       this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
-      this._light.aspect = this._canvasSize[0] / this._canvasSize[1];
     }
 
     if (this._altered.clearColor) {
@@ -217,9 +221,11 @@ class ShadowMappingRenderer extends Renderer {
 
     this._shadowMappingPass.end();
 
+    gl.viewport(0, 0, this._intermediateBlurFBO.width, this._intermediateBlurFBO.height);
     this._intermediateBlurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
     this._gaussFilter.filter(this._shadowMappingPass.shadowMapTexture, GaussFilter.Direction.Horizontal);
 
+    gl.viewport(0, 0, this._blurFBO.width, this._blurFBO.height);
     this._blurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
     this._gaussFilter.filter(this._intermediateBlurTexture, GaussFilter.Direction.Vertical);
 
@@ -227,6 +233,7 @@ class ShadowMappingRenderer extends Renderer {
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 
+    gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
     this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
     this._shadowMappingProgram.bind();
 
