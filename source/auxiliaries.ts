@@ -305,7 +305,7 @@ namespace auxiliaries {
      * @param path - Path string the directory name should be returned of.
      */
     export function dirname(path: string): string {
-        if (path.includes(PATH_SEPARATOR) === false) {
+        if (path.indexOf(PATH_SEPARATOR) < 0) {
             return '';
         }
         return path.substr(0, path.lastIndexOf(PATH_SEPARATOR)).trimLeft();
@@ -316,7 +316,7 @@ namespace auxiliaries {
      * @param path - Path string the file/base name should be returned of.
      */
     export function basename(path: string): string {
-        if (path.includes(PATH_SEPARATOR) === false) {
+        if (path.indexOf(PATH_SEPARATOR) < 0) {
             return path;
         }
         return path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1).trimRight();
