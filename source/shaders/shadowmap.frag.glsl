@@ -13,7 +13,7 @@ float VSMCompare(sampler2D depths, vec2 uv, float compare, float offset)
 {
   vec2 moments = texture(depths, uv).rg;
 
-  float p = smoothstep(compare + offset, compare, moments.x);
+  float p = smoothstep(compare + offset, compare + offset, moments.x);
   float variance = max(moments.y - moments.x * moments.x, - 0.00001);
   float d = compare - moments.x;
   float p_max = linstep(0.2, 1.0, variance / (variance + d*d));

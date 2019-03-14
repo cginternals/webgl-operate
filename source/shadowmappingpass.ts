@@ -68,6 +68,8 @@ export class ShadowMappingPass extends Initializable {
     this._shadowMapFBO = new Framebuffer(this._context);
     this._shadowMapFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._shadowMapTexture]
       , [gl.DEPTH_ATTACHMENT, this._shadowMapRenderbuffer]]);
+    this._shadowMapFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
+    this._shadowMapFBO.clearDepth(1.0);
 
     const vert = new Shader(this._context, gl.VERTEX_SHADER, 'shadowMap.vert');
     vert.initialize(require('./shaders/shadowmap.vert'));
@@ -119,6 +121,6 @@ export class ShadowMappingPass extends Initializable {
     gl.disable(gl.CULL_FACE);
 
     this._program.unbind();
-    //this._shadowMapFBO.unbind();
+    this._shadowMapFBO.unbind();
   }
 }

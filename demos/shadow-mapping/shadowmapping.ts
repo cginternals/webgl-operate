@@ -120,6 +120,8 @@ class ShadowMappingRenderer extends Renderer {
     this._plane.initialize(0);
 
     this._gaussFilter = new GaussFilter(this._context);
+    this._gaussFilter.kernelSize = 31;
+    this._gaussFilter.standardDeviation = 7;
     this._gaussFilter.initialize();
 
     this._shadowMappingPass = new ShadowMappingPass(this._context);
@@ -240,7 +242,7 @@ class ShadowMappingRenderer extends Renderer {
     this._plane.draw();
 
     this._plane.unbind();
-    this._shadowMappingPass.shadowMapTexture.unbind(gl.TEXTURE0);
+    this._blurTexture.unbind(gl.TEXTURE0);
     this._shadowMappingProgram.unbind();
 
     gl.disable(gl.CULL_FACE);
