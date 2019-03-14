@@ -262,15 +262,19 @@ describe('auxiliaries path', () => {
 });
 
 describe('auxiliaries trim', () => {
+    it('should return the same string when no trimming is needed', () => {
+        expect(aux.leftTrim('foobar')).to.equal('foobar');
+        expect(aux.rightTrim('foobar')).to.equal('foobar');
+    });
 
     it('should return a string without starting whitespaces', () => {
         expect(aux.leftTrim('   foobar   ')).to.equal('foobar   ');
-        expect(aux.leftTrim('\nfoobar   ')).to.equal('foobar   ');
+        expect(aux.leftTrim('\n foobar   ')).to.equal('foobar   ');
     });
 
     it('should return a string without trailing whitespaces', () => {
         expect(aux.rightTrim('   foobar   ')).to.equal('   foobar');
-        expect(aux.rightTrim('   foobar\n')).to.equal('   foobar');
+        expect(aux.rightTrim('   foobar \n')).to.equal('   foobar');
     });
 
 
