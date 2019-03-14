@@ -296,8 +296,8 @@ namespace auxiliaries {
     }
 
     /**
-     * Alternative implementation for String.trimLeft() (or String.trimStart() ), which is not supported on every
-     * browser. It removes white spaces on the left side of the given string.
+     * Alternative implementation for String.trimLeft() (or String.trimStart() ), which is not supported on some
+     * browsers (e.g., IE). It removes white spaces on the left side of the given string.
      * @param s - the string that should be trimmed on the left side.
      */
     export function leftTrim(s: string): string {
@@ -305,8 +305,8 @@ namespace auxiliaries {
     }
 
     /**
-     * Alternative implementation for String.trimRight() (or String.trimEnd() ), which is not supported on every
-     * browser. It removes white spaces on the right side of the given string.
+     * Alternative implementation for String.trimRight() (or String.trimEnd() ), which is not supported on some
+     * browsers (e.g., IE). It removes white spaces on the right side of the given string.
      * @param s - the string that should be trimmed on the right side.
      */
     export function rightTrim(s: string): string {
@@ -326,7 +326,6 @@ namespace auxiliaries {
         if (path.indexOf(PATH_SEPARATOR) < 0) {
             return '';
         }
-        // return path.substr(0, path.lastIndexOf(PATH_SEPARATOR)).trimLeft();
         return leftTrim(path.substr(0, path.lastIndexOf(PATH_SEPARATOR)));
     }
 
@@ -338,7 +337,6 @@ namespace auxiliaries {
         if (path.indexOf(PATH_SEPARATOR) < 0) {
             return path;
         }
-        // return path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1).trimRight();
         return rightTrim(path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1));
     }
 
