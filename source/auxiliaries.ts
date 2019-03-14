@@ -296,6 +296,33 @@ namespace auxiliaries {
     }
 
     /**
+     * Alternative implementation for String.trimLeft() (or String.trimStart() ), which is not supported on every
+     * browser. It removes white spaces on the left side of the given string.
+     * @param s - the string that should be trimmed on the left side.
+     */
+    export function leftTrim(s: string): string {
+
+        let left = 0;
+        while (left < s.length && s[left] === ' ') {
+            left++;
+        }
+        return s.substring(left, s.length);
+    }
+
+    /**
+     * Alternative implementation for String.trimRight() (or String.trimEnd() ), which is not supported on every
+     * browser. It removes white spaces on the right side of the given string.
+     * @param s - the string that should be trimmed on the right side.
+     */
+    export function rightTrim(s: string): string {
+        let right = s.length - 1;
+        while (right > 0 && s[right] === ' ') {
+            right--;
+        }
+        return s.substring(0, right + 1);
+    }
+
+    /**
      * Path separator used for path related functions such as dirname and basename.
      */
     export const PATH_SEPARATOR = '/';
