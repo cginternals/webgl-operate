@@ -301,12 +301,7 @@ namespace auxiliaries {
      * @param s - the string that should be trimmed on the left side.
      */
     export function leftTrim(s: string): string {
-
-        let left = 0;
-        while (left < s.length && s[left] === ' ') {
-            left++;
-        }
-        return s.substring(left, s.length);
+        return s.replace(/^\s+/, '');
     }
 
     /**
@@ -315,11 +310,7 @@ namespace auxiliaries {
      * @param s - the string that should be trimmed on the right side.
      */
     export function rightTrim(s: string): string {
-        let right = s.length - 1;
-        while (right > 0 && s[right] === ' ') {
-            right--;
-        }
-        return s.substring(0, right + 1);
+        return s.replace(/\s+$/, '');
     }
 
     /**
@@ -335,7 +326,8 @@ namespace auxiliaries {
         if (path.indexOf(PATH_SEPARATOR) < 0) {
             return '';
         }
-        return path.substr(0, path.lastIndexOf(PATH_SEPARATOR)).trimLeft();
+        // return path.substr(0, path.lastIndexOf(PATH_SEPARATOR)).trimLeft();
+        return leftTrim(path.substr(0, path.lastIndexOf(PATH_SEPARATOR)));
     }
 
     /**
@@ -346,7 +338,8 @@ namespace auxiliaries {
         if (path.indexOf(PATH_SEPARATOR) < 0) {
             return path;
         }
-        return path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1).trimRight();
+        // return path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1).trimRight();
+        return rightTrim(path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1));
     }
 
 }
