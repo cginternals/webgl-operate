@@ -35,7 +35,7 @@ float aastep(float t, float value)
     /* float afwidth = length(vec2(dFdx(value), dFdy(value))) * u_aaStepScale; */
     float afwidth = fwidth(value) * u_aaStepScale;
     /* The aa step scale is more of a hack to provide seemingly smoother (e.g., >= 1.0) or crisper (e.g., between 0.0
-     * and 1.0) contours without specific sampling. Its just scaling the outcome of the derivatives.
+     * and 1.0) contours without specific sampling. It's just scaling the outcome of the derivatives.
      */
 
     return smoothstep(t - afwidth, t + afwidth, value);

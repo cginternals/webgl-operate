@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec2, vec3 } from 'gl-matrix';
+import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 import { assert } from '../auxiliaries';
 import { v3 } from '../gl-matrix-extensions';
@@ -216,7 +216,6 @@ export class Typesetter {
         switch (label.elide) {
             case Label.Elide.Right:
                 return [label.lineWidth - ellipsisWidth, 0.0];
-                break;
             case Label.Elide.Middle:
                 const threshold = label.lineWidth / 2 - ellipsisWidth / 2;
                 return [threshold, threshold];
@@ -324,6 +323,71 @@ export class Typesetter {
     }
 
     /**
+     * @param currentRectangle - [minX, minY, minZ, maxX, maxY, maxZ] is updated in-place
+     * @param newRectangle - [minX, minY, minZ, maxX, maxY, maxZ] used to update currentRectangle
+     */
+    private static updateRectangleMinMax(currentRectangle: number[], newRectangle: number[]): void {
+        assert(currentRectangle.length === 6 && newRectangle.length === 6, `expected the rectangles to have 6 values!`);
+
+        let i = 0;
+        for (; i < 3; i++) {
+            currentRectangle[i] = Math.min(currentRectangle[i], newRectangle[i]);
+        }
+        for (; i < 6; i++) {
+            currentRectangle[i] = Math.max(currentRectangle[i], newRectangle[i]);
+        }
+    }
+
+    /**
+     * Returns a vec2 [min, max] containing the minimum and the maximum of the given values.
+     * @param currentMin - the current minimum (e.g., initialized to +Infinity)
+     * @param currentMax - the current maximum (e.g., initialized to -Infinity)
+     * @param values - find the maximum and minimum of the given values
+     */
+    private static minMax(currentMin: number, currentMax: number, values: number[]): vec2 {
+        const min = Math.min(currentMin, ...values);
+        const max = Math.max(currentMax, ...values);
+        return vec2.fromValues(min, max);
+    }
+
+    /**
+     * Returns [minX, minY, minZ, maxX, maxY, maxZ] of the vertices coordinates, i.e., origins,
+     * origins + tangents, origins + ups, from which a bounding rectangle can be calculated.
+     * @param vertices - Glyph vertices to be transformed (expected untransformed, in typesetting space).
+     * @param begin - Vertex index to start alignment at.
+     * @param end - Vertex index to stop alignment at.
+     */
+    private static getMinMaxVertices(vertices: GlyphVertices, begin: number, end: number)
+        : [number, number, number, number, number, number] {
+
+        let minX = Number.POSITIVE_INFINITY;
+        let maxX = Number.NEGATIVE_INFINITY;
+        let minY = Number.POSITIVE_INFINITY;
+        let maxY = Number.NEGATIVE_INFINITY;
+        let minZ = Number.POSITIVE_INFINITY;
+        let maxZ = Number.NEGATIVE_INFINITY;
+
+        for (let i: number = begin; i < end; ++i) {
+            const x = Typesetter.minMax(minX, maxX, [vertices.origin(i)[0], vertices.origin(i)[0] + vertices.up(i)[0],
+            vertices.origin(i)[0] + vertices.tangent(i)[0]]);
+            minX = x[0];
+            maxX = x[1];
+
+            const y = Typesetter.minMax(minY, maxY, [vertices.origin(i)[1], vertices.origin(i)[1] + vertices.up(i)[1],
+            vertices.origin(i)[1] + vertices.tangent(i)[1]]);
+            minY = y[0];
+            maxY = y[1];
+
+            const z = Typesetter.minMax(minZ, maxZ, [vertices.origin(i)[2], vertices.origin(i)[2] + vertices.up(i)[2],
+            vertices.origin(i)[2] + vertices.tangent(i)[2]]);
+            minZ = z[0];
+            maxZ = z[1];
+        }
+
+        return [minX, minY, minZ, maxX, maxY, maxZ];
+    }
+
+    /**
      * Adjusts the vertices for a line after typesetting (done due to line feed, word wrap, or end of line) w.r.t.
      * the targeted line alignment.
      * @param width - Width of the line (e.g., typesetting position at the end of the line in typesetting space).
@@ -356,10 +420,32 @@ export class Typesetter {
      * @param lines - Indices of glyph vertices on same lines to apply line-based transformations.
      */
     private static transform(label: Label, vertices: GlyphVertices, lines: Array<Line>): void {
+
+        const boundingRectangle = [
+            Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
+            Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY];
+
         for (const line of lines) {
             Typesetter.transformAlignment(line[2], label.alignment, vertices, line[0], line[1]);
+
+            Typesetter.updateRectangleMinMax(boundingRectangle,
+                Typesetter.getMinMaxVertices(vertices, line[0], line[1]));
+
             Typesetter.transformVertices(label.staticTransform, vertices, line[0], line[1]);
         }
+
+        // transform extent from Typesetting Space to the label's fontUnitSize space (depending on the label, e.g.
+        // screen space (px) or world space)
+        const width = boundingRectangle[3] - boundingRectangle[0];
+        const height = boundingRectangle[4] - boundingRectangle[1];
+
+        const ll = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), label.staticTransform);
+        const lr = vec4.transformMat4(vec4.create(), vec4.fromValues(width, 0, 0, 1), label.staticTransform);
+        const ul = vec4.transformMat4(vec4.create(), vec4.fromValues(0, height, 0, 1), label.staticTransform);
+
+        const extent = vec2.fromValues(vec4.distance(lr, ll), vec4.distance(ul, ll));
+
+        label.extent = [extent[0], extent[1]];
     }
 
 
