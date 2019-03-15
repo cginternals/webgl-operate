@@ -296,24 +296,6 @@ namespace auxiliaries {
     }
 
     /**
-     * Alternative implementation for String.trimLeft() (or String.trimStart() ), which is not supported on some
-     * browsers (e.g., IE). It removes white spaces on the left side of the given string.
-     * @param s - the string that should be trimmed on the left side.
-     */
-    export function leftTrim(s: string): string {
-        return s.replace(/^\s+/, '');
-    }
-
-    /**
-     * Alternative implementation for String.trimRight() (or String.trimEnd() ), which is not supported on some
-     * browsers (e.g., IE). It removes white spaces on the right side of the given string.
-     * @param s - the string that should be trimmed on the right side.
-     */
-    export function rightTrim(s: string): string {
-        return s.replace(/\s+$/, '');
-    }
-
-    /**
      * Path separator used for path related functions such as dirname and basename.
      */
     export const PATH_SEPARATOR = '/';
@@ -323,10 +305,10 @@ namespace auxiliaries {
      * @param path - Path string the directory name should be returned of.
      */
     export function dirname(path: string): string {
-        if (path.indexOf(PATH_SEPARATOR) < 0) {
+        if (path.includes(PATH_SEPARATOR) === false) {
             return '';
         }
-        return leftTrim(path.substr(0, path.lastIndexOf(PATH_SEPARATOR)));
+        return path.substr(0, path.lastIndexOf(PATH_SEPARATOR)).trimLeft();
     }
 
     /**
@@ -334,10 +316,10 @@ namespace auxiliaries {
      * @param path - Path string the file/base name should be returned of.
      */
     export function basename(path: string): string {
-        if (path.indexOf(PATH_SEPARATOR) < 0) {
+        if (path.includes(PATH_SEPARATOR) === false) {
             return path;
         }
-        return rightTrim(path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1));
+        return path.substr(path.lastIndexOf(PATH_SEPARATOR) + 1).trimRight();
     }
 
 }

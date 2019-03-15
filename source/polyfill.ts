@@ -66,6 +66,45 @@ if (String.prototype.endsWith === undefined) {
     };
 }
 
+/**
+ * IE11 polyfill for string.includes function, from
+ * https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+ */
+if (String.prototype.includes === undefined) {
+    // tslint:disable-next-line: space-before-function-paren
+    String.prototype.includes = function (search, start): boolean {
+        'use strict';
+        if (typeof start !== 'number') {
+            start = 0;
+        }
+
+        if (start + search.length > this.length) {
+            return false;
+        } else {
+            return this.indexOf(search, start) !== -1;
+        }
+    };
+}
+
+/**
+ * IE11 polyfill for string.trimLeft function, from
+ * https://stackoverflow.com/a/2308168
+ */
+if (String.prototype.trimLeft === undefined) {
+    String.prototype.trimLeft = () => {
+        return this.replace(/^\s+/, '');
+    };
+}
+
+/**
+ * IE11 polyfill for string.trimLeft function, from
+ * https://stackoverflow.com/a/2308168
+ */
+if (String.prototype.trimRight === undefined) {
+    String.prototype.trimRight = () => {
+        return this.replace(/^\s+/, '');
+    };
+}
 
 /**
  * IE11 polyfill for Array.forEach function, from ...
