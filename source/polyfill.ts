@@ -91,7 +91,8 @@ if (String.prototype.includes === undefined) {
  * https://stackoverflow.com/a/2308168
  */
 if (String.prototype.trimLeft === undefined) {
-    String.prototype.trimLeft = () => {
+    // tslint:disable-next-line: space-before-function-paren
+    String.prototype.trimLeft = function (): string {
         return this.replace(/^\s+/, '');
     };
 }
@@ -101,7 +102,8 @@ if (String.prototype.trimLeft === undefined) {
  * https://stackoverflow.com/a/2308168
  */
 if (String.prototype.trimRight === undefined) {
-    String.prototype.trimRight = () => {
+    // tslint:disable-next-line: space-before-function-paren
+    String.prototype.trimRight = function (): string {
         return this.replace(/^\s+/, '');
     };
 }
