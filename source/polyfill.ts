@@ -5,7 +5,6 @@
 if (String.prototype.repeat === undefined) {
     // tslint:disable-next-line:space-before-function-paren
     String.prototype.repeat = function (count): string {
-        'use strict';
         if (this === null) {
             throw new TypeError('can\'t convert ' + this + ' to object');
         }
@@ -51,7 +50,6 @@ if (String.prototype.startsWith === undefined) {
     };
 }
 
-
 /**
  * IE11 polyfill for string.endsWith function, from
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
@@ -73,7 +71,6 @@ if (String.prototype.endsWith === undefined) {
 if (String.prototype.includes === undefined) {
     // tslint:disable-next-line: space-before-function-paren
     String.prototype.includes = function (search, start): boolean {
-        'use strict';
         if (typeof start !== 'number') {
             start = 0;
         }
