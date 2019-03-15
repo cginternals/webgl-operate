@@ -45,7 +45,7 @@ void main(void)
 
     v_uv = a_vertex * texExt + vec2(a_texCoord[0], 1.0 - a_texCoord[1]);
 
-    /* POSITIONING*/
+    /* POSITIONING */
     /* quad data as flat array: [0, 0,  0, 1,  1, 0,  1, 1] (a_vertex), which translates to ll, lr, ul, ur corners.
      * 2-------4
      * |  \    |
