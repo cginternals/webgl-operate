@@ -50,6 +50,9 @@ export class BlitPass extends Initializable {
 
     /* Indirect blit and fallback implementation. */
 
+    /** @see {@link forceProgramBlit} */
+    protected _enforceProgramBlit = false;
+
     /**
      * Geometry used to draw on. This is not provided by default to allow for geometry sharing. If no triangle is given,
      * the ndc triangle will be created and managed internally.
@@ -229,7 +232,7 @@ export class BlitPass extends Initializable {
         }
 
         /* BlitFramebuffer is not an extension and, thus, it does not need to be enabled. */
-        if (this._context.supportsBlitFramebuffer) {
+        if (this._context.supportsBlitFramebuffer && this._enforceProgramBlit === false) {
             return this.functionBlit();
         }
         this.programBlit(this._program);
@@ -272,6 +275,14 @@ export class BlitPass extends Initializable {
     set target(target: Framebuffer) {
         this.assertInitialized();
         this._target = target;
+    }
+
+    /**
+     * Specify whether or not experimental WebGL blit can be used if available.
+     * @param enforce - If true, program based blit instead of WebGL experimental blit function will be used.
+     */
+    set enforceProgramBlit(enforce: boolean) {
+        this._enforceProgramBlit = enforce;
     }
 
     /**

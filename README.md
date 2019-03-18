@@ -16,12 +16,13 @@ It can be used for, e.g., complex charting, volume rendering, point-cloud render
 
 # How to Install
 
-*webgl-operate* can be used both as npm module (TypeScript or JavaScript) and linked JavaScript bundle:
+*webgl-operate* can be used as JavaScript or TypeScript library (types included) via npm:
 
 ```sh
 npm install --save-dev webgl-operate
 ```
 
+Alternatively, *webgl-operate* can be integrated as bundled JavaScript in your HTML:
 ```
 <script src="https://cdn.jsdelivr.net/npm/webgl-operate@latest/dist/webgl-operate.min.js"></script>
 ```

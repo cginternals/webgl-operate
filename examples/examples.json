@@ -1,5 +1,11 @@
 [
     {
+        "target": "canvassize-example",
+        "title": "Canvas Size",
+        "object": "CanvasSizeExample",
+        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+    },
+    {
         "target": "labelelide-example",
         "title": "Label Elide",
         "object": "LabelElideExample",
@@ -24,11 +30,5 @@
         "object": "Label3DExample",
         "caption": "Static/dynamic text that can be positioned in 3D space.",
         "disabled": true
-    },
-    {
-        "target": "gaussfilter-example",
-        "title": "Gauss Filter",
-        "object": "GaussFilterExample",
-        "caption": "Gauss Filter"
     }
 ]

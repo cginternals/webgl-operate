@@ -1,17 +1,13 @@
 
 /* spellchecker: disable */
 
-import { log, logIf, LogLevel } from '../auxiliaries';
+import { dirname, log, logIf, LogLevel } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 
 /* spellchecker: enable */
-
-
-/** @todo replace path */
-import Path = require('path');
 
 
 type StringPairs = Map<string, string>;
@@ -102,7 +98,7 @@ export class FontFaceLoader {
             return undefined;
         }
 
-        const path = Path.dirname(url);
+        const path = dirname(url);
         let page = pairs.get('file')!;
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
