@@ -5,7 +5,7 @@ precision highp float;
 @import ./facade.vert;
 
 
-layout(location = 0) in vec3 a_vertex;
+in vec3 a_vertex;
 
 uniform mat4 u_lightViewMatrix;
 uniform mat4 u_lightProjectionMatrix;

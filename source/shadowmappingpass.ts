@@ -43,7 +43,7 @@ export class ShadowMappingPass extends Initializable {
   }
 
   @Initializable.initialize()
-  initialize(light: Camera): boolean {
+  initialize(light: Camera, vertexLocation: number): boolean {
     assert(light.width > 0 && light.height > 0, 'Width and Height of the lights viewport have to be > 0.');
 
     this._light = light;
@@ -73,6 +73,8 @@ export class ShadowMappingPass extends Initializable {
 
     this._program = new Program(this._context);
     this._program.initialize([vert, frag]);
+
+    this._program.attribute('a_vertex', vertexLocation);
 
     this._uLightViewMatrix = this._program.uniform('u_lightViewMatrix');
     this._uLightProjectionMatrix = this._program.uniform('u_lightProjectionMatrix');
