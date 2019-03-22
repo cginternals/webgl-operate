@@ -4,15 +4,13 @@ import { Camera } from './camera';
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
-import { Program } from './program';
 import { Renderbuffer } from './renderbuffer';
-import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 
 import { GLsizei2 } from './tuples';
 
 
-export class ShadowMappingPass extends Initializable {
+export class ShadowMapping extends Initializable {
   protected _context: Context;
 
   protected _light: Camera;
@@ -21,7 +19,6 @@ export class ShadowMappingPass extends Initializable {
   protected _shadowMapFBO: Framebuffer;
   protected _shadowMapTexture: Texture2D;
   protected _shadowMapRenderbuffer: Renderbuffer;
-  protected _program: Program;
 
   protected _uLightViewMatrix: WebGLUniformLocation;
   protected _uLightProjectionMatrix: WebGLUniformLocation;
@@ -43,7 +40,7 @@ export class ShadowMappingPass extends Initializable {
   }
 
   @Initializable.initialize()
-  initialize(light: Camera, vertexLocation: number): boolean {
+  initialize(light: Camera): boolean {
     assert(light.width > 0 && light.height > 0, 'Width and Height of the lights viewport have to be > 0.');
 
     this._light = light;
@@ -66,26 +63,11 @@ export class ShadowMappingPass extends Initializable {
     this._shadowMapFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
     this._shadowMapFBO.clearDepth(1.0);
 
-    const vert = new Shader(this._context, gl.VERTEX_SHADER, 'shadowMap.vert');
-    vert.initialize(require('./shaders/shadowmap.vert'));
-    const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadowMap.frag');
-    frag.initialize(require('./shaders/shadowmap.frag'));
-
-    this._program = new Program(this._context);
-    this._program.initialize([vert, frag]);
-
-    this._program.attribute('a_vertex', vertexLocation);
-
-    this._uLightViewMatrix = this._program.uniform('u_lightViewMatrix');
-    this._uLightProjectionMatrix = this._program.uniform('u_lightProjectionMatrix');
-    this._uLightFarPlane = this._program.uniform('u_lightFarPlane');
-
     return true;
   }
 
   @Initializable.uninitialize()
   uninitialize(): void {
-    this._program.uninitialize();
 
     this._shadowMapFBO.uninitialize();
     this._shadowMapRenderbuffer.uninitialize();
@@ -107,11 +89,6 @@ export class ShadowMappingPass extends Initializable {
     }
 
     this._shadowMapFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-    this._program.bind();
-
-    gl.uniformMatrix4fv(this._uLightViewMatrix, gl.GL_FALSE, this._light.view);
-    gl.uniformMatrix4fv(this._uLightProjectionMatrix, gl.GL_FALSE, this._light.projection);
-    gl.uniform1f(this._uLightFarPlane, this._light.far);
   }
 
   @Initializable.assert_initialized()
@@ -121,7 +98,6 @@ export class ShadowMappingPass extends Initializable {
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
 
-    this._program.unbind();
     this._shadowMapFBO.unbind();
   }
 }

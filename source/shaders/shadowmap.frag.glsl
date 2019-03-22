@@ -35,3 +35,14 @@ float VSMCompare2(sampler2D depths, vec2 uv, float compare, float offset)
 
   return p_max;
 }
+
+vec2 calculateOutput(vec3 lightViewVertex, float lightFarPlane)
+{
+  float depth = length(lightViewVertex) / lightFarPlane;
+
+  float dx = dFdx(depth);
+  float dy = dFdy(depth);
+  float moment = pow(depth, 2.0) + 0.25 * (dx*dx + dy*dy);
+
+  return vec2(depth, moment);
+}
