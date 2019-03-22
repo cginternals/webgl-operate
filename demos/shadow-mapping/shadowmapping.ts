@@ -181,7 +181,7 @@ class ShadowMappingRenderer extends Renderer {
 
     // ------------------------ Setup ShadowMappingPass ------------------------
     this._shadowMapping = new ShadowMapping(this._context);
-    this._shadowMapping.initialize(this._light, 0);
+    this._shadowMapping.initialize(this._light);
 
     return true;
   }
