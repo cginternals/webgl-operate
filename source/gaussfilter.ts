@@ -192,10 +192,10 @@ export class GaussFilter extends Initializable {
     texture.bind(gl.TEXTURE0);
 
     gl.uniform2iv(this._uTextureSize, texture.size);
+    gl.uniform2fv(this._uDirection, directionVectors[direction]);
 
     if (recalculatedWeights) {
       gl.uniform1i(this._uKernelSize, this._kernelSize);
-      gl.uniform2fv(this._uDirection, directionVectors[direction]);
       gl.uniform1fv(this._uWeights, this._weights);
     }
 
