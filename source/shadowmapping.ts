@@ -68,7 +68,6 @@ export class ShadowMapping extends Initializable {
 
   @Initializable.uninitialize()
   uninitialize(): void {
-
     this._shadowMapFBO.uninitialize();
     this._shadowMapRenderbuffer.uninitialize();
     this._shadowMapTexture.uninitialize();
@@ -80,7 +79,7 @@ export class ShadowMapping extends Initializable {
 
     gl.viewport(0, 0, this._size[0], this._size[1]);
     gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
+    gl.depthFunc(gl.LESS);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
 
@@ -96,6 +95,7 @@ export class ShadowMapping extends Initializable {
     const gl = this._context.gl;
 
     gl.disable(gl.DEPTH_TEST);
+    gl.cullFace(gl.BACK);
     gl.disable(gl.CULL_FACE);
 
     this._shadowMapFBO.unbind();
