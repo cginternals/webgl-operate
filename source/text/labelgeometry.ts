@@ -1,10 +1,14 @@
 
+/* spellchecker: disable */
+
 import { assert } from '../auxiliaries';
 
 import { Buffer } from '../buffer';
 import { Context } from '../context';
 import { Geometry } from '../geometry';
 import { Initializable } from '../initializable';
+
+/* spellchecker: enable */
 
 
 /**
@@ -14,13 +18,17 @@ import { Initializable } from '../initializable';
  * ```
  * const labelGeometry = new LabelGeometry(this._context);
  * labelGeometry = new LabelGeometry(this._context);
- * const aVertex = this._program.attribute('a_quadVertex', 0);
- * const aTexCoord = this._program.attribute('a_texCoord', 1);
- * const aOrigin = this._program.attribute('a_origin', 2);
- * const aTangent = this._program.attribute('a_tangent', 3);
- * const aUp = this._program.attribute('a_up', 4);
+ * ...
+ * labelGeometry.initialize();
  *
- * labelGeometry.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
+ * program.initialize([vert, frag], false);
+ * program.attribute('a_vertex', labelGeometry.vertexLocation);
+ * program.attribute('a_texCoord', labelGeometry.texCoordLocation);
+ * program.attribute('a_origin', labelGeometry.originLocation);
+ * program.attribute('a_tangent', labelGeometry.tangentLocation);
+ * program.attribute('a_up', labelGeometry.upLocation);
+ *
+ * program.link();
  * ...
  * labelGeometry.update(origins, tangents, ups, texCoords);
  * ...
@@ -43,9 +51,28 @@ export class LabelGeometry extends Geometry {
         [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]);
 
     /**
+     * Handle to the glyph template this geometry is based on.
+     */
+    protected _vertices: Buffer;
+
+    protected _texCoords: Buffer;
+    protected _origins: Buffer;
+    protected _tangents: Buffer;
+    protected _ups: Buffer;
+
+
+    /**
      * Number of glyphs encoded within the geometry.
      */
-    protected _glyphCount = 0;
+    protected _numberOfGlyphs = 0;
+
+
+    protected _vertexLocation: GLuint;
+    protected _texCoordLocation: GLuint;
+
+    protected _originLocation: GLuint;
+    protected _tangentLocation: GLuint;
+    protected _upLocation: GLuint;
 
 
     /**
@@ -62,83 +89,100 @@ export class LabelGeometry extends Geometry {
         /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
-        this._buffers.push(new Buffer(context, `${identifier}VBO`));
-        this._buffers.push(new Buffer(context, `${identifier}TexCoordVBO`));
-        this._buffers.push(new Buffer(context, `${identifier}OriginVBO`));
-        this._buffers.push(new Buffer(context, `${identifier}TangentVBO`));
-        this._buffers.push(new Buffer(context, `${identifier}UpVBO`));
+        this._vertices = new Buffer(context, `${identifier}VBO`);
+        this._buffers.push(this._vertices);
+
+        this._texCoords = new Buffer(context, `${identifier}TexCoordVBO`);
+        this._buffers.push(this._texCoords);
+
+        this._origins = new Buffer(context, `${identifier}OriginVBO`);
+        this._buffers.push(this._origins);
+
+        this._tangents = new Buffer(context, `${identifier}TangentVBO`);
+        this._buffers.push(this._tangents);
+
+        this._ups = new Buffer(context, `${identifier}UpVBO`);
+        this._buffers.push(this._ups);
     }
 
     /**
-     * Binds the vertex buffer object (VBO) to an attribute binding point of a given, pre-defined index.
-     * @param indices - indices of buffers to bind
+     * Binds all vertex buffer objects (VBOs) to pre-set attribute binding points.
+     * @param indices - Unused, since pre-set locations are used.
      */
-    protected bindBuffers(indices: Array<GLuint>): void {
+    protected bindBuffers(/*indices: Array<GLuint>*/): void {
         const gl = this.context.gl;
         const gl2facade = this.context.gl2facade;
 
         /* Please note the implicit bind in attribEnable */
 
-        /* quadVertex */
-        this._buffers[0].attribEnable(indices[0], 2, gl.FLOAT, false, 0, 0, true, false);
-        gl2facade.vertexAttribDivisor(indices[0], 0);
-        /* texCoords */
-        this._buffers[1].attribEnable(indices[1], 4, gl.FLOAT, false, 4 * 4, 0, true, false);
-        gl2facade.vertexAttribDivisor(indices[1], 1);
-        /* origin */
-        this._buffers[2].attribEnable(indices[2], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
-        gl2facade.vertexAttribDivisor(indices[2], 1);
-        /* tangent */
-        this._buffers[3].attribEnable(indices[3], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
-        gl2facade.vertexAttribDivisor(indices[3], 1);
-        /* up */
-        this._buffers[4].attribEnable(indices[4], 3, gl.FLOAT, false, 3 * 4, 0, true, false);
-        gl2facade.vertexAttribDivisor(indices[4], 1);
+        this._vertices.attribEnable(this._vertexLocation,
+            2, gl.FLOAT, false, 8, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._vertexLocation, 0);
+
+        this._texCoords.attribEnable(this._texCoordLocation,
+            4, gl.FLOAT, false, 16, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._texCoordLocation, 1);
+
+        this._origins.attribEnable(this._originLocation,
+            3, gl.FLOAT, false, 12, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._originLocation, 1);
+
+        this._tangents.attribEnable(this._tangentLocation,
+            3, gl.FLOAT, false, 12, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._tangentLocation, 1);
+
+        this._ups.attribEnable(this._upLocation,
+            3, gl.FLOAT, false, 12, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._upLocation, 1);
     }
 
     /**
-     * Unbinds the vertex buffer object (VBO) and disables the binding point.
-     * @param indices - indices of buffers to unbind
+     * Unbinds all vertex buffer objects (VBOs) and disables their attribute binding points.
+     * @param indices - Unused, since pre-set locations are used.
      */
-    protected unbindBuffers(indices: Array<GLuint>): void {
+    protected unbindBuffers(/*indices: Array<GLuint>*/): void {
         /* Please note the implicit unbind in attribEnable is skipped */
-        const l = this._buffers.length;
-        for (let i = 0; i < l; i++) {
-            this._buffers[i].attribDisable(indices[i], true, true);
-        }
+        this._vertices.attribDisable(this._vertexLocation, false, false);
+        this._texCoords.attribDisable(this._texCoordLocation, false, false);
+        this._origins.attribDisable(this._originLocation, false, false);
+        this._tangents.attribDisable(this._tangentLocation, false, false);
+        this._ups.attribDisable(this._upLocation, false, false);
     }
 
-    /**
-     * Specifies/invokes the draw of all labels.
-     */
-    @Initializable.assert_initialized()
-    draw(): void {
-        this.context.gl2facade.drawArraysInstanced(this.context.gl.TRIANGLE_STRIP, 0, 4, this._glyphCount);
-    }
 
     /**
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
-     * @param aQuadVertex - Attribute binding point for vertices.
-     * @param aTexCoord - Attribute binding point for texture coordinates.
-     * @param aOrigin - Attribute binding point for glyph origin coordinates
-     * @param aTangent - Attribute binding point for glyph tangent coordinates.
-     * @param aUp - Attribute binding point for glyph up-vector coordinates.
+     * @param vertexLocation - Attribute binding point for vertices.
+     * @param texCoordLocation - Attribute binding point for texture coordinates.
+     * @param originLocation - Attribute binding point for glyph origin coordinates
+     * @param tangentLocation - Attribute binding point for glyph tangent coordinates.
+     * @param upLocation - Attribute binding point for glyph up-vector coordinates.
      */
-    initialize(aQuadVertex: GLuint, aTexCoord: GLuint, aOrigin: GLuint, aTangent: GLuint, aUp: GLuint): boolean {
+    initialize(
+        vertexLocation: GLuint = 0,
+        texCoordLocation: GLuint = 1,
+        originLocation: GLuint = 2,
+        tangentLocation: GLuint = 3,
+        upLocation: GLuint = 4): boolean {
+
+        this._vertexLocation = vertexLocation;
+        this._texCoordLocation = texCoordLocation;
+        this._originLocation = originLocation;
+        this._tangentLocation = tangentLocation;
+        this._upLocation = upLocation;
+
         const gl = this.context.gl;
         const valid = super.initialize(
-            [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER],
-            [aQuadVertex, aTexCoord, aOrigin, aTangent, aUp]);
+            [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER]);
 
         /**
          * These vertices are equal for all quads. There actual position will be changed using
          * origin, tangent and up(-vector).
          */
-        this._buffers[0].data(LabelGeometry.VERTICES, gl.STATIC_DRAW);
+        this._vertices.data(LabelGeometry.VERTICES, gl.STATIC_DRAW);
 
         return valid;
     }
-
 
     /**
      * Use this method to set (or update) the glyph coordinates, e.g. after typesetting or after the calculations
@@ -146,21 +190,91 @@ export class LabelGeometry extends Geometry {
      * 3-component vectors in world space (provided as flat array.)
      * @param origins - Coordinates of the lower left corner of every glyph.
      * @param tangents - Tangent vector for every glyph (direction along base line).
-     * @param ups - Up vector for every glyph (orthogonal to its tangent vector).
+     * @param up - Up vector for every glyph (orthogonal to its tangent vector).
      * @param texCoords - The texture coordinates for every glyph, format: ll.x, ll.y, ur.x, ur.y.
      */
-    update(origins: Float32Array, tangents: Float32Array, ups: Float32Array, texCoords: Float32Array): void {
+    update(origins: Float32Array, tangents: Float32Array, up: Float32Array, texCoords: Float32Array): void {
 
         /** @todo The following buffers could be simplified to an interleaved buffer. */
 
-        this._glyphCount = origins.length / 3;
-
+        this._numberOfGlyphs = origins.length / 3;
         const gl = this.context.gl;
-        /** @todo is DYNAMIC_DRAW more appropriate? */
-        this._buffers[2].data(origins, gl.STATIC_DRAW);
-        this._buffers[3].data(tangents, gl.STATIC_DRAW);
-        this._buffers[4].data(ups, gl.STATIC_DRAW);
-        this._buffers[1].data(texCoords, gl.STATIC_DRAW);
+
+        this._texCoords.data(texCoords, gl.STATIC_DRAW);
+        this._origins.data(origins, gl.STATIC_DRAW);
+        this._tangents.data(tangents, gl.STATIC_DRAW);
+        this._ups.data(up, gl.STATIC_DRAW);
+    }
+
+    /**
+     * Specifies/invokes the draw of specific labels (ranges are supposed to be tracked/managed from outside).
+     */
+    @Initializable.assert_initialized()
+    draw(offset: GLint = 0, count: GLint = 0): void {
+        const gl = this.context.gl;
+        const gl2facade = this.context.gl2facade;
+
+        this._vertices.attribEnable(this._vertexLocation,
+            2, gl.FLOAT, false, 8, 0, true, false);
+        this._texCoords.attribEnable(this._texCoordLocation,
+            4, gl.FLOAT, false, 16, offset * 16, true, false);
+        this._origins.attribEnable(this._originLocation,
+            3, gl.FLOAT, false, 12, offset * 12, true, false);
+        this._tangents.attribEnable(this._tangentLocation,
+            3, gl.FLOAT, false, 12, offset * 12, true, false);
+        this._ups.attribEnable(this._upLocation,
+            3, gl.FLOAT, false, 12, offset * 12, true, false);
+
+        gl2facade.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+    }
+
+    get numberOfGlyphs(): number {
+        return this._numberOfGlyphs;
+    }
+
+    get valid(): boolean {
+        const validVertex = this._vertices && this._vertices.valid;
+        const validTexCoord = this._texCoords && this._texCoords.valid;
+        const validOrigin = this._origins && this._origins.valid;
+        const validTangent = this._tangents && this._tangents.valid;
+        const validUp = this._ups && this._ups.valid;
+        return this.initialized && validVertex && validTexCoord && validOrigin && validTangent && validUp;
+    }
+
+
+    /**
+     * Attribute location to which this geometry's vertices are bound to.
+     */
+    get vertexLocation(): GLint {
+        return this._vertexLocation;
+    }
+
+    /**
+     * Attribute location to which this geometry's texture coordinates are bound to.
+     */
+    get texCoordLocation(): GLint {
+        return this._texCoordLocation;
+    }
+
+    /**
+     * Attribute location to which this geometry's origins are bound to.
+     */
+    get originLocation(): GLint {
+        return this._originLocation;
+    }
+
+    /**
+     * Attribute location to which this geometry's tangents are bound to.
+     */
+    get tangentLocation(): GLint {
+        return this._tangentLocation;
+    }
+
+    /**
+     * Attribute location to which this geometry's up vectors are bound to.
+     */
+    get upLocation(): GLint {
+        return this._upLocation;
     }
 
 }

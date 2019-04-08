@@ -1,13 +1,13 @@
 
-import { log, logIf, LogLevel } from '../auxiliaries';
+/* spellchecker: disable */
+
+import { dirname, log, logIf, LogLevel } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 
-
-/** @todo replace path */
-import Path = require('path');
+/* spellchecker: enable */
 
 
 type StringPairs = Map<string, string>;
@@ -26,10 +26,13 @@ export class FontFaceLoader {
      */
     protected static processInfo(stream: Array<string>, fontFace: FontFace): boolean {
         const pairs: StringPairs = new Map<string, string>();
-        const success = this.readKeyValuePairs(stream, ['padding'], pairs);
+        const success = this.readKeyValuePairs(stream,
+            ['size', 'padding'], pairs);
         if (!success) {
             return false;
         }
+
+        fontFace.size = parseFloat(pairs.get('size')!);
 
         const values = pairs.get('padding')!.split(',');
         if (values.length !== 4) {
@@ -38,10 +41,10 @@ export class FontFaceLoader {
         }
 
         const padding: GLfloat4 = [
-            parseFloat(values[2]), /* top */
+            parseFloat(values[0]), /* top */
             parseFloat(values[1]), /* right */
-            parseFloat(values[3]), /* bottom */
-            parseFloat(values[0]), /* left */
+            parseFloat(values[2]), /* bottom */
+            parseFloat(values[3]), /* left */
         ];
         fontFace.glyphTexturePadding = padding;
 
@@ -50,25 +53,25 @@ export class FontFaceLoader {
 
     /**
      * Parses the common fields for lineHeight, base, ascent, descent, scaleW and scaleH to store them
-     * in the font face.
+     * in the font face. If ascent and/or descent are not available, they can be computed using the largest y-offset
+     * (ascent = baseline - max_yoffset) and descent can be derived as well (descent = - fontsize + ascent).
      * @param stream - The stream of the 'common' identifier.
      * @param fontFace - The font face in which the parsed values are stored.
      */
     protected static processCommon(stream: Array<string>, fontFace: FontFace): boolean {
         const pairs: StringPairs = new Map<string, string>();
         const success = this.readKeyValuePairs(stream,
-            ['lineHeight', 'base', 'ascent', 'descent', 'scaleW', 'scaleH'], pairs);
+            ['lineHeight', 'base', 'scaleW', 'scaleH'], pairs);
         if (!success) {
             return false;
         }
 
         fontFace.base = parseFloat(pairs.get('base')!);
-        fontFace.ascent = parseFloat(pairs.get('ascent')!);
-        fontFace.descent = parseFloat(pairs.get('descent')!);
-
-        if (fontFace.size <= 0.0) {
-            log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
-            return false;
+        if (pairs.has('ascent')) {
+            fontFace.ascent = parseFloat(pairs.get('ascent')!);
+        }
+        if (pairs.has('descent')) {
+            fontFace.descent = parseFloat(pairs.get('descent')!);
         }
 
         fontFace.lineHeight = parseFloat(pairs.get('lineHeight')!);
@@ -95,7 +98,7 @@ export class FontFaceLoader {
             return undefined;
         }
 
-        const path = Path.dirname(url);
+        const path = dirname(url);
         let page = pairs.get('file')!;
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
@@ -215,6 +218,39 @@ export class FontFaceLoader {
     }
 
     /**
+     * Derives ascent and descent data for the font face. Since the computation is based on the available glyphs and
+     * not all of the font's glyphs might be included in the font face, the ascent/descent might be off (based on
+     * minimum y-offset).
+     * @param fontFace - Font face to find ascent and/or descent for (if missing).
+     * @param size - Suggested size of the font face as read from the font file. Note that the actual size of the font
+     * face is determined by the sum of ascent and descent (which should equal the font files info size).
+     */
+    protected static findAscentAndDescentIfNoneProvided(fontFace: FontFace, size: number): void {
+        if (fontFace.ascent > 0.0 && fontFace.descent < 0.0) {
+            return;
+        }
+
+        if (fontFace.ascent > 0.0) {
+            fontFace.descent = fontFace.ascent - size;
+        }
+
+        if (fontFace.descent < 0.0) {
+            fontFace.ascent = fontFace.descent - size;
+        }
+
+        let maximumYBearing = Number.MIN_VALUE;
+        for (const i of fontFace.arrayOfGlyphIndices()) {
+            if (fontFace.glyph(i).extent[1] === 0.0) {
+                continue;
+            }
+            maximumYBearing = Math.max(fontFace.glyph(i).bearing[1], maximumYBearing);
+        }
+        fontFace.ascent = maximumYBearing;
+        fontFace.descent = fontFace.ascent - size;
+        log(LogLevel.Debug, `ascent not specified, derived ${fontFace.ascent} from maximum y-offset`);
+    }
+
+    /**
      * Asynchronously loads a fnt-file and referenced pages to create a font face from them.
      * @param fontFace - Font face object to transform data into.
      * @param data - Font face data, probably fetched from an URL.
@@ -267,6 +303,11 @@ export class FontFaceLoader {
             if (status === false) {
                 break;
             }
+        }
+
+        FontFaceLoader.findAscentAndDescentIfNoneProvided(fontFace, fontFace.size);
+        if (fontFace.size <= 0.0) {
+            log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
         }
 
         /* Multiple promises might be invoked (one per page due to async texture2D load). Since this is a non async

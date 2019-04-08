@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert } from '../auxiliaries';
 import { GLfloat2, GLfloat4, GLsizei2 } from '../tuples';
 
@@ -10,14 +12,15 @@ import { fetchAsync } from '../fetch';
 import { FontFaceLoader } from './fontfaceloader';
 import { Glyph } from './glyph';
 
+/* spellchecker: enable */
+
 
 /**
  * Font related data for glyph based text rendering. The glyph-based font face is described by, e.g., font-size,
  * line spacing, a glyph catalogue, as well as kerning information. The glyph catalogue is based on a set of glyphs
  * referring to a texture atlas (@see {@link Glyph}). All measures are provided in float even though most
  * glyph-textures and associated font data is encoded via integer values. A font face explicitly relies on floating
- * values to reduce the need of casting as well as to simplify the use for dpi aware text rendering. Most measures
- * can be interpreted as points (by means of the unit pt), again, easing the use for arbitrary dpi.
+ * values to reduce the need of casting as well as to simplify the use for dpi aware text rendering.
  * The font face interface is designed to access most basic font settings ascent, descent, and line gap (leading).
  * Additional font settings are provided via interface but are derived from or mapped to the above mentioned three
  * settings, e.g., font size is the sum of descent and ascent. This is to provide as much convenience measures for
@@ -32,6 +35,9 @@ import { Glyph } from './glyph';
  * ```
  */
 export class FontFace {
+
+    /** @see {@link size} */
+    protected _size: number;
 
     /** @see {@link base} */
     protected _base: number;
@@ -163,11 +169,12 @@ export class FontFace {
     }
 
     /**
-     * Kerning for a glyph and a subsequent glyph in pt. If the glyph or the subsequent glyph are unknown to this
-     * font face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph class.
+     * Kerning for a glyph and a subsequent glyph in texture space (px). If the glyph or the subsequent glyph are
+     * unknown to this font face (assertion), 0.f will be returned. For more details on kerning, refer to the Glyph
+     * class.
      * @param index - The current glyph index (e.g., of the current pen-position).
      * @param subsequentIndex - The glyph index of the subsequent/next glyph.
-     * @returns - The kerning (usually negative) between the two glyphs in pt. If either on of the glyphs is unknown
+     * @returns - The kerning (usually negative) between the two glyphs in px. If either on of the glyphs is unknown
      * to this font face or no specific kerning for the glyph pair is available a zero kerning is returned.
      */
     kerning(index: GLsizei, subsequentIndex: GLsizei): number {
@@ -179,16 +186,17 @@ export class FontFace {
     }
 
     /**
-     * Set the kerning for a glyph w.r.t. to a subsequent glyph in pt. If the glyph is known to this font face, the
-     * values are forwarded to the glyphs kerning setter (see Glyph for more information).
+     * Set the kerning for a glyph w.r.t. to a subsequent glyph in texture space (px). If the glyph is known to this
+     * font face, the values are forwarded to the glyphs kerning setter (see Glyph for more information).
      * @param index - The target glyph index.
      * @param subsequentIndex - The glyph index of the respective subsequent/next glyph.
-     * @param kerning - Kerning of the two glyphs in pt.
+     * @param kerning - Kerning of the two glyphs in pixel.
      */
     setKerning(index: GLsizei, subsequentIndex: GLsizei, kerning: number): void {
         const glyph = this._glyphs.get(index);
         if (!glyph || !this.hasGlyph(subsequentIndex)) {
-            assert(false, 'expected glyph or glyph of subsequent index to exist.');
+            assert(false, `expected glyph or glyph of subsequent index to exist, \
+                given ${index} and ${subsequentIndex} respectively`);
             return;
         }
         glyph.setKerning(subsequentIndex, kerning);
@@ -196,21 +204,23 @@ export class FontFace {
 
 
     /**
-     * The size of the font in pt. The font size is the measure from the tops of the tallest glyphs (ascenders) to
-     * the bottom of the lowest descenders in pt. It is derived via the sum of ascent and descent.
-     * @returns - The font size in pt (ascent + descent).
+     * The size of the font in texture space (px).
+     * @returns - The font size in texture space (px).
      */
+    set size(size: number) {
+        assert(size > 0.0, `expected size to be greater than 0.0, given ${size}`);
+        this._size = size;
+    }
     get size(): number {
-        /* Note: this._descent is usually negative. */
-        return this._ascent - this._descent;
+        return this._size;
     }
 
     /**
-     * Set the font's base in pt. The base is the distance from the baseline to the top of the line in pt.
-     * @param base - The distance from the baseline to the top of the line in pt.
+     * Set the font's base in texture space (px). The base is the distance from the baseline to the top in pixel.
+     * @param base - The distance from the baseline to the top of the line in pixel.
      */
     set base(base: number) {
-        assert(base > 0.0, 'base should be larger than zero.');
+        assert(base > 0.0, `expected base to be greater than 0.0, given ${base}`);
         this._base = base;
     }
     get base(): number {
@@ -218,12 +228,12 @@ export class FontFace {
     }
 
     /**
-     * Set the font's ascent in pt. The ascent is the distance from the baseline to the tops of the tallest glyphs
-     * (ascenders) in pt.
-     * @param ascent - The distance from the baseline to the topmost ascenders in pt.
+     * Set the font's ascent in texture space (px). The ascent is the distance from the baseline to the tops of the
+     * tallest glyphs (ascender) in pixel.
+     * @param ascent - The distance from the baseline to the topmost ascender in pixel.
      */
     set ascent(ascent: number) {
-        assert(ascent > 0.0, 'ascent should be larger than zero.');
+        assert(ascent > 0.0, `expected ascent to be greater than 0.0, given ${ascent}`);
         this._ascent = ascent;
     }
     get ascent(): number {
@@ -231,9 +241,10 @@ export class FontFace {
     }
 
     /**
-     * Set the font's descent in pt. The descent is the distance from the baseline to the lowest descenders in pt.
-     * Please note that this value is usually negative (if the fonts lowest descenders are below the baseline).
-     * @param descent - The distance from the baseline to the lowest descenders in pt.
+     * Set the font's descent in texture space (px). The descent is the distance from the baseline to the lowest
+     * descender in pixel. Please note that this value is usually negative (if the fonts lowest descender is below
+     * the baseline).
+     * @param descent - The distance from the baseline to the lowest descender in pixel.
      */
     set descent(descent: number) {
         /* No assert here: there might be fonts with their lowest descender above baseline. */
@@ -245,9 +256,9 @@ export class FontFace {
     }
 
     /**
-     * Set the font's leading/linegap in pt. The leading is the distance from the lowest descenders to the topmost
-     * ascenders of a subsequent text line in pt.
-     * @param lineGap - The gap between two subsequent lines of text in pt.
+     * Set the font's leading/linegap in texture space (px). The leading is the distance from the lowest descender to
+     * the topmost ascender of a subsequent text line in pixel.
+     * @param lineGap - The gap between two subsequent lines of text in pixel.
      */
     set lineGap(lineGap: number) {
         this._lineGap = lineGap;
@@ -257,12 +268,13 @@ export class FontFace {
     }
 
     /**
-     * Set the baseline-to-baseline distance in pt. Negative values will result in negative linegap. The line
-     * height is derived as follows: line_height = size + line_gap, or alternatively:
+     * Set the baseline-to-baseline distance in texture space (px). Negative values will result in negative linegap.
+     * The line height is derived as follows: line_height = size + line_gap, or alternatively:
      * line_height = size * line_space
-     * @param lineHeight - The line height (baseline-to-baseline distance) in pt.
+     * @param lineHeight - The line height (baseline-to-baseline distance) in pixel.
      */
     set lineHeight(lineHeight: number) {
+        assert(this.size > 0, `expected size to be greater than zero to derive line gap from line height`);
         this._lineGap = lineHeight - this.size;
     }
     get lineHeight(): number {
@@ -294,8 +306,8 @@ export class FontFace {
      * @param extent - The texture extent in px
      */
     set glyphTextureExtent(extent: GLsizei2) {
-        assert(extent[0] > 0, 'expected extent.x to be larger than zero.');
-        assert(extent[1] > 0, 'expected extent.y to be larger than zero.');
+        assert(extent[0] > 0, `expected extent.x to be greater than 0.0, given ${extent[0]}`);
+        assert(extent[1] > 0, `expected extent.y to be greater than 0.0, given ${extent[1]}`);
         this._glyphTextureExtent = extent;
     }
     /**
@@ -312,10 +324,10 @@ export class FontFace {
      * px.
      */
     set glyphTexturePadding(padding: GLfloat4) {
-        assert(padding[0] >= 0.0, 'expected padding[0] to be larger than zero.');
-        assert(padding[1] >= 0.0, 'expected padding[1] to be larger than zero.');
-        assert(padding[2] >= 0.0, 'expected padding[2] to be larger than zero.');
-        assert(padding[3] >= 0.0, 'expected padding[3] to be larger than zero.');
+        assert(padding[0] >= 0.0, `expected padding[0] to be greater than 0.0, given ${padding[0]}`);
+        assert(padding[1] >= 0.0, `expected padding[1] to be greater than 0.0, given ${padding[1]}`);
+        assert(padding[2] >= 0.0, `expected padding[2] to be greater than 0.0, given ${padding[2]}`);
+        assert(padding[3] >= 0.0, `expected padding[3] to be greater than 0.0, given ${padding[3]}`);
         this._glyphTexturePadding = padding;
     }
     get glyphTexturePadding(): GLfloat4 {

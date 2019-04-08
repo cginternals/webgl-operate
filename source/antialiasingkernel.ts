@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { RandomSquareKernel } from './randomsquarekernel';
+
+/* spellchecker: enable */
 
 
 /**

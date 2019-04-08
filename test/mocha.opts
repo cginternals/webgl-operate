@@ -2,7 +2,7 @@
 --require source-map-support/register
 --use_strict
 --recursive
---full-trace 
+--full-trace
 --bail
 --colors
 --no-timeouts

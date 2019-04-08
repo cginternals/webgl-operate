@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
 import { GLclampf4 } from './tuples';
 
 import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
+
+/* spellchecker: enable */
 
 
 /**

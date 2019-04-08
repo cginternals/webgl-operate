@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec2, vec3 } from 'gl-matrix';
 
 import { m4, v3 } from './gl-matrix-extensions';
 
 import { CameraModifier } from './cameramodifier';
+
+/* spellchecker: enable */
 
 
 /**

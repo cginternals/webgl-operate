@@ -1,39 +1,43 @@
 
+/* spellchecker: disable */
+
 import { mat4 } from 'gl-matrix';
 
-import { assert, log, LogLevel } from '../auxiliaries';
-import { GLfloat2 } from '../tuples';
+import { assert } from '../auxiliaries';
+import { GLfloat2, GLsizei2 } from '../tuples';
 
 import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
-import { Color } from '../color';
 import { Context } from '../context';
 import { Framebuffer } from '../framebuffer';
 import { Initializable } from '../initializable';
 import { Program } from '../program';
 import { Shader } from '../shader';
-import { FontFace } from './fontface';
+import { Texture2D } from '../texture2d';
 import { GlyphVertices } from './glyphvertices';
 
+import { Color } from '../color';
+import { FontFace } from './fontface';
 import { Label } from './label';
 import { LabelGeometry } from './labelgeometry';
 import { Position2DLabel } from './position2dlabel';
 import { Position3DLabel } from './position3dlabel';
+import { Projected3DLabel } from './projected3dlabel';
+
+/* spellchecker: enable */
 
 
 /**
- * The LabelRenderPass @todo
+ * This class allows rendering of multiple dynamic as well as static labels. While preparing for frame, all label
+ * geometry is packed into single buffers for the GPU and drawing is done with as few draw calls as possible. The
+ * preparation tries to reduce state changes when labels of same color and same font are provided consecutively.
+ * It might be beneficial to not render labels of large static texts and some often changing dynamic texts using the
+ * same label render pass object. Often changing texts should be out into separate passed for better performance.
  */
 export class LabelRenderPass extends Initializable {
 
     /**
-     * Default color that is used for label rendering.
-     */
-    protected static readonly DEFAULT_COLOR: Color = new Color([0.1, 0.1, 0.1, 1.0]);
-
-
-    /**
-     * Default AA step scale: more crisp text rendering.
+     * Default AA step scale: more crisp text rendering (the value is optimized for multi-frame sampling).
      */
     protected static readonly DEFAULT_AA_STEP_SCALE: GLfloat = 0.6666;
 
@@ -45,10 +49,9 @@ export class LabelRenderPass extends Initializable {
         any: false,
         camera: false,
         geometry: false,
-        color: false,
-        font: false,
         labels: false,
         aaStepScale: false,
+        aaSampling: false,
     });
 
     /**
@@ -63,10 +66,7 @@ export class LabelRenderPass extends Initializable {
     protected _camera: Camera;
 
     /** @see {@link ndcOffset} */
-    protected _ndcOffset: GLfloat2;
-
-    /** @see {@link color} */
-    protected _color: Color;
+    protected _ndcOffset: GLfloat2 = [0.0, 0.0];
 
     /** @see {@link depthMask} */
     protected _depthMask = false;
@@ -77,18 +77,32 @@ export class LabelRenderPass extends Initializable {
     /** @see {@link aaStepScale} */
     protected _aaStepScale: GLfloat;
 
+    /** @see {@link aaSampling} */
+    protected _aaSampling: LabelRenderPass.Sampling = LabelRenderPass.Sampling.Smooth1;
+
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation | undefined;
     protected _uNdcOffset: WebGLUniformLocation | undefined;
     protected _uColor: WebGLUniformLocation | undefined;
     protected _uAAStepScale: WebGLUniformLocation | undefined;
+    protected _uTransform: WebGLUniformLocation | undefined;
+    protected _uDynamic: WebGLUniformLocation | undefined;
+    protected _uAASampling: WebGLUniformLocation | undefined;
 
-    protected _font: FontFace | undefined;
-    protected _labels: Array<Label>;
+    protected _labels = new Array<Label>();
 
-    protected _geometry3D: LabelGeometry;
-    protected _geometry2D: LabelGeometry;
+    /**
+     * Stores for each label (same index in _labels) the range within the geometry.
+     */
+    protected _ranges = new Array<GLsizei2>();
+
+    /**
+     * Stores typeset glyph vertices data per label and is used as cache to avoid unnecessary typesetting.
+     */
+    protected _verticesPerLabel = new Array<GlyphVertices | undefined>();
+
+    protected _geometry: LabelGeometry;
 
 
     /**
@@ -101,48 +115,46 @@ export class LabelRenderPass extends Initializable {
         this._depthFunc = context.gl.LESS;
 
         this._program = new Program(context, 'LabelRenderProgram');
-        this._geometry3D = new LabelGeometry(this._context, 'LabelRenderGeometry');
-        this._geometry2D = new LabelGeometry(this._context, 'LabelRenderGeometry2D');
+        this._geometry = new LabelGeometry(this._context, 'LabelGeometry');
 
-        this._color = LabelRenderPass.DEFAULT_COLOR;
         this._aaStepScale = LabelRenderPass.DEFAULT_AA_STEP_SCALE;
-
-        this._labels = new Array<Label>();
     }
 
     /**
      * Typesets and renders 2D and 3D labels.
      */
     protected prepare(): void {
-        if (this._font === undefined) {
-            const empty = new Float32Array(0);
-            this._geometry2D.update(empty, empty, empty, empty);
-            this._geometry3D.update(empty, empty, empty, empty);
-            return;
-        }
-
-        /* Remove all calculated vertices for 2D and 3D labels. */
-        const glyphs2D = new GlyphVertices(0);
-        const glyphs3D = new GlyphVertices(0);
-
         const frameSize = this._camera.viewport;
 
-        for (const label of this._labels) {
-            if (label === undefined) {
-                log(LogLevel.Warning, `skip undefined label`);
-                continue;
-            }
-            label.fontFace = this._font!;
+        for (let i = 0; i < this._labels.length; ++i) {
+            const label = this._labels[i];
+            let vertices: GlyphVertices | undefined;
+
+            const forceTypeset = this._altered.labels && this._verticesPerLabel[i] === undefined;
 
             if (label instanceof Position2DLabel) {
-                glyphs2D.concat(label.typeset(frameSize));
+                label.frameSize = frameSize;
+                vertices = label.typeset(forceTypeset);
+            } else if (label instanceof Projected3DLabel) {
+                label.camera = this._camera;
+                vertices = label.typeset(forceTypeset);
             } else if (label instanceof Position3DLabel) {
-                glyphs3D.concat(label.typeset());
+                vertices = label.typeset(forceTypeset);
             }
+
+            if (vertices === undefined) {
+                vertices = this._verticesPerLabel[i];
+            } else {
+                this._verticesPerLabel[i] = vertices;
+            }
+
+            const rangeStart = i > 0 ? this._ranges[i - 1][1] : 0;
+            const rangeEnd = rangeStart + (vertices === undefined ? 0 : vertices.length);
+            this._ranges[i] = [rangeStart, rangeEnd];
         }
 
-        this._geometry2D.update(glyphs2D.origins, glyphs2D.tangents, glyphs2D.ups, glyphs2D.texCoords);
-        this._geometry3D.update(glyphs3D.origins, glyphs3D.tangents, glyphs3D.ups, glyphs3D.texCoords);
+        const data: GlyphVertices = GlyphVertices.concat(this._verticesPerLabel);
+        this._geometry.update(data.origins, data.tangents, data.ups, data.texCoords);
     }
 
 
@@ -150,52 +162,54 @@ export class LabelRenderPass extends Initializable {
     initialize(): boolean {
         const gl = this._context.gl;
 
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
-        vert.initialize(require('./glyph.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
-        frag.initialize(require('./glyph.frag'));
+        this._geometry.initialize();
 
-        this._program.initialize([vert, frag]);
+        this._context.enable(['OES_standard_derivatives']);
+
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
+        vert.initialize(require(`./glyph.vert`));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
+        frag.initialize(require(`./glyph.frag`));
+
+        this._program.initialize([vert, frag], false);
+
+        this._program.attribute('a_vertex', this._geometry.vertexLocation);
+        this._program.attribute('a_texCoord', this._geometry.texCoordLocation);
+        this._program.attribute('a_origin', this._geometry.originLocation);
+        this._program.attribute('a_tangent', this._geometry.tangentLocation);
+        this._program.attribute('a_up', this._geometry.upLocation);
+
+        this._program.link();
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uColor = this._program.uniform('u_color');
         this._uAAStepScale = this._program.uniform('u_aaStepScale');
+        this._uAASampling = this._program.uniform('u_aaSampling');
+        this._uTransform = this._program.uniform('u_transform');
+        this._uDynamic = this._program.uniform('u_dynamic');
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_glyphs'), 0);
-        gl.uniform4fv(this._uColor, this._color.rgbaF32);
         gl.uniform1f(this._uAAStepScale, this._aaStepScale);
+        gl.uniform1i(this._uAASampling, this._aaSampling);
         this._program.unbind();
-
-
-        const aVertex = this._program.attribute('a_vertex', 0);
-        const aTexCoord = this._program.attribute('a_texCoord', 1);
-        const aOrigin = this._program.attribute('a_origin', 2);
-        const aTangent = this._program.attribute('a_tangent', 3);
-        const aUp = this._program.attribute('a_up', 4);
-
-
-        if (!this._geometry2D.initialized) {
-            this._geometry2D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
-        }
-        if (!this._geometry3D.initialized) {
-            this._geometry3D.initialize(aVertex, aTexCoord, aOrigin, aTangent, aUp);
-        }
 
         return true;
     }
 
     @Initializable.uninitialize()
     uninitialize(): void {
-        this._geometry3D.uninitialize();
-        this._geometry2D.uninitialize();
+        this._geometry.uninitialize();
         this._program.uninitialize();
 
         this._uViewProjection = undefined;
         this._uNdcOffset = undefined;
         this._uColor = undefined;
         this._uAAStepScale = undefined;
+        this._uAASampling = undefined;
+        this._uTransform = undefined;
+        this._uDynamic = undefined;
     }
 
 
@@ -211,32 +225,47 @@ export class LabelRenderPass extends Initializable {
             gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         }
 
-        if (override || this._altered.color) {
-            gl.uniform4fv(this._uColor, this._color.rgbaF32);
-        }
-
         if (override || this._altered.aaStepScale) {
             gl.uniform1f(this._uAAStepScale, this._aaStepScale);
         }
 
-        if (override || this._altered.labels || this._altered.font) {
+        if (override || this._altered.aaSampling) {
+            gl.uniform1i(this._uAASampling, this._aaSampling);
+        }
+
+        /* Some labels need the camera to update their font size and position. */
+        let labelsAltered = override || this._altered.labels || this._altered.camera || this._camera.altered;
+        let i = 0;
+        while (labelsAltered === false && i < this._labels.length) {
+            labelsAltered = this._labels[i].altered;
+            ++i;
+        }
+        if (labelsAltered) {
             this.prepare();
         }
 
         this._altered.reset();
     }
 
+    /**
+     * This invokes draw calls on all labels. Thereby it aims to avoid unnecessary binds when texture or color does
+     * not change and accumulate draw calls as long as both remain unchanged. Further more, draw calls will be
+     * accumulated as much as possible (static labels only).
+     */
     @Initializable.assert_initialized()
     frame(): void {
-        assert(this._target && this._target.valid, `valid target expected`);
-        if (this._font === undefined) {
+        if (this._geometry.numberOfGlyphs === 0 || this._labels.length === 0) {
             return;
         }
 
+        assert(this._target && this._target.valid, `valid target expected`);
         const gl = this._context.gl;
 
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
+
+        /* CULL FACE is expected to be disabled. */
+        // gl.disable(gl.CULL_FACE);
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(this._depthFunc);
@@ -256,39 +285,105 @@ export class LabelRenderPass extends Initializable {
         gl.uniform2fv(this._uNdcOffset, this._ndcOffset);
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
-        this._font.glyphTexture.bind(gl.TEXTURE0);
-
-
         /* Controlling renderer is expected to bind the appropriate target, thus, unbinding is not
         necessary. */
         this._target.bind();
 
-        this._geometry3D.bind();
-        this._geometry3D.draw();
+        this._geometry.bind();
 
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, mat4.create());
+        /* Try to avoid unnecessary binds when texture or color does not change and accumulate draw calls as long as
+        both remain unchanged. */
 
-        this._geometry2D.bind();
-        this._geometry2D.draw();
+        const range: GLsizei2 = [0, 0];
+        let currentColor: Color | undefined;
+        let currentFontFace: FontFace | undefined;
 
+        const identity = mat4.create();
+
+        for (let i = 0; i < this._labels.length; ++i) {
+            const label0 = this._labels[i];
+            range[1] = this._ranges[i][1];
+
+            /* Skip labels that have no depictable glyphs. */
+            if (range[0] === range[1] || (i < this._labels.length - 1 && !label0.valid)) {
+                continue;
+            }
+
+            /* If the next/subsequent label has no depictable glyphs or has the same font and color, then increase
+            draw range. */
+            const label1 = i < this._labels.length - 1 ? this._labels[i + 1] : undefined;
+            const bothStatic = label1 && label0.type === Label.Type.Static && label1.type === Label.Type.Static;
+            const sameColor = label1 && label0.color.equals(label1.color);
+            const sameFontFace = label1 && label0.fontFace === label1.fontFace;
+            const sameUnit = label1 && label0.fontSizeUnit === label1.fontSizeUnit;
+
+            if (label1 && (this._ranges[i + 1][0] === this._ranges[i + 1][1]
+                || (bothStatic && sameColor && sameFontFace && sameUnit))) {
+                continue;
+            }
+
+            const dynamic = label0.type === Label.Type.Dynamic;
+            gl.uniform1i(this._uDynamic, dynamic);
+            if (dynamic) {
+                gl.uniformMatrix4fv(this._uTransform, false, label0.dynamicTransform);
+            }
+
+            if (currentColor === undefined || !currentColor.equals(label0.color)) {
+                gl.uniform4fv(this._uColor, label0.color.rgbaF32);
+                currentColor = label0.color;
+            }
+            if (currentFontFace !== label0.fontFace) {
+                label0.fontFace!.glyphTexture.bind(gl.TEXTURE0);
+                currentFontFace = label0.fontFace;
+            }
+
+            switch (label0.fontSizeUnit) {
+                case Label.Unit.Pixel:
+                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+                    break;
+
+                case Label.Unit.World:
+                case Label.Unit.Mixed:
+                default:
+                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+            }
+
+            this._geometry.draw(range[0], range[1] - range[0]);
+
+            range[0] = range[1];
+        }
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */
         // this._geometry.unbind();
         /** Every stage is expected to bind its own program when drawing, unbinding is not necessary. */
         // this._program.unbind();
 
-        this._font.glyphTexture.unbind(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, Texture2D.DEFAULT_TEXTURE);
+
 
         if (this._depthMask === false) {
             gl.depthMask(true);
         }
-
 
         gl.depthFunc(gl.LESS);
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
     }
+
+    /**
+     * Unbind the label geometry.
+     */
+    @Initializable.assert_initialized()
+    unbind(): void {
+        if (this._geometry.valid) {
+            this._geometry.unbind();
+        }
+        if (this._program.valid) {
+            this._program.unbind();
+        }
+    }
+
 
     /**
      * Sets the framebuffer the quads are rendered to.
@@ -321,22 +416,6 @@ export class LabelRenderPass extends Initializable {
         this._altered.alter('camera');
     }
 
-    /**
-     * Color to be applied when rendering glyphs. Note that color will only change on update in order to reduce number
-     * of uniform value changes.
-     */
-    set color(color: Color) {
-        if (this._color.equals(color)) {
-            return;
-        }
-        this._color = color;
-        this._altered.alter('color');
-    }
-    get color(): Color {
-        this._altered.alter('color'); /* just assume it will be altered on access. */
-        return this._color;
-    }
-
 
     /**
      * Allows to restrict writing into the depth buffer. If the mask is set to `true`, labels might affect the depth
@@ -367,25 +446,21 @@ export class LabelRenderPass extends Initializable {
 
 
     /**
-     * Write access to the labels that should be rendered. Note that label preparation is currently done per
+     * Access to the labels that should be rendered. Note that label preparation is currently done per
      * label-render pass instance, so drawing the same label with multiple renderers should be avoided. Label
      * preparation will be invoked on update, iff the labels or the font face have changed.
      */
     set labels(labels: Array<Label>) {
         this._labels = labels;
+
+        this._ranges.length = this._labels.length;
+        this._verticesPerLabel.length = this._labels.length;
+        this._verticesPerLabel.fill(undefined);
+
         this._altered.alter('labels');
     }
-
-    /**
-     * Allows to specify the font face for rendering. Note that if changes to the font face occur, `update(true)`
-     * should be invoked to invoke, e.g., re-typesetting of labels.
-     */
-    set fontFace(fontFace: FontFace | undefined) {
-        this._font = fontFace;
-        this._altered.alter('font');
-    }
-    get fontFace(): FontFace | undefined {
-        return this._font;
+    get labels(): Array<Label> {
+        return this._labels;
     }
 
 
@@ -398,12 +473,57 @@ export class LabelRenderPass extends Initializable {
         if (this._aaStepScale === scale) {
             return;
         }
-
         this._aaStepScale = scale;
         this._altered.alter('aaStepScale');
     }
     get aaStepScale(): GLfloat {
         return this._aaStepScale;
+    }
+
+
+    /**
+     * Specify the sampling pattern/mode (anti-aliasing / no anti-aliasing) for glyph rendering. The sampling should be
+     * increased when rendering small text, e.g., starting at font size of 16px or less. With larger text, there is no
+     * perceptual benefit with more than one derivative sample, i.e., LabelRenderPass.Sampling.Smooth1.
+     */
+    set aaSampling(sampling: LabelRenderPass.Sampling) {
+        if (this._aaSampling === sampling) {
+            return;
+        }
+        this._aaSampling = sampling;
+        this._altered.alter('aaSampling');
+    }
+    get aaSampling(): LabelRenderPass.Sampling {
+        return this._aaSampling;
+    }
+
+
+    /**
+     * Read-only access (leaky) to the actual label geometry (VAO) used to draw this pass's labels.
+     */
+    get geometry(): LabelGeometry {
+        return this._geometry;
+    }
+
+    /**
+     * Read-only access (leaky) to the actual label geometry (VAO) used to draw this pass's labels.
+     */
+    get program(): Program {
+        return this._program;
+    }
+
+}
+
+
+export namespace LabelRenderPass {
+
+    export enum Sampling {
+        None = 0,        //  1 sample,  no derivatives
+        Smooth1 = 1,     //  1 sample,  requires derivatives
+        Horizontal3 = 2, //  3 samples, requires derivatives
+        Vertical3 = 3,   //  3 samples, requires derivatives
+        Grid3x3 = 4,     //  9 samples, requires derivatives
+        Grid4x4 = 5,     // 16 samples, requires derivatives
     }
 
 }

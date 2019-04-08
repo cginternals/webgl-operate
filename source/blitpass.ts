@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, logIf, LogLevel } from './auxiliaries';
 
 import { Context } from './context';
@@ -8,6 +10,8 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
+
+/* spellchecker: enable */
 
 
 /**
@@ -45,6 +49,9 @@ export class BlitPass extends Initializable {
     protected _drawBuffer: GLenum;
 
     /* Indirect blit and fallback implementation. */
+
+    /** @see {@link forceProgramBlit} */
+    protected _enforceProgramBlit = false;
 
     /**
      * Geometry used to draw on. This is not provided by default to allow for geometry sharing. If no triangle is given,
@@ -151,6 +158,13 @@ export class BlitPass extends Initializable {
     initialize(ndcTriangle?: NdcFillingTriangle): boolean {
         const gl = this._context.gl;
 
+        if (ndcTriangle === undefined) {
+            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Blit');
+        } else {
+            this._ndcTriangle = ndcTriangle;
+            this._ndcTriangleShared = true;
+        }
+
         /* Configure program-based blit. */
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
@@ -159,26 +173,17 @@ export class BlitPass extends Initializable {
         frag.initialize(require('./shaders/blit.frag'));
 
         this._program = new Program(this._context, 'BlitProgram');
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, frag], false);
+
+        if (!this._ndcTriangle.initialized) {
+            this._ndcTriangle.initialize();
+        }
+        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
+        this._program.link();
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         this._program.unbind();
-
-
-        if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context, 'NdcFillingTriangle-Blit');
-        } else {
-            this._ndcTriangle = ndcTriangle;
-            this._ndcTriangleShared = true;
-        }
-
-        if (!this._ndcTriangle.initialized) {
-            const aVertex = this._program.attribute('a_vertex', 0);
-            this._ndcTriangle.initialize(aVertex);
-        } else {
-            this._program.attribute('a_vertex', this._ndcTriangle.aVertex);
-        }
 
         return true;
     }
@@ -227,7 +232,7 @@ export class BlitPass extends Initializable {
         }
 
         /* BlitFramebuffer is not an extension and, thus, it does not need to be enabled. */
-        if (this._context.supportsBlitFramebuffer) {
+        if (this._context.supportsBlitFramebuffer && this._enforceProgramBlit === false) {
             return this.functionBlit();
         }
         this.programBlit(this._program);
@@ -270,6 +275,14 @@ export class BlitPass extends Initializable {
     set target(target: Framebuffer) {
         this.assertInitialized();
         this._target = target;
+    }
+
+    /**
+     * Specify whether or not experimental WebGL blit can be used if available.
+     * @param enforce - If true, program based blit instead of WebGL experimental blit function will be used.
+     */
+    set enforceProgramBlit(enforce: boolean) {
+        this._enforceProgramBlit = enforce;
     }
 
     /**

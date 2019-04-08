@@ -5,9 +5,10 @@
 
 body {
     font-family: 'Source Sans Pro', sans-serif !important;
+    overflow-y: scroll;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, a {
     color: #1c75bc;
     font-weight: 300;
 }
@@ -15,22 +16,41 @@ h4, h5, h6 {
     text-transform: uppercase;
 }
 
+.btn-primary {
+    background-color: #1c75bc;
+    border-color: #1c75bc;
+}
+.btn-primary:hover {
+    background-color: #27aae1;
+    border-color: #27aae1;
+}
+
+
 pre, code {
     font-family: 'Source Code Pro';
-    font-size: 80%;
+}
+
+pre.language-sh::before {
+    content: "$ ";
 }
 
 header, footer {
-    margin-top: 8rem;
+    padding-top: 8rem;
 }
 
-header, footer {
-    margin-bottom: 2rem;
+footer {
+    padding-bottom: 2rem;
 }
+
 
 section {
-    margin-bottom: 2rem;
+    padding-top: 2rem;
 }
+
+a:hover {
+    text-decoration: none;
+}
+
 
 nav.navbar img {
     height: 1.5rem;
@@ -88,16 +108,66 @@ ul.features li:last-child:after {
     content: none;
 }
 
-@media screen and (min-width: 960px) {
+@media screen and (min-width: 992px) {
     .card-columns {
         column-count: 3;
     }
 }
-@media screen and (max-width: 960px) and (min-width: 540px) {
+@media screen and (max-width: 992px) and (min-width: 540px) {
     .card-columns {
         column-count: 2;
     }
 }
+
+#demos .card {
+    margin-bottom: 1.25rem;
+}
+
+#demos .card-img-top {
+    overflow: hidden;
+}
+
+#demos .card.disabled img {
+    filter: grayscale();
+    overflow: hidden;
+}
+
+#demos .card.disabled .badge-parent {
+    position: absolute;
+    z-index: 1;
+    top: 0.5em;
+    right: 0;
+}
+
+#demos .card:hover {
+    border-color: #27aae1;
+}
+
+#demos .card:hover img {
+    -webkit-transition: all 0.3s ease-out ; /* Safari and Chrome */
+    -moz-transition: all 0.3s ease-out ; /* Firefox */
+    -o-transition: all 0.3s ease-out ; /* IE 9 */
+    -ms-transition: all 0.3s ease-out ; /* Opera */
+    transition: all 0.3s ease-out ;
+}
+
+#demos .card:hover img {
+    -webkit-transform:scale(1.02); /* Safari and Chrome */
+    -moz-transform:scale(1.02); /* Firefox */
+    -ms-transform:scale(1.02); /* IE 9 */
+    -o-transform:scale(1.02); /* Opera */
+     transform:scale(1.02);
+}
+
+
+#examples ul {
+    list-style: none;
+}
+
+#examples a.active {
+    font-weight: bold;
+}
+
 
 .btn-clipboard-parent {
     position: relative;
@@ -115,6 +185,10 @@ ul.features li:last-child:after {
     border-radius: .25rem;
 }
 
+canvas {
+    border: 1px solid #d6d8db;
+    background: #e2e3e5;
+}
 
 canvas:fullscreen  {
     width: 100%!important;

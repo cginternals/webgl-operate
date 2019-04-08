@@ -1,0 +1,34 @@
+[
+    {
+        "target": "canvassize-example",
+        "title": "Canvas Size",
+        "object": "CanvasSizeExample",
+        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+    },
+    {
+        "target": "labelelide-example",
+        "title": "Label Elide",
+        "object": "LabelElideExample",
+        "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
+    },
+    {
+        "target": "labelanchor-example",
+        "title": "Label Anchor",
+        "object": "LabelAnchorExample",
+        "caption": "Label placement with anchors top, bottom, ascent, descent, and center. "
+    },
+    {
+        "target": "label2d-example",
+        "title": "Label 2D",
+        "object": "Label2DExample",
+        "caption": "Static/dynamic text that can be positioned in 2D space.",
+        "disabled": true
+    },
+    {
+        "target": "label3d-example",
+        "title": "Label 3D",
+        "object": "Label3DExample",
+        "caption": "Static/dynamic text that can be positioned in 3D space.",
+        "disabled": true
+    }
+]

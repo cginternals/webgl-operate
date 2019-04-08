@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
@@ -8,8 +10,9 @@ chai.use(spies);
 const expect = chai.expect;
 const stub = sinon.stub;
 
-
 import * as aux from '../source/auxiliaries';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */
@@ -56,51 +59,51 @@ describe('auxiliaries log and logIf', () => {
     });
 
     it('should use the correct log level', () => {
-        let output = '';
-        const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
+        const fake = sinon.fake();
+        const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(output).to.string('[0]');
+        expect(fake.lastCall.lastArg).to.string('[0]');
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(output).to.string('[1]');
+        expect(fake.lastCall.lastArg).to.string('[1]');
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(output).to.string('[2]');
+        expect(fake.lastCall.lastArg).to.string('[2]');
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(output).to.string('[3]');
+        expect(fake.lastCall.lastArg).to.string('[3]');
 
         consoleLogStub.restore();
     });
 
     it('should respect verbosity level', () => {
-        let output = '';
-        const consoleLogStub = stub(console, 'log').callsFake((input) => output = input);
+        const fake = sinon.fake();
+        const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(output).to.string('[0]');
+        expect(fake.lastCall.lastArg).to.string('[0]');
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(output).to.string('[1]');
+        expect(fake.lastCall.lastArg).to.string('[1]');
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(output).to.string('[2]');
+        expect(fake.lastCall.lastArg).to.string('[2]');
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(output).to.string('[3]');
+        expect(fake.lastCall.lastArg).to.string('[3]');
 
         aux.log(4, 'log level 4');
-        expect(output).to.string('[3]'); // uses previous output (nothing changed)
+        expect(fake.lastCall.lastArg).to.string('[3]'); // uses previous output (nothing changed)
 
         const thresholdRestore = aux.logVerbosity();
         aux.logVerbosity(4);
         aux.log(4, 'log level 4');
-        expect(output).to.string('[4]');
+        expect(fake.lastCall.lastArg).to.string('[4]');
 
         aux.logVerbosity(-1);
         aux.log(0, 'log level 0');
-        expect(output).to.string('[4]');
+        expect(fake.lastCall.lastArg).to.string('[4]');
 
         aux.logVerbosity(thresholdRestore);
         consoleLogStub.restore();
@@ -234,5 +237,26 @@ describe('auxiliaries GETparameter', () => {
     //     expect(aux.GETsearch()).to.equal('?test=true');
     //     expect(aux.GETparameter('test')).to.equal('true');
     // });
+
+});
+
+
+describe('auxiliaries path', () => {
+
+    it('should return the directory name of a file path', () => {
+        expect(aux.dirname('https://localhost/file.ext')).to.equal('https://localhost');
+        expect(aux.dirname('file.ext')).to.equal('');
+
+        expect(aux.dirname('localhost/file')).to.equal('localhost');
+        expect(aux.dirname('localhost/dir/')).to.equal('localhost/dir');
+    });
+
+    it('should return the base name of a file path', () => {
+        expect(aux.basename('https://localhost/file.ext')).to.equal('file.ext');
+        expect(aux.basename('file.ext')).to.equal('file.ext');
+
+        expect(aux.basename('localhost/file')).to.equal('file');
+        expect(aux.basename('localhost/dir/')).to.equal('');
+    });
 
 });

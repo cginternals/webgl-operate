@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert } from '../auxiliaries';
 
 import { AccumulatePass } from '../accumulatepass';
@@ -15,6 +17,8 @@ import { Invalidate, Renderer } from '../renderer';
 import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 import { TestNavigation } from './testnavigation';
+
+/* spellchecker: enable */
 
 
 namespace debug {

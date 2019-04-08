@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec2, vec3 } from 'gl-matrix';
 import { abs2, abs3, sign, v2, v3 } from './gl-matrix-extensions';
 
 import { DEG2RAD } from './auxiliaries';
 import { Camera } from './camera';
+
+/* spellchecker: enable */
 
 
 namespace ray_math {

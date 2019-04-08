@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
@@ -11,6 +13,8 @@ import {
     equals2, equals3, equals4,
     GLfloat2, GLfloat3, GLfloat4,
 } from '../source/tuples';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

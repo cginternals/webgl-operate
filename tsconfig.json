@@ -22,7 +22,7 @@
     },
     "typedocOptions": {
         "mode": "file",
-        "out": "dist/doc",
+        "out": "build/doc",
         "ignoreCompilerErrors": false,
         "excludePrivate": false,
         "excludeNotExported": false,

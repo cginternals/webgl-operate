@@ -1,5 +1,9 @@
 
+/* spellchecker: disable */
+
 import { mat2, mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
+
+/* spellchecker: enable */
 
 
 /** Namespace that comprises various gl-matrix extensions (also cleans up documentation). */

@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 
 const expect = chai.expect;
@@ -6,6 +8,8 @@ const expect = chai.expect;
 import { Context } from '../source/context';
 import { WEBGL2_EXTENSIONS } from '../source/extensions';
 import { ExtensionsHash } from '../source/extensionshash';
+
+/* spellchecker: enable */
 
 
 class ExtensionsHashMock extends ExtensionsHash {

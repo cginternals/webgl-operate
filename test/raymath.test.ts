@@ -1,13 +1,15 @@
 
+/* spellchecker: disable */
 
 import * as chai from 'chai';
 
 const expect = chai.expect;
 
-
 import { vec2, vec3 } from 'gl-matrix';
 
 import * as rayMath from '../source/raymath';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

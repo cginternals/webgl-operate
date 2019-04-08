@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, log, logIf, LogLevel } from './auxiliaries';
 
 import { AllocationRegister } from './allocationregister';
@@ -6,6 +8,8 @@ import { ContextMasquerade } from './contextmasquerade';
 import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
 import { ExtensionsHash } from './extensionshash';
 import { GL2Facade } from './gl2facade';
+
+/* spellchecker: enable */
 
 
 /**
@@ -188,12 +192,29 @@ export class Context {
     // CONTEXT ATTRIBUTES
 
     /**
+     * Cached attributes of the context.
+     */
+    protected _attributes: WebGLContextAttributes | undefined = undefined;
+
+    protected queryAttributes(): void {
+        const attributes = this._context.getContextAttributes();
+
+        // Some browsers, e.g., Brave, might disable querying the attributes.
+        if (attributes === null) {
+            log(LogLevel.Error, `querying context attributes failed (probably blocked)`);
+            return;
+        }
+
+        this._attributes = attributes;
+    }
+
+    /**
      * @link https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.2
      * If the value is true, the drawing buffer has an alpha channel for the purposes of performing OpenGL destination
      * alpha operations and compositing with the page. If the value is false, no alpha buffer is available.
      */
     get alpha(): boolean {
-        return this._context.getContextAttributes().alpha;
+        return this._attributes ? this._attributes!.alpha as boolean : false;
     }
 
     /**
@@ -203,7 +224,7 @@ export class Context {
      * does not support antialiasing, no antialiasing is performed.
      */
     get antialias(): boolean {
-        return this._context.getContextAttributes().antialias;
+        return this._attributes ? this._attributes!.antialias as boolean : false;
     }
 
     /**
@@ -212,7 +233,7 @@ export class Context {
      * buffer is available.
      */
     get depth(): boolean {
-        return this._context.getContextAttributes().depth;
+        return this._attributes ? this._attributes!.depth as boolean : false;
     }
 
     /**
@@ -222,7 +243,7 @@ export class Context {
      * calls...
      */
     get failIfMajorPerformanceCaveat(): boolean {
-        return this._context.getContextAttributes().failIfMajorPerformanceCaveat;
+        return this._attributes ? this._attributes!.failIfMajorPerformanceCaveat as boolean : false;
     }
 
     /**
@@ -233,7 +254,7 @@ export class Context {
      * the premultipliedAlpha flag.
      */
     get premultipliedAlpha(): boolean {
-        return this._context.getContextAttributes().premultipliedAlpha;
+        return this._attributes ? this._attributes!.premultipliedAlpha as boolean : false;
     }
 
     /**
@@ -244,7 +265,7 @@ export class Context {
      * or overwritten by the author.
      */
     get preserveDrawingBuffer(): boolean {
-        return this._context.getContextAttributes().preserveDrawingBuffer;
+        return this._attributes ? this._attributes!.preserveDrawingBuffer as boolean : false;
     }
 
     /**
@@ -253,7 +274,7 @@ export class Context {
      * stencil buffer is available.
      */
     get stencil(): boolean {
-        return this._context.getContextAttributes().stencil;
+        return this._attributes ? this._attributes!.stencil as boolean : false;
     }
 
 
@@ -298,6 +319,28 @@ export class Context {
     }
 
     /**
+     * Enable provided extensions. Each extension is only enabled if it is supported. Alternatively the extension can
+     * be queried for support and accessed (thereby enabled) directly. Thus, this function only acts as convenience
+     * interface for something like a mandatory extension configuration etc. Also, some extensions only effect GLSL
+     * capabilities and must be enabled explicitly without accessing the extension object.
+     * @param extensions - Array of extensions identifier that are to be enabled.
+     */
+    enable(extensions: Array<string>): void {
+        for (const extension of extensions) {
+            if (this.isWebGL1 && WEBGL1_EXTENSIONS.indexOf(extension) === -1) {
+                continue;
+            }
+            if (this.isWebGL2 && WEBGL2_EXTENSIONS.indexOf(extension) === -1) {
+                continue;
+            }
+            if (this.supports(extension) === false) {
+                continue;
+            }
+            this.extension(undefined, extension);
+        }
+    }
+
+    /**
      * Queries all extensions for the current context and stores the result (supported or not supported). This is
      * relevant to avoid continuous searches or regexp matching or substring queries in the complete extension string.
      * Instead, the support is queried once and can be explicitly request in the public interface using properties.
@@ -305,7 +348,17 @@ export class Context {
      * This function should get called only once per Context instance.
      */
     protected queryExtensionSupport(): void {
-        this._extensions = this._context.getSupportedExtensions();
+        const extensions = this._context.getSupportedExtensions();
+
+        // Some browsers, e.g., Brave, might disable querying the supported extensions.
+        if (extensions === null) {
+            log(LogLevel.Error, `querying supported extensions failed (probably blocked)`);
+            return;
+        }
+
+        for (const extension of extensions) {
+            this._extensions.push(extension);
+        }
 
         if (this._backend === Context.BackendType.WebGL1) {
             this.ANGLE_instanced_arrays_supported = this.supports('ANGLE_instanced_arrays');
@@ -390,6 +443,7 @@ export class Context {
         assert(this._backend !== undefined && this._backend.valueOf() !== Context.BackendType.Invalid.valueOf(),
             `context is neither webgl nor webgl2, given ${contextString}`);
 
+        this.queryAttributes();
         this.queryExtensionSupport();
 
         // undefine all masked functions
@@ -902,9 +956,10 @@ export class Context {
             this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_VECTORS)]);
 
         const MAX_VIEWPORT_DIMS = this._context.getParameter(this._context.MAX_VIEWPORT_DIMS);
-        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (WIDTH)', MAX_VIEWPORT_DIMS[0]]);
-        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (HEIGHT)', MAX_VIEWPORT_DIMS[1]]);
-
+        // tslint:disable:no-null-keyword
+        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (WIDTH)', MAX_VIEWPORT_DIMS ? MAX_VIEWPORT_DIMS[0] : null]);
+        pNamesAndValues.push(['MAX_VIEWPORT_DIMS (HEIGHT)', MAX_VIEWPORT_DIMS ? MAX_VIEWPORT_DIMS[1] : null]);
+        // tslint:enable:no-null-keyword
 
         if (this.isWebGL2) {
             pNamesAndValues.push(['MAX_3D_TEXTURE_SIZE',

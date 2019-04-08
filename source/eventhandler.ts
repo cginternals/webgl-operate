@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { vec2 } from 'gl-matrix';
 
 import { Observable, Subscription } from 'rxjs';
@@ -9,6 +11,8 @@ import { assert } from './auxiliaries';
 import { MouseEventProvider } from './mouseeventprovider';
 import { Invalidate } from './renderer';
 import { TouchEventProvider } from './toucheventprovider';
+
+/* spellchecker: enable */
 
 
 /**

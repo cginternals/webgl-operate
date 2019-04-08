@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 export * from './webgl-operate.slim';
 
 
@@ -31,3 +33,5 @@ export namespace viewer {
 
 
 /* DEVELOPMENT facilities (should be none when publishing) */
+
+/* spellchecker: enable */

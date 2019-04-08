@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
@@ -9,6 +11,8 @@ const expect = chai.expect;
 const stub = sinon.stub;
 
 import { Resizable as AbstractResizable } from '../source/resizable';
+
+/* spellchecker: enable */
 
 
 /* tslint:disable:no-unused-expression */

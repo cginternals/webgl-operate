@@ -1,0 +1,33 @@
+extends partials/site.pug
+block vars
+  - var active = 'examples'
+
+block head
+
+
+block content
+
+  header.container#examples
+    div.row
+      .col-lg-3.col-md-3.col-sm-4
+        h2.pb-4 Examples
+
+        ul.list-group.list-group-flush
+          each example, index in examples
+            li
+              if example.disabled
+                span.text-black-50 #{example.title}
+              else
+                a(href = `/examples/${example.target}.html` target = 'example' class = index == 0 ? 'active' : '').example-link #{example.title}
+
+      .col-lg-9.col-md-9.col-sm-8
+        .embed-responsive.embed-responsive-16by9
+          iframe(name = 'example' src = `/examples/${examples[0].target}.html`
+            frameborder = 0 marginwidth = 0 marginheight = 0
+            allow-scripts allowfullscreen).embed-responsive-item
+
+  script.
+    $('a.example-link').click(function() {
+      $('a.example-link').removeClass('active');
+      $(this).addClass('active');
+    });

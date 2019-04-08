@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import { assert } from './auxiliaries';
@@ -16,6 +18,8 @@ import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 import { GLsizei2 } from './tuples';
 
+/* spellchecker: enable */
+
 
 /**
  * This stage provides means to sample G-Buffers, in order to give access to world space coordinates, depth values and
@@ -24,55 +28,6 @@ import { GLsizei2 } from './tuples';
  * back the value from this texture. Note that depth and ID values are cached as long as no redraw (frame) was invoked.
  */
 export class ReadbackPass extends Initializable {
-
-
-    /**
-     * Whether or not caching of requested depths and ids should be used to reduce performance impact.
-     */
-    set cache(value: boolean) {
-        this._cache = value;
-    }
-
-
-    /**
-     * Sets the framebuffer object that is to be used for depth readback.
-     * @param framebuffer - Framebuffer that is to be used for depth readback.
-     */
-    set depthFBO(framebuffer: Framebuffer) {
-        this._depthFBO = framebuffer;
-    }
-
-    /**
-     * Sets the framebuffer's {@link depthFBO} depth attachment that is to be used for depth readback.
-     * @param attachment - Depth attachment that is to be used for depth readback.
-     */
-    set depthAttachment(attachment: GLenum) {
-        this._depthAttachment = attachment;
-    }
-
-    /**
-     * Sets the framebuffer object that is to be used for id readback.
-     * @param framebuffer - Framebuffer that is to be used for id readback.
-     */
-    set idFBO(framebuffer: Framebuffer) {
-        this._idFBO = framebuffer;
-    }
-
-    /**
-     * Sets the framebuffer's {@link idFBO} id attachment that is to be used for id readback.
-     * @param attachment - ID attachment that is to be used for id readback.
-     */
-    set idAttachment(attachment: GLenum) {
-        this._idAttachment = attachment;
-    }
-
-    /**
-     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
-     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
-     */
-    set coordinateReferenceSize(size: GLsizei2 | undefined) {
-        this._referenceSize = size;
-    }
 
     /**
      * Read-only access to the objects context, used to get context information and WebGL API access.
@@ -230,7 +185,6 @@ export class ReadbackPass extends Initializable {
      */
     @Initializable.assert_initialized()
     renderThenReadDepthAt(x: GLsizei, y: GLsizei): Uint8Array {
-
         assert(this._depthFBO !== undefined && this._depthFBO.valid, `valid depth FBO expected for reading back depth`);
         const texture = this._depthFBO.texture(this._depthAttachment) as Texture2D;
 
@@ -298,10 +252,22 @@ export class ReadbackPass extends Initializable {
         frag.initialize(require('./shaders/readbackdepth.frag'));
 
         this._program = new Program(this._context, 'ReadbackDepthProgram');
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, frag], false);
+
+        if (ndcTriangle === undefined) {
+            this._ndcTriangle = new NdcFillingTriangle(this._context);
+        } else {
+            this._ndcTriangle = ndcTriangle;
+            this._ndcTriangleShared = true;
+        }
+
+        if (!this._ndcTriangle.initialized) {
+            this._ndcTriangle.initialize();
+        }
+        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
+        this._program.link();
 
         this._uOffset = this._program.uniform('u_offset');
-
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         this._program.unbind();
@@ -313,21 +279,6 @@ export class ReadbackPass extends Initializable {
 
         this._framebuffer = new Framebuffer(this._context, 'ReadbackFBO');
         this._framebuffer.initialize([[gl2facade.COLOR_ATTACHMENT0, this._texture]]);
-
-
-        if (ndcTriangle === undefined) {
-            this._ndcTriangle = new NdcFillingTriangle(this._context);
-        } else {
-            this._ndcTriangle = ndcTriangle;
-            this._ndcTriangleShared = true;
-        }
-
-        if (!this._ndcTriangle.initialized) {
-            const aVertex = this._program.attribute('a_vertex', 0);
-            this._ndcTriangle.initialize(aVertex);
-        } else {
-            this._program.attribute('a_vertex', this._ndcTriangle.aVertex);
-        }
 
         return true;
     }
@@ -451,6 +402,55 @@ export class ReadbackPass extends Initializable {
      */
     frame(): void {
         this.onFrame();
+    }
+
+
+    /**
+     * Whether or not caching of requested depths and ids should be used to reduce performance impact.
+     */
+    set cache(value: boolean) {
+        this._cache = value;
+    }
+
+
+    /**
+     * Sets the framebuffer object that is to be used for depth readback.
+     * @param framebuffer - Framebuffer that is to be used for depth readback.
+     */
+    set depthFBO(framebuffer: Framebuffer) {
+        this._depthFBO = framebuffer;
+    }
+
+    /**
+     * Sets the framebuffer's {@link depthFBO} depth attachment that is to be used for depth readback.
+     * @param attachment - Depth attachment that is to be used for depth readback.
+     */
+    set depthAttachment(attachment: GLenum) {
+        this._depthAttachment = attachment;
+    }
+
+    /**
+     * Sets the framebuffer object that is to be used for id readback.
+     * @param framebuffer - Framebuffer that is to be used for id readback.
+     */
+    set idFBO(framebuffer: Framebuffer) {
+        this._idFBO = framebuffer;
+    }
+
+    /**
+     * Sets the framebuffer's {@link idFBO} id attachment that is to be used for id readback.
+     * @param attachment - ID attachment that is to be used for id readback.
+     */
+    set idAttachment(attachment: GLenum) {
+        this._idAttachment = attachment;
+    }
+
+    /**
+     * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
+     * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
+     */
+    set coordinateReferenceSize(size: GLsizei2 | undefined) {
+        this._referenceSize = size;
     }
 
 }

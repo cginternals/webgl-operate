@@ -7,25 +7,25 @@
  */
 export class Text {
 
-    static readonly DEFAULT_LINEFEED = '\x0A';
+    static readonly DEFAULT_LINE_FEED = '\x0A';
 
 
     /** @see {@link text} */
     protected _text: string;
 
     /** @see {@link lineFeed} */
-    protected _lineFeed: string = Text.DEFAULT_LINEFEED;
+    protected _lineFeed: string = Text.DEFAULT_LINE_FEED;
 
     /** @see {@link altered} */
     protected _altered = false;
 
     /**
      * Constructs a Text to be used for a Label.
-     * @param str - the actual content of this Text.
+     * @param text - the actual content of this Text.
      * @param lineFeed - char for lineFeed, default is LF.
      */
-    constructor(str: string, lineFeed?: string) {
-        this._text = str;
+    constructor(text?: string, lineFeed?: string) {
+        this._text = text ? text : '';
 
         this._lineFeed = lineFeed !== undefined ? lineFeed : this._lineFeed;
     }
@@ -36,6 +36,25 @@ export class Text {
     get length(): number {
         return this._text.length;
     }
+
+    /**
+     * Returns the character at the specified index.
+     * @param index - The zero-based index of the desired character.
+     * @returns character at the specified index
+     */
+    charAt(index: number): string {
+        return this._text.charAt(index);
+    }
+
+    /**
+     * Returns the Unicode value (codepoint) of the character at the specified location.
+     * @param index - The zero-based index of the desired character.
+     * @returns - Codepoint of the character at given index or NaN, if no character exists at index.
+     */
+    charCodeAt(index: number): number {
+        return this._text.charCodeAt(index);
+    }
+
 
     /**
      * Text that is to be rendered.

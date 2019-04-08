@@ -1,9 +1,13 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
+
+/* spellchecker: enable */
 
 
 /**

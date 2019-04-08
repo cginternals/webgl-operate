@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { assert, log, LogLevel } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 
@@ -6,6 +8,8 @@ import { Bindable } from './bindable';
 import { TexImage2DData } from './gl2facade';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
+
+/* spellchecker: enable */
 
 
 /**

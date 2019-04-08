@@ -1,7 +1,11 @@
 
+/* spellchecker: disable */
+
 import { assert } from './auxiliaries';
 
 import { Context } from './context';
+
+/* spellchecker: enable */
 
 
 /**
