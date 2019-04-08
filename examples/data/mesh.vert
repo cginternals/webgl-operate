@@ -1,7 +1,7 @@
 
 precision lowp float;
 
-@import ../shaders/facade.vert;
+@import ../../source/shaders/facade.vert;
 
 
 uniform mat4 u_viewProjection;

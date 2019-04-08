@@ -1,7 +1,7 @@
 
 precision lowp float;
 
-@import ../shaders/facade.frag;
+@import ../../source/shaders/facade.frag;
 
 
 uniform sampler2D u_texture;
