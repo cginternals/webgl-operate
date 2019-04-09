@@ -3,7 +3,7 @@
 /**
  * @todo add description
  */
-export class SceneNodeComponent {
+export abstract class SceneNodeComponent {
 
     /** @see {@link type} */
     protected _type: string;

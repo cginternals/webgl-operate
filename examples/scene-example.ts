@@ -2,13 +2,15 @@
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
-    Box,
     Camera,
     Canvas,
     Context,
+    DefaultFramebuffer,
     ForwardSceneRenderPass,
-    Geometry,
+    Framebuffer,
+    GeometryComponent,
     Invalidate,
+    Material,
     MouseEventProvider,
     Navigation,
     Program,
@@ -37,22 +39,8 @@ export class SceneRenderer extends Renderer {
 
     protected _scene: SceneNode;
 
-    // Will be removed ...
-    protected _useSphere = true;
-    protected _meshSize = 1.0;
-    protected _textured = true;
-
-    protected _meshNode: SceneNode;
-    protected _mesh: Geometry;
-    protected _meshProgram: Program;
-    protected _uViewProjection: WebGLUniformLocation;
-    protected _uModel: WebGLUniformLocation;
-    protected _uTexture: WebGLUniformLocation;
-    protected _uTextured: WebGLUniformLocation;
-    protected _aMeshVertex: GLuint;
-    protected _aMeshTexCoord: GLuint;
     protected _texture: Texture2D;
-
+    protected _framebuffer: Framebuffer;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -66,7 +54,8 @@ export class SceneRenderer extends Renderer {
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
-        const gl = this._context.gl;
+        this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
+        this._framebuffer.initialize();
 
         /* Create and configure camera. */
 
@@ -89,6 +78,7 @@ export class SceneRenderer extends Renderer {
 
         this._forwardPass.camera = this._camera;
         // this._forwardPass.target = this._intermediateFBO;
+        this._forwardPass.target = this._framebuffer;
 
         /* Create scene. */
 
@@ -97,44 +87,24 @@ export class SceneRenderer extends Renderer {
 
         /* Will be removed ... */
 
-        /* Create mesh rendering program. */
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
-        vert.initialize(require('./data/mesh.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
-        frag.initialize(require('./data/mesh.frag'));
-        this._meshProgram = new Program(this._context, 'MeshProgram');
-        this._meshProgram.initialize([vert, frag]);
-        this._uViewProjection = this._meshProgram.uniform('u_viewProjection');
-        this._uModel = this._meshProgram.uniform('u_model');
-        this._uTexture = this._meshProgram.uniform('u_texture');
-        this._uTextured = this._meshProgram.uniform('u_textured');
-        this._aMeshVertex = this._meshProgram.attribute('a_vertex', 0);
-        this._aMeshTexCoord = this._meshProgram.attribute('a_texcoord', 1);
 
         /* Create geometry. */
-        if (this._useSphere) {
-            this._mesh = new Sphere(
-                this._context,
-                'mesh',
-                this._meshSize,
-                this._textured);
-        } else {
-            this._mesh = new Box(
-                this._context,
-                'mesh',
-                this._meshSize,
-                this._meshSize,
-                this._meshSize,
-                this._textured);
-        }
-        this._mesh.initialize(this._aMeshVertex, this._aMeshTexCoord);
-
-        /* Create and load texture. */
-        this._texture = new Texture2D(this._context, 'Texture');
-        this._texture.initialize(128, 128, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
-        this._texture.fetch('./data/logo.png', false).then(() => {
-            this.invalidate(true);
-        });
+        // if (this._useSphere) {
+        //     this._mesh = new Sphere(
+        //         this._context,
+        //         'mesh',
+        //         this._meshSize,
+        //         this._textured);
+        // } else {
+        //     this._mesh = new Box(
+        //         this._context,
+        //         'mesh',
+        //         this._meshSize,
+        //         this._meshSize,
+        //         this._meshSize,
+        //         this._textured);
+        // }
+        // this._mesh.initialize(this._aMeshVertex, this._aMeshTexCoord);
 
         return true;
     }
@@ -145,8 +115,10 @@ export class SceneRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        this._mesh.uninitialize();
-        this._meshProgram.uninitialize();
+        // TODO: make sure that all meshes and programs inside of the scene get cleaned
+
+        // this._mesh.uninitialize();
+        // this._meshProgram.uninitialize();
     }
 
     /**
@@ -206,20 +178,10 @@ export class SceneRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
-        this._mesh.bind();
-        this._meshProgram.bind();
+        // gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        // gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, this._meshNode.transform);
 
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-        gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, this._meshNode.transform);
-
-        this._texture.bind(gl.TEXTURE0);
-        gl.uniform1i(this._uTexture, 0);
-        gl.uniform1i(this._uTextured, this._textured);
-
-        this._mesh.draw();
-
-        this._meshProgram.unbind();
-        this._mesh.unbind();
+        this._forwardPass.frame();
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
@@ -236,20 +198,116 @@ export class SceneRenderer extends Renderer {
      *  @todo comment
      */
     protected generateScene(): void {
+        const gl = this._context.gl;
 
         /* Create scene */
         this._scene = new SceneNode('root');
 
         /* Create node with a mesh */
-        this._meshNode = this._scene.addNode(new SceneNode('mesh'));
+        const meshNode = this._scene.addNode(new SceneNode('mesh'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, 0.0, 0.0));
         const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
         const transform = mat4.multiply(mat4.create(), translate, scale);
-        this._meshNode.transform = transform;
-    }
+        meshNode.transform = transform;
 
+        /* Create mesh rendering program. */
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+        vert.initialize(require('./data/mesh.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
+        frag.initialize(require('./data/mesh.frag'));
+        const program = new Program(this._context, 'MeshProgram');
+        program.initialize([vert, frag]);
+
+        /* Create and load texture. */
+        const texture = new Texture2D(this._context, 'Texture');
+        texture.initialize(128, 128, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
+        texture.fetch('./data/logo.png', false).then(() => {
+            this.invalidate(true);
+        });
+
+        /* Create material */
+        const material1 = new SceneExampleMaterial('ExampleMaterial1', program);
+        material1.texture = texture;
+        material1.textured = true;
+
+        const material2 = new SceneExampleMaterial('ExampleMaterial2', program);
+        material2.textured = false;
+
+        /* Create geometry. */
+        const geometry = new Sphere(
+            this._context,
+            'mesh',
+            1.0,
+            true);
+
+        const aMeshVertex = program.attribute('a_vertex', 0);
+        const aMeshTexCoord = program.attribute('a_texcoord', 1);
+        geometry.initialize(aMeshVertex, aMeshTexCoord);
+
+        const sphereComponent = new GeometryComponent();
+        sphereComponent.geometry = geometry;
+        sphereComponent.material = material1;
+
+        meshNode.addComponent(sphereComponent);
+
+        const meshNode2 = this._scene.addNode(new SceneNode('mesh2'));
+        const translate2 = mat4.fromTranslation(mat4.create(), vec3.fromValues(1.0, 0.0, 0.0));
+        const scale2 = mat4.fromScaling(mat4.create(), vec3.fromValues(0.2, 0.2, 0.2));
+        const transform2 = mat4.multiply(mat4.create(), translate2, scale2);
+        meshNode2.transform = transform2;
+
+        const sphereComponent2 = new GeometryComponent();
+        sphereComponent2.geometry = geometry;
+        sphereComponent2.material = material2;
+
+        meshNode2.addComponent(sphereComponent2);
+    }
 }
 
+export class SceneExampleMaterial extends Material {
+
+    protected _uViewProjection: WebGLUniformLocation;
+    protected _uModel: WebGLUniformLocation;
+    protected _uTexture: WebGLUniformLocation;
+    protected _uTextured: WebGLUniformLocation;
+
+    protected _texture: Texture2D | undefined;
+    protected _textured: boolean;
+
+    constructor(name: string, program: Program) {
+        super(name, program);
+
+        this._uViewProjection = program.uniform('u_viewProjection');
+        this._uModel = program.uniform('u_model');
+        this._uTexture = program.uniform('u_texture');
+        this._uTextured = program.uniform('u_textured');
+    }
+
+    set texture(texture: Texture2D) {
+        this._texture = texture;
+    }
+
+    set textured(value: boolean) {
+        this._textured = value;
+    }
+
+    bind(): void {
+        const gl = this.program.context.gl;
+
+        this.program.bind();
+
+        if (this._textured) {
+            this._texture!.bind(gl.TEXTURE0);
+            gl.uniform1i(this._uTexture, 0);
+        }
+
+        gl.uniform1i(this._uTextured, this._textured);
+    }
+
+    unbind(): void {
+        this.program.unbind();
+    }
+}
 
 export class SceneExample extends Example {
 

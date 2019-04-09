@@ -33,6 +33,7 @@ export class SceneNode {
     constructor(name: string) {
         this._name = name;
         this._parent = undefined;
+        this._transform = mat4.create();
     }
 
 

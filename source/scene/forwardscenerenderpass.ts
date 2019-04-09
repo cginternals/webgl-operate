@@ -9,6 +9,9 @@ import { Framebuffer } from '../framebuffer';
 import { Initializable } from '../initializable';
 
 import { SceneRenderPass } from './scenerenderpass';
+import { SceneNode } from './scenenode';
+import { mat4 } from 'gl-matrix';
+import { GeometryComponent } from './geometrycomponent';
 
 
 /**
@@ -101,14 +104,45 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
 
-        gl.enable(gl.DEPTH_TEST);
-
-        /** @todo implement ... */
-
         this._target.clear(gl.COLOR_BUFFER_BIT, true, false);
 
+        this.renderNode(this._scene!, mat4.create());
+    }
 
-        gl.disable(gl.DEPTH_TEST);
+    renderNode(node: SceneNode, transform: mat4): void {
+        const gl = this._context.gl;
+
+        const nodeTransform = mat4.create();
+        mat4.mul(nodeTransform, transform, node.transform);
+
+        const geometryComponents = node.componentsOfType('GeometryComponent');
+
+        // TODO: allow different orders via visitor
+        for (const geometryComponent of geometryComponents) {
+            const currentComponent = geometryComponent as GeometryComponent;
+            const material = currentComponent.material;
+            const geometry = currentComponent.geometry;
+            const program = material.program;
+
+            geometry.bind();
+            material.bind();
+
+            gl.uniformMatrix4fv(program.uniform('u_viewProjection'), gl.GL_FALSE, this._camera.viewProjection);
+            gl.uniformMatrix4fv(program.uniform('u_model'), gl.GL_FALSE, nodeTransform);
+
+            geometry.draw();
+
+            material.unbind();
+            geometry.unbind();
+        }
+
+        if (!node.nodes) {
+            return;
+        }
+
+        for (const child of node.nodes) {
+            this.renderNode(child, nodeTransform);
+        }
     }
 
 
