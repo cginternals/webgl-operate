@@ -2,6 +2,7 @@
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
+    Box,
     Camera,
     Canvas,
     Context,
@@ -62,7 +63,7 @@ export class SceneRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 3.0);
         this._camera.near = 0.1;
         this._camera.far = 8.0;
 
@@ -77,34 +78,12 @@ export class SceneRenderer extends Renderer {
         this._forwardPass.initialize();
 
         this._forwardPass.camera = this._camera;
-        // this._forwardPass.target = this._intermediateFBO;
         this._forwardPass.target = this._framebuffer;
 
         /* Create scene. */
 
         this.generateScene();
         this._forwardPass.scene = this._scene;
-
-        /* Will be removed ... */
-
-
-        /* Create geometry. */
-        // if (this._useSphere) {
-        //     this._mesh = new Sphere(
-        //         this._context,
-        //         'mesh',
-        //         this._meshSize,
-        //         this._textured);
-        // } else {
-        //     this._mesh = new Box(
-        //         this._context,
-        //         'mesh',
-        //         this._meshSize,
-        //         this._meshSize,
-        //         this._meshSize,
-        //         this._textured);
-        // }
-        // this._mesh.initialize(this._aMeshVertex, this._aMeshTexCoord);
 
         return true;
     }
@@ -178,9 +157,6 @@ export class SceneRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
-        // gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-        // gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, this._meshNode.transform);
-
         this._forwardPass.frame();
 
         gl.cullFace(gl.BACK);
@@ -203,13 +179,6 @@ export class SceneRenderer extends Renderer {
         /* Create scene */
         this._scene = new SceneNode('root');
 
-        /* Create node with a mesh */
-        const meshNode = this._scene.addNode(new SceneNode('mesh'));
-        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, 0.0, 0.0));
-        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
-        const transform = mat4.multiply(mat4.create(), translate, scale);
-        meshNode.transform = transform;
-
         /* Create mesh rendering program. */
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
@@ -217,6 +186,21 @@ export class SceneRenderer extends Renderer {
         frag.initialize(require('./data/mesh.frag'));
         const program = new Program(this._context, 'MeshProgram');
         program.initialize([vert, frag]);
+
+        this.generateSphere1Node(this._scene, program);
+        this.generateSphere2Node(this._scene, program);
+        this.generateBoxNode(this._scene, program);
+    }
+
+    protected generateSphere1Node(parent: SceneNode, program: Program): SceneNode {
+        const gl = this._context.gl;
+
+        /* Create node with a mesh */
+        const node = parent.addNode(new SceneNode('mesh'));
+        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, 0.0, 0.0));
+        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
+        const transform = mat4.multiply(mat4.create(), translate, scale);
+        node.transform = transform;
 
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
@@ -226,12 +210,9 @@ export class SceneRenderer extends Renderer {
         });
 
         /* Create material */
-        const material1 = new SceneExampleMaterial('ExampleMaterial1', program);
-        material1.texture = texture;
-        material1.textured = true;
-
-        const material2 = new SceneExampleMaterial('ExampleMaterial2', program);
-        material2.textured = false;
+        const material = new SceneExampleMaterial('ExampleMaterial1', program);
+        material.texture = texture;
+        material.textured = true;
 
         /* Create geometry. */
         const geometry = new Sphere(
@@ -246,21 +227,75 @@ export class SceneRenderer extends Renderer {
 
         const sphereComponent = new GeometryComponent();
         sphereComponent.geometry = geometry;
-        sphereComponent.material = material1;
+        sphereComponent.material = material;
 
-        meshNode.addComponent(sphereComponent);
+        node.addComponent(sphereComponent);
 
-        const meshNode2 = this._scene.addNode(new SceneNode('mesh2'));
-        const translate2 = mat4.fromTranslation(mat4.create(), vec3.fromValues(1.0, 0.0, 0.0));
-        const scale2 = mat4.fromScaling(mat4.create(), vec3.fromValues(0.2, 0.2, 0.2));
-        const transform2 = mat4.multiply(mat4.create(), translate2, scale2);
-        meshNode2.transform = transform2;
+        return node;
+    }
 
-        const sphereComponent2 = new GeometryComponent();
-        sphereComponent2.geometry = geometry;
-        sphereComponent2.material = material2;
+    protected generateSphere2Node(parent: SceneNode, program: Program): SceneNode {
+        /* Create node with a mesh */
+        const node = parent.addNode(new SceneNode('mesh'));
+        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(1.0, 0.0, 0.0));
+        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
+        const transform = mat4.multiply(mat4.create(), translate, scale);
+        node.transform = transform;
 
-        meshNode2.addComponent(sphereComponent2);
+        /* Create material */
+        const material = new SceneExampleMaterial('ExampleMaterial2', program);
+        material.textured = false;
+
+        /* Create geometry. */
+        const geometry = new Sphere(
+            this._context,
+            'mesh',
+            1.0,
+            true);
+
+        const aMeshVertex = program.attribute('a_vertex', 0);
+        const aMeshTexCoord = program.attribute('a_texcoord', 1);
+        geometry.initialize(aMeshVertex, aMeshTexCoord);
+
+        const sphereComponent = new GeometryComponent();
+        sphereComponent.geometry = geometry;
+        sphereComponent.material = material;
+
+        node.addComponent(sphereComponent);
+
+        return node;
+    }
+
+    protected generateBoxNode(parent: SceneNode, program: Program): SceneNode {
+        /* Create node with a mesh */
+        const node = parent.addNode(new SceneNode('mesh'));
+        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1.0, 0.0, 0.0));
+        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.5, 0.5, 0.5));
+        const transform = mat4.multiply(mat4.create(), translate, scale);
+        node.transform = transform;
+
+        /* Create material */
+        const material = new SceneExampleMaterial('ExampleMaterial3', program);
+        material.textured = false;
+
+        /* Create geometry. */
+        const geometry = new Box(
+            this._context,
+            'mesh',
+            1.0, 1.0, 1.0,
+            true);
+
+        const aMeshVertex = program.attribute('a_vertex', 0);
+        const aMeshTexCoord = program.attribute('a_texcoord', 1);
+        geometry.initialize(aMeshVertex, aMeshTexCoord);
+
+        const boxComponent = new GeometryComponent();
+        boxComponent.geometry = geometry;
+        boxComponent.material = material;
+
+        node.addComponent(boxComponent);
+
+        return node;
     }
 }
 
