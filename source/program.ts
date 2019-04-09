@@ -47,6 +47,11 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
     /** @see {@link linked} */
     protected _linked = false;
 
+    /**
+     * Store uniform bindings for fast lookup.
+     * This prevents needless WebGL calls if uniforms locations are often looked up via name.
+     */
+    protected _uniformBinding = new Map<string, WebGLUniformLocation>();
 
     /**
      * Creates a WebGLProgram object and attaches, and references all shaders to it. The program is then linked. All
@@ -202,7 +207,14 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
      */
     @Initializable.assert_initialized()
     uniform(uniform: string): WebGLUniformLocation {
-        return this._context.gl.getUniformLocation(this._object, uniform);
+        if (this._uniformBinding.has(uniform)) {
+            return this._uniformBinding.get(uniform)!;
+        }
+
+        const location = this._context.gl.getUniformLocation(this._object, uniform);
+        this._uniformBinding.set(uniform, location);
+
+        return location;
     }
 
     /**
@@ -224,7 +236,6 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
             return this._context.gl.getAttribLocation(this._object, attribute);
         }
     }
-
 
     /**
      * Provides access (leaky abstraction) to all shaders attached to this program.
