@@ -12,6 +12,7 @@ import { SceneRenderPass } from './scenerenderpass';
 import { SceneNode } from './scenenode';
 import { mat4 } from 'gl-matrix';
 import { GeometryComponent } from './geometrycomponent';
+import { Program } from '../program';
 
 
 /**
@@ -38,6 +39,12 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
     /** @see {@link clearColor} */
     protected _clearColor: GLclampf4;
+
+    /** @see {@link program} */
+    protected _program: Program;
+
+    updateModelTransform: (matrix: mat4) => void;
+    updateViewProjectionTransform: (matrix: mat4) => void;
 
     /**
      * Creates a ...
@@ -97,6 +104,8 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     @Initializable.assert_initialized()
     frame(): void {
         assert(this._target && this._target.valid, `valid target expected`);
+        assert(this._program && this._program.valid, `valid program expected`);
+
         if (this._scene === undefined) {
             return;
         }
@@ -115,31 +124,35 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     }
 
     renderNode(node: SceneNode, transform: mat4): void {
-        const gl = this._context.gl;
+        assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
+        assert(this.updateViewProjectionTransform !== undefined, `View Projection transform function needs to be initialized.`);
 
         const nodeTransform = mat4.create();
         mat4.mul(nodeTransform, transform, node.transform);
 
         const geometryComponents = node.componentsOfType('GeometryComponent');
 
+        this._program.bind();
+
         // TODO: allow different orders via visitor
         for (const geometryComponent of geometryComponents) {
             const currentComponent = geometryComponent as GeometryComponent;
             const material = currentComponent.material;
             const geometry = currentComponent.geometry;
-            const program = material.program;
 
             geometry.bind();
             material.bind();
 
-            gl.uniformMatrix4fv(program.uniform('u_viewProjection'), gl.GL_FALSE, this._camera.viewProjection);
-            gl.uniformMatrix4fv(program.uniform('u_model'), gl.GL_FALSE, nodeTransform);
+            this.updateModelTransform(nodeTransform);
+            this.updateViewProjectionTransform(this._camera.viewProjection);
 
             geometry.draw();
 
             material.unbind();
             geometry.unbind();
         }
+
+        this._program.unbind();
 
         if (!node.nodes) {
             return;
@@ -187,5 +200,9 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
      */
     set clearColor(color: GLclampf4) {
         this._clearColor = color;
+    }
+
+    set program(program: Program) {
+        this._program = program;
     }
 }

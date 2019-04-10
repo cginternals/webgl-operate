@@ -42,6 +42,13 @@ export class SceneRenderer extends Renderer {
 
     protected _texture: Texture2D;
     protected _framebuffer: Framebuffer;
+    protected _program: Program;
+
+    protected _uViewProjection: WebGLUniformLocation;
+    protected _uModel: WebGLUniformLocation;
+
+    protected _aMeshVertex: GLint;
+    protected _aMeshTexCoord: GLint;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -55,8 +62,24 @@ export class SceneRenderer extends Renderer {
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
+        const gl = this._context.gl;
+
         this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._framebuffer.initialize();
+
+        /* Create mesh rendering program. */
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+        vert.initialize(require('./data/mesh.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
+        frag.initialize(require('./data/mesh.frag'));
+        this._program = new Program(this._context, 'MeshProgram');
+        this._program.initialize([vert, frag]);
+
+        this._uViewProjection = this._program.uniform('u_viewProjection');
+        this._uModel = this._program.uniform('u_model');
+
+        this._aMeshVertex = this._program.attribute('a_vertex', 0);
+        this._aMeshTexCoord = this._program.attribute('a_texcoord', 1);
 
         /* Create and configure camera. */
 
@@ -83,7 +106,15 @@ export class SceneRenderer extends Renderer {
         /* Create scene. */
 
         this.generateScene();
+
         this._forwardPass.scene = this._scene;
+        this._forwardPass.program = this._program;
+        this._forwardPass.updateModelTransform = (matrix: mat4) => {
+            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
+        };
+        this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
+        };
 
         return true;
     }
@@ -164,25 +195,14 @@ export class SceneRenderer extends Renderer {
      *  @todo comment
      */
     protected generateScene(): void {
-        const gl = this._context.gl;
-
-        /* Create scene */
         this._scene = new SceneNode('root');
 
-        /* Create mesh rendering program. */
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
-        vert.initialize(require('./data/mesh.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
-        frag.initialize(require('./data/mesh.frag'));
-        const program = new Program(this._context, 'MeshProgram');
-        program.initialize([vert, frag]);
-
-        this.generateSphere1Node(this._scene, program);
-        this.generateSphere2Node(this._scene, program);
-        this.generateBoxNode(this._scene, program);
+        this.generateSphere1Node(this._scene);
+        this.generateSphere2Node(this._scene);
+        this.generateBoxNode(this._scene);
     }
 
-    protected generateSphere1Node(parent: SceneNode, program: Program): SceneNode {
+    protected generateSphere1Node(parent: SceneNode): SceneNode {
         const gl = this._context.gl;
 
         /* Create node with a mesh */
@@ -200,7 +220,7 @@ export class SceneRenderer extends Renderer {
         });
 
         /* Create material */
-        const material = new SceneExampleMaterial('ExampleMaterial1', program);
+        const material = new SceneExampleMaterial('ExampleMaterial1', this._program);
         material.texture = texture;
         material.textured = true;
 
@@ -211,20 +231,18 @@ export class SceneRenderer extends Renderer {
             1.0,
             true);
 
-        const aMeshVertex = program.attribute('a_vertex', 0);
-        const aMeshTexCoord = program.attribute('a_texcoord', 1);
-        geometry.initialize(aMeshVertex, aMeshTexCoord);
+        geometry.initialize(this._aMeshVertex, this._aMeshTexCoord);
 
-        const sphereComponent = new GeometryComponent();
-        sphereComponent.geometry = geometry;
-        sphereComponent.material = material;
+        const sphere = new GeometryComponent();
+        sphere.geometry = geometry;
+        sphere.material = material;
 
-        node.addComponent(sphereComponent);
+        node.addComponent(sphere);
 
         return node;
     }
 
-    protected generateSphere2Node(parent: SceneNode, program: Program): SceneNode {
+    protected generateSphere2Node(parent: SceneNode): SceneNode {
         /* Create node with a mesh */
         const node = parent.addNode(new SceneNode('mesh'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(1.0, 0.0, 0.0));
@@ -233,7 +251,7 @@ export class SceneRenderer extends Renderer {
         node.transform = transform;
 
         /* Create material */
-        const material = new SceneExampleMaterial('ExampleMaterial2', program);
+        const material = new SceneExampleMaterial('ExampleMaterial2', this._program);
         material.textured = false;
 
         /* Create geometry. */
@@ -243,20 +261,18 @@ export class SceneRenderer extends Renderer {
             1.0,
             true);
 
-        const aMeshVertex = program.attribute('a_vertex', 0);
-        const aMeshTexCoord = program.attribute('a_texcoord', 1);
-        geometry.initialize(aMeshVertex, aMeshTexCoord);
+        geometry.initialize(this._aMeshVertex, this._aMeshTexCoord);
 
-        const sphereComponent = new GeometryComponent();
-        sphereComponent.geometry = geometry;
-        sphereComponent.material = material;
+        const sphere = new GeometryComponent();
+        sphere.geometry = geometry;
+        sphere.material = material;
 
-        node.addComponent(sphereComponent);
+        node.addComponent(sphere);
 
         return node;
     }
 
-    protected generateBoxNode(parent: SceneNode, program: Program): SceneNode {
+    protected generateBoxNode(parent: SceneNode): SceneNode {
         /* Create node with a mesh */
         const node = parent.addNode(new SceneNode('mesh'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1.0, 0.0, 0.0));
@@ -265,7 +281,7 @@ export class SceneRenderer extends Renderer {
         node.transform = transform;
 
         /* Create material */
-        const material = new SceneExampleMaterial('ExampleMaterial3', program);
+        const material = new SceneExampleMaterial('ExampleMaterial3', this._program);
         material.textured = false;
 
         /* Create geometry. */
@@ -275,15 +291,13 @@ export class SceneRenderer extends Renderer {
             1.0, 1.0, 1.0,
             true);
 
-        const aMeshVertex = program.attribute('a_vertex', 0);
-        const aMeshTexCoord = program.attribute('a_texcoord', 1);
-        geometry.initialize(aMeshVertex, aMeshTexCoord);
+        geometry.initialize(this._aMeshVertex, this._aMeshTexCoord);
 
-        const boxComponent = new GeometryComponent();
-        boxComponent.geometry = geometry;
-        boxComponent.material = material;
+        const box = new GeometryComponent();
+        box.geometry = geometry;
+        box.material = material;
 
-        node.addComponent(boxComponent);
+        node.addComponent(box);
 
         return node;
     }
@@ -291,8 +305,6 @@ export class SceneRenderer extends Renderer {
 
 export class SceneExampleMaterial extends Material {
 
-    protected _uViewProjection: WebGLUniformLocation;
-    protected _uModel: WebGLUniformLocation;
     protected _uTexture: WebGLUniformLocation;
     protected _uTextured: WebGLUniformLocation;
 
@@ -302,8 +314,6 @@ export class SceneExampleMaterial extends Material {
     constructor(name: string, program: Program) {
         super(name, program);
 
-        this._uViewProjection = program.uniform('u_viewProjection');
-        this._uModel = program.uniform('u_model');
         this._uTexture = program.uniform('u_texture');
         this._uTextured = program.uniform('u_textured');
     }
