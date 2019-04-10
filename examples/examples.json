@@ -1,5 +1,11 @@
 [
     {
+        "target": "cube-example",
+        "title": "Cube 3D",
+        "object": "CubeExample",
+        "caption": "... in 3D space."
+    },
+    {
         "target": "canvassize-example",
         "title": "Canvas Size",
         "object": "CanvasSizeExample",
