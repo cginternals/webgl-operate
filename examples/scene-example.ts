@@ -109,20 +109,14 @@ export class SceneRenderer extends Renderer {
      * @returns whether to redraw
      */
     protected onUpdate(): boolean {
-        const gl = this.context.gl;
-        // Resize
         if (this._altered.frameSize) {
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
-            gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
         }
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
         }
-
-        // Update clear color
         if (this._altered.clearColor) {
-            const c = this._clearColor;
-            gl.clearColor(c[0], c[1], c[2], c[3]);
+            this._forwardPass.clearColor = this._clearColor;
         }
 
         this._navigation.update();
@@ -148,10 +142,6 @@ export class SceneRenderer extends Renderer {
      */
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
-
-        this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
-
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);

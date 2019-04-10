@@ -1,6 +1,6 @@
 
 import { assert } from '../auxiliaries';
-import { GLfloat2 } from '../tuples';
+import { GLfloat2, GLclampf4 } from '../tuples';
 
 import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
@@ -36,6 +36,8 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     /** @see {@link ndcOffset} */
     protected _ndcOffset: GLfloat2;
 
+    /** @see {@link clearColor} */
+    protected _clearColor: GLclampf4;
 
     /**
      * Creates a ...
@@ -104,7 +106,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
 
-        this._target.clear(gl.COLOR_BUFFER_BIT, true, false);
+        const c = this._clearColor;
+        gl.clearColor(c[0], c[1], c[2], c[3]);
+
+        this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
         this.renderNode(this._scene!, mat4.create());
     }
@@ -177,4 +182,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         this._altered.alter('camera');
     }
 
+    /**
+     * Sets the clear color for rendering.
+     */
+    set clearColor(color: GLclampf4) {
+        this._clearColor = color;
+    }
 }
