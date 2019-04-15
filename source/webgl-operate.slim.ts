@@ -58,6 +58,7 @@ export { ReadbackPass } from './readbackpass';
 export * from './core/index';
 export * from './scene/index';
 export * from './text/index';
+export * from './gltf/index';
 
 
 /* AUXILIARIES */
