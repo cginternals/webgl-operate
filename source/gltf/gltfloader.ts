@@ -3,15 +3,78 @@ import { SceneNode } from '../scene/scenenode';
 
 import { GltfLoader, GltfAsset } from 'gltf-loader-ts';
 import { GLTFMesh } from './gltfmesh';
-import { assert } from '../auxiliaries';
-import { GLTFPrimitive } from './gltfprimitive';
+import { assert, log, LogLevel } from '../auxiliaries';
+import { GLTFPrimitive, VertexBinding } from './gltfprimitive';
 import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
+import { Context } from '../context';
 
 export class GLTFLoader {
 
+    protected _context: Context;
     protected _scenes: Array<SceneNode>;
 
-    constructor() { }
+    constructor(context: Context) {
+        this._context = context;
+    }
+
+    protected modeToEnum(mode: number): GLenum {
+        assert(mode <= 6, 'Mode can only take values between 0 and 6');
+
+        const gl = this._context.gl;
+
+        if (mode === 0) {
+            return gl.POINTS;
+        }
+        if (mode === 1) {
+            return gl.LINES;
+        }
+        if (mode === 2) {
+            return gl.LINE_LOOP;
+        }
+        if (mode === 3) {
+            return gl.LINE_STRIP;
+        }
+        if (mode === 4) {
+            return gl.TRIANGLES;
+        }
+        if (mode === 5) {
+            return gl.TRIANGLE_STRIP;
+        }
+        if (mode === 6) {
+            return gl.TRIANGLE_FAN;
+        }
+
+        return gl.TRIANGLES;
+    }
+
+    protected nameToAttributeIndex(name: string): number {
+        if (name === 'POSITION') {
+            return 0;
+        }
+        if (name === 'NORMAL') {
+            return 1;
+        }
+        if (name === 'TANGENT') {
+            return 2;
+        }
+        if (name === 'TEXCOORD_0') {
+            return 3;
+        }
+        if (name === 'TEXCOORD_1') {
+            return 4;
+        }
+        if (name === 'JOINTS_0') {
+            return 5;
+        }
+        if (name === 'WEIGHTS_0') {
+            return 6;
+        }
+
+        log(LogLevel.Warning, `Unknown attribute name '${name}' encountered. \
+            Possibly this model uses an unsupported extension.`);
+
+        return -1;
+    }
 
     async loadAsset(uri: string): Promise<boolean> {
         const loader = new GltfLoader();
@@ -49,15 +112,33 @@ export class GLTFLoader {
     }
 
     loadPrimitive(primitiveInfo: MeshPrimitive): GLTFPrimitive {
-        const primitive = new GLTFPrimitive(this._context);
+        let modeNumber = primitiveInfo.mode;
 
-        // primitive.material = ...
+        // if no mode is specified the default is 4 (gl.TRIANGLES)
+        if (!modeNumber) {
+            modeNumber = 4;
+        }
+
+        const drawMode = this.modeToEnum(modeNumber);
+        const bindings = new Array<VertexBinding>();
+        // const material = ...
+
         for (const semantic in primitiveInfo.attributes) {
             // init buffer/attribute binding for attribute
             const accessorIndex = primitiveInfo.attributes[semantic];
+            // const accessor = accesors[accessorIndex];
+
+            const binding = new VertexBinding();
+            // binding.buffer = ...
+            // binding.normalized = ...
+            // binding.size
+            // binding.offset
+            // binding.stride
+            // binding.type
+            bindings.push(binding);
         }
 
-        return primitive;
+        return new GLTFPrimitive(this._context, bindings, material, drawMode);
     }
 
     get scenes(): Array<SceneNode> {
