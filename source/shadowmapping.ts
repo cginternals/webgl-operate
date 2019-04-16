@@ -1,6 +1,5 @@
 
 import { assert } from './auxiliaries';
-import { Camera } from './camera';
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
@@ -13,7 +12,6 @@ import { GLsizei2 } from './tuples';
 export class ShadowMapping extends Initializable {
   protected _context: Context;
 
-  protected _light: Camera;
   protected _size: GLsizei2;
 
   protected _shadowMapFBO: Framebuffer;
@@ -34,17 +32,16 @@ export class ShadowMapping extends Initializable {
   }
 
   @Initializable.assert_initialized()
-  protected _resize(): void {
-    this._size = this._light.viewport;
-    this._shadowMapFBO.resize(this._size[0], this._size[1], true, true);
+  resize(size: GLsizei2, bind: boolean = true, unbind: boolean = true): void {
+    this._size = size;
+    this._shadowMapFBO.resize(this._size[0], this._size[1], bind, unbind);
   }
 
   @Initializable.initialize()
-  initialize(light: Camera): boolean {
-    assert(light.width > 0 && light.height > 0, 'Width and Height of the lights viewport have to be > 0.');
+  initialize(size: GLsizei2): boolean {
+    assert(size[0] > 0 && size[1] > 0, 'Size has to be > 0.');
 
-    this._light = light;
-    this._size = this._light.viewport;
+    this._size = size;
 
     const gl = this._context.gl;
     const gl2facade = this._context.gl2facade;
@@ -74,17 +71,17 @@ export class ShadowMapping extends Initializable {
   }
 
   @Initializable.assert_initialized()
-  begin(): void {
+  begin(cullFace: ShadowMapping.CullFace): void {
     const gl = this._context.gl;
 
     gl.viewport(0, 0, this._size[0], this._size[1]);
     gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LESS);
+    gl.depthFunc(gl.LEQUAL);
     gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
-
-    if (this._size !== this._light.viewport) {
-      this._resize();
+    if (cullFace === ShadowMapping.CullFace.Back) {
+      gl.cullFace(gl.BACK);
+    } else if (cullFace === ShadowMapping.CullFace.Front) {
+      gl.cullFace(gl.FRONT);
     }
 
     this._shadowMapFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
@@ -100,4 +97,13 @@ export class ShadowMapping extends Initializable {
 
     this._shadowMapFBO.unbind();
   }
+}
+
+export namespace ShadowMapping {
+
+  export enum CullFace {
+    Back = 0,
+    Front = 1,
+  }
+
 }

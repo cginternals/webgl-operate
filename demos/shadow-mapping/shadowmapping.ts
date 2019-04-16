@@ -157,7 +157,6 @@ class ShadowMappingRenderer extends Renderer {
     this._light.eye = vec3.fromValues(0.0, 6.0, 6.0);
     this._light.near = 3.0;
     this._light.far = 16.0;
-    this._light.viewport = ShadowMappingRenderer.SHADOWMAP_SIZE;
     this._light.aspect = 1;
 
     // ------------------------ Setup Navigation ------------------------
@@ -179,7 +178,7 @@ class ShadowMappingRenderer extends Renderer {
 
     // ------------------------ Setup ShadowMappingPass ------------------------
     this._shadowMapping = new ShadowMapping(this._context);
-    this._shadowMapping.initialize(this._light);
+    this._shadowMapping.initialize(ShadowMappingRenderer.SHADOWMAP_SIZE);
 
     return true;
   }
@@ -228,7 +227,7 @@ class ShadowMappingRenderer extends Renderer {
   protected onFrame(frameNumber: number): void {
     const gl = this._context.gl;
 
-    this._shadowMapping.begin();
+    this._shadowMapping.begin(ShadowMapping.CullFace.Front);
     this._shadowProgram.bind();
 
     gl.uniformMatrix4fv(this._uShadowViewMatrix, gl.GL_FALSE, this._light.view);
