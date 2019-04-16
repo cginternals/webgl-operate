@@ -81,7 +81,7 @@ export class ShadowMapping extends Initializable {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
     gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.FRONT);
+    gl.cullFace(gl.BACK);
 
     if (this._size !== this._light.viewport) {
       this._resize();
