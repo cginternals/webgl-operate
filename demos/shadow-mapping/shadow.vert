@@ -7,14 +7,14 @@ precision highp float;
 
 in vec3 a_vertex;
 
-uniform mat4 u_LightViewMatrix;
-uniform mat4 u_LightProjectionMatrix;
+uniform mat4 u_lightViewMatrix;
+uniform mat4 u_lightProjectionMatrix;
 
 out vec4 v_vertex;
 
 
 void main()
 {
-  v_vertex = u_LightViewMatrix * vec4(a_vertex, 1.0);
-  gl_Position = u_LightProjectionMatrix * v_vertex;
+  v_vertex = u_lightViewMatrix * vec4(a_vertex, 1.0);
+  gl_Position = u_lightProjectionMatrix * v_vertex;
 }

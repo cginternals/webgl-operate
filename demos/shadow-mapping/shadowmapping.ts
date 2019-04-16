@@ -4,8 +4,6 @@ import { vec3 } from 'webgl-operate';
 import { Cube } from './cube';
 import { Plane } from './plane';
 
-//import { ShadowMappingPass } from '../../source/shadowmappingpass';
-
 import {
   Camera,
   Canvas,
@@ -127,9 +125,9 @@ class ShadowMappingRenderer extends Renderer {
     const result = this._shadowProgram.initialize([shadowVert, shadowFrag]);
     console.log(result);
 
-    this._uShadowViewMatrix = this._shadowProgram.uniform('u_LightViewMatrix');
-    this._uShadowProjectionMatrix = this._shadowProgram.uniform('u_LightProjectionMatrix');
-    this._uShadowFarPlane = this._shadowProgram.uniform('u_LightFarPlane');
+    this._uShadowViewMatrix = this._shadowProgram.uniform('u_lightViewMatrix');
+    this._uShadowProjectionMatrix = this._shadowProgram.uniform('u_lightProjectionMatrix');
+    this._uShadowFarPlane = this._shadowProgram.uniform('u_lightFarPlane');
 
     // ------------------------ Setup Shadow Mapping Program ------------------------
     const shadowMappingVert = new Shader(this._context, gl.VERTEX_SHADER, 'shadowMapping.vert');
@@ -140,10 +138,10 @@ class ShadowMappingRenderer extends Renderer {
     this._shadowMappingProgram = new Program(this._context);
     this._shadowMappingProgram.initialize([shadowMappingVert, shadowMappingFrag]);
 
-    this._uShadowMappingViewMatrix = this._shadowMappingProgram.uniform('u_LightViewMatrix');
-    this._uShadowMappingProjectionMatrix = this._shadowMappingProgram.uniform('u_LightProjectionMatrix');
-    this._uShadowMappingFarPlane = this._shadowMappingProgram.uniform('u_LightFarPlane');
-    this._uCameraViewProjectionMatrix = this._shadowMappingProgram.uniform('u_CameraViewProjectionMatrix');
+    this._uShadowMappingViewMatrix = this._shadowMappingProgram.uniform('u_lightViewMatrix');
+    this._uShadowMappingProjectionMatrix = this._shadowMappingProgram.uniform('u_lightProjectionMatrix');
+    this._uShadowMappingFarPlane = this._shadowMappingProgram.uniform('u_lightFarPlane');
+    this._uCameraViewProjectionMatrix = this._shadowMappingProgram.uniform('u_cameraViewProjectionMatrix');
 
     // ------------------------ Setup Cameras ------------------------
     this._camera = new Camera();
