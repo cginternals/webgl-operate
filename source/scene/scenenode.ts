@@ -1,7 +1,5 @@
 
 
-import { mat4 } from 'gl-matrix';
-
 import { SceneNodeComponent } from './scenenodecomponent';
 
 
@@ -19,9 +17,6 @@ export class SceneNode {
     /** @see {@link nodes} */
     protected _nodes = new Array<SceneNode>();
 
-    /** @see {@link transform} */
-    protected _transform: mat4;
-
     /** @see {@link components} */
     protected _components = new Array<SceneNodeComponent>();
 
@@ -33,7 +28,6 @@ export class SceneNode {
     constructor(name: string) {
         this._name = name;
         this._parent = undefined;
-        this._transform = mat4.create();
     }
 
 
@@ -81,43 +75,28 @@ export class SceneNode {
 
 
     /**
-     * Read-only access to ... @todo comment
+     * Read-only access to the name of this node.
      */
     get name(): string {
         return this._name;
     }
 
     /**
-     * Read-only access to ... @todo comment
+     * Read-only access to the parent node of this node if one exists.
      */
     get parent(): SceneNode | undefined {
         return this._parent;
     }
 
     /**
-     * Read-only access to ... @todo comment
+     * Read-only access to the child nodes of this node.
      */
     get nodes(): Array<SceneNode> | undefined {
         return this._nodes;
     }
 
     /**
-     * Read-only access to ... @todo comment
-     */
-    get transform(): mat4 {
-        return this._transform;
-    }
-
-    /**
-     * Sets the transformation of the scene node.
-     * @param transform - Transformation relative to parent node.
-     */
-    set transform(transform: mat4) {
-        this._transform = transform;
-    }
-
-    /**
-     * Read-only access to ... @todo comment
+     * Read-only access to the components attached to this node.
      */
     get components(): Array<SceneNodeComponent> {
         return this._components;
@@ -125,14 +104,14 @@ export class SceneNode {
 
 
     /**
-     * @todo comment
+     * Returns whether this node is a leaf, i.e. there are no child nodes attached to it.
      */
     get isLeaf(): boolean {
         return this._nodes.length === 0;
     }
 
     /**
-     * @todo comment
+     * @todo Returns whether this is the root node, i.e. it has no parent.
      */
     get isRoot(): boolean {
         return this._parent === undefined;
