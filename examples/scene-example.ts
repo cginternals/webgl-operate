@@ -2,7 +2,7 @@
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
-    Box,
+    BoxGeometry,
     Camera,
     Canvas,
     Context,
@@ -18,8 +18,9 @@ import {
     Renderer,
     SceneNode,
     Shader,
-    Sphere,
+    SphereGeometry,
     Texture2D,
+    TransformComponent,
     Wizard,
 } from 'webgl-operate';
 
@@ -205,12 +206,14 @@ export class SceneRenderer extends Renderer {
     protected generateSphere1Node(parent: SceneNode): SceneNode {
         const gl = this._context.gl;
 
-        /* Create node with a mesh */
+        /* Create node and transform */
         const node = parent.addNode(new SceneNode('mesh'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, 0.0, 0.0));
         const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
-        const transform = mat4.multiply(mat4.create(), translate, scale);
-        node.transform = transform;
+        const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
+
+        const transform = new TransformComponent(transformMatrix);
+        node.addComponent(transform);
 
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
@@ -225,7 +228,7 @@ export class SceneRenderer extends Renderer {
         material.textured = true;
 
         /* Create geometry. */
-        const geometry = new Sphere(
+        const geometry = new SphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -243,19 +246,21 @@ export class SceneRenderer extends Renderer {
     }
 
     protected generateSphere2Node(parent: SceneNode): SceneNode {
-        /* Create node with a mesh */
+        /* Create node and transform */
         const node = parent.addNode(new SceneNode('mesh'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(1.0, 0.0, 0.0));
         const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
-        const transform = mat4.multiply(mat4.create(), translate, scale);
-        node.transform = transform;
+        const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
+
+        const transform = new TransformComponent(transformMatrix);
+        node.addComponent(transform);
 
         /* Create material */
         const material = new SceneExampleMaterial('ExampleMaterial2', this._program);
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new Sphere(
+        const geometry = new SphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -273,19 +278,21 @@ export class SceneRenderer extends Renderer {
     }
 
     protected generateBoxNode(parent: SceneNode): SceneNode {
-        /* Create node with a mesh */
+        /* Create node and transform */
         const node = parent.addNode(new SceneNode('mesh'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1.0, 0.0, 0.0));
         const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.5, 0.5, 0.5));
-        const transform = mat4.multiply(mat4.create(), translate, scale);
-        node.transform = transform;
+        const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
+
+        const transform = new TransformComponent(transformMatrix);
+        node.addComponent(transform);
 
         /* Create material */
         const material = new SceneExampleMaterial('ExampleMaterial3', this._program);
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new Box(
+        const geometry = new BoxGeometry(
             this._context,
             'mesh',
             1.0, 1.0, 1.0,

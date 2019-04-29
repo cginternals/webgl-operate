@@ -13,6 +13,7 @@ import { SceneNode } from './scenenode';
 import { mat4 } from 'gl-matrix';
 import { GeometryComponent } from './geometrycomponent';
 import { Program } from '../program';
+import { TransformComponent } from './transformcomponent';
 
 
 /**
@@ -127,8 +128,15 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
         assert(this.updateViewProjectionTransform !== undefined, `View Projection transform function needs to be initialized.`);
 
-        const nodeTransform = mat4.create();
-        mat4.mul(nodeTransform, transform, node.transform);
+        const nodeTransform = mat4.clone(transform);
+
+        const transformComponents = node.componentsOfType('TransformComponent');
+        assert(transformComponents.length <= 1, `SceneNode can not have more than one transform component`);
+
+        if (transformComponents.length === 1) {
+            const transformComponent = transformComponents[0] as TransformComponent;
+            mat4.mul(nodeTransform, nodeTransform, transformComponent.transform);
+        }
 
         const geometryComponents = node.componentsOfType('GeometryComponent');
 
