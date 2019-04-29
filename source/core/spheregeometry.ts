@@ -10,13 +10,30 @@ import { Icosahedron } from './icosahedron';
 
 export class SphereGeometry extends Geometry {
 
+    /**
+     * Diameter of the sphere
+     */
+    protected _diameter = 1.0;
 
-    protected _diameter = 1.0;   // Diameter of the sphere
-    protected _textured = false; // Is the sphere textured?
+    /**
+     * Is the sphere textured?
+     */
+    protected _textured = false;
+
+    /**
+     *
+     */
     protected _size = 0;         // Number of indices to render.
 
-    protected _vertexLocation: GLuint;   // Attribute location of the vertex position
-    protected _texCoordLocation: GLuint; // Attribute location of the texture coordinate
+    /**
+     * Attribute location of the vertex position
+     */
+    protected _vertexLocation: GLuint;
+
+    /**
+     * Attribute location of the texture coordinate
+     */
+    protected _texCoordLocation: GLuint;
 
     /**
      * Object constructor, requires a context and an identifier.

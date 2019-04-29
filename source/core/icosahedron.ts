@@ -9,9 +9,20 @@ type ivec3 = [number, number, number];
  */
 export class Icosahedron {
 
-    protected _faces: Array<ivec3>;     // List of faces (triangles)
-    protected _vertices: Array<vec3>;  // List of vertices
-    protected _texcoords: Array<vec2>; // List of texture coordinates
+    /**
+     * List of faces (triangles)
+     */
+    protected _faces: Array<ivec3>;
+
+    /**
+     * List of vertices
+     */
+    protected _vertices: Array<vec3>;
+
+    /**
+     * List of texture coordinates
+     */
+    protected _texcoords: Array<vec2>;
 
     /**
      * Object constructor.

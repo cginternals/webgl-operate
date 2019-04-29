@@ -11,13 +11,35 @@ import { Geometry } from '../geometry';
  */
 export class BoxGeometry extends Geometry {
 
-    protected _width = 1.0;      // Width of the box
-    protected _height = 1.0;     // Height of the box
-    protected _depth = 1.0;      // Depth of the box
-    protected _textured = false; // Is the box textured?
+    /**
+     * Width of the box
+     */
+    protected _width = 1.0;
 
-    protected _vertexLocation: GLuint;   // Attribute location of the vertex position
-    protected _texCoordLocation: GLuint; // Attribute location of the texture coordinate
+    /**
+     * Height of the box
+     */
+    protected _height = 1.0;
+
+    /**
+     * Depth of the box
+     */
+    protected _depth = 1.0;
+
+    /**
+     * Is the box textured?
+     */
+    protected _textured = false;
+
+    /**
+     * Attribute location of the vertex position
+     */
+    protected _vertexLocation: GLuint;
+
+    /**
+     * Attribute location of the texture coordinate
+     */
+    protected _texCoordLocation: GLuint;
 
     /**
      * Object constructor, requires a context and an identifier.
