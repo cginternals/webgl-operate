@@ -8,12 +8,15 @@ import { Geometry } from '../geometry';
 import { Icosahedron } from './icosahedron';
 
 
-export class Sphere extends Geometry {
+export class SphereGeometry extends Geometry {
 
 
     protected _diameter = 1.0;   // Diameter of the sphere
     protected _textured = false; // Is the sphere textured?
     protected _size = 0;         // Number of indices to render.
+
+    protected _vertexLocation: GLuint;   // Attribute location of the vertex position
+    protected _texCoordLocation: GLuint; // Attribute location of the texture coordinate
 
     /**
      * Object constructor, requires a context and an identifier.
@@ -48,24 +51,24 @@ export class Sphere extends Geometry {
     /**
      * Binds the vertex buffer object (VBO) to an attribute binding point of a given, pre-defined index.
      */
-    protected bindBuffers(indices: Array<GLuint>): void {
+    protected bindBuffers(/*indices: Array<GLuint>*/): void {
         /* Please note the implicit bind in attribEnable */
         this._buffers[0].bind();
-        this._buffers[1].attribEnable(0, 3, this.context.gl.FLOAT, false, 0, 0, true, false);
+        this._buffers[1].attribEnable(this._vertexLocation, 3, this.context.gl.FLOAT, false, 0, 0, true, false);
         if (this._textured) {
-            this._buffers[2].attribEnable(1, 2, this.context.gl.FLOAT, false, 0, 0, true, false);
+            this._buffers[2].attribEnable(this._texCoordLocation, 2, this.context.gl.FLOAT, false, 0, 0, true, false);
         }
     }
 
     /**
      * Unbinds the vertex buffer object (VBO) and disables the binding point.
      */
-    protected unbindBuffers(indices: Array<GLuint>): void {
+    protected unbindBuffers(/*indices: Array<GLuint>*/): void {
         /* Please note the implicit unbind in attribEnable is skipped */
         this._buffers[0].unbind();
-        this._buffers[1].attribDisable(0, true, true);
+        this._buffers[1].attribDisable(this._vertexLocation, true, true);
         if (this._textured) {
-            this._buffers[2].attribDisable(1, true, true);
+            this._buffers[2].attribDisable(this._texCoordLocation, true, true);
         }
     }
 
@@ -73,9 +76,13 @@ export class Sphere extends Geometry {
     /**
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
      * @param aVertex - Attribute binding point for vertices.
+     * @param aTexCoord - Attribute binding point for texture coordinates.
      */
-    initialize(aVertex: GLuint, aTexCoord: GLuint): boolean {
+    initialize(aVertex: GLuint = 0, aTexCoord: GLuint = 1): boolean {
         const gl = this.context.gl;
+
+        this._vertexLocation = aVertex;
+        this._texCoordLocation = aTexCoord;
 
         const valid = super.initialize(
             [gl.ELEMENT_ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ARRAY_BUFFER],
@@ -156,4 +163,17 @@ export class Sphere extends Geometry {
         gl.drawElements(gl.TRIANGLES, this._size, gl.UNSIGNED_SHORT, 0);
     }
 
+    /**
+     * Attribute location to which this geometrys vertices are bound to.
+     */
+    get vertexLocation(): GLuint {
+        return this._vertexLocation;
+    }
+
+    /**
+     * Attribute location to which this geometrys texture coordinates are bound to.
+     */
+    get texCoordLocation(): GLuint {
+        return this._texCoordLocation;
+    }
 }

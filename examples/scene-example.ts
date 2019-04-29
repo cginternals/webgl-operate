@@ -2,7 +2,7 @@
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
-    Box,
+    BoxGeometry,
     Camera,
     Canvas,
     Context,
@@ -18,7 +18,7 @@ import {
     Renderer,
     SceneNode,
     Shader,
-    Sphere,
+    SphereGeometry,
     Texture2D,
     Wizard,
 } from 'webgl-operate';
@@ -225,7 +225,7 @@ export class SceneRenderer extends Renderer {
         material.textured = true;
 
         /* Create geometry. */
-        const geometry = new Sphere(
+        const geometry = new SphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -255,7 +255,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new Sphere(
+        const geometry = new SphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -285,7 +285,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new Box(
+        const geometry = new BoxGeometry(
             this._context,
             'mesh',
             1.0, 1.0, 1.0,
