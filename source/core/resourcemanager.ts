@@ -5,6 +5,7 @@ import { Context } from '../context';
 import { Texture2D } from '../texture2d';
 import { Material } from '../scene';
 import { Geometry } from '../geometry';
+import { Buffer } from '../buffer';
 
 
 /**
@@ -31,6 +32,11 @@ export class ResourceManager {
      * Internal storage of geometries.
      */
     protected _geometries = new Map<string, Geometry>();
+
+    /**
+     * Internal storage of buffers.
+     */
+    protected _buffers = new Map<string, Buffer>();
 
     /**
      * Creates a resource manager that can be used to fetch and store resources such as textures, geometries, etc.
@@ -69,14 +75,14 @@ export class ResourceManager {
      * @param identifiers - The identifiers by which the resource can be queried from the ResourceManager.
      * @returns - The array of added indentifiers. If an identifier already exists for another resource it is not added.
      */
-    add(resource: Texture2D | Material | Geometry, identifiers: Array<string>): Array<string> {
+    add(resource: Texture2D | Material | Geometry | Buffer, identifiers: Array<string>): Array<string> {
 
         const addedIdentifiers = new Array<string>();
 
         if (resource instanceof Texture2D) {
             const texture = resource as Texture2D;
 
-            for (const identifier in identifiers) {
+            for (const identifier of identifiers) {
                 if (!this._texture2Ds.has(identifier)) {
                     this._texture2Ds.set(identifier, texture);
                     addedIdentifiers.push(identifier);
@@ -87,7 +93,7 @@ export class ResourceManager {
         if (resource instanceof Material) {
             const material = resource as Material;
 
-            for (const identifier in identifiers) {
+            for (const identifier of identifiers) {
                 if (!this._materials.has(identifier)) {
                     this._materials.set(identifier, material);
                     addedIdentifiers.push(identifier);
@@ -98,9 +104,20 @@ export class ResourceManager {
         if (resource instanceof Geometry) {
             const geometry = resource as Geometry;
 
-            for (const identifier in identifiers) {
+            for (const identifier of identifiers) {
                 if (!this._geometries.has(identifier)) {
                     this._geometries.set(identifier, geometry);
+                    addedIdentifiers.push(identifier);
+                }
+            }
+        }
+
+        if (resource instanceof Buffer) {
+            const buffer = resource as Buffer;
+
+            for (const identifier of identifiers) {
+                if (!this._buffers.has(identifier)) {
+                    this._buffers.set(identifier, buffer);
                     addedIdentifiers.push(identifier);
                 }
             }
@@ -113,7 +130,7 @@ export class ResourceManager {
      * Queries a resource based on the given identifier.
      * @param identifier - Name of a previously added resource
      */
-    get(identifier: string): Texture2D | Material | Geometry | undefined {
+    get(identifier: string): Texture2D | Material | Geometry | Buffer | undefined {
 
         if (this._texture2Ds.has(identifier)) {
             return this._texture2Ds.get(identifier);
@@ -125,6 +142,10 @@ export class ResourceManager {
 
         if (this._geometries.has(identifier)) {
             return this._geometries.get(identifier);
+        }
+
+        if (this._buffers.has(identifier)) {
+            return this._buffers.get(identifier);
         }
 
         return undefined;

@@ -5,6 +5,10 @@ export class GLTFMesh {
 
     protected _primitives: Array<GLTFPrimitive>;
 
+    constructor() {
+        this._primitives = new Array<GLTFPrimitive>();
+    }
+
     get primitives(): Array<GLTFPrimitive> {
         return this._primitives;
     }

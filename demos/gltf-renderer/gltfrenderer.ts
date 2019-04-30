@@ -15,12 +15,14 @@ import { Demo } from '../demo';
 
 class GltfRenderer extends Renderer {
 
+    protected _loader: GLTFLoader;
+
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider): boolean {
 
-        const loader = new GLTFLoader(this._context);
+        this._loader = new GLTFLoader(this._context);
         /* const root = */
-        loader.loadAsset('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf');
+        this._loader.loadAsset('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf');
 
         return true;
     }
@@ -33,7 +35,9 @@ class GltfRenderer extends Renderer {
 
     protected onPrepare(): void { }
 
-    protected onFrame(frameNumber: number): void { }
+    protected onFrame(frameNumber: number): void {
+        console.log(this._loader);
+    }
 
 }
 
