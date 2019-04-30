@@ -3,6 +3,8 @@ import { assert } from '../auxiliaries';
 
 import { Context } from '../context';
 import { Texture2D } from '../texture2d';
+import { Material } from '../scene';
+import { Geometry } from '../geometry';
 
 
 /**
@@ -20,6 +22,15 @@ export class ResourceManager {
      */
     protected _texture2Ds = new Map<string, Texture2D>();
 
+    /**
+     * Internal storage of material.
+     */
+    protected _materials = new Map<string, Material>();
+
+    /**
+     * Internal storage of geometries.
+     */
+    protected _geometries = new Map<string, Geometry>();
 
     /**
      * Creates a resource manager that can be used to fetch and store resources such as textures, geometries, etc.
@@ -53,45 +64,68 @@ export class ResourceManager {
     /**
      * Allows to add a resource that, e.g., was not fetched by this resource manager but was loaded or generated
      * somewhere else instead. Please note that by adding the resource, the manager assumes 'taking ownership'.
-     * @param resource - Resource to add. The resource is expected to have an identifier.
-     * @returns - True if the resource has been added thus is owned by the manager. False otherwise.
+     * If all given identifiers are already in use, the resource manager does not take ownership of the resource.
+     * @param resource - Resource to add.
+     * @param identifiers - The identifiers by which the resource can be queried from the ResourceManager.
+     * @returns - The array of added indentifiers. If an identifier already exists for another resource it is not added.
      */
-    add(resource: Texture2D): boolean {
+    add(resource: Texture2D | Material | Geometry, identifiers: Array<string>): Array<string> {
+
+        const addedIdentifiers = new Array<string>();
 
         if (resource instanceof Texture2D) {
             const texture = resource as Texture2D;
-            if (this._texture2Ds.has(texture.identifier)) {
-                return false;
+
+            for (const identifier in identifiers) {
+                if (!this._texture2Ds.has(identifier)) {
+                    this._texture2Ds.set(identifier, texture);
+                    addedIdentifiers.push(identifier);
+                }
             }
-            this._texture2Ds.set(texture.identifier, texture);
-            return true;
         }
 
-        // if (resource instanceof ...) {
-        //     const ... = resource as ...;
-        //     if (this._ ... .has(... .identifier)) {
-        //         return false;
-        //     }
-        //     this._ ... .set(... .identifier, ...);
-        //     return true;
-        // }
+        if (resource instanceof Material) {
+            const material = resource as Material;
 
-        return false;
+            for (const identifier in identifiers) {
+                if (!this._materials.has(identifier)) {
+                    this._materials.set(identifier, material);
+                    addedIdentifiers.push(identifier);
+                }
+            }
+        }
+
+        if (resource instanceof Geometry) {
+            const geometry = resource as Geometry;
+
+            for (const identifier in identifiers) {
+                if (!this._geometries.has(identifier)) {
+                    this._geometries.set(identifier, geometry);
+                    addedIdentifiers.push(identifier);
+                }
+            }
+        }
+
+        return addedIdentifiers;
     }
 
     /**
      * Queries a resource based on the given identifier.
      * @param identifier - Name of a previously added resource
      */
-    get(identifier: string): Texture2D | /* ... | */ undefined {
+    get(identifier: string): Texture2D | Material | Geometry | undefined {
 
         if (this._texture2Ds.has(identifier)) {
             return this._texture2Ds.get(identifier);
         }
 
-        // if (this._ ... .has(identifier)) {
-        //     return this._ ... .get(identifier);
-        // }
+        if (this._materials.has(identifier)) {
+            return this._materials.get(identifier);
+        }
+
+        if (this._geometries.has(identifier)) {
+            return this._geometries.get(identifier);
+        }
 
         return undefined;
     }

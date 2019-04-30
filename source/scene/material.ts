@@ -16,6 +16,10 @@ export abstract class Material implements Bindable {
         return this._program;
     }
 
+    get name(): string {
+        return this._name;
+    }
+
     abstract bind(): void;
     abstract unbind(): void;
 }

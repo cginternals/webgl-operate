@@ -18,9 +18,9 @@ class GltfRenderer extends Renderer {
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider): boolean {
 
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader(this._context);
         /* const root = */
-        loader.loadAsset('/demos/data/scene.gltf');
+        loader.loadAsset('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf');
 
         return true;
     }
