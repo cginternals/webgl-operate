@@ -120,26 +120,49 @@ export class GLTFLoader {
     protected async loadTextures(asset: GltfAsset): Promise<void> {
         const gl = this._context.gl;
 
+        const textures = asset.gltf.textures;
         const images = asset.gltf.images;
-        if (!images) {
+        const samplers = asset.gltf.samplers;
+
+        if (!textures || !samplers || !images) {
             return;
         }
 
-        let imageId = 0;
-        for (const image of images) {
-            const identifier = this._sceneName + '_image_' + imageId;
+        let textureId = 0;
+        for (const textureInfo of textures) {
+            if (textureInfo.source === undefined) {
+                log(LogLevel.Warning,
+                    `The GLTF model does not specify a texture source. Possibly it uses an unsupported extension.`);
+                textureId++;
+                continue;
+            }
+
+            const imageId = textureInfo.source!;
+            const image = images[imageId];
+            const identifier = this._sceneName + '_texture_' + textureId;
             const name = image.name === undefined ? image.uri : image.name;
 
+            // TODO: make sure image is only loaded once if it is referenced by multiple textures
             const data = await asset.imageData.get(imageId);
-            imageId++;
 
             const texture = new Texture2D(this._context, name);
             texture.initialize(data.width, data.height, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE);
+
+            if (textureInfo.sampler === undefined) {
+                texture.wrap(gl.REPEAT, gl.REPEAT);
+                texture.filter(gl.LINEAR, gl.LINEAR);
+            } else {
+                const sampler = samplers[textureInfo.sampler];
+                texture.wrap(sampler.wrapS || gl.REPEAT, sampler.wrapT || gl.REPEAT);
+                texture.filter(sampler.magFilter || gl.LINEAR, sampler.minFilter || gl.LINEAR);
+            }
+
             texture.data(data);
 
-            // TODO: sampler and mipmap handling
+            // TODO: mipmap handling
 
             this._resourceManager.add(texture, [name, identifier]);
+            textureId++;
         }
     }
 
@@ -170,7 +193,7 @@ export class GLTFLoader {
             const baseColorTexture = pbrInfo!.baseColorTexture;
             if (baseColorTexture) {
                 const index = baseColorTexture.index;
-                const identifier = this._sceneName + '_image_' + index;
+                const identifier = this._sceneName + '_texture_' + index;
                 const texture = this._resourceManager.get(identifier);
 
                 if (texture) {

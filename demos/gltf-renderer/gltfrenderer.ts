@@ -27,9 +27,9 @@ import { Demo } from '../demo';
  */
 export class GltfRenderer extends Renderer {
 
-    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf';
     //static assetURI = '/Users/philipp/Google Drive/Uni/Masterarbeit/assets/adamHead/adamHead.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
+    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
 
     protected _loader: GLTFLoader;
 
