@@ -6,6 +6,13 @@ import { Material } from '../scene';
 
 // tslint:disable:max-classes-per-file
 
+export class IndexBinding {
+    buffer: Buffer;
+    type: GLenum;
+    numIndices: number;
+    offset: GLintptr;
+}
+
 export class VertexBinding {
     buffer: Buffer;
     size: GLint;
@@ -19,12 +26,18 @@ export class GLTFPrimitive extends Geometry {
 
     protected _material: Material;
     protected _drawMode: GLenum;
+    protected _indexBinding: IndexBinding | undefined;
     protected _bindings: Array<VertexBinding>;
 
-    constructor(context: Context, bindings: Array<VertexBinding>, material: Material, drawMode: GLenum) {
+    constructor(context: Context,
+        bindings: Array<VertexBinding>,
+        indexBinding: IndexBinding | undefined,
+        material: Material, drawMode: GLenum) {
+
         super(context);
 
         this._bindings = bindings;
+        this._indexBinding = indexBinding;
         this._material = material;
         this._drawMode = drawMode;
     }

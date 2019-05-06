@@ -1,10 +1,10 @@
 
 import { SceneNode } from '../scene/scenenode';
 
-import { GltfLoader, GltfAsset } from 'gltf-loader-ts';
+import { GltfLoader, GltfAsset, GLTF_ELEMENTS_PER_TYPE } from 'gltf-loader-ts';
 import { GLTFMesh } from './gltfmesh';
 import { assert, log, LogLevel } from '../auxiliaries';
-import { GLTFPrimitive, VertexBinding } from './gltfprimitive';
+import { GLTFPrimitive, VertexBinding, IndexBinding } from './gltfprimitive';
 import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 import { Context } from '../context';
 import { Program } from '../program';
@@ -29,7 +29,9 @@ export class GLTFLoader {
     }
 
     protected modeToEnum(mode: number): GLenum {
-        assert(mode <= 6, 'Mode can only take values between 0 and 6');
+        if (mode > 6) {
+            log(LogLevel.Error, `Specified draw mode is ${mode} but is required to be between 0 and 6`);
+        }
 
         const gl = this._context.gl;
 
@@ -56,6 +58,21 @@ export class GLTFLoader {
         }
 
         return gl.TRIANGLES;
+    }
+
+    protected targetToEnum(target: number): GLenum {
+        const gl = this._context.gl;
+
+        if (target === 34962) {
+            return gl.ARRAY_BUFFER;
+        }
+        if (target === 34963) {
+            return gl.ELEMENT_ARRAY_BUFFER;
+        }
+
+        log(LogLevel.Error,
+            'BufferView target is neither ARRAY_BUFFER nor ELEMENT_ARRAY_BUFFER and therefore invalid.');
+        return gl.ARRAY_BUFFER;
     }
 
     protected nameToAttributeIndex(name: string): number {
@@ -156,27 +173,38 @@ export class GLTFLoader {
     }
 
     protected async loadBuffers(asset: GltfAsset): Promise<void> {
-        const buffers = asset.gltf.buffers;
+        const gl = this._context.gl;
 
-        if (!buffers) {
+        const bufferViews = asset.gltf.bufferViews;
+
+        if (!bufferViews) {
             return;
         }
 
-        let bufferId = 0;
-        for (const bufferInfo of buffers) {
-            const identifier = this._sceneName + '_buffer_' + bufferId;
-            const data = asset.bufferData.get(bufferId);
+        let bufferViewId = 0;
+        for (const bufferViewInfo of bufferViews) {
+            const identifier = this._sceneName + '_bufferView_' + bufferViewId;
+            const data = await asset.bufferViewData(bufferViewId);
+            const targetNumber = bufferViewInfo.target;
 
             /**
-             * TODO: probably need to create one buffer per bufferview instead
-             * since we need to know usage when calling gl.bufferData
+             * TODO: handle cases where target is not specified by looking
+             * at usages and inferring what the target should be
              */
+            if (!targetNumber) {
+                log(LogLevel.Warning,
+                    'Encountered BufferView without explitict target specification. This is not yet supported.');
+                bufferViewId++;
+                continue;
+            }
 
-            // const buffer = new Buffer(this._context, identifier);
-            // buffer.initialize()
+            const target = this.targetToEnum(targetNumber);
+            const buffer = new Buffer(this._context, identifier);
+            buffer.initialize(target);
+            buffer.data(data, gl.STATIC_DRAW);
 
             this._resourceManager.add(buffer, [identifier]);
-            bufferId++;
+            bufferViewId++;
         }
     }
 
@@ -193,14 +221,28 @@ export class GLTFLoader {
             const mesh = new GLTFMesh();
             for (const primitiveInfo of meshInfo.primitives) {
                 const primitive = await this.loadPrimitive(asset, primitiveInfo, primitiveId);
-                mesh.addPrimitive(primitive);
+
+                if (primitive) {
+                    mesh.addPrimitive(primitive);
+                }
+
                 primitiveId++;
             }
+
+            result.push(mesh);
         }
         return result;
     }
 
-    protected async loadPrimitive(asset: GltfAsset, primitiveInfo: MeshPrimitive, id: number): Promise<GLTFPrimitive> {
+    protected async loadPrimitive(asset: GltfAsset,
+        primitiveInfo: MeshPrimitive, id: number): Promise<GLTFPrimitive | undefined> {
+        const accessors = asset.gltf.accessors;
+
+        if (!accessors) {
+            log(LogLevel.Error, 'GLTF asset does not have any accessors for the primitive to load.');
+            return;
+        }
+
         let modeNumber = primitiveInfo.mode;
         const identifier = this._sceneName + '_primitive_' + id;
 
@@ -226,20 +268,45 @@ export class GLTFLoader {
 
         for (const semantic in primitiveInfo.attributes) {
             // init buffer/attribute binding for attribute
-            let accessorIndex = primitiveInfo.attributes[semantic];
-            //const accessor = accesors[accessorIndex];
+            const accessorIndex = primitiveInfo.attributes[semantic];
+            const accessorInfo = accessors[accessorIndex];
+            const bufferViewIndex = accessorInfo.bufferView;
+            if (!bufferViewIndex) {
+                log(LogLevel.Error, 'Accessor does not reference a BufferView.');
+            }
+            // TODO: handle undefined
+            const bufferViewInfo = asset.gltf.bufferViews![bufferViewIndex!];
+            const bufferViewIdentifier = this._sceneName + '_bufferView_' + bufferViewIndex;
+            const buffer = this._resourceManager.get(bufferViewIdentifier) as Buffer;
 
             const binding = new VertexBinding();
-            // binding.buffer = ...
-            // binding.normalized = ...
-            // binding.size
-            // binding.offset
-            // binding.stride
-            // binding.type
+            binding.buffer = buffer;
+            binding.normalized = accessorInfo.normalized || false;
+            binding.size = GLTF_ELEMENTS_PER_TYPE[accessorInfo.type];
+            binding.offset = accessorInfo.byteOffset || 0;
+            binding.stride = bufferViewInfo.byteStride || 0;
+            binding.type = accessorInfo.componentType;
             bindings.push(binding);
         }
 
-        const primitive = new GLTFPrimitive(this._context, bindings, material, drawMode);
+        let indexBinding: IndexBinding | undefined;
+        if (primitiveInfo.indices) {
+            const accessorInfo = accessors[primitiveInfo.indices];
+            const bufferViewIndex = accessorInfo.bufferView;
+            if (!bufferViewIndex) {
+                log(LogLevel.Error, 'Accessor does not reference a BufferView.');
+            }
+            const bufferViewIdentifier = this._sceneName + '_bufferView_' + bufferViewIndex;
+            const buffer = this._resourceManager.get(bufferViewIdentifier) as Buffer;
+
+            indexBinding = new IndexBinding();
+            indexBinding.buffer = buffer;
+            indexBinding.numIndices = accessorInfo.count;
+            indexBinding.offset = accessorInfo.byteOffset || 0;
+            indexBinding.type = accessorInfo.componentType;
+        }
+
+        const primitive = new GLTFPrimitive(this._context, bindings, indexBinding, material, drawMode);
         this._resourceManager.add(primitive, [identifier]);
         return primitive;
     }
