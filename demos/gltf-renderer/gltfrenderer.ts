@@ -37,6 +37,7 @@ class GltfRenderer extends Renderer {
 
     protected onFrame(frameNumber: number): void {
         console.log(this._loader);
+        console.log(this._loader.defaultScene);
     }
 
 }

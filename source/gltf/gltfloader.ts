@@ -1,6 +1,7 @@
 
 import { SceneNode } from '../scene/scenenode';
 
+import { vec3, mat4, quat } from 'gl-matrix';
 import { GltfLoader, GltfAsset, GLTF_ELEMENTS_PER_TYPE } from 'gltf-loader-ts';
 import { GLTFMesh } from './gltfmesh';
 import { assert, log, LogLevel } from '../auxiliaries';
@@ -11,13 +12,14 @@ import { Program } from '../program';
 import { GLTFPbrMaterial } from './gltfpbrmaterial';
 import { ResourceManager } from '../core';
 import { Texture2D } from '../texture2d';
-import { Material } from '../scene';
+import { Material, TransformComponent, GeometryComponent } from '../scene';
 import { Buffer } from '../buffer';
 
 export class GLTFLoader {
 
     protected _context: Context;
     protected _sceneName: string;
+    protected _defaultScene: SceneNode;
     protected _scenes: Array<SceneNode>;
     protected _resourceManager: ResourceManager;
     protected _pbrProgram: Program;
@@ -26,6 +28,7 @@ export class GLTFLoader {
     constructor(context: Context) {
         this._context = context;
         this._resourceManager = new ResourceManager(this._context);
+        this._scenes = new Array<SceneNode>();
     }
 
     protected modeToEnum(mode: number): GLenum {
@@ -311,8 +314,120 @@ export class GLTFLoader {
         return primitive;
     }
 
-    protected async generateGraph(meshes: Array<GLTFMesh>): Promise<void> {
+    protected async generateGraph(asset: GltfAsset, meshes: Array<GLTFMesh>): Promise<void> {
+        const nodes = asset.gltf.nodes;
+        const scenes = asset.gltf.scenes;
 
+        if (!nodes || !scenes) {
+            return;
+        }
+
+        const idToNode = new Map<number, SceneNode>();
+
+        let nodeId = 0;
+        for (const node of nodes) {
+            const name = node.name || 'node_' + nodeId;
+            const sceneNode = new SceneNode(name);
+            idToNode.set(nodeId, sceneNode);
+
+            if (node.matrix) {
+                const matrix = mat4.fromValues.apply(undefined, node.matrix);
+                const transformComponent = new TransformComponent(matrix);
+                sceneNode.addComponent(transformComponent);
+            } else if (node.translation || node.rotation || node.scale) {
+                let rotation = quat.create();
+                if (node.rotation) {
+                    rotation = quat.fromValues.apply(undefined, node.rotation);
+                }
+
+                let translation = vec3.create();
+                if (node.translation) {
+                    translation = vec3.fromValues.apply(undefined, node.translation);
+                }
+
+                let scale = vec3.create();
+                if (node.scale) {
+                    scale = vec3.fromValues.apply(undefined, node.scale);
+                }
+
+                const matrix = mat4.fromRotationTranslationScale(
+                    mat4.create(),
+                    rotation,
+                    translation,
+                    scale,
+                );
+
+                const transformComponent = new TransformComponent(matrix);
+                sceneNode.addComponent(transformComponent);
+            }
+
+            if (node.mesh !== undefined) {
+                const mesh = meshes[node.mesh];
+                for (const primitive of mesh.primitives) {
+                    const geometryComponent = new GeometryComponent();
+                    geometryComponent.material = primitive.material;
+                    geometryComponent.geometry = primitive;
+                    sceneNode.addComponent(geometryComponent);
+                }
+            }
+
+            /**
+             * TODO: skinning support
+             */
+            if (node.skin || node.weights) {
+                log(LogLevel.Info, 'Imported GLTF assets uses skins, which are not supported yet.');
+            }
+
+            nodeId++;
+        }
+
+        nodeId = 0;
+        for (const node of nodes) {
+            const sceneNode = idToNode.get(nodeId);
+
+            assert(sceneNode !== undefined, 'Scene node could not be found.');
+
+            if (node.children) {
+                for (const childId of node.children) {
+                    const childNode = idToNode.get(childId);
+
+                    if (!childNode) {
+                        log(LogLevel.Error, 'Model references a node that does not exist.');
+                    }
+
+                    sceneNode!.addNode(childNode!);
+                }
+            }
+
+            nodeId++;
+        }
+
+        const sceneId = 0;
+        for (const scene of scenes) {
+            const name = scene.name || 'scene_' + sceneId;
+            const sceneNode = new SceneNode(name);
+
+            if (scene.nodes) {
+                for (const nodeId of scene.nodes) {
+                    const node = idToNode.get(nodeId);
+
+                    if (!node) {
+                        log(LogLevel.Error, 'Scene references a node that does not exist.');
+                    }
+
+                    sceneNode.addNode(node!);
+                }
+            } else {
+                log(LogLevel.Warning, ` Scene ${name} does not contain any nodes.`);
+            }
+
+            this._scenes.push(sceneNode);
+        }
+
+        const defaultSceneId = asset.gltf.scene;
+        if (defaultSceneId !== undefined) {
+            this._defaultScene = this._scenes[defaultSceneId];
+        }
     }
 
     async loadAsset(uri: string): Promise<void> {
@@ -325,21 +440,25 @@ export class GLTFLoader {
             this._sceneName = gltf.scenes[gltf.scene!].name;
         }
 
-        console.log(gltf);
-
         this.loadTextures(asset)
             .then(() => this.loadMaterials(asset))
             .then(() => this.loadBuffers(asset))
             .then(() => this.loadMeshes(asset))
-            .then((meshes) => this.generateGraph(meshes));
-
-        // let data = await asset.accessorData(0); // fetches BoxTextured0.bin
-        // let image = await asset.imageData.get(0); // fetches CesiumLogoFlat.png
-
-        // const root = new SceneNode('root');
+            .then((meshes) => this.generateGraph(asset, meshes));
     }
 
     get scenes(): Array<SceneNode> {
         return this._scenes;
+    }
+
+    get defaultScene(): SceneNode {
+        if (this._defaultScene !== undefined) {
+            return this._defaultScene;
+        } else if (this._scenes && this._scenes.length > 0) {
+            return this._scenes[0];
+        } else {
+            log(LogLevel.Warning, 'Default scene was requested, but none is available.');
+            return new SceneNode('EmptyScene');
+        }
     }
 }
