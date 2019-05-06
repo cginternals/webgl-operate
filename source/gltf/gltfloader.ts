@@ -14,6 +14,7 @@ import { ResourceManager } from '../core';
 import { Texture2D } from '../texture2d';
 import { Material, TransformComponent, GeometryComponent } from '../scene';
 import { Buffer } from '../buffer';
+import { Shader } from '../shader';
 
 export class GLTFLoader {
 
@@ -27,8 +28,17 @@ export class GLTFLoader {
 
     constructor(context: Context) {
         this._context = context;
+        const gl = this._context.gl;
+
         this._resourceManager = new ResourceManager(this._context);
         this._scenes = new Array<SceneNode>();
+
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glsl_default.vert');
+        vert.initialize(require('./shaders/glsl_default.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glsl_default.frag');
+        frag.initialize(require('./shaders/glsl_default.frag'));
+        this._pbrProgram = new Program(this._context, 'GLTFPbrProgram');
+        this._pbrProgram.initialize([vert, frag]);
     }
 
     protected modeToEnum(mode: number): GLenum {
@@ -258,7 +268,7 @@ export class GLTFLoader {
         const bindings = new Array<VertexBinding>();
 
         let material = this._pbrDefaultMaterial;
-        if (primitiveInfo.material) {
+        if (primitiveInfo.material !== undefined) {
             const materialIdentifier = this._sceneName + '_material_' + primitiveInfo.material!
             const fetchedMaterial = this._resourceManager.get(materialIdentifier);
 
@@ -297,10 +307,10 @@ export class GLTFLoader {
         }
 
         let indexBinding: IndexBinding | undefined;
-        if (primitiveInfo.indices) {
+        if (primitiveInfo.indices !== undefined) {
             const accessorInfo = accessors[primitiveInfo.indices];
             const bufferViewIndex = accessorInfo.bufferView;
-            if (!bufferViewIndex) {
+            if (!bufferViewIndex === undefined) {
                 log(LogLevel.Error, 'Accessor does not reference a BufferView.');
             }
             const bufferViewIdentifier = this._sceneName + '_bufferView_' + bufferViewIndex;
@@ -446,11 +456,15 @@ export class GLTFLoader {
             this._sceneName = gltf.scenes[gltf.scene!].name;
         }
 
-        this.loadTextures(asset)
+        await this.loadTextures(asset)
             .then(() => this.loadMaterials(asset))
             .then(() => this.loadBuffers(asset))
             .then(() => this.loadMeshes(asset))
             .then((meshes) => this.generateGraph(asset, meshes));
+    }
+
+    get pbrProgram(): Program {
+        return this._pbrProgram;
     }
 
     get scenes(): Array<SceneNode> {
