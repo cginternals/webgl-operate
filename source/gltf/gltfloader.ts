@@ -271,6 +271,8 @@ export class GLTFLoader {
 
         for (const semantic in primitiveInfo.attributes) {
             // init buffer/attribute binding for attribute
+            const attributeIndex = this.nameToAttributeIndex(semantic);
+
             const accessorIndex = primitiveInfo.attributes[semantic];
             const accessorInfo = accessors[accessorIndex];
             const bufferViewIndex = accessorInfo.bufferView;
@@ -284,6 +286,8 @@ export class GLTFLoader {
 
             const binding = new VertexBinding();
             binding.buffer = buffer;
+            binding.attributeIndex = attributeIndex;
+            binding.numVertices = accessorInfo.count;
             binding.normalized = accessorInfo.normalized || false;
             binding.size = GLTF_ELEMENTS_PER_TYPE[accessorInfo.type];
             binding.offset = accessorInfo.byteOffset || 0;
@@ -310,6 +314,7 @@ export class GLTFLoader {
         }
 
         const primitive = new GLTFPrimitive(this._context, bindings, indexBinding, material, drawMode);
+        primitive.initialize();
         this._resourceManager.add(primitive, [identifier]);
         return primitive;
     }
@@ -402,7 +407,7 @@ export class GLTFLoader {
             nodeId++;
         }
 
-        const sceneId = 0;
+        let sceneId = 0;
         for (const scene of scenes) {
             const name = scene.name || 'scene_' + sceneId;
             const sceneNode = new SceneNode(name);
@@ -422,6 +427,7 @@ export class GLTFLoader {
             }
 
             this._scenes.push(sceneNode);
+            sceneId++;
         }
 
         const defaultSceneId = asset.gltf.scene;

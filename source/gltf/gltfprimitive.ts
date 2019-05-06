@@ -15,12 +15,14 @@ export class IndexBinding {
 
 export class VertexBinding {
     buffer: Buffer;
+    attributeIndex: GLint;
+    numVertices: GLint;
     size: GLint;
     type: GLenum;
     normalized: boolean;
     stride: GLsizei;
     offset: GLintptr;
-};
+}
 
 export class GLTFPrimitive extends Geometry {
 
@@ -32,9 +34,10 @@ export class GLTFPrimitive extends Geometry {
     constructor(context: Context,
         bindings: Array<VertexBinding>,
         indexBinding: IndexBinding | undefined,
-        material: Material, drawMode: GLenum) {
+        material: Material, drawMode: GLenum,
+        identifier?: string) {
 
-        super(context);
+        super(context, identifier);
 
         this._bindings = bindings;
         this._indexBinding = indexBinding;
@@ -42,16 +45,48 @@ export class GLTFPrimitive extends Geometry {
         this._drawMode = drawMode;
     }
 
-    protected bindBuffers(indices: number[]): void {
-        throw new Error("Method not implemented.");
+    protected bindBuffers(): void {
+        if (this._indexBinding) {
+            this._indexBinding.buffer.bind();
+        }
+
+        for (const vertexBinding of this._bindings) {
+            vertexBinding.buffer.attribEnable(
+                vertexBinding.attributeIndex,
+                vertexBinding.size,
+                vertexBinding.type,
+                vertexBinding.normalized,
+                vertexBinding.stride,
+                vertexBinding.offset,
+                true, true);
+        }
     }
 
-    protected unbindBuffers(indices: number[]): void {
-        throw new Error("Method not implemented.");
+    protected unbindBuffers(): void {
+        if (this._indexBinding) {
+            this._indexBinding.buffer.unbind();
+        }
+
+        for (const vertexBinding of this._bindings) {
+            vertexBinding.buffer.attribDisable(vertexBinding.attributeIndex, true, true);
+        }
     }
 
     draw(): void {
-        throw new Error("Method not implemented.");
+        const gl = this.context.gl;
+
+        if (this._indexBinding) {
+            gl.drawElements(
+                this._drawMode,
+                this._indexBinding.numIndices,
+                this._indexBinding.type,
+                this._indexBinding.offset);
+        } else {
+            gl.drawArrays(
+                this._drawMode,
+                0,
+                this._bindings[0].numVertices);
+        }
     }
 
     get material(): Material {
