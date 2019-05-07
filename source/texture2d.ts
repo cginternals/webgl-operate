@@ -287,6 +287,26 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
+     * Let WebGL automatically generate mipmaps for the texture.
+     * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
+     */
+    @Initializable.assert_initialized()
+    generateMipmap(bind: boolean = true, unbind: boolean = true): void {
+        const gl = this.context.gl;
+
+        if (bind) {
+            this.bind();
+        }
+
+        gl.generateMipmap(gl.TEXTURE_2D);
+
+        if (unbind) {
+            this.unbind();
+        }
+    }
+
+    /**
      * Returns the number of bytes this object approximately allocates on the GPU. The size will be zero when no
      * image data was passed to the texture object.
      */

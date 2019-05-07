@@ -29,7 +29,8 @@ export class GltfRenderer extends Renderer {
 
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf';
     //static assetURI = '/Users/philipp/Google Drive/Uni/Masterarbeit/assets/adamHead/adamHead.gltf';
-    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
+    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf';
 
     protected _loader: GLTFLoader;
 
@@ -75,9 +76,9 @@ export class GltfRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 3.0);
+        this._camera.eye = vec3.fromValues(0.0, 3.0, 3.0);
         this._camera.near = 0.1;
-        this._camera.far = 8.0;
+        this._camera.far = 32.0;
 
         /* Create and configure navigation */
 

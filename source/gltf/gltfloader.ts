@@ -73,21 +73,6 @@ export class GLTFLoader {
         return gl.TRIANGLES;
     }
 
-    protected targetToEnum(target: number): GLenum {
-        const gl = this._context.gl;
-
-        if (target === 34962) {
-            return gl.ARRAY_BUFFER;
-        }
-        if (target === 34963) {
-            return gl.ELEMENT_ARRAY_BUFFER;
-        }
-
-        log(LogLevel.Error,
-            'BufferView target is neither ARRAY_BUFFER nor ELEMENT_ARRAY_BUFFER and therefore invalid.');
-        return gl.ARRAY_BUFFER;
-    }
-
     protected nameToAttributeIndex(name: string): number {
         if (name === 'POSITION') {
             return 0;
@@ -117,6 +102,18 @@ export class GLTFLoader {
         return -1;
     }
 
+    protected isPowerOfTwo(x: number): boolean {
+        return (x & (x - 1)) === 0;
+    }
+
+    protected nextHighestPowerOfTwo(x: number): number {
+        --x;
+        for (let i = 1; i < 32; i <<= 1) {
+            x = x | x >> i;
+        }
+        return x + 1;
+    }
+
     protected async loadTextures(asset: GltfAsset): Promise<void> {
         const gl = this._context.gl;
 
@@ -143,10 +140,35 @@ export class GLTFLoader {
             const name = image.name === undefined ? image.uri : image.name;
 
             // TODO: make sure image is only loaded once if it is referenced by multiple textures
-            const data = await asset.imageData.get(imageId);
+            let data: HTMLImageElement | HTMLCanvasElement = await asset.imageData.get(imageId);
+
+            let width = data.width;
+            let height = data.height;
+
+            /**
+             * If the texture is not power of two, resize it to avoid problems with REPEAT samplers.
+             * See: https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
+             */
+            if (!this.isPowerOfTwo(width) || !this.isPowerOfTwo(height)) {
+                // Scale up the texture to the next highest power of two dimensions.
+                const canvas = document.createElement('canvas');
+                canvas.width = this.nextHighestPowerOfTwo(data.width);
+                canvas.height = this.nextHighestPowerOfTwo(data.height);
+                width = canvas.width;
+                height = canvas.height;
+
+                const ctx = canvas.getContext('2d');
+
+                if (ctx === undefined) {
+                    log(LogLevel.Error, 'Failed to create context while trying to resize non power of two texture');
+                }
+                ctx!.drawImage(data, 0, 0, data.width, data.height);
+                data = canvas;
+            }
 
             const texture = new Texture2D(this._context, name);
-            texture.initialize(data.width, data.height, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE);
+            texture.initialize(width, height, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE);
+            texture.data(data);
 
             if (textureInfo.sampler === undefined) {
                 texture.wrap(gl.REPEAT, gl.REPEAT);
@@ -155,11 +177,15 @@ export class GLTFLoader {
                 const sampler = samplers[textureInfo.sampler];
                 texture.wrap(sampler.wrapS || gl.REPEAT, sampler.wrapT || gl.REPEAT);
                 texture.filter(sampler.magFilter || gl.LINEAR, sampler.minFilter || gl.LINEAR);
+
+                if (sampler.minFilter === gl.NEAREST_MIPMAP_NEAREST ||
+                    sampler.minFilter === gl.LINEAR_MIPMAP_NEAREST ||
+                    sampler.minFilter === gl.NEAREST_MIPMAP_LINEAR ||
+                    sampler.minFilter === gl.LINEAR_MIPMAP_LINEAR) {
+
+                    texture.generateMipmap();
+                }
             }
-
-            texture.data(data);
-
-            // TODO: mipmap handling
 
             this._resourceManager.add(texture, [name, identifier]);
             textureId++;
@@ -208,6 +234,41 @@ export class GLTFLoader {
         }
     }
 
+    protected inferBufferUsage(asset: GltfAsset, bufferViewId: number): GLenum {
+        const gl = this._context.gl;
+
+        const meshes = asset.gltf.meshes;
+        const accessors = asset.gltf.accessors;
+
+        if (meshes === undefined || accessors === undefined) {
+            log(LogLevel.Error, `Asset does not include any meshes or accessors`);
+            return gl.ARRAY_BUFFER;
+        }
+
+        // Find out if any primitive uses this buffer view as an index buffer
+        // If so, the buffer view can only be used as an index buffer as per specification
+        for (const meshInfo of meshes!) {
+            for (const primitive of meshInfo.primitives) {
+                const indexAccessorId = primitive.indices;
+
+                if (indexAccessorId === undefined) {
+                    continue;
+                }
+
+                const accessor = accessors![indexAccessorId];
+                const indexBufferViewId = accessor.bufferView;
+
+                if (indexBufferViewId === undefined) {
+                    continue;
+                } else if (indexBufferViewId === bufferViewId) {
+                    return gl.ELEMENT_ARRAY_BUFFER;
+                }
+            }
+        }
+
+        return gl.ARRAY_BUFFER;
+    }
+
     protected async loadBuffers(asset: GltfAsset): Promise<void> {
         const gl = this._context.gl;
 
@@ -221,20 +282,12 @@ export class GLTFLoader {
         for (const bufferViewInfo of bufferViews) {
             const identifier = this._sceneName + '_bufferView_' + bufferViewId;
             const data = await asset.bufferViewData(bufferViewId);
-            const targetNumber = bufferViewInfo.target;
 
-            /**
-             * TODO: handle cases where target is not specified by looking
-             * at usages and inferring what the target should be
-             */
-            if (!targetNumber) {
-                log(LogLevel.Warning,
-                    'Encountered BufferView without explitict target specification. This is not yet supported.');
-                bufferViewId++;
-                continue;
+            let target = bufferViewInfo.target;
+            if (!target) {
+                target = this.inferBufferUsage(asset, bufferViewId);
             }
 
-            const target = this.targetToEnum(targetNumber);
             const buffer = new Buffer(this._context, identifier);
             buffer.initialize(target);
             buffer.data(data, gl.STATIC_DRAW);
