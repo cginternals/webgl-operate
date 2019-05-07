@@ -31,7 +31,10 @@ export class GltfRenderer extends Renderer {
     //static assetURI = '/Users/philipp/Google Drive/Uni/Masterarbeit/assets/adamHead/adamHead.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf';
-    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/VC/glTF/VC.gltf';
+    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Corset/glTF/Corset.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf';
 
     protected _loader: GLTFLoader;
 
@@ -166,14 +169,19 @@ export class GltfRenderer extends Renderer {
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
 
-        // gl.enable(gl.CULL_FACE);
-        // gl.cullFace(gl.BACK);
+        // TODO: proper handling of transparent materials in the loader
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
         this._forwardPass.frame();
 
-        // gl.cullFace(gl.BACK);
-        // gl.disable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
     }
 
     /**

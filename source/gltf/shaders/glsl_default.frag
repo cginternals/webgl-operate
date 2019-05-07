@@ -14,7 +14,6 @@ varying vec2 v_uv;
 
 void main(void)
 {
-    vec3 texColor = texture(u_baseColor, v_uv).rgb;
-    fragColor = vec4(texColor, 1.0);
-    //fragColor = vec4(v_uv, 0.0, 1.0);
+    vec4 texColor = texture(u_baseColor, v_uv);
+    fragColor = texColor;
 }

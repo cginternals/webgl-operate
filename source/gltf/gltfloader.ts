@@ -42,7 +42,7 @@ export class GLTFLoader {
     }
 
     protected modeToEnum(mode: number): GLenum {
-        if (mode > 6) {
+        if (mode < 0 || mode > 6) {
             log(LogLevel.Error, `Specified draw mode is ${mode} but is required to be between 0 and 6`);
         }
 
@@ -121,7 +121,7 @@ export class GLTFLoader {
         const images = asset.gltf.images;
         const samplers = asset.gltf.samplers;
 
-        if (!textures || !samplers || !images) {
+        if (!textures || !images) {
             return;
         }
 
@@ -165,7 +165,7 @@ export class GLTFLoader {
             texture.initialize(data.width, data.height, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE);
             texture.data(data);
 
-            if (textureInfo.sampler === undefined) {
+            if (samplers === undefined || textureInfo.sampler === undefined) {
                 texture.wrap(gl.REPEAT, gl.REPEAT);
                 texture.filter(gl.LINEAR, gl.LINEAR);
             } else {
@@ -188,14 +188,15 @@ export class GLTFLoader {
     }
 
     protected async loadMaterials(asset: GltfAsset): Promise<void> {
-        const materials = asset.gltf.materials;
-        if (!materials) {
-            return;
-        }
 
         // Init default material
         this._pbrDefaultMaterial = new GLTFPbrMaterial('DefaultMaterial', this._pbrProgram);
         this._resourceManager.add(this._pbrDefaultMaterial, [this._pbrDefaultMaterial.name]);
+
+        const materials = asset.gltf.materials;
+        if (!materials) {
+            return;
+        }
 
         // Init materials specified by GLTF
         let materialId = 0;
@@ -217,10 +218,10 @@ export class GLTFLoader {
                 const identifier = this._sceneName + '_texture_' + index;
                 const texture = this._resourceManager.get(identifier);
 
-                if (texture) {
+                if (texture !== undefined) {
                     material.baseColorTexture = texture as Texture2D;
                 } else {
-                    log(LogLevel.Warning, `Base color texture could not be located for ${material}.`);
+                    log(LogLevel.Warning, `Base color texture could not be located for material ${material.name}.`);
                 }
             }
 
@@ -270,6 +271,7 @@ export class GLTFLoader {
         const bufferViews = asset.gltf.bufferViews;
 
         if (!bufferViews) {
+            log(LogLevel.Warning, 'The asset does not include any buffer view information.');
             return;
         }
 
@@ -296,7 +298,8 @@ export class GLTFLoader {
         const result = new Array<GLTFMesh>();
         const meshes = asset.gltf.meshes;
 
-        if (!meshes) {
+        if (meshes === undefined) {
+            log(LogLevel.Warning, 'The asset does not contain any mesh information');
             return result;
         }
 
@@ -306,7 +309,7 @@ export class GLTFLoader {
             for (const primitiveInfo of meshInfo.primitives) {
                 const primitive = await this.loadPrimitive(asset, primitiveInfo, primitiveId);
 
-                if (primitive) {
+                if (primitive !== undefined) {
                     mesh.addPrimitive(primitive);
                 }
 
@@ -322,7 +325,7 @@ export class GLTFLoader {
         primitiveInfo: MeshPrimitive, id: number): Promise<GLTFPrimitive | undefined> {
         const accessors = asset.gltf.accessors;
 
-        if (!accessors) {
+        if (accessors === undefined) {
             log(LogLevel.Error, 'GLTF asset does not have any accessors for the primitive to load.');
             return;
         }
@@ -343,7 +346,7 @@ export class GLTFLoader {
             const materialIdentifier = this._sceneName + '_material_' + primitiveInfo.material!
             const fetchedMaterial = this._resourceManager.get(materialIdentifier);
 
-            if (fetchedMaterial) {
+            if (fetchedMaterial !== undefined) {
                 material = fetchedMaterial as Material;
             } else {
                 log(LogLevel.Warning, `Material ${materialIdentifier} could not be found.`);
@@ -357,7 +360,7 @@ export class GLTFLoader {
             const accessorIndex = primitiveInfo.attributes[semantic];
             const accessorInfo = accessors[accessorIndex];
             const bufferViewIndex = accessorInfo.bufferView;
-            if (!bufferViewIndex) {
+            if (bufferViewIndex === undefined) {
                 log(LogLevel.Error, 'Accessor does not reference a BufferView.');
             }
             // TODO: handle undefined
@@ -405,6 +408,7 @@ export class GLTFLoader {
         const scenes = asset.gltf.scenes;
 
         if (!nodes || !scenes) {
+            log(LogLevel.Warning, 'The asset does not contain any nodes or scene information.');
             return;
         }
 
@@ -431,7 +435,7 @@ export class GLTFLoader {
                     translation = vec3.fromValues.apply(undefined, node.translation);
                 }
 
-                let scale = vec3.create();
+                let scale = vec3.fromValues(1, 1, 1);
                 if (node.scale) {
                     scale = vec3.fromValues.apply(undefined, node.scale);
                 }
@@ -545,7 +549,7 @@ export class GLTFLoader {
     get defaultScene(): SceneNode {
         if (this._defaultScene !== undefined) {
             return this._defaultScene;
-        } else if (this._scenes && this._scenes.length > 0) {
+        } else if (this._scenes !== undefined && this._scenes.length > 0) {
             return this._scenes[0];
         } else {
             log(LogLevel.Warning, 'Default scene was requested, but none is available.');
