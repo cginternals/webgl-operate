@@ -142,32 +142,27 @@ export class GLTFLoader {
             // TODO: make sure image is only loaded once if it is referenced by multiple textures
             let data: HTMLImageElement | HTMLCanvasElement = await asset.imageData.get(imageId);
 
-            let width = data.width;
-            let height = data.height;
-
             /**
              * If the texture is not power of two, resize it to avoid problems with REPEAT samplers.
              * See: https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
              */
-            if (!this.isPowerOfTwo(width) || !this.isPowerOfTwo(height)) {
+            if (!this.isPowerOfTwo(data.width) || !this.isPowerOfTwo(data.height)) {
                 // Scale up the texture to the next highest power of two dimensions.
                 const canvas = document.createElement('canvas');
                 canvas.width = this.nextHighestPowerOfTwo(data.width);
                 canvas.height = this.nextHighestPowerOfTwo(data.height);
-                width = canvas.width;
-                height = canvas.height;
 
                 const ctx = canvas.getContext('2d');
 
                 if (ctx === undefined) {
                     log(LogLevel.Error, 'Failed to create context while trying to resize non power of two texture');
                 }
-                ctx!.drawImage(data, 0, 0, data.width, data.height);
+                ctx!.drawImage(data, 0, 0, canvas.width, canvas.height);
                 data = canvas;
             }
 
             const texture = new Texture2D(this._context, name);
-            texture.initialize(width, height, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE);
+            texture.initialize(data.width, data.height, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE);
             texture.data(data);
 
             if (textureInfo.sampler === undefined) {
