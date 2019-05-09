@@ -1,21 +1,24 @@
 
-import { SceneNode } from '../scene/scenenode';
+import { mat4, quat, vec3 } from 'gl-matrix';
 
-import { vec3, mat4, quat } from 'gl-matrix';
-import { GltfLoader, GltfAsset, GLTF_ELEMENTS_PER_TYPE } from 'gltf-loader-ts';
-import { GLTFMesh } from './gltfmesh';
-import { assert, log, LogLevel } from '../auxiliaries';
-import { GLTFPrimitive, VertexBinding, IndexBinding } from './gltfprimitive';
+import { GLTF_ELEMENTS_PER_TYPE, GltfAsset, GltfLoader } from 'gltf-loader-ts';
 import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
-import { Context } from '../context';
-import { Program } from '../program';
-import { GLTFPbrMaterial } from './gltfpbrmaterial';
-import { ResourceManager } from '../core';
-import { Texture2D } from '../texture2d';
-import { Material, TransformComponent, GeometryComponent } from '../scene';
-import { Buffer } from '../buffer';
-import { Shader } from '../shader';
+
 import { GLTFHelper } from './gltfhelper';
+import { GLTFMesh } from './gltfmesh';
+import { GLTFPbrMaterial } from './gltfpbrmaterial';
+import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
+
+import { assert, log, LogLevel } from '../auxiliaries';
+import { Buffer } from '../buffer';
+import { Context } from '../context';
+import { ResourceManager } from '../core';
+import { Program } from '../program';
+import { GeometryComponent, Material, TransformComponent } from '../scene';
+import { SceneNode } from '../scene/scenenode';
+import { Shader } from '../shader';
+import { Texture2D } from '../texture2d';
+
 
 export class GLTFLoader {
 
@@ -308,7 +311,7 @@ export class GLTFLoader {
 
         let material = this._pbrDefaultMaterial;
         if (primitiveInfo.material !== undefined) {
-            const materialIdentifier = this._sceneName + '_material_' + primitiveInfo.material!
+            const materialIdentifier = this._sceneName + '_material_' + primitiveInfo.material!;
             const fetchedMaterial = this._resourceManager.get(materialIdentifier);
 
             if (fetchedMaterial !== undefined) {
@@ -479,7 +482,7 @@ export class GLTFLoader {
                     sceneNode.addNode(node!);
                 }
             } else {
-                log(LogLevel.Warning, ` Scene ${name} does not contain any nodes.`);
+                log(LogLevel.Warning, `Scene ${name} does not contain any nodes.`);
             }
 
             this._scenes.push(sceneNode);
