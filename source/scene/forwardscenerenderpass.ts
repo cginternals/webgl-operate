@@ -1,6 +1,6 @@
 
 import { assert } from '../auxiliaries';
-import { GLfloat2, GLclampf4 } from '../tuples';
+import { GLclampf4, GLfloat2 } from '../tuples';
 
 import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
@@ -8,11 +8,11 @@ import { Context } from '../context';
 import { Framebuffer } from '../framebuffer';
 import { Initializable } from '../initializable';
 
-import { SceneRenderPass } from './scenerenderpass';
-import { SceneNode } from './scenenode';
 import { mat4 } from 'gl-matrix';
-import { GeometryComponent } from './geometrycomponent';
 import { Program } from '../program';
+import { GeometryComponent } from './geometrycomponent';
+import { SceneNode } from './scenenode';
+import { SceneRenderPass } from './scenerenderpass';
 import { TransformComponent } from './transformcomponent';
 
 
@@ -126,7 +126,8 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
     renderNode(node: SceneNode, transform: mat4): void {
         assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
-        assert(this.updateViewProjectionTransform !== undefined, `View Projection transform function needs to be initialized.`);
+        assert(this.updateViewProjectionTransform !== undefined,
+            `View Projection transform function needs to be initialized.`);
 
         const nodeTransform = mat4.clone(transform);
 
