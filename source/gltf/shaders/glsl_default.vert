@@ -10,6 +10,8 @@ precision lowp float;
     attribute vec4 a_tangent;
     attribute vec2 a_texcoord_0;
     attribute vec2 a_texcoord_1;
+    attribute vec4 a_joints;
+    attribute vec4 a_weights;
     attribute vec4 a_color;
 #else
     layout (location = 0) in vec4 a_position;
@@ -17,16 +19,20 @@ precision lowp float;
     layout (location = 2) in vec4 a_tangent;
     layout (location = 3) in vec2 a_texcoord_0;
     layout (location = 4) in vec2 a_texcoord_1;
-    layout (location = 5) in vec4 a_color;
+    layout (location = 5) in vec4 a_joints;
+    layout (location = 6) in vec4 a_weights;
+    layout (location = 7) in vec4 a_color;
 #endif
 
 uniform mat4 u_model;
 uniform mat4 u_viewProjection;
 
 varying vec2 v_uv;
+varying vec4 v_color;
 
 void main(void)
 {
     v_uv = a_texcoord_0.xy;
+    v_color = a_color;
     gl_Position = u_viewProjection * u_model * a_position;
 }

@@ -53,6 +53,9 @@ export class GLTFHelper {
         if (name === 'WEIGHTS_0') {
             return 6;
         }
+        if (name === 'COLOR_0') {
+            return 7;
+        }
 
         log(LogLevel.Warning, `Unknown attribute name '${name}' encountered. \
             Possibly this model uses an unsupported extension.`);

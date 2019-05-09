@@ -19,7 +19,16 @@ import { SceneNode } from '../scene/scenenode';
 import { Shader } from '../shader';
 import { Texture2D } from '../texture2d';
 
-
+/**
+ * This class can be used to load the glTF file format, which describes scenes and models.
+ * It handles all buffer, texture and geometry creation as well as scene generation.
+ * Per glTF scene, one SceneNode is generated which represents the hierarchy of the scene.
+ * ```
+ * const loader = new GLTFLoader(this._context);
+ * await loader.loadAsset(GltfRenderer.assetURI);
+ * const rootNode = loader.defaultScene;
+ * ```
+ */
 export class GLTFLoader {
 
     protected _context: Context;
@@ -44,7 +53,6 @@ export class GLTFLoader {
         this._pbrProgram = new Program(this._context, 'GLTFPbrProgram');
         this._pbrProgram.initialize([vert, frag]);
     }
-
 
     protected async loadTextures(asset: GltfAsset): Promise<void> {
         const gl = this._context.gl;
@@ -138,7 +146,7 @@ export class GLTFLoader {
             const pbrInfo = materialInfo.pbrMetallicRoughness;
 
             // TODO: full support of material properties
-            if (!pbrInfo) {
+            if (pbrInfo === undefined) {
                 log(LogLevel.Warning, 'Model contains a material without PBR information');
                 continue;
             }
@@ -172,8 +180,10 @@ export class GLTFLoader {
             return gl.ARRAY_BUFFER;
         }
 
-        // Find out if any primitive uses this buffer view as an index buffer
-        // If so, the buffer view can only be used as an index buffer as per specification
+        /**
+         * Find out if any primitive uses this buffer view as an index buffer.
+         * If so, the buffer view can only be used as an index buffer as per specification
+         */
         for (const meshInfo of meshes!) {
             for (const primitive of meshInfo.primitives) {
                 const indexAccessorId = primitive.indices;
@@ -212,13 +222,17 @@ export class GLTFLoader {
             return;
         }
 
+        /**
+         * Create a buffer for each buffer view in the model.
+         * If a target (index or array buffer) is specified use it, otherwise infer it from the usage within primitives.
+         */
         let bufferViewId = 0;
         for (const bufferViewInfo of bufferViews) {
             const identifier = this._sceneName + '_bufferView_' + bufferViewId;
             const data = await asset.bufferViewData(bufferViewId);
 
             let target = bufferViewInfo.target;
-            if (!target) {
+            if (target === undefined) {
                 target = this.inferBufferUsage(asset, bufferViewId);
             }
 
@@ -388,6 +402,9 @@ export class GLTFLoader {
 
         const idToNode = new Map<number, SceneNode>();
 
+        /**
+         * First pass over all nodes to initialize them and save the index to node mapping.
+         */
         let nodeId = 0;
         for (const node of nodes) {
             const name = node.name || 'node_' + nodeId;
@@ -445,6 +462,9 @@ export class GLTFLoader {
             nodeId++;
         }
 
+        /**
+         * Second pass over all nodes to create the hierarchy.
+         */
         nodeId = 0;
         for (const node of nodes) {
             const sceneNode = idToNode.get(nodeId);
@@ -466,6 +486,11 @@ export class GLTFLoader {
             nodeId++;
         }
 
+        /**
+         * Create a scene node per scene specified by gltf.
+         * Gltf scenes can specify multiple root nodes.
+         * Therefore, the top level scene nodes are wrappers to contain all root nodes of a scene.
+         */
         let sceneId = 0;
         for (const scene of scenes) {
             const name = scene.name || 'scene_' + sceneId;
