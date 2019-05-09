@@ -14,6 +14,7 @@ import { mat4 } from 'gl-matrix';
 import { GeometryComponent } from './geometrycomponent';
 import { Program } from '../program';
 import { TransformComponent } from './transformcomponent';
+import { Material } from './material';
 
 
 /**
@@ -46,6 +47,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
     updateModelTransform: (matrix: mat4) => void;
     updateViewProjectionTransform: (matrix: mat4) => void;
+    bindMaterial: (material: Material) => void;
 
     /**
      * Creates a ...
@@ -107,11 +109,22 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         assert(this._target && this._target.valid, `valid target expected`);
         assert(this._program && this._program.valid, `valid program expected`);
 
+        assert(this.updateModelTransform !== undefined,
+            `Model transform function needs to be initialized.`);
+        assert(this.updateViewProjectionTransform !== undefined,
+            `View Projection transform function needs to be initialized.`);
+        assert(this.bindMaterial !== undefined,
+            `Material binding function needs to be initialized.`);
+
         if (this._scene === undefined) {
             return;
         }
 
         const gl = this._context.gl;
+
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.enable(gl.DEPTH_TEST);
 
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
@@ -121,13 +134,16 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
+        this._program.bind();
         this.renderNode(this._scene!, mat4.create());
+        this._program.unbind();
+
+        gl.cullFace(gl.BACK);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
     }
 
     renderNode(node: SceneNode, transform: mat4): void {
-        assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
-        assert(this.updateViewProjectionTransform !== undefined, `View Projection transform function needs to be initialized.`);
-
         const nodeTransform = mat4.clone(transform);
 
         const transformComponents = node.componentsOfType('TransformComponent');
@@ -140,8 +156,6 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         const geometryComponents = node.componentsOfType('GeometryComponent');
 
-        this._program.bind();
-
         // TODO: allow different orders via visitor
         for (const geometryComponent of geometryComponents) {
             const currentComponent = geometryComponent as GeometryComponent;
@@ -149,18 +163,15 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
             const geometry = currentComponent.geometry;
 
             geometry.bind();
-            material.bind();
 
+            this.bindMaterial(material);
             this.updateModelTransform(nodeTransform);
             this.updateViewProjectionTransform(this._camera.viewProjection);
 
             geometry.draw();
 
-            material.unbind();
             geometry.unbind();
         }
-
-        this._program.unbind();
 
         if (!node.nodes) {
             return;

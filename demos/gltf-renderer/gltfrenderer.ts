@@ -1,6 +1,9 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
+
+import { auxiliaries } from 'webgl-operate';
+
 import {
     Camera,
     Canvas,
@@ -9,7 +12,9 @@ import {
     ForwardSceneRenderPass,
     Framebuffer,
     GLTFLoader,
+    GLTFPbrMaterial,
     Invalidate,
+    Material,
     MouseEventProvider,
     Navigation,
     Program,
@@ -28,14 +33,14 @@ import { Demo } from '../demo';
 export class GltfRenderer extends Renderer {
 
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf';
-    static assetURI = 'http://localhost:8001/adamHead/adamHead.gltf';
+    //static assetURI = 'http://localhost:8001/adamHead/adamHead.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/VC/glTF/VC.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Corset/glTF/Corset.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf';
+    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf';
 
     protected _loader: GLTFLoader;
 
@@ -48,9 +53,13 @@ export class GltfRenderer extends Renderer {
     protected _texture: Texture2D;
     protected _framebuffer: Framebuffer;
     protected _program: Program;
+    protected _emptyTexture: Texture2D;
 
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
+
+    protected _uBaseColor: WebGLUniformLocation;
+    protected _uHasBaseColor: WebGLUniformLocation;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -68,6 +77,9 @@ export class GltfRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
+        this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
+        this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
+
         this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._framebuffer.initialize();
 
@@ -75,6 +87,9 @@ export class GltfRenderer extends Renderer {
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
+
+        this._uBaseColor = this._program.uniform('u_baseColor');
+        this._uHasBaseColor = this._program.uniform('u_hasBaseColor');
 
         /* Create and configure camera. */
 
@@ -104,6 +119,18 @@ export class GltfRenderer extends Renderer {
         };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
+        };
+        this._forwardPass.bindMaterial = (material: Material) => {
+            const pbrMaterial = material as GLTFPbrMaterial;
+            auxiliaries.assert(pbrMaterial !== undefined, `Material ${material.name} is not a PBR material.`);
+            gl.uniform1i(this._uBaseColor, 0);
+            gl.uniform1i(this._uHasBaseColor, pbrMaterial.baseColorTexture !== undefined);
+
+            if (pbrMaterial.baseColorTexture !== undefined) {
+                pbrMaterial.baseColorTexture.bind(gl.TEXTURE0);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE0);
+            }
         };
 
         this._loader.loadAsset(GltfRenderer.assetURI)
@@ -170,15 +197,7 @@ export class GltfRenderer extends Renderer {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        gl.enable(gl.DEPTH_TEST);
-
         this._forwardPass.frame();
-
-        gl.cullFace(gl.BACK);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
     }
 
     protected onSwap(): void {

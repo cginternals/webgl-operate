@@ -48,6 +48,9 @@ export class SceneRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
 
+    protected _uTexture: WebGLUniformLocation;
+    protected _uTextured: WebGLUniformLocation;
+
     protected _aMeshVertex: GLint;
     protected _aMeshTexCoord: GLint;
 
@@ -78,6 +81,9 @@ export class SceneRenderer extends Renderer {
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
+
+        this._uTexture = this._program.uniform('u_texture');
+        this._uTextured = this._program.uniform('u_textured');
 
         this._aMeshVertex = this._program.attribute('a_vertex', 0);
         this._aMeshTexCoord = this._program.attribute('a_texcoord', 1);
@@ -116,6 +122,16 @@ export class SceneRenderer extends Renderer {
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
         };
+        this._forwardPass.bindMaterial = (material: Material) => {
+            const sceneMaterial = material as SceneExampleMaterial;
+
+            if (sceneMaterial.textured) {
+                sceneMaterial.texture!.bind(gl.TEXTURE0);
+                gl.uniform1i(this._uTexture, 0);
+            }
+
+            gl.uniform1i(this._uTextured, sceneMaterial.textured);
+        }
 
         return true;
     }
@@ -173,16 +189,7 @@ export class SceneRenderer extends Renderer {
      * @param frameNumber - for intermediate frames in accumulation rendering.
      */
     protected onFrame(frameNumber: number): void {
-        const gl = this._context.gl;
-
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        gl.enable(gl.DEPTH_TEST);
-
         this._forwardPass.frame();
-
-        gl.cullFace(gl.BACK);
-        gl.disable(gl.CULL_FACE);
     }
 
     /**
@@ -223,7 +230,7 @@ export class SceneRenderer extends Renderer {
         });
 
         /* Create material */
-        const material = new SceneExampleMaterial('ExampleMaterial1', this._program);
+        const material = new SceneExampleMaterial(this._context, 'ExampleMaterial1');
         material.texture = texture;
         material.textured = true;
 
@@ -256,7 +263,7 @@ export class SceneRenderer extends Renderer {
         node.addComponent(transform);
 
         /* Create material */
-        const material = new SceneExampleMaterial('ExampleMaterial2', this._program);
+        const material = new SceneExampleMaterial(this._context, 'ExampleMaterial2');
         material.textured = false;
 
         /* Create geometry. */
@@ -288,7 +295,7 @@ export class SceneRenderer extends Renderer {
         node.addComponent(transform);
 
         /* Create material */
-        const material = new SceneExampleMaterial('ExampleMaterial3', this._program);
+        const material = new SceneExampleMaterial(this._context, 'ExampleMaterial3');
         material.textured = false;
 
         /* Create geometry. */
@@ -312,42 +319,23 @@ export class SceneRenderer extends Renderer {
 
 export class SceneExampleMaterial extends Material {
 
-    protected _uTexture: WebGLUniformLocation;
-    protected _uTextured: WebGLUniformLocation;
-
-    protected _texture: Texture2D | undefined;
+    protected _texture: Texture2D;
     protected _textured: boolean;
-
-    constructor(name: string, program: Program) {
-        super(name, program);
-
-        this._uTexture = program.uniform('u_texture');
-        this._uTextured = program.uniform('u_textured');
-    }
 
     set texture(texture: Texture2D) {
         this._texture = texture;
+    }
+
+    get texture(): Texture2D {
+        return this._texture;
     }
 
     set textured(value: boolean) {
         this._textured = value;
     }
 
-    bind(): void {
-        const gl = this.program.context.gl;
-
-        this.program.bind();
-
-        if (this._textured) {
-            this._texture!.bind(gl.TEXTURE0);
-            gl.uniform1i(this._uTexture, 0);
-        }
-
-        gl.uniform1i(this._uTextured, this._textured);
-    }
-
-    unbind(): void {
-        this.program.unbind();
+    get textured(): boolean {
+        return this._textured;
     }
 }
 

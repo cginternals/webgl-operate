@@ -1,25 +1,17 @@
 
-import { Bindable } from '../bindable';
-import { Program } from '../program';
+import { Context } from '../context';
 
-export abstract class Material implements Bindable {
+export abstract class Material {
 
+    protected _context: Context;
     protected _name: string;
-    protected _program: Program;
 
-    constructor(name: string, program: Program) {
+    constructor(context: Context, name: string) {
+        this._context = context;
         this._name = name;
-        this._program = program;
-    }
-
-    get program(): Program {
-        return this._program;
     }
 
     get name(): string {
         return this._name;
     }
-
-    abstract bind(): void;
-    abstract unbind(): void;
 }

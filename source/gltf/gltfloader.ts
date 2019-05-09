@@ -129,7 +129,7 @@ export class GLTFLoader {
 
     protected async loadMaterials(asset: GltfAsset): Promise<void> {
         // Init default material
-        this._pbrDefaultMaterial = new GLTFPbrMaterial('DefaultMaterial', this._pbrProgram);
+        this._pbrDefaultMaterial = new GLTFPbrMaterial(this._context, 'DefaultMaterial');
         this._resourceManager.add(this._pbrDefaultMaterial, [this._pbrDefaultMaterial.name]);
 
         const materials = asset.gltf.materials;
@@ -142,7 +142,7 @@ export class GLTFLoader {
 
         for (const materialInfo of materials) {
             const identifier = this._sceneName + '_material_' + materialId;
-            const material = new GLTFPbrMaterial(materialInfo.name, this._pbrProgram);
+            const material = new GLTFPbrMaterial(this._context, materialInfo.name);
             const pbrInfo = materialInfo.pbrMetallicRoughness;
 
             // TODO: full support of material properties
