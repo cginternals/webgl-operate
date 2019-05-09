@@ -33,8 +33,9 @@ export class GltfRenderer extends Renderer {
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/VC/glTF/VC.gltf';
-    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Corset/glTF/Corset.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Corset/glTF/Corset.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf';
+    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf';
 
     protected _loader: GLTFLoader;
 
@@ -162,10 +163,6 @@ export class GltfRenderer extends Renderer {
         this._camera.altered = false;
     }
 
-    /**
-     * @todo comment
-     * @param frameNumber - for intermediate frames in accumulation rendering.
-     */
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
 
@@ -184,9 +181,6 @@ export class GltfRenderer extends Renderer {
         gl.disable(gl.BLEND);
     }
 
-    /**
-     * @todo comment ...
-     */
     protected onSwap(): void {
     }
 }

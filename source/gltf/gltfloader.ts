@@ -15,6 +15,7 @@ import { Texture2D } from '../texture2d';
 import { Material, TransformComponent, GeometryComponent } from '../scene';
 import { Buffer } from '../buffer';
 import { Shader } from '../shader';
+import { GLTFHelper } from './gltfhelper';
 
 export class GLTFLoader {
 
@@ -41,78 +42,6 @@ export class GLTFLoader {
         this._pbrProgram.initialize([vert, frag]);
     }
 
-    protected modeToEnum(mode: number): GLenum {
-        if (mode < 0 || mode > 6) {
-            log(LogLevel.Error, `Specified draw mode is ${mode} but is required to be between 0 and 6`);
-        }
-
-        const gl = this._context.gl;
-
-        if (mode === 0) {
-            return gl.POINTS;
-        }
-        if (mode === 1) {
-            return gl.LINES;
-        }
-        if (mode === 2) {
-            return gl.LINE_LOOP;
-        }
-        if (mode === 3) {
-            return gl.LINE_STRIP;
-        }
-        if (mode === 4) {
-            return gl.TRIANGLES;
-        }
-        if (mode === 5) {
-            return gl.TRIANGLE_STRIP;
-        }
-        if (mode === 6) {
-            return gl.TRIANGLE_FAN;
-        }
-
-        return gl.TRIANGLES;
-    }
-
-    protected nameToAttributeIndex(name: string): number {
-        if (name === 'POSITION') {
-            return 0;
-        }
-        if (name === 'NORMAL') {
-            return 1;
-        }
-        if (name === 'TANGENT') {
-            return 2;
-        }
-        if (name === 'TEXCOORD_0') {
-            return 3;
-        }
-        if (name === 'TEXCOORD_1') {
-            return 4;
-        }
-        if (name === 'JOINTS_0') {
-            return 5;
-        }
-        if (name === 'WEIGHTS_0') {
-            return 6;
-        }
-
-        log(LogLevel.Warning, `Unknown attribute name '${name}' encountered. \
-            Possibly this model uses an unsupported extension.`);
-
-        return -1;
-    }
-
-    protected isPowerOfTwo(x: number): boolean {
-        return (x & (x - 1)) === 0;
-    }
-
-    protected nextHighestPowerOfTwo(x: number): number {
-        --x;
-        for (let i = 1; i < 32; i <<= 1) {
-            x = x | x >> i;
-        }
-        return x + 1;
-    }
 
     protected async loadTextures(asset: GltfAsset): Promise<void> {
         const gl = this._context.gl;
@@ -146,11 +75,11 @@ export class GLTFLoader {
              * If the texture is not power of two, resize it to avoid problems with REPEAT samplers.
              * See: https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
              */
-            if (!this.isPowerOfTwo(data.width) || !this.isPowerOfTwo(data.height)) {
+            if (!GLTFHelper.isPowerOfTwo(data.width) || !GLTFHelper.isPowerOfTwo(data.height)) {
                 // Scale up the texture to the next highest power of two dimensions.
                 const canvas = document.createElement('canvas');
-                canvas.width = this.nextHighestPowerOfTwo(data.width);
-                canvas.height = this.nextHighestPowerOfTwo(data.height);
+                canvas.width = GLTFHelper.nextHighestPowerOfTwo(data.width);
+                canvas.height = GLTFHelper.nextHighestPowerOfTwo(data.height);
 
                 const ctx = canvas.getContext('2d');
 
@@ -188,7 +117,6 @@ export class GLTFLoader {
     }
 
     protected async loadMaterials(asset: GltfAsset): Promise<void> {
-
         // Init default material
         this._pbrDefaultMaterial = new GLTFPbrMaterial('DefaultMaterial', this._pbrProgram);
         this._resourceManager.add(this._pbrDefaultMaterial, [this._pbrDefaultMaterial.name]);
@@ -269,9 +197,15 @@ export class GLTFLoader {
         const gl = this._context.gl;
 
         const bufferViews = asset.gltf.bufferViews;
+        const accessors = asset.gltf.accessors;
 
         if (!bufferViews) {
             log(LogLevel.Warning, 'The asset does not include any buffer view information.');
+            return;
+        }
+
+        if (!accessors) {
+            log(LogLevel.Warning, 'The asset does not include any accessor information.');
             return;
         }
 
@@ -291,6 +225,29 @@ export class GLTFLoader {
 
             this._resourceManager.add(buffer, [identifier]);
             bufferViewId++;
+        }
+
+        /**
+         * Create buffers for sparse accessors
+         * See: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#sparse-accessors
+         */
+        let accessorId = 0;
+        for (const accessorInfo of accessors) {
+            const bufferViewIndex = accessorInfo.bufferView;
+            const sparseInfo = accessorInfo.sparse;
+
+            if (bufferViewIndex === undefined || sparseInfo !== undefined) {
+                const identifier = this._sceneName + '_accessor_' + accessorId;
+                const buffer = new Buffer(this._context, identifier);
+                const data = await asset.accessorData(accessorId);
+
+                // TODO: find out if sparse accessor can be used for index buffers
+                buffer.initialize(gl.ARRAY_BUFFER);
+                buffer.data(data, gl.STATIC_DRAW);
+
+                this._resourceManager.add(buffer, [identifier]);
+            }
+            accessorId++;
         }
     }
 
@@ -323,10 +280,18 @@ export class GLTFLoader {
 
     protected async loadPrimitive(asset: GltfAsset,
         primitiveInfo: MeshPrimitive, id: number): Promise<GLTFPrimitive | undefined> {
+
+        const gl = this._context.gl;
         const accessors = asset.gltf.accessors;
+        const bufferViews = asset.gltf.bufferViews;
 
         if (accessors === undefined) {
-            log(LogLevel.Error, 'GLTF asset does not have any accessors for the primitive to load.');
+            log(LogLevel.Error, 'GLTF asset does not have any accessors.');
+            return;
+        }
+
+        if (bufferViews === undefined) {
+            log(LogLevel.Error, 'GLTF asset does not have any buffer views.');
             return;
         }
 
@@ -338,7 +303,7 @@ export class GLTFLoader {
             modeNumber = 4;
         }
 
-        const drawMode = this.modeToEnum(modeNumber);
+        const drawMode = GLTFHelper.modeToEnum(gl, modeNumber);
         const bindings = new Array<VertexBinding>();
 
         let material = this._pbrDefaultMaterial;
@@ -355,27 +320,33 @@ export class GLTFLoader {
 
         for (const semantic in primitiveInfo.attributes) {
             // init buffer/attribute binding for attribute
-            const attributeIndex = this.nameToAttributeIndex(semantic);
+            const attributeIndex = GLTFHelper.nameToAttributeIndex(semantic);
 
             const accessorIndex = primitiveInfo.attributes[semantic];
             const accessorInfo = accessors[accessorIndex];
             const bufferViewIndex = accessorInfo.bufferView;
-            if (bufferViewIndex === undefined) {
-                log(LogLevel.Error, 'Accessor does not reference a BufferView.');
+            const sparseInfo = accessorInfo.sparse;
+            let buffer: Buffer;
+            let stride = 0;
+
+            if (bufferViewIndex === undefined || sparseInfo !== undefined) {
+                const accessorIdentifier = this._sceneName + '_accessor_' + accessorIndex;
+                buffer = this._resourceManager.get(accessorIdentifier) as Buffer;
+            } else {
+                const bufferViewInfo = bufferViews[bufferViewIndex!];
+                const bufferViewIdentifier = this._sceneName + '_bufferView_' + bufferViewIndex;
+                buffer = this._resourceManager.get(bufferViewIdentifier) as Buffer;
+                stride = bufferViewInfo.byteStride || 0;
             }
-            // TODO: handle undefined
-            const bufferViewInfo = asset.gltf.bufferViews![bufferViewIndex!];
-            const bufferViewIdentifier = this._sceneName + '_bufferView_' + bufferViewIndex;
-            const buffer = this._resourceManager.get(bufferViewIdentifier) as Buffer;
 
             const binding = new VertexBinding();
-            binding.buffer = buffer;
+            binding.buffer = buffer!;
             binding.attributeIndex = attributeIndex;
             binding.numVertices = accessorInfo.count;
             binding.normalized = accessorInfo.normalized || false;
             binding.size = GLTF_ELEMENTS_PER_TYPE[accessorInfo.type];
             binding.offset = accessorInfo.byteOffset || 0;
-            binding.stride = bufferViewInfo.byteStride || 0;
+            binding.stride = stride;
             binding.type = accessorInfo.componentType;
             bindings.push(binding);
         }
@@ -403,7 +374,7 @@ export class GLTFLoader {
         return primitive;
     }
 
-    protected async generateGraph(asset: GltfAsset, meshes: Array<GLTFMesh>): Promise<void> {
+    protected async generateScenes(asset: GltfAsset, meshes: Array<GLTFMesh>): Promise<void> {
         const nodes = asset.gltf.nodes;
         const scenes = asset.gltf.scenes;
 
@@ -527,7 +498,7 @@ export class GLTFLoader {
         const gltf = asset.gltf;
 
         this._sceneName = 'scene';
-        if (gltf.scenes && gltf.scenes[gltf.scene!].name) {
+        if (gltf.scenes && gltf.scene && gltf.scenes[gltf.scene!].name) {
             this._sceneName = gltf.scenes[gltf.scene!].name;
         }
 
@@ -535,7 +506,7 @@ export class GLTFLoader {
             .then(() => this.loadMaterials(asset))
             .then(() => this.loadBuffers(asset))
             .then(() => this.loadMeshes(asset))
-            .then((meshes) => this.generateGraph(asset, meshes));
+            .then((meshes) => this.generateScenes(asset, meshes));
     }
 
     get pbrProgram(): Program {
