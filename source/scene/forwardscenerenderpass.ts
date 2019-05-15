@@ -1,20 +1,19 @@
 
+import { mat4 } from 'gl-matrix';
 import { assert } from '../auxiliaries';
-import { GLfloat2, GLclampf4 } from '../tuples';
+import { GLclampf4, GLfloat2 } from '../tuples';
 
 import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
 import { Context } from '../context';
 import { Framebuffer } from '../framebuffer';
 import { Initializable } from '../initializable';
-
-import { SceneRenderPass } from './scenerenderpass';
-import { SceneNode } from './scenenode';
-import { mat4 } from 'gl-matrix';
-import { GeometryComponent } from './geometrycomponent';
 import { Program } from '../program';
-import { TransformComponent } from './transformcomponent';
+import { GeometryComponent } from './geometrycomponent';
 import { Material } from './material';
+import { SceneNode } from './scenenode';
+import { SceneRenderPass } from './scenerenderpass';
+import { TransformComponent } from './transformcomponent';
 
 
 /**
