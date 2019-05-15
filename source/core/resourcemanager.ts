@@ -1,11 +1,11 @@
 
 import { assert } from '../auxiliaries';
 
-import { Context } from '../context';
-import { Texture2D } from '../texture2d';
-import { Material } from '../scene';
-import { Geometry } from '../geometry';
 import { Buffer } from '../buffer';
+import { Context } from '../context';
+import { Geometry } from '../geometry';
+import { Material } from '../scene';
+import { Texture2D } from '../texture2d';
 
 
 /**
