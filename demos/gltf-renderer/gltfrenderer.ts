@@ -153,7 +153,6 @@ export class GltfRenderer extends Renderer {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
         };
         this._forwardPass.bindUniforms = () => {
-            console.log(this._camera.eye);
             gl.uniform3fv(this._uEye, this._camera.eye);
 
             gl.uniform1i(this._uBaseColor, 0);
