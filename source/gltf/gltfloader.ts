@@ -1,12 +1,12 @@
 
-import { mat4, quat, vec3 } from 'gl-matrix';
+import { mat4, quat, vec3, vec4 } from 'gl-matrix';
 
 import { GLTF_ELEMENTS_PER_TYPE, GltfAsset, GltfLoader } from 'gltf-loader-ts';
 import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 
 import { GLTFHelper } from './gltfhelper';
 import { GLTFMesh } from './gltfmesh';
-import { GLTFPbrMaterial } from './gltfpbrmaterial';
+import { GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
 import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
 
 import { assert, log, LogLevel } from '../auxiliaries';
@@ -127,6 +127,18 @@ export class GLTFLoader {
         }
     }
 
+    protected getTexture(index: number): Texture2D | undefined {
+        const identifier = this._sceneName + '_texture_' + index;
+        const texture = this._resourceManager.get(identifier) as Texture2D;
+
+        if (texture === undefined) {
+            log(LogLevel.Warning, `Texture with index ${index} could not be located.`);
+            return;
+        }
+
+        return texture;
+    }
+
     protected async loadMaterials(asset: GltfAsset): Promise<void> {
         // Init default material
         this._pbrDefaultMaterial = new GLTFPbrMaterial(this._context, 'DefaultMaterial');
@@ -143,26 +155,48 @@ export class GLTFLoader {
         for (const materialInfo of materials) {
             const identifier = this._sceneName + '_material_' + materialId;
             const material = new GLTFPbrMaterial(this._context, materialInfo.name);
+
+            const normalTexture = materialInfo.normalTexture;
+            if (normalTexture !== undefined) {
+                material.normalTexture = this.getTexture(normalTexture.index);
+            }
+
+            const occlusionTexture = materialInfo.occlusionTexture;
+            if (occlusionTexture !== undefined) {
+                material.occlusionTexture = this.getTexture(occlusionTexture.index);
+            }
+
+            const emissiveTexture = materialInfo.emissiveTexture;
+            if (emissiveTexture !== undefined) {
+                material.emissiveTexture = this.getTexture(emissiveTexture.index);
+            }
+
+            material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor)
+                || vec3.fromValues(0, 0, 0);
+
+            material.isDoubleSided = materialInfo.doubleSided || false;
+
             const pbrInfo = materialInfo.pbrMetallicRoughness;
 
             // TODO: full support of material properties
             if (pbrInfo === undefined) {
                 log(LogLevel.Warning, 'Model contains a material without PBR information');
-                continue;
             }
 
             const baseColorTexture = pbrInfo!.baseColorTexture;
-            if (baseColorTexture) {
-                const index = baseColorTexture.index;
-                const identifier = this._sceneName + '_texture_' + index;
-                const texture = this._resourceManager.get(identifier);
-
-                if (texture !== undefined) {
-                    material.baseColorTexture = texture as Texture2D;
-                } else {
-                    log(LogLevel.Warning, `Base color texture could not be located for material ${material.name}.`);
-                }
+            if (baseColorTexture !== undefined) {
+                material.baseColorTexture = this.getTexture(baseColorTexture.index);
             }
+
+            const metallicRoughnessTexture = pbrInfo!.metallicRoughnessTexture;
+            if (metallicRoughnessTexture !== undefined) {
+                material.metallicRoughnessTexture = this.getTexture(metallicRoughnessTexture.index);
+            }
+
+            material.baseColorFactor = vec4.fromValues.apply(undefined, pbrInfo!.baseColorFactor)
+                || vec4.fromValues(1, 1, 1, 1);
+
+            material.metallicFactor = pbrInfo!.metallicFactor || 1;
 
             this._resourceManager.add(material, [materialInfo.name, identifier]);
             materialId++;
@@ -335,9 +369,24 @@ export class GLTFLoader {
             }
         }
 
+        let geometryFlags = 0;
+
         for (const semantic in primitiveInfo.attributes) {
             // init buffer/attribute binding for attribute
             const attributeIndex = GLTFHelper.nameToAttributeIndex(semantic);
+
+            if (semantic === 'NORMAL') {
+                geometryFlags |= GLTFShaderFlags.HAS_NORMALS;
+            }
+            if (semantic === 'TANGENT') {
+                geometryFlags |= GLTFShaderFlags.HAS_TANGENTS;
+            }
+            if (semantic === 'COLOR_0') {
+                geometryFlags |= GLTFShaderFlags.HAS_COLORS;
+            }
+            if (semantic === 'TEXCOORD_0' || semantic === 'TEXCOORD_1') {
+                geometryFlags |= GLTFShaderFlags.HAS_UV;
+            }
 
             const accessorIndex = primitiveInfo.attributes[semantic];
             const accessorInfo = accessors[accessorIndex];
@@ -385,7 +434,7 @@ export class GLTFLoader {
             indexBinding.type = accessorInfo.componentType;
         }
 
-        const primitive = new GLTFPrimitive(this._context, bindings, indexBinding, material, drawMode);
+        const primitive = new GLTFPrimitive(this._context, bindings, indexBinding, drawMode, material, geometryFlags);
         primitive.initialize();
         this._resourceManager.add(primitive, [identifier]);
         return primitive;

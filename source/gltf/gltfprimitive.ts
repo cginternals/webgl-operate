@@ -26,15 +26,18 @@ export class VertexBinding {
 
 export class GLTFPrimitive extends Geometry {
 
-    protected _material: Material;
     protected _drawMode: GLenum;
     protected _indexBinding: IndexBinding | undefined;
     protected _bindings: Array<VertexBinding>;
+    protected _material: Material;
+    protected _geometryFlags: number;
 
     constructor(context: Context,
         bindings: Array<VertexBinding>,
         indexBinding: IndexBinding | undefined,
-        material: Material, drawMode: GLenum,
+        drawMode: GLenum,
+        material: Material,
+        flags: number,
         identifier?: string) {
 
         super(context, identifier);
@@ -42,6 +45,7 @@ export class GLTFPrimitive extends Geometry {
         this._bindings = bindings;
         this._indexBinding = indexBinding;
         this._material = material;
+        this._geometryFlags = flags;
         this._drawMode = drawMode;
     }
 
@@ -93,7 +97,7 @@ export class GLTFPrimitive extends Geometry {
         return this._material;
     }
 
-    set material(material: Material) {
-        this._material = material;
+    get flags(): number {
+        return this._geometryFlags;
     }
 }

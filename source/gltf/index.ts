@@ -1,5 +1,5 @@
 
 export { GLTFLoader } from './gltfloader';
-export { GLTFPbrMaterial } from './gltfpbrmaterial';
+export { GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
 export { GLTFPrimitive } from './gltfprimitive';
 export { GLTFMesh } from './gltfmesh';

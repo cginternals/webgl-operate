@@ -7,6 +7,7 @@ import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
 import { Context } from '../context';
 import { Framebuffer } from '../framebuffer';
+import { Geometry } from '../geometry';
 import { Initializable } from '../initializable';
 import { Program } from '../program';
 import { GeometryComponent } from './geometrycomponent';
@@ -47,6 +48,8 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     updateModelTransform: (matrix: mat4) => void;
     updateViewProjectionTransform: (matrix: mat4) => void;
     bindMaterial: (material: Material) => void;
+    bindGeometry: (geometry: Geometry) => void;
+    bindUniforms: () => void;
 
     /**
      * Creates a ...
@@ -134,6 +137,9 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
         this._program.bind();
+        if (this.bindUniforms !== undefined) {
+            this.bindUniforms();
+        }
         this.renderNode(this._scene!, mat4.create());
         this._program.unbind();
 
@@ -163,6 +169,9 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
             geometry.bind();
 
+            if (this.bindGeometry !== undefined) {
+                this.bindGeometry(geometry);
+            }
             this.bindMaterial(material);
             this.updateModelTransform(nodeTransform);
             this.updateViewProjectionTransform(this._camera.viewProjection);

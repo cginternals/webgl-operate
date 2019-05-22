@@ -1,5 +1,5 @@
 
-import { mat4, vec3 } from 'gl-matrix';
+import { mat3, mat4, vec3 } from 'gl-matrix';
 
 
 import { auxiliaries } from 'webgl-operate';
@@ -11,8 +11,10 @@ import {
     DefaultFramebuffer,
     ForwardSceneRenderPass,
     Framebuffer,
+    Geometry,
     GLTFLoader,
     GLTFPbrMaterial,
+    GLTFPrimitive,
     Invalidate,
     Material,
     MouseEventProvider,
@@ -34,13 +36,13 @@ export class GltfRenderer extends Renderer {
 
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf';
     //static assetURI = 'http://localhost:8001/adamHead/adamHead.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
+    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/VC/glTF/VC.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Corset/glTF/Corset.gltf';
     //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf';
-    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf';
+    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf';
 
     protected _loader: GLTFLoader;
 
@@ -57,9 +59,21 @@ export class GltfRenderer extends Renderer {
 
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
+    protected _uNormalMatrix: WebGLUniformLocation;
 
     protected _uBaseColor: WebGLUniformLocation;
-    protected _uHasBaseColor: WebGLUniformLocation;
+    protected _uMetallicRoughness: WebGLUniformLocation;
+    protected _uNormal: WebGLUniformLocation;
+    protected _uEmission: WebGLUniformLocation;
+    protected _uOcclusion: WebGLUniformLocation;
+
+    protected _uEye: WebGLUniformLocation;
+    protected _uGeometryFlags: WebGLUniformLocation;
+    protected _uPbrFlags: WebGLUniformLocation;
+    protected _uBaseColorFactor: WebGLUniformLocation;
+    protected _uMetallicFactor: WebGLUniformLocation;
+    protected _uRoughnessFactor: WebGLUniformLocation;
+    protected _uEmissiveFactor: WebGLUniformLocation;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -87,9 +101,21 @@ export class GltfRenderer extends Renderer {
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
+        this._uNormalMatrix = this._program.uniform('u_normalMatrix');
 
         this._uBaseColor = this._program.uniform('u_baseColor');
-        this._uHasBaseColor = this._program.uniform('u_hasBaseColor');
+        this._uMetallicRoughness = this._program.uniform('u_metallicRoughness');
+        this._uNormal = this._program.uniform('u_normal');
+        this._uEmission = this._program.uniform('u_emission');
+        this._uOcclusion = this._program.uniform('u_occlusion');
+
+        this._uEye = this._program.uniform('u_eye');
+        this._uGeometryFlags = this._program.uniform('u_geometryFlags');
+        this._uPbrFlags = this._program.uniform('u_pbrFlags');
+        this._uBaseColorFactor = this._program.uniform('u_baseColorFactor');
+        this._uMetallicFactor = this._program.uniform('u_metallicFactor');
+        this._uRoughnessFactor = this._program.uniform('u_roughnessFactor');
+        this._uEmissiveFactor = this._program.uniform('u_emissiveFactor');
 
         /* Create and configure camera. */
 
@@ -116,21 +142,84 @@ export class GltfRenderer extends Renderer {
         this._forwardPass.program = this._program;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
+
+            const normalMatrix = mat3.create();
+            mat3.normalFromMat4(normalMatrix, matrix);
+            gl.uniformMatrix3fv(this._uNormalMatrix, gl.GL_FALSE, normalMatrix);
         };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
         };
+        this._forwardPass.bindUniforms = () => {
+            gl.uniform3fv(this._uEye, this._camera.eye);
+
+            gl.uniform1i(this._uBaseColor, 0);
+            gl.uniform1i(this._uMetallicRoughness, 1);
+            gl.uniform1i(this._uNormal, 2);
+            gl.uniform1i(this._uOcclusion, 3);
+            gl.uniform1i(this._uEmission, 4);
+        };
+        this._forwardPass.bindGeometry = (geometry: Geometry) => {
+            const primitive = geometry as GLTFPrimitive;
+            gl.uniform1i(this._uGeometryFlags, primitive.flags);
+        };
         this._forwardPass.bindMaterial = (material: Material) => {
             const pbrMaterial = material as GLTFPbrMaterial;
             auxiliaries.assert(pbrMaterial !== undefined, `Material ${material.name} is not a PBR material.`);
-            gl.uniform1i(this._uBaseColor, 0);
-            gl.uniform1i(this._uHasBaseColor, pbrMaterial.baseColorTexture !== undefined);
 
+            /**
+             * Base color texture
+             */
             if (pbrMaterial.baseColorTexture !== undefined) {
                 pbrMaterial.baseColorTexture.bind(gl.TEXTURE0);
             } else {
                 this._emptyTexture.bind(gl.TEXTURE0);
             }
+
+            /**
+             * Metallic Roughness texture
+             */
+            if (pbrMaterial.metallicRoughnessTexture !== undefined) {
+                pbrMaterial.metallicRoughnessTexture.bind(gl.TEXTURE1);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE1);
+            }
+
+            /**
+             * Normal texture
+             */
+            if (pbrMaterial.normalTexture !== undefined) {
+                pbrMaterial.normalTexture.bind(gl.TEXTURE2);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE2);
+            }
+
+            /**
+             * Occlusion texture
+             */
+            if (pbrMaterial.occlusionTexture !== undefined) {
+                pbrMaterial.occlusionTexture.bind(gl.TEXTURE3);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE3);
+            }
+
+            /**
+             * Emission texture
+             */
+            if (pbrMaterial.emissiveTexture !== undefined) {
+                pbrMaterial.emissiveTexture.bind(gl.TEXTURE4);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE4);
+            }
+
+            /**
+             * Factors
+             */
+            gl.uniform4fv(this._uBaseColorFactor, pbrMaterial.baseColorFactor);
+            gl.uniform3fv(this._uEmissiveFactor, pbrMaterial.emissiveFactor);
+            gl.uniform1f(this._uMetallicFactor, pbrMaterial.metallicFactor);
+            gl.uniform1f(this._uRoughnessFactor, pbrMaterial.roughnessFactor);
+            gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
         };
 
         this._loader.loadAsset(GltfRenderer.assetURI)
