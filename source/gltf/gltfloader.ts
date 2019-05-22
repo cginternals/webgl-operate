@@ -171,8 +171,10 @@ export class GLTFLoader {
                 material.emissiveTexture = this.getTexture(emissiveTexture.index);
             }
 
-            material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor)
-                || vec3.fromValues(0, 0, 0);
+            material.emissiveFactor = vec3.fromValues(0, 0, 0);
+            if (materialInfo.emissiveFactor !== undefined) {
+                material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor)
+            }
 
             material.isDoubleSided = materialInfo.doubleSided || false;
 
@@ -193,8 +195,10 @@ export class GLTFLoader {
                 material.metallicRoughnessTexture = this.getTexture(metallicRoughnessTexture.index);
             }
 
-            material.baseColorFactor = vec4.fromValues.apply(undefined, pbrInfo!.baseColorFactor)
-                || vec4.fromValues(1, 1, 1, 1);
+            material.baseColorFactor = vec4.fromValues(1, 1, 1, 1);
+            if (pbrInfo!.baseColorFactor !== undefined) {
+                material.baseColorFactor = vec4.fromValues.apply(undefined, pbrInfo!.baseColorFactor);
+            }
 
             material.metallicFactor = pbrInfo!.metallicFactor || 1;
 

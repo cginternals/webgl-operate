@@ -94,7 +94,6 @@ export class GLTFPbrMaterial extends Material {
         return this._emissiveFactor;
     }
 
-
     set baseColorFactor(factor: vec4) {
         this._baseColorFactor = factor;
     }

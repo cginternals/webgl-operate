@@ -1,6 +1,15 @@
 precision highp float;
 
 // Adapted from https://github.com/KhronosGroup/glTF-WebGL-PBR
+// References:
+// [1] Real Shading in Unreal Engine 4
+//     http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+// [2] Physically Based Shading at Disney
+//     http://blog.selfshadow.com/publications/s2012-shading-course/burley/s2012_pbs_disney_brdf_notes_v3.pdf
+// [3] README.md - Environment Maps
+//     https://github.com/KhronosGroup/glTF-WebGL-PBR/#environment-maps
+// [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
+//     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
 
 @import ../../shaders/facade.frag;
 
@@ -169,7 +178,7 @@ float geometricOcclusion(PBRInfo pbrInputs)
     float NdotV = pbrInputs.NdotV;
     float r = pbrInputs.alphaRoughness;
 
-     float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
+    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
     float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));
     return attenuationL * attenuationV;
 }
@@ -186,7 +195,7 @@ float microfacetDistribution(PBRInfo pbrInputs)
 
 void main(void)
 {
-   // Metallic and Roughness material properties are packed together
+    // Metallic and Roughness material properties are packed together
     // In glTF, these factors can be specified by fixed scalar values
     // or from a metallic-roughness map
     float perceptualRoughness = u_MetallicRoughnessValues.y;
@@ -209,8 +218,7 @@ void main(void)
     if (checkFlag(HAS_BASECOLORMAP)) {
         baseColor = SRGBtoLINEAR(texture(u_baseColor, v_uv[u_BaseColorTexCoord])) * u_baseColorFactor;
     } else {
-        baseColor = vec4(0, 0, 0, 1);
-        //baseColor = u_BaseColorFactor;
+        baseColor = u_baseColorFactor;
     }
 
     // spec: COLOR_0 ... acts as an additional linear multiplier to baseColor
@@ -231,7 +239,7 @@ void main(void)
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
-     vec3 n = getNormal();                         // normal at surface point
+    vec3 n = getNormal();                         // normal at surface point
     vec3 v = normalize(u_eye - v_position);        // Vector from surface point to camera
     vec3 l = normalize(u_LightDirection);          // Vector from surface point to light
     vec3 h = normalize(l+v);                       // Half vector between both l and v
@@ -243,7 +251,7 @@ void main(void)
     float LdotH = clamp(dot(l, h), 0.0, 1.0);
     float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
-     PBRInfo pbrInputs = PBRInfo(
+    PBRInfo pbrInputs = PBRInfo(
         NdotL,
         NdotV,
         NdotH,
@@ -269,23 +277,11 @@ void main(void)
     // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
     vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
 
-     // // This section uses mix to override final color for reference app visualization
-    // // of various parameters in the lighting equation.
-    // color = mix(color, F, u_ScaleFGDSpec.x);
-    // color = mix(color, vec3(G), u_ScaleFGDSpec.y);
-    // color = mix(color, vec3(D), u_ScaleFGDSpec.z);
-    // color = mix(color, specContrib, u_ScaleFGDSpec.w);
-
-     // color = mix(color, diffuseContrib, u_ScaleDiffBaseMR.x);
-    // color = mix(color, baseColor.rgb, u_ScaleDiffBaseMR.y);
-    // color = mix(color, vec3(metallic), u_ScaleDiffBaseMR.z);
-    // color = mix(color, vec3(perceptualRoughness), u_ScaleDiffBaseMR.w);
-
     // NOTE: the spec mandates to ignore any alpha value in 'OPAQUE' mode
     float alpha = 1.0;
     // float alpha = mix(1.0, baseColor.a, u_AlphaBlend);
     // if (u_AlphaCutoff > 0.0) {
     //     alpha = step(u_AlphaCutoff, baseColor.a);
     // }
-    fragColor = vec4(pow(color,vec3(1.0/2.2)), alpha);
+    fragColor = vec4(pow(color, vec3(1.0/2.2)), alpha);
 }
