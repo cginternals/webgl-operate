@@ -48,6 +48,27 @@ fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
 }
 `;
 
+    static readonly CUBE_INDICES = new Int8Array([
+        0, 1, 2,
+        2, 1, 3,
+
+        1, 4, 3,
+        3, 4, 5,
+
+        4, 6, 5,
+        5, 6, 7,
+
+        6, 0, 7,
+        7, 0, 2,
+
+        2, 3, 7,
+        7, 3, 5,
+
+        6, 4, 0,
+        0, 4, 1,
+    ]);
+
+
     /**
      * Object constructor, requires a context and an identifier.
      * @param context - Valid context to create the object for.
@@ -57,16 +78,15 @@ fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
         super(context, identifier);
 
         /* Generate identifier from constructor name if none given. */
-        identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
+        identifier = identifier !== undefined
+            && identifier !== `` ? identifier : this.constructor.name;
 
         const vertexVBO = new Buffer(context, identifier + 'VBO');
-
         this._buffers.push(vertexVBO);
+        const indexBuffer = new Buffer(context, identifier + 'IndicesVBO');
+        this._buffers.push(indexBuffer);
     }
 
-    /**
-     * Generates the vertex array for the box.
-     */
     protected generateVertices(): Float32Array {
         const x = 1;
         const y = 1;
@@ -76,50 +96,11 @@ fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
             -x, -y, +z,
             +x, -y, +z,
             -x, +y, +z,
-
-            -x, +y, +z,
-            +x, -y, +z,
-            +x, +y, +z,
-
-            +x, -y, +z,
-            +x, -y, -z,
-            +x, +y, +z,
-
             +x, +y, +z,
             +x, -y, -z,
             +x, +y, -z,
-
-            +x, -y, -z,
-            -x, -y, -z,
-            +x, +y, -z,
-
-            +x, +y, -z,
             -x, -y, -z,
             -x, +y, -z,
-
-            -x, -y, -z,
-            -x, -y, +z,
-            -x, +y, -z,
-
-            -x, +y, -z,
-            -x, -y, +z,
-            -x, +y, +z,
-
-            -x, +y, +z,
-            +x, +y, +z,
-            -x, +y, -z,
-
-            -x, +y, -z,
-            +x, +y, +z,
-            +x, +y, -z,
-
-            -x, -y, -z,
-            +x, -y, -z,
-            -x, -y, +z,
-
-            -x, -y, +z,
-            +x, -y, -z,
-            +x, -y, +z,
         ]);
     }
 
@@ -129,14 +110,16 @@ fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
     protected bindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit bind in attribEnable. */
         this._buffers[0].attribEnable(0, 3, this.context.gl.FLOAT, false, 0, 0, true, false);
+        this._buffers[1].bind();
     }
 
     /**
      * Unbinds the vertex buffer object (VBO) and disables the binding point.
      */
     protected unbindBuffers(indices: Array<GLuint>): void {
-        /* Please note the implicit unbind in attribEnable is skipped. */
+        /* Please note the implicit unbind in attribEnable. */
         this._buffers[0].attribDisable(0, true, true);
+        this._buffers[1].unbind();
     }
 
     /**
@@ -146,12 +129,17 @@ fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
     initialize(aVertex: GLuint): boolean {
         const gl = this.context.gl;
 
-        const valid = super.initialize([gl.ARRAY_BUFFER], [aVertex]);
+        const valid = super.initialize(
+            [gl.ARRAY_BUFFER, gl.ELEMENT_ARRAY_BUFFER],
+            [aVertex],
+        );
 
-        auxiliaries.assert(this._buffers[0] !== undefined && this._buffers[0].object instanceof WebGLBuffer,
+        auxiliaries.assert(this._buffers[0] !== undefined
+            && this._buffers[0].object instanceof WebGLBuffer,
             `expected valid WebGLBuffer`);
 
         this._buffers[0].data(this.generateVertices(), gl.STATIC_DRAW);
+        this._buffers[1].data(ExampleCube.CUBE_INDICES, gl.STATIC_DRAW);
 
         return valid;
     }
@@ -161,6 +149,6 @@ fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
      */
     draw(): void {
         const { gl } = this.context;
-        gl.drawArrays(gl.TRIANGLES, 0, 36);
+        gl.drawElements(gl.TRIANGLES, ExampleCube.CUBE_INDICES.length, gl.UNSIGNED_BYTE, this._buffers[1]);
     }
 }
