@@ -173,7 +173,7 @@ export class GLTFLoader {
 
             material.emissiveFactor = vec3.fromValues(0, 0, 0);
             if (materialInfo.emissiveFactor !== undefined) {
-                material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor)
+                material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor);
             }
 
             material.isDoubleSided = materialInfo.doubleSided || false;
