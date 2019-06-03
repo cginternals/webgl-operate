@@ -36,8 +36,20 @@ export class GLTFPbrMaterial extends Material {
     protected _roughnessFactor: number;
     protected _isDoubleSided: boolean;
 
+    public baseColorTexCoord: number;
+    public metallicRoughnessTexCoord: number;
+    public normalTexCoord: number;
+    public occlusionTexCoord: number;
+    public emissiveTexCoord: number;
+
     constructor(context: Context, name: string) {
         super(context, name);
+
+        this.baseColorTexCoord = 0;
+        this.metallicRoughnessTexCoord = 0;
+        this.normalTexCoord = 0;
+        this.occlusionTexCoord = 0;
+        this.emissiveTexCoord = 0;
 
         this._baseColorFactor = vec4.fromValues(1, 1, 1, 1);
         this._metallicFactor = 1;

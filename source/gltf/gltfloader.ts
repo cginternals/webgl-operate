@@ -33,7 +33,7 @@ export class GLTFLoader {
 
     protected _context: Context;
     protected _sceneName: string;
-    protected _defaultScene: SceneNode;
+    protected _defaultScene: SceneNode | undefined;
     protected _scenes: Array<SceneNode>;
     protected _resourceManager: ResourceManager;
     protected _pbrProgram: Program;
@@ -159,16 +159,19 @@ export class GLTFLoader {
             const normalTexture = materialInfo.normalTexture;
             if (normalTexture !== undefined) {
                 material.normalTexture = this.getTexture(normalTexture.index);
+                material.normalTexCoord = normalTexture.texCoord || 0;
             }
 
             const occlusionTexture = materialInfo.occlusionTexture;
             if (occlusionTexture !== undefined) {
                 material.occlusionTexture = this.getTexture(occlusionTexture.index);
+                material.occlusionTexCoord = occlusionTexture.texCoord || 0;
             }
 
             const emissiveTexture = materialInfo.emissiveTexture;
             if (emissiveTexture !== undefined) {
                 material.emissiveTexture = this.getTexture(emissiveTexture.index);
+                material.emissiveTexCoord = emissiveTexture.texCoord || 0;
             }
 
             material.emissiveFactor = vec3.fromValues(0, 0, 0);
@@ -188,11 +191,13 @@ export class GLTFLoader {
             const baseColorTexture = pbrInfo!.baseColorTexture;
             if (baseColorTexture !== undefined) {
                 material.baseColorTexture = this.getTexture(baseColorTexture.index);
+                material.baseColorTexCoord = baseColorTexture.texCoord || 0;
             }
 
             const metallicRoughnessTexture = pbrInfo!.metallicRoughnessTexture;
             if (metallicRoughnessTexture !== undefined) {
                 material.metallicRoughnessTexture = this.getTexture(metallicRoughnessTexture.index);
+                material.metallicRoughnessTexCoord = metallicRoughnessTexture.texCoord || 0;
             }
 
             material.baseColorFactor = vec4.fromValues(1, 1, 1, 1);
@@ -588,6 +593,12 @@ export class GLTFLoader {
             .then(() => this.loadBuffers(asset))
             .then(() => this.loadMeshes(asset))
             .then((meshes) => this.generateScenes(asset, meshes));
+    }
+
+    uninitialize(): void {
+        this._scenes = [];
+        this._defaultScene = undefined;
+        this._resourceManager.uninitialize();
     }
 
     get pbrProgram(): Program {

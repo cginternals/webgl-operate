@@ -151,4 +151,29 @@ export class ResourceManager {
         return undefined;
     }
 
+    uninitialize(): void {
+        for (const geometry of Array.from(this._geometries.values())) {
+            if (geometry.initialized) {
+                geometry.uninitialize();
+            }
+        }
+        this._geometries.clear();
+
+        for (const tex2D of Array.from(this._texture2Ds.values())) {
+            if (tex2D.initialized) {
+                tex2D.uninitialize();
+            }
+        }
+        this._texture2Ds.clear();
+
+        for (const buffer of Array.from(this._buffers.values())) {
+            if (buffer.initialized) {
+                buffer.uninitialize();
+            }
+        }
+        this._buffers.clear();
+
+        this._materials.clear();
+    }
+
 }

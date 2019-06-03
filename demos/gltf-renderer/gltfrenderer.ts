@@ -34,18 +34,6 @@ import { Demo } from '../demo';
  */
 export class GltfRenderer extends Renderer {
 
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf';
-    //static assetURI = 'http://localhost:8001/adamHead/adamHead.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/VC/glTF/VC.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Corset/glTF/Corset.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf';
-    //static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf';
-    static assetURI = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF/WaterBottle.gltf';
-
     protected _loader: GLTFLoader;
 
     protected _navigation: Navigation;
@@ -64,10 +52,15 @@ export class GltfRenderer extends Renderer {
     protected _uNormalMatrix: WebGLUniformLocation;
 
     protected _uBaseColor: WebGLUniformLocation;
+    protected _uBaseColorTexCoord: WebGLUniformLocation;
     protected _uMetallicRoughness: WebGLUniformLocation;
+    protected _uMetallicRoughnessTexCoord: WebGLUniformLocation;
     protected _uNormal: WebGLUniformLocation;
-    protected _uEmission: WebGLUniformLocation;
+    protected _uNormalTexCoord: WebGLUniformLocation;
+    protected _uEmissive: WebGLUniformLocation;
+    protected _uEmissiveTexCoord: WebGLUniformLocation;
     protected _uOcclusion: WebGLUniformLocation;
+    protected _uOcclusionTexCoord: WebGLUniformLocation;
 
     protected _uEye: WebGLUniformLocation;
     protected _uGeometryFlags: WebGLUniformLocation;
@@ -106,10 +99,19 @@ export class GltfRenderer extends Renderer {
         this._uNormalMatrix = this._program.uniform('u_normalMatrix');
 
         this._uBaseColor = this._program.uniform('u_baseColor');
+        this._uBaseColorTexCoord = this._program.uniform('u_baseColorTexCoord');
+
         this._uMetallicRoughness = this._program.uniform('u_metallicRoughness');
+        this._uMetallicRoughnessTexCoord = this._program.uniform('u_metallicRoughnessTexCoord');
+
         this._uNormal = this._program.uniform('u_normal');
-        this._uEmission = this._program.uniform('u_emission');
+        this._uNormalTexCoord = this._program.uniform('u_normalTexCoord');
+
+        this._uEmissive = this._program.uniform('u_emissive');
+        this._uEmissiveTexCoord = this._program.uniform('u_emissiveTexCoord');
+
         this._uOcclusion = this._program.uniform('u_occlusion');
+        this._uOcclusionTexCoord = this._program.uniform('u_occlusionTexCoord');
 
         this._uEye = this._program.uniform('u_eye');
         this._uGeometryFlags = this._program.uniform('u_geometryFlags');
@@ -124,7 +126,7 @@ export class GltfRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 1.0, 1.0);
+        this._camera.eye = vec3.fromValues(0.0, 3.0, 1.0);
         this._camera.near = 0.1;
         this._camera.far = 32.0;
 
@@ -159,7 +161,7 @@ export class GltfRenderer extends Renderer {
             gl.uniform1i(this._uMetallicRoughness, 1);
             gl.uniform1i(this._uNormal, 2);
             gl.uniform1i(this._uOcclusion, 3);
-            gl.uniform1i(this._uEmission, 4);
+            gl.uniform1i(this._uEmissive, 4);
         };
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
             const primitive = geometry as GLTFPrimitive;
@@ -174,6 +176,7 @@ export class GltfRenderer extends Renderer {
              */
             if (pbrMaterial.baseColorTexture !== undefined) {
                 pbrMaterial.baseColorTexture.bind(gl.TEXTURE0);
+                gl.uniform1i(this._uBaseColorTexCoord, pbrMaterial.baseColorTexCoord);
             } else {
                 this._emptyTexture.bind(gl.TEXTURE0);
             }
@@ -183,6 +186,7 @@ export class GltfRenderer extends Renderer {
              */
             if (pbrMaterial.metallicRoughnessTexture !== undefined) {
                 pbrMaterial.metallicRoughnessTexture.bind(gl.TEXTURE1);
+                gl.uniform1i(this._uMetallicRoughnessTexCoord, pbrMaterial.metallicRoughnessTexCoord);
             } else {
                 this._emptyTexture.bind(gl.TEXTURE1);
             }
@@ -192,6 +196,7 @@ export class GltfRenderer extends Renderer {
              */
             if (pbrMaterial.normalTexture !== undefined) {
                 pbrMaterial.normalTexture.bind(gl.TEXTURE2);
+                gl.uniform1i(this._uNormalTexCoord, pbrMaterial.normalTexCoord);
             } else {
                 this._emptyTexture.bind(gl.TEXTURE2);
             }
@@ -201,6 +206,7 @@ export class GltfRenderer extends Renderer {
              */
             if (pbrMaterial.occlusionTexture !== undefined) {
                 pbrMaterial.occlusionTexture.bind(gl.TEXTURE3);
+                gl.uniform1i(this._uOcclusionTexCoord, pbrMaterial.occlusionTexCoord);
             } else {
                 this._emptyTexture.bind(gl.TEXTURE3);
             }
@@ -210,6 +216,7 @@ export class GltfRenderer extends Renderer {
              */
             if (pbrMaterial.emissiveTexture !== undefined) {
                 pbrMaterial.emissiveTexture.bind(gl.TEXTURE4);
+                gl.uniform1i(this._uEmissiveTexCoord, pbrMaterial.emissiveTexCoord);
             } else {
                 this._emptyTexture.bind(gl.TEXTURE4);
             }
@@ -224,11 +231,12 @@ export class GltfRenderer extends Renderer {
             gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
         };
 
-        this._loader.loadAsset(GltfRenderer.assetURI)
-            .then(() => {
-                this._forwardPass.scene = this._loader.defaultScene;
-                this._invalidate(true);
-            });
+        this.loadAsset();
+
+        const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
+        assetSelect.onchange = (_) => {
+            this.loadAsset();
+        };
 
         return true;
     }
@@ -292,6 +300,23 @@ export class GltfRenderer extends Renderer {
     }
 
     protected onSwap(): void {
+    }
+
+    /**
+     * Load asset from URI specified by the HTML select
+     */
+    protected loadAsset(): void {
+        const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
+
+        const uri = assetSelect.value;
+        this._forwardPass.scene = undefined;
+
+        this._loader.uninitialize();
+        this._loader.loadAsset(uri)
+            .then(() => {
+                this._forwardPass.scene = this._loader.defaultScene;
+                this._invalidate(true);
+            });
     }
 }
 

@@ -31,12 +31,6 @@ const int HAS_METALROUGHNESSMAP = 1 << 8;
 const int HAS_OCCLUSIONMAP      = 1 << 9;
 const int USE_TEX_LOD           = 1 << 10;
 
-// TODO: use texcoord location from material
-const int u_normalTexCoord = 0;
-const int u_baseColorTexCoord = 0;
-const int u_MetallicRoughnessTexCoord = 0;
-const int u_BaseColorTexCoord = 0;
-
 // TODO: use normal sclae from material
 const float u_normalScale = 1.0;
 const vec2 u_MetallicRoughnessValues = vec2(1, 1);
@@ -52,6 +46,12 @@ uniform sampler2D u_metallicRoughness;
 uniform sampler2D u_normal;
 uniform sampler2D u_emissive;
 uniform sampler2D u_occlusion;
+
+uniform int u_baseColorTexCoord;
+uniform int u_normalTexCoord;
+uniform int u_metallicRoughnessTexCoord;
+uniform int u_occlusionTexCoord;
+uniform int u_emissiveTexCoord;
 
 uniform vec4 u_baseColorFactor;
 uniform float u_metallicFactor;
@@ -203,7 +203,7 @@ void main(void)
     if (checkFlag(HAS_METALROUGHNESSMAP)) {
         // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
         // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
-        vec4 mrSample = texture(u_metallicRoughness, v_uv[u_MetallicRoughnessTexCoord]);
+        vec4 mrSample = texture(u_metallicRoughness, v_uv[u_metallicRoughnessTexCoord]);
         perceptualRoughness = mrSample.g * perceptualRoughness;
         metallic = mrSample.b * metallic;
     }
@@ -216,7 +216,7 @@ void main(void)
      // The albedo may be defined from a base texture or a flat color
     vec4 baseColor;
     if (checkFlag(HAS_BASECOLORMAP)) {
-        baseColor = SRGBtoLINEAR(texture(u_baseColor, v_uv[u_BaseColorTexCoord])) * u_baseColorFactor;
+        baseColor = SRGBtoLINEAR(texture(u_baseColor, v_uv[u_baseColorTexCoord])) * u_baseColorFactor;
     } else {
         baseColor = u_baseColorFactor;
     }
@@ -276,6 +276,11 @@ void main(void)
     vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
     // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
     vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
+
+    if (checkFlag(HAS_EMISSIVEMAP)) {
+        vec3 emissive = SRGBtoLINEAR(texture(u_emissive, v_uv[u_emissiveTexCoord])).rgb * u_emissiveFactor;
+        color += emissive;
+    }
 
     // NOTE: the spec mandates to ignore any alpha value in 'OPAQUE' mode
     float alpha = 1.0;
