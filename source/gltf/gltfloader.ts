@@ -160,6 +160,7 @@ export class GLTFLoader {
             if (normalTexture !== undefined) {
                 material.normalTexture = this.getTexture(normalTexture.index);
                 material.normalTexCoord = normalTexture.texCoord || 0;
+                material.normalScale = normalTexture.scale || 1;
             }
 
             const occlusionTexture = materialInfo.occlusionTexture;

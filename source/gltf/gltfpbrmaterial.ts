@@ -35,6 +35,7 @@ export class GLTFPbrMaterial extends Material {
     protected _emissiveFactor: vec3;
     protected _roughnessFactor: number;
     protected _isDoubleSided: boolean;
+    protected _normalScale: number;
 
     public baseColorTexCoord: number;
     public metallicRoughnessTexCoord: number;
@@ -56,6 +57,7 @@ export class GLTFPbrMaterial extends Material {
         this._roughnessFactor = 1;
         this._emissiveFactor = vec3.fromValues(0, 0, 0);
         this._isDoubleSided = false;
+        this._normalScale = 1;
     }
 
     set baseColorTexture(texture: Texture2D | undefined) {
@@ -128,6 +130,14 @@ export class GLTFPbrMaterial extends Material {
 
     get roughnessFactor(): number {
         return this._roughnessFactor;
+    }
+
+    get normalScale(): number {
+        return this._normalScale;
+    }
+
+    set normalScale(normalScale: number) {
+        this._normalScale = normalScale;
     }
 
     set isDoubleSided(val: boolean) {

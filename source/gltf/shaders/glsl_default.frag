@@ -31,10 +31,6 @@ const int HAS_METALROUGHNESSMAP = 1 << 8;
 const int HAS_OCCLUSIONMAP      = 1 << 9;
 const int USE_TEX_LOD           = 1 << 10;
 
-// TODO: use normal sclae from material
-const float u_normalScale = 1.0;
-const vec2 u_MetallicRoughnessValues = vec2(1, 1);
-
 const vec3 u_LightDirection = vec3(0.2, 1.0, 0.2);
 const vec3 u_LightColor = vec3(1, 1, 1);
 
@@ -57,6 +53,7 @@ uniform vec4 u_baseColorFactor;
 uniform float u_metallicFactor;
 uniform float u_roughnessFactor;
 uniform vec3 u_emissiveFactor;
+uniform float u_normalScale;
 
 uniform mediump int u_geometryFlags;
 uniform mediump int u_pbrFlags;
@@ -195,11 +192,8 @@ float microfacetDistribution(PBRInfo pbrInputs)
 
 void main(void)
 {
-    // Metallic and Roughness material properties are packed together
-    // In glTF, these factors can be specified by fixed scalar values
-    // or from a metallic-roughness map
-    float perceptualRoughness = u_MetallicRoughnessValues.y;
-    float metallic = u_MetallicRoughnessValues.x;
+    float perceptualRoughness = u_roughnessFactor;
+    float metallic = u_metallicFactor;
     if (checkFlag(HAS_METALROUGHNESSMAP)) {
         // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
         // This layout intentionally reserves the 'r' channel for (optional) occlusion map data

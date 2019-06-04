@@ -69,6 +69,7 @@ export class GltfRenderer extends Renderer {
     protected _uMetallicFactor: WebGLUniformLocation;
     protected _uRoughnessFactor: WebGLUniformLocation;
     protected _uEmissiveFactor: WebGLUniformLocation;
+    protected _uNormalScale: WebGLUniformLocation;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -120,6 +121,7 @@ export class GltfRenderer extends Renderer {
         this._uMetallicFactor = this._program.uniform('u_metallicFactor');
         this._uRoughnessFactor = this._program.uniform('u_roughnessFactor');
         this._uEmissiveFactor = this._program.uniform('u_emissiveFactor');
+        this._uNormalScale = this._program.uniform('u_normalScale');
 
         /* Create and configure camera. */
 
@@ -228,6 +230,7 @@ export class GltfRenderer extends Renderer {
             gl.uniform3fv(this._uEmissiveFactor, pbrMaterial.emissiveFactor);
             gl.uniform1f(this._uMetallicFactor, pbrMaterial.metallicFactor);
             gl.uniform1f(this._uRoughnessFactor, pbrMaterial.roughnessFactor);
+            gl.uniform1f(this._uNormalScale, pbrMaterial.normalScale);
             gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
         };
 
