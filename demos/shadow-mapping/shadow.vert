@@ -1,9 +1,7 @@
 
 precision highp float;
 
-
 @import ../../source/shaders/facade.vert;
-
 
 in vec3 a_vertex;
 
@@ -11,7 +9,6 @@ uniform mat4 u_lightViewMatrix;
 uniform mat4 u_lightProjectionMatrix;
 
 out vec4 v_vertex;
-
 
 void main()
 {

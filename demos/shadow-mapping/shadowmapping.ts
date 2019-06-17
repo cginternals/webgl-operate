@@ -58,18 +58,18 @@ class ShadowMappingRenderer extends Renderer {
     protected _uShadowProjectionMatrix: WebGLUniformLocation;
     protected _uShadowFarPlane: WebGLUniformLocation;
 
-    protected _shadowMappingProgram: Program;
+    protected _meshProgram: Program;
     protected _uCameraViewProjectionMatrix: WebGLUniformLocation;
-    protected _uShadowMappingViewMatrix: WebGLUniformLocation;
-    protected _uShadowMappingProjectionMatrix: WebGLUniformLocation;
-    protected _uShadowMappingFarPlane: WebGLUniformLocation;
+    protected _uMeshViewMatrix: WebGLUniformLocation;
+    protected _uMeshProjectionMatrix: WebGLUniformLocation;
+    protected _uMeshFarPlane: WebGLUniformLocation;
 
 
     protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider): boolean {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
-        // ------------------------ Setup Blur (Intermediate) ------------------------
+        // Setup Blur (Intermediate)
         this._intermediateBlurTexture = new Texture2D(this._context, 'IntermediateBlurTexture');
         this._intermediateBlurTexture.initialize(
             ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
@@ -90,7 +90,7 @@ class ShadowMappingRenderer extends Renderer {
         this._intermediateBlurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         this._intermediateBlurFBO.clearDepth(1.0);
 
-        // ------------------------ Setup Blur (Final) ------------------------
+        // Setup Blur (Final)
         this._blurTexture = new Texture2D(this._context, 'BlurTexture');
         this._blurTexture.initialize(
             ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
@@ -111,11 +111,11 @@ class ShadowMappingRenderer extends Renderer {
         this._blurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         this._blurFBO.clearDepth(1.0);
 
-        // ------------------------ Setup DefaultFBO ------------------------
+        // Setup DefaultFBO
         this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._defaultFBO.initialize();
 
-        // ------------------------ Setup Shadow Program ------------------------
+        // Setup Shadow Program
         const shadowVert = new Shader(this._context, gl.VERTEX_SHADER, 'shadow.vert');
         shadowVert.initialize(require('./shadow.vert'));
         const shadowFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadow.frag');
@@ -129,21 +129,21 @@ class ShadowMappingRenderer extends Renderer {
         this._uShadowProjectionMatrix = this._shadowProgram.uniform('u_lightProjectionMatrix');
         this._uShadowFarPlane = this._shadowProgram.uniform('u_lightFarPlane');
 
-        // ------------------------ Setup Shadow Mapping Program ------------------------
-        const shadowMappingVert = new Shader(this._context, gl.VERTEX_SHADER, 'shadowMapping.vert');
-        shadowMappingVert.initialize(require('./shadowMapping.vert'));
-        const shadowMappingFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadowMapping.frag');
-        shadowMappingFrag.initialize(require('./shadowMapping.frag'));
+        // Setup Shadow Mapping Program
+        const meshVert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+        meshVert.initialize(require('./mesh.vert'));
+        const meshFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
+        meshFrag.initialize(require('./mesh.frag'));
 
-        this._shadowMappingProgram = new Program(this._context);
-        this._shadowMappingProgram.initialize([shadowMappingVert, shadowMappingFrag]);
+        this._meshProgram = new Program(this._context);
+        this._meshProgram.initialize([meshVert, meshFrag]);
 
-        this._uShadowMappingViewMatrix = this._shadowMappingProgram.uniform('u_lightViewMatrix');
-        this._uShadowMappingProjectionMatrix = this._shadowMappingProgram.uniform('u_lightProjectionMatrix');
-        this._uShadowMappingFarPlane = this._shadowMappingProgram.uniform('u_lightFarPlane');
-        this._uCameraViewProjectionMatrix = this._shadowMappingProgram.uniform('u_cameraViewProjectionMatrix');
+        this._uMeshViewMatrix = this._meshProgram.uniform('u_lightViewMatrix');
+        this._uMeshProjectionMatrix = this._meshProgram.uniform('u_lightProjectionMatrix');
+        this._uMeshFarPlane = this._meshProgram.uniform('u_lightFarPlane');
+        this._uCameraViewProjectionMatrix = this._meshProgram.uniform('u_cameraViewProjectionMatrix');
 
-        // ------------------------ Setup Cameras ------------------------
+        // Setup Cameras
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         vec3.normalize(this._camera.up, vec3.fromValues(-1.0, 1.0, 0.0));
@@ -159,24 +159,24 @@ class ShadowMappingRenderer extends Renderer {
         this._light.far = 16.0;
         this._light.aspect = 1;
 
-        // ------------------------ Setup Navigation ------------------------
+        // Setup Navigation
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
 
-        // ------------------------ Setup Geometry
+        // Setup Geometry
         this._cube = new Cube(this._context, 'cube');
         this._cube.initialize(0);
 
         this._plane = new Plane(this._context, 'plane');
         this._plane.initialize(0);
 
-        // ------------------------ Setup GaussFilter ------------------------
+        // Setup GaussFilter
         this._gaussFilter = new GaussFilter(this._context);
         this._gaussFilter.kernelSize = 21;
         this._gaussFilter.standardDeviation = 4;
         this._gaussFilter.initialize();
 
-        // ------------------------ Setup ShadowMappingPass ------------------------
+        // Setup ShadowMappingPass
         this._shadowMapping = new ShadowMapping(this._context);
         this._shadowMapping.initialize(ShadowMappingRenderer.SHADOWMAP_SIZE);
 
@@ -256,13 +256,13 @@ class ShadowMappingRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-        this._shadowMappingProgram.bind();
+        this._meshProgram.bind();
 
         this._blurTexture.bind(gl.TEXTURE0);
         gl.uniformMatrix4fv(this._uCameraViewProjectionMatrix, gl.GL_FALSE, this._camera.viewProjection);
-        gl.uniformMatrix4fv(this._uShadowMappingViewMatrix, gl.GL_FALSE, this._light.view);
-        gl.uniformMatrix4fv(this._uShadowMappingProjectionMatrix, gl.GL_FALSE, this._light.projection);
-        gl.uniform1f(this._uShadowMappingFarPlane, this._light.far);
+        gl.uniformMatrix4fv(this._uMeshViewMatrix, gl.GL_FALSE, this._light.view);
+        gl.uniformMatrix4fv(this._uMeshProjectionMatrix, gl.GL_FALSE, this._light.projection);
+        gl.uniform1f(this._uMeshFarPlane, this._light.far);
 
         this._cube.bind();
         this._cube.draw();
@@ -271,7 +271,7 @@ class ShadowMappingRenderer extends Renderer {
 
         this._plane.unbind();
         this._blurTexture.unbind(gl.TEXTURE0);
-        this._shadowMappingProgram.unbind();
+        this._meshProgram.unbind();
 
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
