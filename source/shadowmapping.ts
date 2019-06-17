@@ -18,10 +18,6 @@ export class ShadowMapping extends Initializable {
     protected _shadowMapTexture: Texture2D;
     protected _shadowMapRenderbuffer: Renderbuffer;
 
-    protected _uLightViewMatrix: WebGLUniformLocation;
-    protected _uLightProjectionMatrix: WebGLUniformLocation;
-    protected _uLightFarPlane: WebGLUniformLocation;
-
     constructor(context: Context) {
         super();
         this._context = context;

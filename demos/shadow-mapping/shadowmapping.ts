@@ -15,7 +15,6 @@ import {
     MouseEventProvider,
     Navigation,
     Program,
-    Renderbuffer,
     Renderer,
     Shader,
     ShadowMapping,
@@ -44,11 +43,9 @@ class ShadowMappingRenderer extends Renderer {
 
     protected _intermediateBlurFBO: Framebuffer;
     protected _intermediateBlurTexture: Texture2D;
-    protected _intermediateBlurRenderbuffer: Renderbuffer;
 
     protected _blurFBO: Framebuffer;
     protected _blurTexture: Texture2D;
-    protected _blurRenderbuffer: Renderbuffer;
 
     protected _gaussFilter: GaussFilter;
     protected _shadowMapping: ShadowMapping;
@@ -63,6 +60,7 @@ class ShadowMappingRenderer extends Renderer {
     protected _uMeshViewMatrix: WebGLUniformLocation;
     protected _uMeshProjectionMatrix: WebGLUniformLocation;
     protected _uMeshFarPlane: WebGLUniformLocation;
+    protected _uMeshDepthTexture: WebGLUniformLocation;
 
 
     protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider): boolean {
@@ -78,15 +76,8 @@ class ShadowMappingRenderer extends Renderer {
         this._intermediateBlurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._intermediateBlurTexture.filter(gl.LINEAR, gl.LINEAR);
 
-        this._intermediateBlurRenderbuffer = new Renderbuffer(this._context, 'IntermediateBlurRenderbuffer');
-        this._intermediateBlurRenderbuffer.initialize(
-            ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
-            ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[1],
-            gl.DEPTH_COMPONENT16);
-
         this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
-        this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]
-            , [gl.DEPTH_ATTACHMENT, this._intermediateBlurRenderbuffer]]);
+        this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]]);
         this._intermediateBlurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         this._intermediateBlurFBO.clearDepth(1.0);
 
@@ -99,15 +90,9 @@ class ShadowMappingRenderer extends Renderer {
         this._blurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._blurTexture.filter(gl.LINEAR, gl.LINEAR);
 
-        this._blurRenderbuffer = new Renderbuffer(this._context, 'BlurRenderbuffer');
-        this._blurRenderbuffer.initialize(
-            ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[0],
-            ShadowMappingRenderer.BLURRED_SHADOWMAP_SIZE[1],
-            gl.DEPTH_COMPONENT16);
 
         this._blurFBO = new Framebuffer(this._context, 'BlurFramebuffer');
-        this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]
-            , [gl.DEPTH_ATTACHMENT, this._blurRenderbuffer]]);
+        this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]]);
         this._blurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         this._blurFBO.clearDepth(1.0);
 
@@ -142,6 +127,7 @@ class ShadowMappingRenderer extends Renderer {
         this._uMeshProjectionMatrix = this._meshProgram.uniform('u_lightProjectionMatrix');
         this._uMeshFarPlane = this._meshProgram.uniform('u_lightFarPlane');
         this._uCameraViewProjectionMatrix = this._meshProgram.uniform('u_cameraViewProjectionMatrix');
+        this._uMeshDepthTexture = this._meshProgram.uniform('u_depthTexture');
 
         // Setup Cameras
         this._camera = new Camera();
@@ -188,11 +174,9 @@ class ShadowMappingRenderer extends Renderer {
 
         this._intermediateBlurFBO.uninitialize();
         this._intermediateBlurTexture.uninitialize();
-        this._intermediateBlurRenderbuffer.uninitialize();
 
         this._blurFBO.uninitialize();
         this._intermediateBlurTexture.uninitialize();
-        this._intermediateBlurRenderbuffer.uninitialize();
 
         this._defaultFBO.uninitialize();
 
@@ -259,6 +243,7 @@ class ShadowMappingRenderer extends Renderer {
         this._meshProgram.bind();
 
         this._blurTexture.bind(gl.TEXTURE0);
+        gl.uniform1i(this._uMeshDepthTexture, 0);
         gl.uniformMatrix4fv(this._uCameraViewProjectionMatrix, gl.GL_FALSE, this._camera.viewProjection);
         gl.uniformMatrix4fv(this._uMeshViewMatrix, gl.GL_FALSE, this._light.view);
         gl.uniformMatrix4fv(this._uMeshProjectionMatrix, gl.GL_FALSE, this._light.projection);
