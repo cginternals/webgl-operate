@@ -20,8 +20,8 @@ varying vec2 v_delta;
 
 void main()
 {
-  v_texCoords = a_vertex * 0.5 + 0.5;
-  v_delta = u_direction / vec2(u_textureSize);
+    v_texCoords = a_vertex * 0.5 + 0.5;
+    v_delta = u_direction / vec2(u_textureSize);
 
-  gl_Position = vec4(a_vertex, 0.0, 1.0);
+    gl_Position = vec4(a_vertex, 0.0, 1.0);
 }

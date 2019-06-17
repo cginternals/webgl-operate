@@ -17,5 +17,5 @@ out vec2 depths;
 
 void main(void)
 {
-  depths = calculateDepths(v_vertex.xyz, u_lightFarPlane);
+    depths = calculateDepths(v_vertex.xyz, u_lightFarPlane);
 }

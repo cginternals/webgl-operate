@@ -22,11 +22,11 @@ varying vec2 v_delta;
 
 void main()
 {
-  vec4 result = vec4(0.0);
-  for (int i = -u_kernelSize / 2; i <= u_kernelSize / 2; i++)
-  {
-    result += u_weights[abs(i)] * texture(u_texture, float(i) * v_delta + v_texCoords);
-  }
+    vec4 result = vec4(0.0);
+    for (int i = -u_kernelSize / 2; i <= u_kernelSize / 2; i++)
+    {
+        result += u_weights[abs(i)] * texture(u_texture, float(i) * v_delta + v_texCoords);
+    }
 
-  fragColor = result;
+    fragColor = result;
 }

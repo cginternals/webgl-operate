@@ -15,6 +15,6 @@ out vec4 v_vertex;
 
 void main()
 {
-  v_vertex = u_lightViewMatrix * vec4(a_vertex, 1.0);
-  gl_Position = u_lightProjectionMatrix * v_vertex;
+    v_vertex = u_lightViewMatrix * vec4(a_vertex, 1.0);
+    gl_Position = u_lightProjectionMatrix * v_vertex;
 }
