@@ -4,7 +4,10 @@ import { SceneNodeComponent } from './scenenodecomponent';
 
 
 /**
- * @todo add description
+ * This class describes a node in a scene hierarchy. To render a scene, a renderer can traverse the hierarchy
+ * of SceneNodes, while recursively applying the transformations specfied by each node.
+ * Every node contains components that describe the contents of the node, e.g. the contained geometry or the
+ * applied transformation.
  */
 export class SceneNode {
 
@@ -22,8 +25,8 @@ export class SceneNode {
 
 
     /**
-     * @todo comment
-     * @param parent - @todo comment
+     * Constucts a new scene node
+     * @param name - The name of the new node
      */
     constructor(name: string) {
         this._name = name;
@@ -32,7 +35,8 @@ export class SceneNode {
 
 
     /**
-     * @todo comment
+     * Traverses the node hierarchy starting at this node and applies the given callback to each node.
+     * @param callback - Function that will be called for each node in the tree.
      */
     traverse(callback: SceneNode.NodeCallback): void {
         callback(this);
@@ -45,8 +49,8 @@ export class SceneNode {
 
 
     /**
-     * @todo comment
-     * @param node - @todo comment
+     * Add a child node to this node.
+     * @param node - The child that will be added
      */
     addNode(node: SceneNode): SceneNode {
         node._parent = this;
@@ -56,8 +60,8 @@ export class SceneNode {
     }
 
     /**
-     * @todo comment
-     * @param component - @todo comment
+     * Add a component to this node.
+     * @param component - Component to add
      */
     addComponent(component: SceneNodeComponent): SceneNodeComponent {
         this._components.push(component);
@@ -66,8 +70,8 @@ export class SceneNode {
     }
 
     /**
-     * @todo comment
-     * @param type - @todo comment
+     * Find all components of a specfic type that are registered on this node.
+     * @param type - @todo Name of component type to search for
      */
     componentsOfType(type: string): Array<SceneNodeComponent> {
         return this._components.filter((component: SceneNodeComponent) => type === component.type);
@@ -111,7 +115,7 @@ export class SceneNode {
     }
 
     /**
-     * @todo Returns whether this is the root node, i.e. it has no parent.
+     * Returns whether this is the root node, i.e. it has no parent.
      */
     get isRoot(): boolean {
         return this._parent === undefined;
