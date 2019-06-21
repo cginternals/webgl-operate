@@ -128,6 +128,7 @@ namespace debug {
             this._depthRenderbuffer.uninitialize();
 
             this._blit.uninitialize();
+            this._accumulate.uninitialize();
         }
 
 

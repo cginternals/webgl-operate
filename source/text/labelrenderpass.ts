@@ -55,7 +55,7 @@ export class LabelRenderPass extends Initializable {
     });
 
     /**
-     * Read-only access to the objects context, used to get context information and WebGL API access.
+     * Context, used to get context information and WebGL API access.
      */
     protected _context: Context;
 

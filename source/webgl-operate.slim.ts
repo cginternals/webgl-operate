@@ -55,6 +55,8 @@ export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
 
+export * from './core/index';
+export * from './scene/index';
 export * from './text/index';
 
 
