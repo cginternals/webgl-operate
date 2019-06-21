@@ -57,6 +57,8 @@ export { ReadbackPass } from './readbackpass';
 export { GaussFilter } from './gaussfilter';
 
 
+export * from './core/index';
+export * from './scene/index';
 export * from './text/index';
 
 

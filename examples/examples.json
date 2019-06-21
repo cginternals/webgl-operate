@@ -18,6 +18,12 @@
         "caption": "Label placement with anchors top, bottom, ascent, descent, and center. "
     },
     {
+        "target": "scene-example",
+        "title": "Scene",
+        "object": "SceneExample",
+        "caption": "Rendering with the webgl-operate scene concept"
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
