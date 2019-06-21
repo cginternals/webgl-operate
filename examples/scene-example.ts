@@ -10,6 +10,7 @@ import {
     ForwardSceneRenderPass,
     Framebuffer,
     GeometryComponent,
+    GeosphereGeometry,
     Invalidate,
     Material,
     MouseEventProvider,
@@ -18,7 +19,6 @@ import {
     Renderer,
     SceneNode,
     Shader,
-    GeosphereGeometry,
     Texture2D,
     TransformComponent,
     Wizard,
@@ -74,13 +74,14 @@ export class SceneRenderer extends Renderer {
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
         frag.initialize(require('./data/mesh.frag'));
         this._program = new Program(this._context, 'MeshProgram');
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, frag], false);
+        this._aMeshVertex = this._program.attribute('a_vertex', 0);
+        this._aMeshTexCoord = this._program.attribute('a_texCoord', 1);
+        this._program.link();
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
 
-        this._aMeshVertex = this._program.attribute('a_vertex', 0);
-        this._aMeshTexCoord = this._program.attribute('a_texCoord', 1);
 
         /* Create and configure camera. */
 
