@@ -2,10 +2,10 @@
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
-    BoxGeometry,
     Camera,
     Canvas,
     Context,
+    CubeGeometry,
     DefaultFramebuffer,
     ForwardSceneRenderPass,
     Framebuffer,
@@ -292,7 +292,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new BoxGeometry(
+        const geometry = new CubeGeometry(
             this._context,
             'mesh',
             1.0, 1.0, 1.0,

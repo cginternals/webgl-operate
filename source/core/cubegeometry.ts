@@ -9,7 +9,7 @@ import { Geometry } from '../geometry';
 /**
  * Geometry of a box with configurable size and texture coordinates (optional).
  */
-export class BoxGeometry extends Geometry {
+export class CubeGeometry extends Geometry {
 
     /**
      * Width of the box

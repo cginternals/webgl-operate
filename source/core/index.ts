@@ -1,6 +1,6 @@
 
-export { BoxGeometry as BoxGeometry } from './boxgeometry';
+export { CubeGeometry } from './cubegeometry';
 export { Icosahedron } from './icosahedron';
-export { SphereGeometry as SphereGeometry } from './spheregeometry';
+export { SphereGeometry } from './spheregeometry';
 
 export { ResourceManager } from './resourcemanager';
