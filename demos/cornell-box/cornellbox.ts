@@ -220,7 +220,12 @@ export class CornellBoxRenderer extends Renderer {
             (this._context.supportsTextureFloat ? './cornell1.frag' : './cornell0.frag') :
             './cornell2.frag'));
         this._program = new Program(this._context);
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, frag], false);
+
+        // attributes
+        this._ndcTriangle = new NdcFillingTriangle(this._context);
+        const aVertex = this._program.attribute('a_vertex', 0);
+        this._program.link();
 
         // uniforms
         this._uTransform = this._program.uniform('u_transform');
@@ -234,9 +239,7 @@ export class CornellBoxRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_lights'), 1);
         this._program.unbind();
 
-        // triangle
-        this._ndcTriangle = new NdcFillingTriangle(this._context);
-        const aVertex = this._program.attribute('a_vertex', 0);
+
         this._ndcTriangle.initialize(aVertex);
 
 
