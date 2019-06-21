@@ -190,7 +190,9 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Actual swap call specified by inheritor. After (1) update, (2) preparation, and (3) frame are invoked, a swap
      * might be invoked. In case of experimental batch rendering when using multi-frame a swap might be withhold for
-     * multiple frames.
+     * multiple frames. Any implementation is expected to ensure that contents of a frame to be on the OpenGL
+     * back buffer. The swap of front buffer and back buffer is scheduled after the invocation of this function by
+     * the browser.
      */
     protected onSwap(): void { /* default empty impl. */ }
 

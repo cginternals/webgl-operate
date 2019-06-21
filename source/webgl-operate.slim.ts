@@ -58,6 +58,8 @@ export { GaussFilter } from './gaussfilter';
 export { ShadowMapping } from './shadowmapping';
 
 
+export * from './core/index';
+export * from './scene/index';
 export * from './text/index';
 
 
