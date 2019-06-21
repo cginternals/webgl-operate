@@ -1,6 +1,6 @@
 
-export { CubeGeometry } from './cubegeometry';
+export { CuboidGeometry } from './cuboidgeometry';
 export { Icosahedron } from './icosahedron';
-export { SphereGeometry } from './spheregeometry';
+export { GeosphereGeometry } from './geospheregeometry';
 
 export { ResourceManager } from './resourcemanager';

@@ -5,7 +5,7 @@ import {
     Camera,
     Canvas,
     Context,
-    CubeGeometry,
+    CuboidGeometry,
     DefaultFramebuffer,
     ForwardSceneRenderPass,
     Framebuffer,
@@ -18,7 +18,7 @@ import {
     Renderer,
     SceneNode,
     Shader,
-    SphereGeometry,
+    GeosphereGeometry,
     Texture2D,
     TransformComponent,
     Wizard,
@@ -80,7 +80,7 @@ export class SceneRenderer extends Renderer {
         this._uModel = this._program.uniform('u_model');
 
         this._aMeshVertex = this._program.attribute('a_vertex', 0);
-        this._aMeshTexCoord = this._program.attribute('a_texcoord', 1);
+        this._aMeshTexCoord = this._program.attribute('a_texCoord', 1);
 
         /* Create and configure camera. */
 
@@ -218,7 +218,8 @@ export class SceneRenderer extends Renderer {
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
         texture.initialize(128, 128, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
-        texture.fetch('./data/logo.png', false).then(() => {
+        texture.wrap(gl.REPEAT, gl.REPEAT);
+        texture.fetch('./data/concrete_floor_02_diff_1k.webp', false).then(() => {
             this.invalidate(true);
         });
 
@@ -228,7 +229,7 @@ export class SceneRenderer extends Renderer {
         material.textured = true;
 
         /* Create geometry. */
-        const geometry = new SphereGeometry(
+        const geometry = new GeosphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -260,7 +261,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new SphereGeometry(
+        const geometry = new GeosphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -292,11 +293,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new CubeGeometry(
-            this._context,
-            'mesh',
-            1.0, 1.0, 1.0,
-            true);
+        const geometry = new CuboidGeometry(this._context, 'mesh', true);
 
         geometry.initialize(this._aMeshVertex, this._aMeshTexCoord);
 
