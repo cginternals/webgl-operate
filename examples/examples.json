@@ -1,9 +1,9 @@
 [
     {
         "target": "cube-example",
-        "title": "Cube 3D",
+        "title": "Textured Cube",
         "object": "CubeExample",
-        "caption": "... in 3D space."
+        "caption": "Minimalistic scene featuring a textured unit cube."
     },
     {
         "target": "canvassize-example",

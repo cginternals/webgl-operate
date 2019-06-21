@@ -1,4 +1,6 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
@@ -25,6 +27,9 @@ import {
 } from 'webgl-operate';
 
 import { Example } from './example';
+
+/* spellchecker: enable */
+
 
 // tslint:disable:max-classes-per-file
 
@@ -73,8 +78,10 @@ export class SceneRenderer extends Renderer {
         vert.initialize(require('./data/mesh.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
         frag.initialize(require('./data/mesh.frag'));
+
         this._program = new Program(this._context, 'MeshProgram');
         this._program.initialize([vert, frag], false);
+
         this._aMeshVertex = this._program.attribute('a_vertex', 0);
         this._aMeshTexCoord = this._program.attribute('a_texCoord', 1);
         this._program.link();
@@ -218,8 +225,7 @@ export class SceneRenderer extends Renderer {
 
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
-        texture.initialize(128, 128, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
-        texture.wrap(gl.REPEAT, gl.REPEAT);
+        texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         texture.fetch('./data/concrete_floor_02_diff_1k.webp', false).then(() => {
             this.invalidate(true);
         });
