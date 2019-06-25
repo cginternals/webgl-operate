@@ -11,10 +11,10 @@ import {
 export class Plane extends Geometry {
 
     protected static readonly VERTICES = new Float32Array([
-        -10.0, -2.0, -10.0,
-        -10.0, -2.0, +10.0,
-        +10.0, -2.0, -10.0,
-        +10.0, -2.0, +10.0,
+        -10.0, -2.5, -10.0,
+        -10.0, -2.5, +10.0,
+        +10.0, -2.5, -10.0,
+        +10.0, -2.5, +10.0,
     ]);
 
     protected static readonly INDICES = new Uint8Array([0, 1, 2, 3]);

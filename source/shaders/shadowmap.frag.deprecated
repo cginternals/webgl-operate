@@ -12,7 +12,7 @@ uniform float u_lightFarPlane;
 out vec2 depths;
 
 
-@import ./shadow_mapping;
+@import ./shadowpass;
 
 
 void main(void)

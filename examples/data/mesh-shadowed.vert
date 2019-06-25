@@ -17,14 +17,14 @@ uniform mat4 u_model;
 #endif
 
 
-varying vec3 v_vertex;
+varying vec4 v_vertex;
 varying vec2 v_uv;
 
 
 void main()
 {
-    v_vertex = a_vertex;
+    v_vertex = u_model * vec4(a_vertex, 1.0);
     v_uv = a_texCoord;
 
-    gl_Position = u_viewProjection * u_model * vec4(a_vertex, 1.0);
+    gl_Position = u_viewProjection * v_vertex;
 }

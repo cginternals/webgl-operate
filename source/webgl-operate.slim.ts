@@ -55,7 +55,7 @@ export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
 export { GaussFilter } from './gaussfilter';
-export { ShadowMapping } from './shadowmapping';
+export { ShadowPass } from './shadowpass';
 
 
 export * from './core/index';

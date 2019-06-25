@@ -1,11 +1,15 @@
 
 precision highp float;
 
-
 @import ./facade.vert;
 
 
-in vec3 a_vertex;
+#if __VERSION__ == 100
+    attribute vec2 a_vertex;
+#else
+    in vec2 a_vertex;
+#endif
+
 
 uniform mat4 u_lightViewMatrix;
 uniform mat4 u_lightProjectionMatrix;

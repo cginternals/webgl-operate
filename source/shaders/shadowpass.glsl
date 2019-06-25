@@ -1,4 +1,6 @@
 
+// requires extension GL_OES_standard_derivatives to be explicitly enabled in WebGL1
+
 vec2 calculateDepths(vec3 lightViewVertex, float lightFarPlane)
 {
     float depth = length(lightViewVertex.xyz) / lightFarPlane;
@@ -32,15 +34,15 @@ float VSMCompare(sampler2D depths, vec2 uv, float compare, float offset)
   return clamp(max(p, p_max), 0.0, 1.0);
 }
 
-vec4 calculateShadowColor(vec4 objectColor, float visibility, float intensity, vec4 shadowColor, float colorIntensity)
-{
-  visibility = min(visibility + (1.0 - intensity) * (1.0 - visibility), 1.0);
+// vec4 calculateShadowColor(vec4 objectColor, float visibility, float intensity, vec4 shadowColor, float colorIntensity)
+// {
+//   visibility = min(visibility + (1.0 - intensity) * (1.0 - visibility), 1.0);
 
-  vec4 finalColor = vec4(visibility * objectColor.rgb, objectColor.a);
-  if (visibility < 1.0)
-  {
-    finalColor = clamp(shadowColor * colorIntensity + finalColor, finalColor, objectColor);
-  }
+//   vec4 finalColor = vec4(visibility * objectColor.rgb, objectColor.a);
+//   if (visibility < 1.0)
+//   {
+//     finalColor = clamp(shadowColor * colorIntensity + finalColor, finalColor, objectColor);
+//   }
 
-  return finalColor;
-}
+//   return finalColor;
+// }
