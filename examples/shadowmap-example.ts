@@ -94,7 +94,7 @@ class ShadowMapRenderer extends Renderer {
         this._light = new Camera();
         this._light.center = vec3.fromValues(0.0, 0.5, 0.0);
         this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._light.eye = vec3.fromValues(-2.0, 2.0, 4.0);
+        this._light.eye = vec3.fromValues(-2.0, 3.0, 4.0);
         this._light.near = 1.0;
         this._light.far = 8.0;
 
