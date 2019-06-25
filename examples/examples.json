@@ -1,5 +1,11 @@
 [
     {
+        "target": "cube-example",
+        "title": "Textured Cube",
+        "object": "CubeExample",
+        "caption": "Minimalistic scene featuring a textured unit cube."
+    },
+    {
         "target": "canvassize-example",
         "title": "Canvas Size",
         "object": "CanvasSizeExample",

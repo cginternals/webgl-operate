@@ -41,7 +41,7 @@ export class CuboidGeometry extends Geometry {
 
 
     /** @see {@link vertexLocation} */
-    protected _vertexLocation: GLuint;
+    protected _vertexLocation: GLuint = 0;
 
     /** @see {@link textCoordLocation} */
     protected _uvCoordLocation: GLuint;
