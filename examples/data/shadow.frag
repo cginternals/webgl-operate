@@ -1,6 +1,4 @@
 
-precision highp float;
-
 #if __VERSION__ == 100
 
     #ifdef GL_OES_standard_derivatives
@@ -8,6 +6,8 @@ precision highp float;
     #endif
 
 #endif
+
+precision highp float;
 
 @import ../../source/shaders/facade.frag;
 
@@ -18,7 +18,7 @@ uniform vec2 u_lightNearFar;
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
 #else
-    layout(location = 0) out vec2 fragColor;
+    layout(location = 0) out vec4 fragColor;
 #endif
 
 
@@ -29,5 +29,5 @@ varying vec4 v_vertex;
 
 void main(void)
 {
-    fragColor = calculateDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1]);
+    fragColor = vec4(calculateDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1]), 0.0, 0.0);
 }

@@ -67,8 +67,8 @@ class ShadowMapRenderer extends Renderer {
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
-        context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives']);
-
+        context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives',
+            'WEBGL_color_buffer_float', 'OES_texture_float']);
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();

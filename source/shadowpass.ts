@@ -78,11 +78,21 @@ export class ShadowPass extends Initializable {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
+        let internalFormat = gl.RG16F;
+        let format = gl.RG;
+        let filter = gl.LINEAR;
+        if (this._context.isWebGL1) {
+            internalFormat = gl.RGBA;
+            format = gl.RGBA;
+            filter = gl.NEAREST;
+        }
+
         // Setup shadow map
         this._shadowMapTexture = new Texture2D(this._context);
-        this._shadowMapTexture.initialize(this._shadowMapSize[0], this._shadowMapSize[1], gl.RG16F, gl.RG, gl.FLOAT);
+        this._shadowMapTexture.initialize(this._shadowMapSize[0], this._shadowMapSize[1],
+            internalFormat, format, gl.FLOAT);
         this._shadowMapTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-        this._shadowMapTexture.filter(gl.LINEAR, gl.LINEAR);
+        this._shadowMapTexture.filter(filter, filter);
 
         this._shadowMapRenderbuffer = new Renderbuffer(this._context);
         this._shadowMapRenderbuffer.initialize(this._shadowMapSize[0], this._shadowMapSize[1], gl.DEPTH_COMPONENT16);
@@ -105,9 +115,9 @@ export class ShadowPass extends Initializable {
             this._intermediateBlurTexture.initialize(
                 this._blurredShadowMapSize[0],
                 this._blurredShadowMapSize[1],
-                gl.RG16F, gl.RG, gl.FLOAT);
+                internalFormat, format, gl.FLOAT);
             this._intermediateBlurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-            this._intermediateBlurTexture.filter(gl.LINEAR, gl.LINEAR);
+            this._intermediateBlurTexture.filter(filter, filter);
 
             this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
             this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]]);
@@ -119,9 +129,9 @@ export class ShadowPass extends Initializable {
             this._blurTexture.initialize(
                 this._blurredShadowMapSize[0],
                 this._blurredShadowMapSize[1],
-                gl.RG16F, gl.RG, gl.FLOAT);
+                internalFormat, format, gl.FLOAT);
             this._blurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-            this._blurTexture.filter(gl.LINEAR, gl.LINEAR);
+            this._blurTexture.filter(filter, filter);
 
             this._blurFBO = new Framebuffer(this._context, 'BlurFramebuffer');
             this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]]);

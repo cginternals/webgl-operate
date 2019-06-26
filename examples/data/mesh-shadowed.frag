@@ -1,6 +1,14 @@
 
 precision lowp float;
 
+#if __VERSION__ == 100
+
+    #ifdef GL_OES_standard_derivatives
+        #extension GL_OES_standard_derivatives : enable
+    #endif
+
+#endif
+
 @import ../../source/shaders/facade.frag;
 
 
@@ -28,7 +36,7 @@ varying vec2 v_uv;
 
 
 const vec4 shadowColor = vec4(0.494, 0.753, 0.933, 1.0);
-const float shadowBias = -0.001;
+const float shadowBias = -0.002;
 
 
 void main(void)
