@@ -2,7 +2,7 @@
 import { assert } from './auxiliaries';
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
-import { GaussFilter } from './gaussfilter';
+// import { GaussFilter } from './gaussfilter';
 import { Initializable } from './initializable';
 import { Renderbuffer } from './renderbuffer';
 import { Texture2D } from './texture2d';
@@ -21,12 +21,12 @@ export class ShadowPass extends Initializable {
     protected _shadowMapTexture: Texture2D;
     protected _shadowMapRenderbuffer: Renderbuffer;
 
-    protected _gaussFilter: GaussFilter;
+    // protected _gaussFilter: GaussFilter;
 
-    protected _intermediateBlurFBO: Framebuffer;
-    protected _intermediateBlurTexture: Texture2D;
-    protected _blurFBO: Framebuffer;
-    protected _blurTexture: Texture2D;
+    // protected _intermediateBlurFBO: Framebuffer;
+    // protected _intermediateBlurTexture: Texture2D;
+    // protected _blurFBO: Framebuffer;
+    // protected _blurTexture: Texture2D;
 
     constructor(context: Context) {
         super();
@@ -52,13 +52,13 @@ export class ShadowPass extends Initializable {
         this._shadowMapFBO.resize(this._shadowMapSize[0], this._shadowMapSize[1], bind, unbind);
     }
 
-    @Initializable.assert_initialized()
-    resizeBlurTexture(size: GLsizei2, bind: boolean = true, unbind: boolean = true): void {
-        assert(size[0] > 0 && size[1] > 0, 'Size has to be > 0.');
-        this._blurredShadowMapSize = size;
-        this._intermediateBlurFBO.resize(this._blurredShadowMapSize[0], this._blurredShadowMapSize[1], bind, unbind);
-        this._blurFBO.resize(this._blurredShadowMapSize[0], this._blurredShadowMapSize[1], bind, unbind);
-    }
+    // @Initializable.assert_initialized()
+    // resizeBlurTexture(size: GLsizei2, bind: boolean = true, unbind: boolean = true): void {
+    //     assert(size[0] > 0 && size[1] > 0, 'Size has to be > 0.');
+    //     this._blurredShadowMapSize = size;
+    //     this._intermediateBlurFBO.resize(this._blurredShadowMapSize[0], this._blurredShadowMapSize[1], bind, unbind);
+    //     this._blurFBO.resize(this._blurredShadowMapSize[0], this._blurredShadowMapSize[1], bind, unbind);
+    // }
 
     @Initializable.initialize()
     initialize(shadowType: ShadowPass.ShadowMappingType,
