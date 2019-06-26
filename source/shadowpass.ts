@@ -127,7 +127,7 @@ export class ShadowPass extends Initializable {
     }
 
     @Initializable.assert_initialized()
-    begin(/*cullFace: ShadowPass.CullFace*/): void {
+    frame(callback: () => void): void {
         const gl = this._context.gl;
 
         gl.viewport(0, 0, this._shadowMapSize[0], this._shadowMapSize[1]);
@@ -142,11 +142,8 @@ export class ShadowPass extends Initializable {
         // }
 
         this._shadowMapFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-    }
 
-    @Initializable.assert_initialized()
-    end(): void {
-        const gl = this._context.gl;
+        callback();
 
         gl.disable(gl.DEPTH_TEST);
         // gl.cullFace(gl.BACK);

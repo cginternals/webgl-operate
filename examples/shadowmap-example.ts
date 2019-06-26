@@ -187,14 +187,11 @@ class ShadowMapRenderer extends Renderer {
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
 
-        this._shadowPass.begin(/*ShadowPass.CullFace.Front*/);
-        this._shadowProgram.bind();
-
-        this.drawCuboids(this._uModelS);
-
-        this._shadowProgram.unbind();
-        this._shadowPass.end();
-
+        this._shadowPass.frame(() => {
+            this._shadowProgram.bind();
+            this.drawCuboids(this._uModelS);
+            this._shadowProgram.unbind();
+        });
 
         this._defaultFBO.bind();
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
@@ -209,10 +206,6 @@ class ShadowMapRenderer extends Renderer {
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE0);
-
-        // gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, this._light.view);
-        // gl.uniformMatrix4fv(this._uLightProjection, gl.GL_FALSE, this._light.projection);
-        // gl.uniform1f(this._uMeshFarPlane, this._light.far);
 
         this.drawCuboids(this._uModel);
 
