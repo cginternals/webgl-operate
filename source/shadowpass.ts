@@ -36,9 +36,10 @@ export class ShadowPass extends Initializable {
     get shadowMapTexture(): Texture2D {
         if (this._shadowType === ShadowPass.ShadowMappingType.HardShadowMapping) {
             return this._shadowMapTexture;
-        } else if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
-            return this._blurTexture;
         }
+        // else if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        //     return this._blurTexture;
+        // }
 
         assert(false, `Unknown shadow mapping type encountered.`);
         return this._shadowMapTexture;
@@ -103,41 +104,41 @@ export class ShadowPass extends Initializable {
         this._shadowMapFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         this._shadowMapFBO.clearDepth(1.0);
 
-        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
-            // Setup GaussFilter
-            this._gaussFilter = new GaussFilter(this._context);
-            this._gaussFilter.kernelSize = 21;
-            this._gaussFilter.standardDeviation = 4;
-            this._gaussFilter.initialize();
+        // if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        //     // Setup GaussFilter
+        //     this._gaussFilter = new GaussFilter(this._context);
+        //     this._gaussFilter.kernelSize = 21;
+        //     this._gaussFilter.standardDeviation = 4;
+        //     this._gaussFilter.initialize();
 
-            // Setup intermediate blur
-            this._intermediateBlurTexture = new Texture2D(this._context, 'IntermediateBlurTexture');
-            this._intermediateBlurTexture.initialize(
-                this._blurredShadowMapSize[0],
-                this._blurredShadowMapSize[1],
-                internalFormat, format, gl.FLOAT);
-            this._intermediateBlurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-            this._intermediateBlurTexture.filter(filter, filter);
+        //     // Setup intermediate blur
+        //     this._intermediateBlurTexture = new Texture2D(this._context, 'IntermediateBlurTexture');
+        //     this._intermediateBlurTexture.initialize(
+        //         this._blurredShadowMapSize[0],
+        //         this._blurredShadowMapSize[1],
+        //         internalFormat, format, gl.FLOAT);
+        //     this._intermediateBlurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
+        //     this._intermediateBlurTexture.filter(filter, filter);
 
-            this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
-            this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]]);
-            this._intermediateBlurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
-            this._intermediateBlurFBO.clearDepth(1.0);
+        //     this._intermediateBlurFBO = new Framebuffer(this._context, 'IntermediateBlurFramebuffer');
+        //     this._intermediateBlurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._intermediateBlurTexture]]);
+        //     this._intermediateBlurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
+        //     this._intermediateBlurFBO.clearDepth(1.0);
 
-            // Setup final blur
-            this._blurTexture = new Texture2D(this._context, 'BlurTexture');
-            this._blurTexture.initialize(
-                this._blurredShadowMapSize[0],
-                this._blurredShadowMapSize[1],
-                internalFormat, format, gl.FLOAT);
-            this._blurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-            this._blurTexture.filter(filter, filter);
+        //     // Setup final blur
+        //     this._blurTexture = new Texture2D(this._context, 'BlurTexture');
+        //     this._blurTexture.initialize(
+        //         this._blurredShadowMapSize[0],
+        //         this._blurredShadowMapSize[1],
+        //         internalFormat, format, gl.FLOAT);
+        //     this._blurTexture.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
+        //     this._blurTexture.filter(filter, filter);
 
-            this._blurFBO = new Framebuffer(this._context, 'BlurFramebuffer');
-            this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]]);
-            this._blurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
-            this._blurFBO.clearDepth(1.0);
-        }
+        //     this._blurFBO = new Framebuffer(this._context, 'BlurFramebuffer');
+        //     this._blurFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._blurTexture]]);
+        //     this._blurFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
+        //     this._blurFBO.clearDepth(1.0);
+        // }
 
         return true;
     }
@@ -148,15 +149,15 @@ export class ShadowPass extends Initializable {
         this._shadowMapRenderbuffer.uninitialize();
         this._shadowMapTexture.uninitialize();
 
-        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
-            this._intermediateBlurFBO.uninitialize();
-            this._intermediateBlurTexture.uninitialize();
+        // if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        //     this._intermediateBlurFBO.uninitialize();
+        //     this._intermediateBlurTexture.uninitialize();
 
-            this._blurFBO.uninitialize();
-            this._intermediateBlurTexture.uninitialize();
+        //     this._blurFBO.uninitialize();
+        //     this._intermediateBlurTexture.uninitialize();
 
-            this._gaussFilter.uninitialize();
-        }
+        //     this._gaussFilter.uninitialize();
+        // }
     }
 
     @Initializable.assert_initialized()
@@ -173,16 +174,16 @@ export class ShadowPass extends Initializable {
 
         gl.disable(gl.DEPTH_TEST);
 
-        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
-            // Blur the variance shadow map in two passes
-            gl.viewport(0, 0, this._intermediateBlurFBO.width, this._intermediateBlurFBO.height);
-            this._intermediateBlurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-            this._gaussFilter.filter(this._shadowMapTexture, GaussFilter.Direction.Horizontal);
+        // if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        //     // Blur the variance shadow map in two passes
+        //     gl.viewport(0, 0, this._intermediateBlurFBO.width, this._intermediateBlurFBO.height);
+        //     this._intermediateBlurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+        //     this._gaussFilter.filter(this._shadowMapTexture, GaussFilter.Direction.Horizontal);
 
-            gl.viewport(0, 0, this._blurFBO.width, this._blurFBO.height);
-            this._blurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-            this._gaussFilter.filter(this._intermediateBlurTexture, GaussFilter.Direction.Vertical);
-        }
+        //     gl.viewport(0, 0, this._blurFBO.width, this._blurFBO.height);
+        //     this._blurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+        //     this._gaussFilter.filter(this._intermediateBlurTexture, GaussFilter.Direction.Vertical);
+        // }
     }
 }
 
@@ -190,7 +191,7 @@ export namespace ShadowPass {
 
     export enum ShadowMappingType {
         HardShadowMapping = 0,
-        VarianceShadowMapping = 1,
+        // VarianceShadowMapping = 1,
     }
 
 }
