@@ -1,8 +1,6 @@
 
 import { mat4, vec3 } from 'webgl-operate';
 
-// import { Plane } from '../demos/shadow-mapping/plane';
-
 import {
     Camera,
     Canvas,
@@ -28,9 +26,6 @@ import { vec2 } from 'gl-matrix';
 
 class ShadowMapRenderer extends Renderer {
 
-    // private static readonly SHADOWMAP_SIZE: [number, number] = [1024, 1024];
-    // private static readonly BLURRED_SHADOWMAP_SIZE: [number, number] = [512, 512];
-
     protected _cuboids: Array<CuboidGeometry>;
     protected _plane: PlaneGeometry;
 
@@ -48,19 +43,7 @@ class ShadowMapRenderer extends Renderer {
     protected _shadowProgram: Program;
     protected _uModelS: WebGLUniformLocation;
 
-
     protected _shadowPass: ShadowPass;
-
-    // protected _uShadowViewMatrix: WebGLUniformLocation;
-    // protected _uShadowProjectionMatrix: WebGLUniformLocation;
-    // protected _uShadowFarPlane: WebGLUniformLocation;
-
-
-    // protected _uMeshViewMatrix: WebGLUniformLocation;
-    // protected _uMeshProjectionMatrix: WebGLUniformLocation;
-    // protected _uMeshFarPlane: WebGLUniformLocation;
-    // protected _uMeshDepthTexture: WebGLUniformLocation;
-
 
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
@@ -271,8 +254,6 @@ export class ShadowMapExample extends Example {
 
         this._canvas.clearColor.fromHex('ffffff');
         this._canvas.controller.multiFrameNumber = 64;
-
-        // this._canvas.element.addEventListener('click', () => { this._canvas.controller.update(); });
 
         this._renderer = new ShadowMapRenderer();
         this._canvas.renderer = this._renderer;
