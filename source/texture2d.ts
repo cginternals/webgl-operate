@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { assert, log, LogLevel, logIf } from './auxiliaries';
+import { assert, log, logIf, LogLevel } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei2 } from './tuples';
 
