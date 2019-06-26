@@ -34,10 +34,10 @@ void main(void)
     vec4 vLightViewSpace = u_lightView * v_vertex;
     vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
 
-    float light_depth  = clamp(length(vLightViewSpace.xyz) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
+    float light_depth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
     vec2 shadow_uv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
 
-    float visibility = VSMCompare(u_shadowMap, shadow_uv, light_depth, shadowBias);
+    float visibility = hardShadowCompare(u_shadowMap, shadow_uv, light_depth, shadowBias);
 
     vec4 color = vec4(0.8 + (v_vertex.xyz * 0.2 - 0.1), 1.0);
     fragColor = mix(shadowColor * color, color, step(1.0, visibility));

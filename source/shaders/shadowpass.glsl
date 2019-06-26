@@ -1,9 +1,9 @@
 
 // requires extension GL_OES_standard_derivatives to be explicitly enabled in WebGL1
 
-vec2 calculateDepths(vec3 lightViewVertex, float lightFarPlane)
+vec2 calculateDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
 {
-    float depth = length(lightViewVertex.xyz) / lightFarPlane;
+    float depth = (length(lightViewVertex) - lightNearPlane) / (lightFarPlane - lightNearPlane);
 
     float dx = dFdx(depth);
     float dy = dFdy(depth);

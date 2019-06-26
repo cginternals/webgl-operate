@@ -145,7 +145,7 @@ class ShadowMapRenderer extends Renderer {
 
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize([1024, 1024], [512, 512]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024], [512, 512]);
 
         return true;
     }

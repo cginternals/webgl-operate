@@ -29,5 +29,5 @@ varying vec4 v_vertex;
 
 void main(void)
 {
-    fragColor = calculateDepths(v_vertex.xyz, u_lightNearFar[1] - u_lightNearFar[0]);
+    fragColor = calculateDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1]);
 }
