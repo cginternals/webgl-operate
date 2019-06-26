@@ -12,6 +12,7 @@ import {
     Invalidate,
     MouseEventProvider,
     Navigation,
+    PlaneGeometry,
     Program,
     Renderer,
     Shader,
@@ -20,6 +21,7 @@ import {
 } from 'webgl-operate';
 
 import { Example } from './example';
+import { vec2 } from 'gl-matrix';
 
 // tslint:disable:max-classes-per-file
 
@@ -30,9 +32,7 @@ class ShadowMapRenderer extends Renderer {
     // private static readonly BLURRED_SHADOWMAP_SIZE: [number, number] = [512, 512];
 
     protected _cuboids: Array<CuboidGeometry>;
-
-    // protected _plane: Plane;
-
+    protected _plane: PlaneGeometry;
 
     protected _defaultFBO: DefaultFramebuffer;
     protected _navigation: Navigation;
@@ -43,6 +43,7 @@ class ShadowMapRenderer extends Renderer {
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
+    protected _uColored: WebGLUniformLocation;
 
     protected _shadowProgram: Program;
     protected _uModelS: WebGLUniformLocation;
@@ -82,19 +83,22 @@ class ShadowMapRenderer extends Renderer {
             this._cuboids[i].initialize();
         }
 
+        this._plane = new PlaneGeometry(context, 'plane');
+        this._plane.initialize();
+        this._plane.scale = vec2.fromValues(10, 10);
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(2.8868, 2.8868, 2.8868);
         this._camera.near = 1.0;
-        this._camera.far = 8.0;
+        this._camera.far = 12.0;
 
 
         this._light = new Camera();
-        this._light.center = vec3.fromValues(0.0, 0.5, 0.0);
+        this._light.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._light.eye = vec3.fromValues(-2.0, 3.0, 4.0);
+        this._light.eye = vec3.fromValues(-2.0, 4.0, 2.0);
         this._light.near = 1.0;
         this._light.far = 8.0;
 
@@ -121,6 +125,7 @@ class ShadowMapRenderer extends Renderer {
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
 
+        this._uColored = this._program.uniform('u_colored');
 
         const shadowVert = new Shader(context, gl.VERTEX_SHADER, 'shadow.vert');
         shadowVert.initialize(require('./data/shadow.vert'));
@@ -158,7 +163,7 @@ class ShadowMapRenderer extends Renderer {
         for (const cuboid of this._cuboids) {
             cuboid.uninitialize();
         }
-        // this._plane.uninitialize();
+        this._plane.uninitialize();
 
         this._shadowPass.uninitialize();
     }
@@ -207,7 +212,11 @@ class ShadowMapRenderer extends Renderer {
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE0);
 
+        gl.uniform1i(this._uColored, true);
         this.drawCuboids(this._uModel);
+
+        gl.uniform1i(this._uColored, false);
+        this.drawPlane(this._uModel);
 
         this._program.unbind();
         this._shadowPass.shadowMapTexture.unbind();
@@ -236,6 +245,14 @@ class ShadowMapRenderer extends Renderer {
             this._cuboids[i].bind();
             this._cuboids[i].draw();
         }
+    }
+
+    protected drawPlane(model: WebGLUniformLocation): void {
+        const gl = this._context.gl;
+
+        gl.uniformMatrix4fv(model, gl.GL_FALSE, this._plane.transformation);
+        this._plane.bind();
+        this._plane.draw();
     }
 
 }

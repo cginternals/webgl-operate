@@ -8,6 +8,8 @@ uniform vec2 u_lightNearFar;
 uniform mat4 u_lightView;
 uniform mat4 u_lightProjection;
 
+uniform bool u_colored;
+
 uniform sampler2D u_shadowMap;
 
 
@@ -39,6 +41,10 @@ void main(void)
 
     float visibility = hardShadowCompare(u_shadowMap, shadow_uv, light_depth, shadowBias);
 
-    vec4 color = vec4(0.8 + (v_vertex.xyz * 0.2 - 0.1), 1.0);
+    vec4 color = vec4(1.0);
+    if (u_colored) {
+        color = vec4(0.8 + (v_vertex.xyz * 0.2 - 0.1), 1.0);
+    }
+
     fragColor = mix(shadowColor * color, color, step(1.0, visibility));
 }
