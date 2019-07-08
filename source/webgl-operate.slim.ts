@@ -54,6 +54,9 @@ export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { ReadbackPass } from './readbackpass';
 
+export { GaussFilter } from './gaussfilter';
+export { ShadowPass } from './shadowpass';
+
 
 export * from './core/index';
 export * from './scene/index';

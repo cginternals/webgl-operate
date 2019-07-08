@@ -28,20 +28,17 @@ import { Example } from './example';
 
 export class CubeRenderer extends Renderer {
 
-    // Camera and navigation
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    // Cubes
-    protected _geometry: CuboidGeometry;
-    protected _program: Program;
-
+    protected _cuboid: CuboidGeometry;
     protected _texture: Texture2D;
 
+    protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
 
-    // FBO
     protected _defaultFBO: DefaultFramebuffer;
+
 
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
@@ -55,30 +52,31 @@ export class CubeRenderer extends Renderer {
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
-        // Create framebuffers, textures, and render buffers.
-        this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
+        this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
         this._defaultFBO.bind();
 
-        const { gl } = this._context;
+        const gl = context.gl;
 
-        // init cuboid geometry
-        this._geometry = new CuboidGeometry(this._context, 'Cuboid', true, [2.0, 2.0, 2.0]);
-        this._geometry.initialize();
 
-        // Initialize program
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'cube.vert');
+        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.0, 2.0, 2.0]);
+        this._cuboid.initialize();
+
+
+        const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'cube.frag');
+        const frag = new Shader(context, gl.FRAGMENT_SHADER, 'mesh.frag');
         frag.initialize(require('./data/mesh.frag'));
 
-        this._program = new Program(this._context, 'CubeProgram');
+
+        this._program = new Program(context, 'CubeProgram');
         this._program.initialize([vert, frag], false);
 
-        this._program.attribute('a_vertex', this._geometry.vertexLocation);
-        this._program.attribute('a_texCoord', this._geometry.uvCoordLocation);
+        this._program.attribute('a_vertex', this._cuboid.vertexLocation);
+        this._program.attribute('a_texCoord', this._cuboid.uvCoordLocation);
         this._program.link();
         this._program.bind();
+
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         const identity = mat4.identity(mat4.create());
@@ -86,26 +84,15 @@ export class CubeRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         gl.uniform1i(this._program.uniform('u_textured'), false);
 
-        // Create and load texture.
-        this._texture = new Texture2D(this._context, 'Texture');
+
+        this._texture = new Texture2D(context, 'Texture');
         this._texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._texture.wrap(gl.REPEAT, gl.REPEAT);
+        this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
+        this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
+
         this._texture.fetch('./data/blue_painted_planks_diff_1k_modified.webp', false).then(() => {
-
-            const gl = this._context.gl;
-
-            this._texture.bind(gl.TEXTURE0);
-
-            if (this._context.supportsTextureFilterAnisotropic) {
-                const ext = this._context.textureFilterAnisotropic;
-                const maxAnisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-                gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
-            }
-            gl.generateMipmap(gl.TEXTURE_2D);
-
-            this._texture.wrap(gl.REPEAT, gl.REPEAT, false, false);
-            this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR, false, false);
-
+            const gl = context.gl;
 
             this._program.bind();
             gl.uniform1i(this._program.uniform('u_textured'), true);
@@ -113,13 +100,14 @@ export class CubeRenderer extends Renderer {
             this.invalidate(true);
         });
 
-        // Initialize camera
+
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
-        this._camera.near = 0.1;
+        this._camera.near = 1.0;
         this._camera.far = 8.0;
+
 
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
@@ -133,7 +121,7 @@ export class CubeRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        this._geometry.uninitialize();
+        this._cuboid.uninitialize();
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
@@ -187,9 +175,9 @@ export class CubeRenderer extends Renderer {
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
-        this._geometry.bind();
-        this._geometry.draw();
-        this._geometry.unbind();
+        this._cuboid.bind();
+        this._cuboid.draw();
+        this._cuboid.unbind();
 
         this._program.unbind();
 
@@ -224,7 +212,7 @@ export class CubeExample extends Example {
 
     uninitialize(): void {
         this._canvas.dispose();
-        this._renderer.uninitialize();
+        (this._renderer as Renderer).uninitialize();
     }
 
     get canvas(): Canvas {

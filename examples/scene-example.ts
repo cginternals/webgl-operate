@@ -96,7 +96,7 @@ export class SceneRenderer extends Renderer {
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 0.0, 3.0);
-        this._camera.near = 0.1;
+        this._camera.near = 1.0;
         this._camera.far = 8.0;
 
         /* Create and configure navigation */
