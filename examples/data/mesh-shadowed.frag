@@ -49,6 +49,10 @@ void main(void)
 
     float visibility = hardShadowCompare(u_shadowMap, shadow_uv, light_depth, shadowBias);
 
+    if (any(greaterThan(shadow_uv, vec2(1.0))) || any(lessThan(shadow_uv, vec2(0.0)))) {
+        visibility = 1.0;
+    }
+
     vec4 color = vec4(1.0);
     if (u_colored) {
         color = vec4(0.8 + (v_vertex.xyz * 0.2 - 0.1), 1.0);
