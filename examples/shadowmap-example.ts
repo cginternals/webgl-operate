@@ -71,19 +71,19 @@ class ShadowMapRenderer extends Renderer {
         this._plane.scale = vec2.fromValues(10, 10);
 
         this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(2.8868, 2.8868, 2.8868);
-        this._camera.near = 1.0;
-        this._camera.far = 12.0;
+        this._camera.eye = vec3.fromValues(1.8, 2.6, 3.4);
+        this._camera.near = 2.0;
+        this._camera.far = 11.0;
 
 
         this._light = new Camera();
         this._light.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._light.eye = vec3.fromValues(-2.0, 4.0, 2.0);
-        this._light.near = 1.0;
-        this._light.far = 8.0;
+        this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
+        this._light.near = 3.0;
+        this._light.far = 9.0;
 
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh-shadowed.vert');
@@ -249,11 +249,10 @@ export class ShadowMapExample extends Example {
 
         this._canvas = new Canvas(element);
         this._canvas.controller.multiFrameNumber = 1;
-        this._canvas.framePrecision = Wizard.Precision.float;
+        this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
 
         this._canvas.clearColor.fromHex('ffffff');
-        this._canvas.controller.multiFrameNumber = 64;
 
         this._renderer = new ShadowMapRenderer();
         this._canvas.renderer = this._renderer;

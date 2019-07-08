@@ -13,6 +13,7 @@ import { Texture2D } from './texture2d';
  * Gaussian Filter implemented using a fragment shader.
  * Renders the filtered result into COLOR_ATTACHMENT0 of the currently bound framebuffer.
  * Does not support integer textures.
+ * @todo: revisit this class design w.r.t. post planned catalogue of processing/filtering passes ...
  */
 export class GaussFilter extends Initializable {
     protected static readonly _MAXKERNELSIZEHALF = 32;

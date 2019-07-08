@@ -1,8 +1,11 @@
 
-import { mat4, vec3 } from 'webgl-operate';
+/* spellchecker: disable */
+
+import { mat4, vec2, vec3 } from 'webgl-operate';
 
 import {
     AccumulatePass,
+    AntiAliasingKernel,
     BlitPass,
     Camera,
     Canvas,
@@ -25,7 +28,8 @@ import {
 } from 'webgl-operate';
 
 import { Example } from './example';
-import { vec2 } from 'gl-matrix';
+
+/* spellchecker: enable */
 
 // tslint:disable:max-classes-per-file
 
@@ -45,6 +49,10 @@ class ShadowMapMultiframeRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _light: Camera;
+    protected _lightSamples: Array<vec3>;
+
+    protected _ndcOffsetKernel: AntiAliasingKernel;
+    protected _uNdcOffset: WebGLUniformLocation;
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
@@ -59,6 +67,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
     protected _shadowPass: ShadowPass;
     protected _accumulate: AccumulatePass;
     protected _blit: BlitPass;
+
 
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
@@ -88,19 +97,21 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._ndcTriangle = new NdcFillingTriangle(this._context);
         this._ndcTriangle.initialize();
 
+
         this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(2.8868, 2.8868, 2.8868);
-        this._camera.near = 1.0;
-        this._camera.far = 12.0;
+        this._camera.eye = vec3.fromValues(1.8, 2.6, 3.4);
+        this._camera.near = 2.0;
+        this._camera.far = 11.0;
 
         this._light = new Camera();
         this._light.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._light.eye = vec3.fromValues(-2.0, 4.0, 2.0);
-        this._light.near = 1.0;
-        this._light.far = 8.0;
+        this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
+        this._light.near = 3.0;
+        this._light.far = 10.0;
+
 
         this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
         this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
@@ -127,6 +138,8 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
         this._uLightView = this._program.uniform('u_lightView');
+        this._uNdcOffset = this._program.uniform('u_ndcOffset');
+
 
         this._uColored = this._program.uniform('u_colored');
 
@@ -147,13 +160,16 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._uModelS = this._shadowProgram.uniform('u_model');
         this._uLightViewS = this._shadowProgram.uniform('u_lightView');
 
+
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
+
 
         this._accumulate = new AccumulatePass(context);
         this._accumulate.initialize(this._ndcTriangle);
         this._accumulate.precision = this._framePrecision;
         this._accumulate.texture = this._colorRenderTexture;
+
 
         this._blit = new BlitPass(this._context);
         this._blit.initialize(this._ndcTriangle);
@@ -162,7 +178,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._blit.target = this._defaultFBO;
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024], [512, 512]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024]);
 
         return true;
     }
@@ -183,8 +199,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
 
     protected onUpdate(): boolean {
         this._navigation.update();
-
-        return true;
+        return this._camera.altered;
     }
 
     protected onPrepare(): void {
@@ -197,9 +212,11 @@ class ShadowMapMultiframeRenderer extends Renderer {
             this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
             this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
                 , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
+            this._intermediateFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         }
 
         if (this._altered.frameSize) {
+            this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
         }
         if (this._altered.canvasSize) {
@@ -210,20 +227,45 @@ class ShadowMapMultiframeRenderer extends Renderer {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        if (this._altered.multiFrameNumber) {
+            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+
+            // /* Create light samples along circle around eye (light position). */
+
+            const n = vec3.sub(vec3.create(), this._light.eye, this._light.center);
+            vec3.normalize(n, n);
+
+            const u = vec3.cross(vec3.create(), n, vec3.fromValues(0.0, 1.0, 0.0));
+            const v = vec3.cross(vec3.create(), n, u);
+
+            this._lightSamples = new Array<vec3>(this._multiFrameNumber);
+            for (let i = 0; i < this._multiFrameNumber; ++i) {
+                const p = vec3.clone(this._light.eye);
+
+                const r = Math.random() * 0.25; // Math.sqrt(i / this._multiFrameNumber);
+                const theta = Math.random() * Math.PI * 2.0;
+
+                vec3.scaleAndAdd(p, p, u, r * Math.cos(theta));
+                vec3.scaleAndAdd(p, p, v, r * Math.sin(theta));
+
+                this._lightSamples[i] = p;
+            }
+
+            this._lightSamples.sort((a: vec3, b: vec3) =>
+                vec3.sqrDist(a, this._light.eye) - vec3.sqrDist(b, this._light.eye));
+        }
+
         this._accumulate.update();
 
         this._altered.reset();
+        this._camera.altered = false;
     }
 
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
 
-        const offset = vec3.create();
-        vec3.random(offset, 0.1);
-        const eye = vec3.fromValues(-2.0, 4.0, 2.0);
-        vec3.add(eye, eye, offset);
 
-        this._light.eye = eye;
+        this._light.eye = this._lightSamples[frameNumber];
 
         this._shadowPass.frame(() => {
             this._shadowProgram.bind();
@@ -235,7 +277,13 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._intermediateFBO.bind();
         this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
+
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+
+        const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
+        ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
+        ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
+
 
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
@@ -244,6 +292,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
         gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, this._light.view);
+        gl.uniform2fv(this._uNdcOffset, ndcOffset);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE0);
 
@@ -304,12 +353,11 @@ export class ShadowMapMultiframeExample extends Example {
     initialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
-        this._canvas.controller.multiFrameNumber = 1;
-        this._canvas.framePrecision = Wizard.Precision.float;
+        this._canvas.framePrecision = Wizard.Precision.half;
         this._canvas.frameScale = [1.0, 1.0];
 
         this._canvas.clearColor.fromHex('ffffff');
-        this._canvas.controller.multiFrameNumber = 64;
+        this._canvas.controller.multiFrameNumber = 128;
 
         this._renderer = new ShadowMapMultiframeRenderer();
         this._canvas.renderer = this._renderer;
