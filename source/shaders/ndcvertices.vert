@@ -6,12 +6,12 @@ precision lowp float;
 
 #if __VERSION__ == 100
     attribute vec2 a_vertex;
-#else 
+#else
     in vec2 a_vertex;
 #endif
 
 
-varying vec2 v_uv;
+out vec2 v_uv;
 
 
 void main(void)
