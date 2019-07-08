@@ -95,7 +95,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         // Initialize camera
         this._camera = new Camera();
         this._camera.eye = vec3.fromValues(0.0, 0.5, 1.0);
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.near = 0.1;
         this._camera.far = 4.0;
