@@ -69,10 +69,10 @@ class EnvironmentProjectionRenderer extends Renderer {
 
         // Initialize program and uniforms
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices');
-        vert.initialize(require('./data/env_mapping.vert'));
+        vert.initialize(require('./data/env-projections.vert'));
 
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections');
-        frag.initialize(require('./data/env_mapping.frag'));
+        frag.initialize(require('./data/env-projections.frag'));
 
         this._program = new Program(this._context, 'EnvProjectionsProgram');
         this._program.initialize([vert, frag], false);
@@ -161,19 +161,19 @@ class EnvironmentProjectionRenderer extends Renderer {
         gl.enable(gl.SCISSOR_TEST);
 
         gl.scissor((w + b) * 0.0, 0, w, h);
-        gl.uniform1i(this._uMode, 0);
+        gl.uniform1i(this._uMode, 2); // sphere map
         this._ndcTriangle.draw();
 
         gl.scissor((w + b) * 1.0, 0, w, h);
-        gl.uniform1i(this._uMode, 1);
+        gl.uniform1i(this._uMode, 1); // equirectangular map
         this._ndcTriangle.draw();
 
         gl.scissor((w + b) * 2.0, 0, w, h);
-        gl.uniform1i(this._uMode, 2);
+        gl.uniform1i(this._uMode, 0); // cube map
         this._ndcTriangle.draw();
 
         gl.scissor((w + b) * 3.0, 0, w, h);
-        gl.uniform1i(this._uMode, 3);
+        gl.uniform1i(this._uMode, 3); // dual paraboloid map
         this._ndcTriangle.draw();
 
         gl.disable(gl.SCISSOR_TEST);
@@ -194,7 +194,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         // gl.generateMipmap(gl.TEXTURE_2D);
 
         texture.wrap(gl.REPEAT, gl.REPEAT, false, false);
-        texture.filter(gl.NEAREST, gl.NEAREST, false, false);
+        texture.filter(gl.LINEAR, gl.LINEAR, false, false);
         this.invalidate(true);
     }
 
@@ -213,7 +213,7 @@ class EnvironmentProjectionRenderer extends Renderer {
             positiveZ: 'data/cube-map-pz.webp', negativeZ: 'data/cube-map-nz.webp',
         }).then(() => {
             const gl = this._context.gl;
-            this._cubeMap.filter(gl.NEAREST, gl.NEAREST, true, true);
+            this._cubeMap.filter(gl.LINEAR, gl.LINEAR, true, true);
 
             this.invalidate(true);
         });

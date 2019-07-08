@@ -1,16 +1,21 @@
 precision highp float;
 
+@import ../../source/shaders/facade.vert;
+
+
 #if __VERSION__ == 100
     attribute vec2 a_vertex;
 #else
     in vec2 a_vertex;
-    #define varying out
 #endif
+
 
 uniform mat4 u_viewProjectionInverse;
 
+
 varying vec2 v_uv;
 varying vec4 v_ray;
+
 
 void main(void)
 {
