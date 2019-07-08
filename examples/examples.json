@@ -41,6 +41,12 @@
         "object": "SceneExample",
         "caption": "Rendering with the webgl-operate scene concept"
     },
+        {
+        "target": "envprojections-example",
+        "title": "Environment Mapping",
+        "object": "EnvironmentProjectionExample",
+        "caption": "Different techniques for environment mapping"
+    },
     {
         "target": "label2d-example",
         "title": "Label 2D",
