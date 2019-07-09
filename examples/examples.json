@@ -13,7 +13,7 @@
     },
     {
         "target": "shadowmap-multiframe-example",
-        "title": "Multiframe Shadow Map",
+        "title": "Shadow Map (Progressive)",
         "object": "ShadowMapMultiframeExample",
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
@@ -41,7 +41,7 @@
         "object": "SceneExample",
         "caption": "Rendering with the webgl-operate scene concept"
     },
-        {
+    {
         "target": "envprojections-example",
         "title": "Environment Mapping",
         "object": "EnvironmentProjectionExample",
