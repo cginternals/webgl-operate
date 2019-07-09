@@ -37,6 +37,7 @@ void main(void)
 {
     vec2 uv = v_uv;
     vec3 ray = normalize(v_ray.xyz);
+    ray.x *= -1.0;
 
     if(u_mode == 0) {
 
@@ -56,7 +57,9 @@ void main(void)
 
     } else if (u_mode == 2) {
 
-        ray = ray.xzy;
+        ray = -ray.xzy;
+        ray.x *= -1.0;
+        // ray.z *= -1.0;
         ray.z += +1.0;
         uv = 0.5 + 0.5 * ray.xy / length(ray);
 

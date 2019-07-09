@@ -94,7 +94,7 @@ class EnvironmentProjectionRenderer extends Renderer {
 
         // Initialize camera
         this._camera = new Camera();
-        this._camera.eye = vec3.fromValues(0.0, 0.5, 1.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
         this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.near = 0.1;
@@ -194,7 +194,8 @@ class EnvironmentProjectionRenderer extends Renderer {
         // gl.generateMipmap(gl.TEXTURE_2D);
 
         texture.wrap(gl.REPEAT, gl.REPEAT, false, false);
-        texture.filter(gl.LINEAR, gl.LINEAR, false, false);
+        texture.filter(gl.NEAREST, gl.NEAREST, false, false);
+
         this.invalidate(true);
     }
 
@@ -205,15 +206,15 @@ class EnvironmentProjectionRenderer extends Renderer {
             this._context, gl.RGB, Wizard.Precision.byte);
 
         this._cubeMap = new TextureCube(this._context);
-        this._cubeMap.initialize(512, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
+        this._cubeMap.initialize(592, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         this._cubeMap.load({
-            positiveX: 'data/cube-map-px.webp', negativeX: 'data/cube-map-nx.webp',
-            positiveY: 'data/cube-map-py.webp', negativeY: 'data/cube-map-ny.webp',
-            positiveZ: 'data/cube-map-pz.webp', negativeZ: 'data/cube-map-nz.webp',
+            positiveX: 'data/cube-map-px.jpg', negativeX: 'data/cube-map-nx.jpg',
+            positiveY: 'data/cube-map-py.jpg', negativeY: 'data/cube-map-ny.jpg',
+            positiveZ: 'data/cube-map-pz.jpg', negativeZ: 'data/cube-map-nz.jpg',
         }).then(() => {
             const gl = this._context.gl;
-            this._cubeMap.filter(gl.LINEAR, gl.LINEAR, true, true);
+            this._cubeMap.filter(gl.NEAREST, gl.NEAREST, true, true);
 
             this.invalidate(true);
         });
@@ -222,7 +223,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._equiRectangularMap = new Texture2D(this._context);
         this._equiRectangularMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._equiRectangularMap.fetch('data/equirectangular-map.webp').then(() => {
+        this._equiRectangularMap.fetch('data/equirectangular-map.jpg').then(() => {
             this.setupTexture2D(this._equiRectangularMap, gl.TEXTURE1);
         });
 
@@ -230,7 +231,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._sphereMap = new Texture2D(this._context);
         this._sphereMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._sphereMap.fetch('data/sphere-map-py.webp').then(() => {
+        this._sphereMap.fetch('data/sphere-map-ny.jpg').then(() => {
             this.setupTexture2D(this._sphereMap, gl.TEXTURE2);
         });
 
@@ -239,7 +240,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._polarMaps[0] = new Texture2D(this._context);
         this._polarMaps[0].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._polarMaps[0].fetch('data/paraboloid-map-py.webp').then(() => {
+        this._polarMaps[0].fetch('data/paraboloid-map-py.jpg').then(() => {
             this.setupTexture2D(this._polarMaps[0], gl.TEXTURE3);
         });
 
@@ -247,7 +248,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._polarMaps[1] = new Texture2D(this._context);
         this._polarMaps[1].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._polarMaps[1].fetch('data/paraboloid-map-ny.webp').then(() => {
+        this._polarMaps[1].fetch('data/paraboloid-map-ny.jpg').then(() => {
             this.setupTexture2D(this._polarMaps[1], gl.TEXTURE4);
         });
     }
