@@ -7,13 +7,13 @@
     },
     {
         "target": "shadowmap-example",
-        "title": "Shadow Map",
+        "title": "Shadow Mapping",
         "object": "ShadowMapExample",
         "caption": "Minimalistic scene featuring a textured unit cube and shadow mapping."
     },
     {
         "target": "shadowmap-multiframe-example",
-        "title": "Multiframe Shadow Map",
+        "title": "Shadow Mapping (Progressive)",
         "object": "ShadowMapMultiframeExample",
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
@@ -41,7 +41,7 @@
         "object": "SceneExample",
         "caption": "Rendering with the webgl-operate scene concept"
     },
-        {
+    {
         "target": "envprojections-example",
         "title": "Environment Mapping",
         "object": "EnvironmentProjectionExample",
