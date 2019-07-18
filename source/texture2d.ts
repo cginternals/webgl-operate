@@ -167,6 +167,8 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
      */
     @Initializable.assert_initialized()
     fetch(url: string, crossOrigin: boolean = false): Promise<void> {
+        const gl = this.context.gl;
+
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onerror = () => {
@@ -176,7 +178,13 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
 
             image.onload = () => {
                 this.resize(image.width, image.height);
+
+                // Flip the image horizontally, since Image has the origin on the top left
+                // while WebGL has it on the bottom left
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
                 this.data(image);
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
                 resolve();
             };
 
