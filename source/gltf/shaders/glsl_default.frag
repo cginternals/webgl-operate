@@ -200,9 +200,9 @@ vec3 getIBLContribution(vec3 n, vec3 v, PBRInfo pbrInfo)
     // TODO: pass uniform for mip count
     const float MIP_COUNT = 8.0;
     float lod = clamp(pbrInfo.perceptualRoughness * MIP_COUNT, 0.0, MIP_COUNT);
-    vec3 reflection = normalize(reflect(v, n));
+    vec3 reflection = normalize(reflect(-v, n));
 
-    vec2 brdfSamplePoint = clamp(vec2(NdotV, pbrInfo.perceptualRoughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
+    vec2 brdfSamplePoint = vec2(NdotV, pbrInfo.perceptualRoughness);
     vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
 
     // vec4 diffuseSample = textureCube(u_DiffuseEnvSampler, n);
@@ -299,7 +299,8 @@ void main(void)
     // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
     vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
 
-    color += getIBLContribution(n, -v, pbrInputs);
+    vec3 environmentLight = getIBLContribution(n, v, pbrInputs);
+    color += environmentLight;
 
     if (checkFlag(HAS_EMISSIVEMAP)) {
         vec3 emissive = SRGBtoLINEAR(texture(u_emissive, v_uv[u_emissiveTexCoord])).rgb * u_emissiveFactor;
