@@ -132,13 +132,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
      * @param transform - The transformation that should be applied to this node
      */
     renderNode(node: SceneNode, transform: mat4): void {
-<<<<<<< HEAD
-=======
         assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
         assert(this.updateViewProjectionTransform !== undefined,
             `View Projection transform function needs to be initialized.`);
 
->>>>>>> image-based-lighting
         const nodeTransform = mat4.clone(transform);
 
         const transformComponents = node.componentsOfType('TransformComponent');

@@ -118,7 +118,7 @@ export class GLTFLoader {
                     sampler.minFilter === gl.NEAREST_MIPMAP_LINEAR ||
                     sampler.minFilter === gl.LINEAR_MIPMAP_LINEAR) {
 
-                    texture.generateMipmap();
+                    texture.generateMipMap();
                 }
             }
 
