@@ -5,7 +5,9 @@ import { SceneNode } from './scenenode';
 
 
 /**
- * @todo add description
+ * This is the base class for all render passes that render scenes.
+ * A `SceneNode` must be given, which is the root node that will be rendered.
+ * All children of this node will be rendered recursively.
  */
 export abstract class SceneRenderPass extends Initializable {
 
@@ -35,15 +37,15 @@ export abstract class SceneRenderPass extends Initializable {
 
 
     /**
-     * @todo comment
-     * @param scene - * @todo comment
+     * Setter for the scene of this render pass.
+     * @param scene - Scene to be rendered
      */
     set scene(scene: SceneNode | undefined) {
         this._scene = scene;
     }
 
     /**
-     * @todo comment
+     * The scene which will be rendered by this pass.
      */
     get scene(): SceneNode | undefined {
         return this._scene;

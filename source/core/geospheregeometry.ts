@@ -8,7 +8,10 @@ import { Geometry } from '../geometry';
 import { Icosahedron } from './icosahedron';
 
 
-export class SphereGeometry extends Geometry {
+/**
+ * @todo Refine this based on https://github.com/cginternals/webgl-operate/issues/183
+ */
+export class GeosphereGeometry extends Geometry {
 
     /**
      * Diameter of the sphere

@@ -181,7 +181,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
      * @returns - Promise for handling images load status.
      */
     @Initializable.assert_initialized()
-    load(urisByFace: TextureCube.PerFaceURI, crossOrigin: boolean = false): Promise<void> {
+    fetch(urisByFace: TextureCube.PerFaceURI, mipLevel: number = 0, crossOrigin: boolean = false): Promise<void> {
 
         const gl = this.context.gl;
         return new Promise((resolve, reject) => {
@@ -212,16 +212,19 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
                 image.onerror = () => reject();
 
                 image.onload = () => {
+                    const size = this.calculateMipLevelSize(mipLevel);
+
                     if (image.width !== image.height) {
                         log(LogLevel.Warning, `image ignored, width and height expected to be equal (square image)`);
                         return;
                     }
-                    if (image.width !== this._size) {
+
+                    if (image.width !== size) {
                         log(LogLevel.Warning, `image ignored, width and height expected to match ` +
-                            `this texture's size ${this._size}, given ${image.width}`);
+                            `this texture's size ${size}, given ${image.width}`);
                         return;
                     }
-                    this.data([tuple[0], image]);
+                    this.data([tuple[0], image], mipLevel);
 
                     /* Resolve the promise when all requested images have been loaded. */
                     waiting = waiting - 1;
@@ -241,6 +244,14 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
     }
 
     /**
+     * This function returns how big a specific mip level for this cubemap hast to be.
+     * @param level - The level for which the size should be determined
+     */
+    calculateMipLevelSize(level: number): number {
+        return this._size * Math.pow(0.5, level);
+    }
+
+    /**
      * Pass data of six images to the texture cube object.
      * @param data - Per face texel data that will be copied into the objects data store. Either provided via object
      * or as tuple, providing the data associated to the targeted face (as GLenum).
@@ -248,11 +259,17 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: TextureCube.PerFaceData | [GLenum, TexImage2DData], bind: boolean = true, unbind: boolean = true): void {
+    data(data: TextureCube.PerFaceData | [GLenum, TexImage2DData],
+        mipLevel: number = 0,
+        bind: boolean = true,
+        unbind: boolean = true): void {
+
         const gl = this.context.gl;
         const gl2facade = this.context.gl2facade;
 
-        let bytesPerFace = this._size * this._size * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
+        const size = this.calculateMipLevelSize(mipLevel);
+
+        let bytesPerFace = size * size * byteSizeOfFormat(this.context, this._internalFormat as GLenum);
         // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
         if (this._type === this.context.gl2facade.HALF_FLOAT && this._internalFormat !== this.context.gl.RGBA16F) {
             bytesPerFace *= 2;
@@ -265,8 +282,8 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         }
 
         if (data instanceof Array && data.length === 2) { /* if tuple is provided... */
-            gl2facade.texImage2D(data[0], 0, this._internalFormat,
-                this._size, this._size, 0, this._format, this._type, data[1]);
+            gl2facade.texImage2D(data[0], mipLevel, this._internalFormat,
+                size, size, 0, this._format, this._type, data[1]);
             const id = this.faceID(data[0]);
             this.context.allocationRegister.deallocate(this._identifier, this._bytes[id]);
             this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
@@ -276,43 +293,43 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
             const perFaceData = data as TextureCube.PerFaceData;
 
             if (perFaceData.positiveX !== undefined) {
-                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this._internalFormat,
-                    this._size, this._size, 0, this._format, this._type, perFaceData.positiveX);
+                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, mipLevel, this._internalFormat,
+                    size, size, 0, this._format, this._type, perFaceData.positiveX);
                 this.context.allocationRegister.deallocate(this._identifier, this._bytes[0]);
                 this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
                 this._bytes[0] = bytesPerFace;
             }
             if (perFaceData.negativeX !== undefined) {
-                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this._internalFormat,
-                    this._size, this._size, 0, this._format, this._type, perFaceData.negativeX);
+                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, mipLevel, this._internalFormat,
+                    size, size, 0, this._format, this._type, perFaceData.negativeX);
                 this.context.allocationRegister.deallocate(this._identifier, this._bytes[1]);
                 this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
                 this._bytes[1] = bytesPerFace;
             }
             if (perFaceData.positiveY !== undefined) {
-                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this._internalFormat,
-                    this._size, this._size, 0, this._format, this._type, perFaceData.positiveY);
+                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, mipLevel, this._internalFormat,
+                    size, size, 0, this._format, this._type, perFaceData.positiveY);
                 this.context.allocationRegister.deallocate(this._identifier, this._bytes[2]);
                 this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
                 this._bytes[2] = bytesPerFace;
             }
             if (perFaceData.negativeY !== undefined) {
-                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this._internalFormat,
-                    this._size, this._size, 0, this._format, this._type, perFaceData.negativeY);
+                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, mipLevel, this._internalFormat,
+                    size, size, 0, this._format, this._type, perFaceData.negativeY);
                 this.context.allocationRegister.deallocate(this._identifier, this._bytes[3]);
                 this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
                 this._bytes[3] = bytesPerFace;
             }
             if (perFaceData.positiveZ !== undefined) {
-                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this._internalFormat,
-                    this._size, this._size, 0, this._format, this._type, perFaceData.positiveZ);
+                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, mipLevel, this._internalFormat,
+                    size, size, 0, this._format, this._type, perFaceData.positiveZ);
                 this.context.allocationRegister.deallocate(this._identifier, this._bytes[4]);
                 this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
                 this._bytes[4] = bytesPerFace;
             }
             if (perFaceData.negativeZ !== undefined) {
-                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this._internalFormat,
-                    this._size, this._size, 0, this._format, this._type, perFaceData.negativeZ);
+                gl2facade.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, mipLevel, this._internalFormat,
+                    size, size, 0, this._format, this._type, perFaceData.negativeZ);
                 this.context.allocationRegister.deallocate(this._identifier, this._bytes[5]);
                 this.context.allocationRegister.allocate(this._identifier, bytesPerFace);
                 this._bytes[5] = bytesPerFace;
@@ -368,6 +385,29 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
     }
 
     /**
+     * Set the textures base and max level for mip mapping. This needs to be used when mip levels
+     * are uploaded manually to specifiy how many mip levels exist.
+     * @param baseLevel - The level with the maximal resolution, usually this will be 0.
+     * @param maxLevel - The level with the minimal resolution.
+     * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
+     */
+    @Initializable.assert_initialized()
+    levels(baseLevel: number, maxLevel: number, bind: boolean = true, unbind: boolean = true): void {
+        const gl = this.context.gl;
+
+        if (bind) {
+            this.bind();
+        }
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_BASE_LEVEL, baseLevel);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAX_LEVEL, maxLevel);
+
+        if (unbind) {
+            this.unbind();
+        }
+    }
+
+    /**
      * This can be used to reformat the texture image without creating a new texture object. Please note that this
      * resets the texture's image data to undefined. @see {@link data} for setting new image data.
      * @param internalFormat - Internal format of the texture object.
@@ -395,7 +435,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
             this._type = type;
         }
 
-        this.data({ clearOnUndefined: true }, bind, unbind);
+        this.data({ clearOnUndefined: true }, 0, bind, unbind);
     }
 
     /**
@@ -411,7 +451,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         }
         this._size = size;
 
-        this.data({ clearOnUndefined: true }, bind, unbind);
+        this.data({ clearOnUndefined: true }, 0, bind, unbind);
     }
 
     /**

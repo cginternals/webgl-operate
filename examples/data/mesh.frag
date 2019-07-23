@@ -15,15 +15,15 @@ uniform bool u_textured;
 #endif
 
 
-varying vec3 v_vertex;
-varying vec2 v_texcoord;
+varying vec4 v_vertex;
+varying vec2 v_uv;
 
 
 void main(void)
 {
     if (u_textured) {
-        fragColor = texture(u_texture, v_texcoord);
+        fragColor = texture(u_texture, v_uv);
     } else {
-        fragColor = vec4(v_vertex * 0.5 + 0.5, 1.0);
+        fragColor = vec4(v_vertex.xyz * 0.5 + 0.5, 1.0);
     }
 }
