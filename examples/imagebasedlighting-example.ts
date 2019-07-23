@@ -35,6 +35,7 @@ export class ImageBasedLightingRenderer extends Renderer {
     protected _sphere: GeosphereGeometry;
     protected _albedoTexture: Texture2D;
     protected _roughnessTexture: Texture2D;
+    protected _metallicTexture: Texture2D;
     protected _normalTexture: Texture2D;
     protected _brdfLUT: Texture2D;
     protected _cubemap: TextureCube;
@@ -91,19 +92,23 @@ export class ImageBasedLightingRenderer extends Renderer {
         gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, identity);
         gl.uniform1i(this._program.uniform('u_albedoTexture'), 0);
         gl.uniform1i(this._program.uniform('u_roughnessTexture'), 1);
-        gl.uniform1i(this._program.uniform('u_normalTexture'), 2);
-        gl.uniform1i(this._program.uniform('u_cubemap'), 3);
-        gl.uniform1i(this._program.uniform('u_brdfLUT'), 4);
+        gl.uniform1i(this._program.uniform('u_metallicTexture'), 2);
+        gl.uniform1i(this._program.uniform('u_normalTexture'), 3);
+        gl.uniform1i(this._program.uniform('u_cubemap'), 4);
+        gl.uniform1i(this._program.uniform('u_brdfLUT'), 5);
 
         gl.uniform1i(this._program.uniform('u_textured'), false);
 
+        /**
+         * Textures taken from https://3dtextures.me/2018/11/19/metal-001/ and modified
+         */
         this._albedoTexture = new Texture2D(context, 'AlbedoTexture');
         this._albedoTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._albedoTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._albedoTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._albedoTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._albedoTexture.fetch('./data/imagebasedlighting/metal_plate_diff_1k.jpg', false).then(() => {
+        this._albedoTexture.fetch('./data/imagebasedlighting/Metal_001_basecolor.png', false).then(() => {
             const gl = context.gl;
 
             this._program.bind();
@@ -117,14 +122,21 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._roughnessTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._roughnessTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._roughnessTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._roughnessTexture.fetch('./data/imagebasedlighting/metal_plate_rough_1k.jpg', false);
+        this._roughnessTexture.fetch('./data/imagebasedlighting/Metal_001_roughness.png', false);
+
+        this._metallicTexture = new Texture2D(context, 'MetallicTexture');
+        this._metallicTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
+        this._metallicTexture.wrap(gl.REPEAT, gl.REPEAT);
+        this._metallicTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
+        this._metallicTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
+        this._metallicTexture.fetch('./data/imagebasedlighting/Metal_001_metallic.png', false);
 
         this._normalTexture = new Texture2D(context, 'NormalTexture');
         this._normalTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._normalTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._normalTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._normalTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._normalTexture.fetch('./data/imagebasedlighting/metal_plate_normal_1k.jpg', false);
+        this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false);
 
         this._brdfLUT = new Texture2D(context, 'BRDFLookUpTable');
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
@@ -225,9 +237,10 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         this._albedoTexture.bind(gl.TEXTURE0);
         this._roughnessTexture.bind(gl.TEXTURE1);
-        this._normalTexture.bind(gl.TEXTURE2);
-        this._cubemap.bind(gl.TEXTURE3);
-        this._brdfLUT.bind(gl.TEXTURE4);
+        this._metallicTexture.bind(gl.TEXTURE2);
+        this._normalTexture.bind(gl.TEXTURE3);
+        this._cubemap.bind(gl.TEXTURE4);
+        this._brdfLUT.bind(gl.TEXTURE5);
 
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
@@ -240,10 +253,11 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._program.unbind();
 
         this._albedoTexture.unbind(gl.TEXTURE0);
-        this._roughnessTexture.bind(gl.TEXTURE1);
-        this._normalTexture.bind(gl.TEXTURE2);
-        this._cubemap.unbind(gl.TEXTURE3);
-        this._brdfLUT.unbind(gl.TEXTURE4);
+        this._roughnessTexture.unbind(gl.TEXTURE1);
+        this._metallicTexture.unbind(gl.TEXTURE2);
+        this._normalTexture.unbind(gl.TEXTURE3);
+        this._cubemap.unbind(gl.TEXTURE4);
+        this._brdfLUT.unbind(gl.TEXTURE5);
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);

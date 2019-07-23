@@ -6,6 +6,7 @@ precision lowp float;
 
 uniform sampler2D u_albedoTexture;
 uniform sampler2D u_roughnessTexture;
+uniform sampler2D u_metallicTexture;
 uniform sampler2D u_normalTexture;
 uniform sampler2D u_brdfLUT;
 uniform bool u_textured;
@@ -23,6 +24,7 @@ uniform samplerCube u_cubemap;
 
 varying vec4 v_vertex;
 varying vec2 v_uv;
+varying vec3 v_normal;
 
 const float GAMMA = 2.2;
 const float INV_GAMMA = 1.0 / GAMMA;
@@ -73,32 +75,31 @@ vec3 getIBLContribution(vec3 n, vec3 v, float perceptualRoughness, vec3 diffuseC
     float NdotV = clamp(dot(n, v), 0.0, 1.0);
 
     float lod = clamp(perceptualRoughness * MIP_COUNT, 0.0, MIP_COUNT);
-    vec3 reflection = normalize(reflect(v, n));
+    vec3 reflection = normalize(reflect(-v, n));
 
     vec2 brdfSamplePoint = clamp(vec2(NdotV, perceptualRoughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
     vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
 
-    // vec4 diffuseSample = textureCube(u_DiffuseEnvSampler, n);
     vec4 specularSample = textureLod(u_cubemap, reflection, lod);
 
-    // vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
+    // TODO: use a prefiltered diffuse environment map
+    vec3 diffuseLight = vec3(0.8);
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
 
-    // vec3 diffuse = diffuseLight * diffuseColor;
+    vec3 diffuse = diffuseLight * diffuseColor;
     vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
 
-    return specular;
-    // return diffuse + specular;
+    return diffuse + specular;
 }
 
 void main(void)
 {
+    vec3 N = normalize(v_normal);
     vec3 T = normalize(dFdx(v_vertex.xyz));
-    vec3 B = normalize(dFdy(v_vertex.xyz));
-    vec3 N = normalize(cross(T, B));
+    vec3 B = normalize(cross(T, N));
     mat3 TBN = mat3(T, B, N);
 
-    vec3 view = normalize(v_vertex.xyz - u_eye);
+    vec3 view = normalize(u_eye - v_vertex.xyz);
 
     if (u_textured) {
         vec3 albedoColor = texture(u_albedoTexture, v_uv).rgb;
@@ -111,8 +112,14 @@ void main(void)
         float roughness = texture(u_roughnessTexture, v_uv).r;
         roughness = pow(roughness, GAMMA);
 
-        // simplified IBL calculation that only handles metallic materials
-        vec3 IBL = getIBLContribution(normal, view, roughness, vec3(0.0), albedoColor);
+        float metallic = texture(u_metallicTexture, v_uv).r;
+        metallic = pow(metallic, GAMMA);
+
+        const vec3 f0 = vec3(0.04);
+        vec3 diffuseColor = albedoColor * (vec3(1.0) - f0) * (1.0 - metallic);
+        vec3 specularColor = mix(f0, albedoColor, metallic);
+
+        vec3 IBL = getIBLContribution(normal, view, roughness, diffuseColor, specularColor);
         fragColor = vec4(IBL, 1.0);
         fragColor.rgb = toneMapUncharted(fragColor.rgb);
     } else {
