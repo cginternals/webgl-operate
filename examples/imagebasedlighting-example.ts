@@ -7,7 +7,7 @@ import {
     Camera,
     Canvas,
     Context,
-    CuboidGeometry,
+    GeosphereGeometry,
     DefaultFramebuffer,
     Invalidate,
     MouseEventProvider,
@@ -32,7 +32,7 @@ export class ImageBasedLightingRenderer extends Renderer {
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _cuboid: CuboidGeometry;
+    protected _sphere: GeosphereGeometry;
     protected _albedoTexture: Texture2D;
     protected _roughnessTexture: Texture2D;
     protected _normalTexture: Texture2D;
@@ -65,8 +65,8 @@ export class ImageBasedLightingRenderer extends Renderer {
         const gl = context.gl;
 
 
-        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.0, 2.0, 2.0]);
-        this._cuboid.initialize();
+        this._sphere = new GeosphereGeometry(context, 'Sphere');
+        this._sphere.initialize();
 
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
@@ -78,8 +78,8 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._program = new Program(context, 'CubeProgram');
         this._program.initialize([vert, frag], false);
 
-        this._program.attribute('a_vertex', this._cuboid.vertexLocation);
-        this._program.attribute('a_texCoord', this._cuboid.uvCoordLocation);
+        this._program.attribute('a_vertex', this._sphere.vertexLocation);
+        this._program.attribute('a_texCoord', this._sphere.texCoordLocation);
         this._program.link();
         this._program.bind();
 
@@ -174,7 +174,7 @@ export class ImageBasedLightingRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        this._cuboid.uninitialize();
+        this._sphere.uninitialize();
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
@@ -233,9 +233,9 @@ export class ImageBasedLightingRenderer extends Renderer {
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
         gl.uniform3fv(this._uEye, this._camera.eye);
 
-        this._cuboid.bind();
-        this._cuboid.draw();
-        this._cuboid.unbind();
+        this._sphere.bind();
+        this._sphere.draw();
+        this._sphere.unbind();
 
         this._program.unbind();
 

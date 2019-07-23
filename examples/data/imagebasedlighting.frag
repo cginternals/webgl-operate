@@ -28,8 +28,6 @@ const float GAMMA = 2.2;
 const float INV_GAMMA = 1.0 / GAMMA;
 const float MIP_COUNT = 8.0;
 
-const float cubemapFactor = 1.5;
-
 // sRGB to linear approximation
 // see http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html
 vec4 SRGBtoLINEAR(vec4 srgbIn)
@@ -85,7 +83,6 @@ vec3 getIBLContribution(vec3 n, vec3 v, float perceptualRoughness, vec3 diffuseC
 
     // vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
-    specularLight *= cubemapFactor;
 
     // vec3 diffuse = diffuseLight * diffuseColor;
     vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
@@ -111,25 +108,14 @@ void main(void)
         vec3 normal = normalize(normalSample * 2.0 - 1.0);
         normal = normalize(TBN * normal);
 
-        float metalness = 1.0;
         float roughness = texture(u_roughnessTexture, v_uv).r;
         roughness = pow(roughness, GAMMA);
-        // roughness = clamp(roughness - 0.1, 0.0, 1.0);
 
+        // simplified IBL calculation that only handles metallic materials
         vec3 IBL = getIBLContribution(normal, view, roughness, vec3(0.0), albedoColor);
         fragColor = vec4(IBL, 1.0);
         fragColor.rgb = toneMapUncharted(fragColor.rgb);
-
-        // vec3 R = normalize(reflect(V, N));
-        // fragColor = textureLod(u_cubemap, R, 0.0);
-        // fragColor = vec4(vec3(roughness), 1.0);
-        // fragColor = vec4(albedoColor, 1.0);
-        // fragColor.rgb = pow(fragColor.rgb, vec3(INV_GAMMA));
-        // fragColor.rgb = toneMapUncharted(fragColor.rgb);
     } else {
         fragColor = vec4(v_vertex.xyz * 0.5 + 0.5, 1.0);
     }
-
-    // fragColor = vec4(-V.y * 0.5 + 0.5, 0.0, 0.0, 1.0);
-    // fragColor = vec4(reflect(vec3(0.0, -1.0, 0.0), vec3(0.0, 1.0, 0.0)).y * 0.5 + 0.5, 0.0, 0.0, 1.0);
 }
