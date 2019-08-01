@@ -54,6 +54,12 @@
         "caption": "Image based lighting using prefiltered cube maps"
     },
     {
+        "target": "arealight-example",
+        "title": "Area Lights",
+        "object": "AreaLightExample",
+        "caption": "Area lights using Multi-Frame sampling."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
