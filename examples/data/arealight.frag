@@ -94,9 +94,72 @@ float microfacetDistribution(float alphaRoughnessSq, float NdotH)
     return alphaRoughnessSq / (M_PI * f * f);
 }
 
+vec3 pbrSpecular(vec3 V, vec3 N, vec3 L, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq)
+{
+    vec3 H = normalize(V + L);
+
+    float VdotH = clamp(dot(V, H), 0.0, 1.0);
+    float NdotL = clamp(dot(N, L), 0.0, 1.0);
+    float NdotV = clamp(dot(N, V), 0.0, 1.0);
+    float NdotH = clamp(dot(N, H), 0.0, 1.0);
+
+    if (NdotL < 0.0 && NdotV < 0.0) {
+        return vec3(0.0);
+    }
+
+    vec3 F = specularReflection(reflectance0, reflectance90, VdotH);
+    float Vis = visibilityOcclusion(alphaRoughnessSq, NdotL, NdotV);
+    float D = microfacetDistribution(alphaRoughnessSq, NdotH);
+
+    vec3 specularContribution = F * Vis * D;
+
+    return specularContribution * NdotL * lightColor;
+}
+
+// Adapted from "Moving Frostbite to PBR"
+vec3 uniformSampleSphere(float u1, float u2)
+{
+    float phi = 2.0 * M_PI * u2;
+    float cosTheta = 1.0 - 2.0 * u1;
+    float sinTheta = sqrt(max (0.0 , 1.0 - cosTheta * cosTheta));
+
+    return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+}
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
+    const int SAMPLE_COUNT = 128;
+    const vec3 SPHERE_POSITION = vec3(0.0, 0.5, 0.0);
+    const float SPHERE_RADIUS = 0.25;
+
+    vec3 light = vec3(0.0);
+
+    float lightPdf = 1.0 / (4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS);
+
+    for (int i = 0; i < SAMPLE_COUNT; ++i) {
+        float r1 = rand(v_uv + vec2(float(i)));
+        float r2 = rand(v_uv + vec2(float(i * 3)));
+
+        vec3 sphereNormal = uniformSampleSphere(r1, r2);
+        vec3 spherePosition = sphereNormal * SPHERE_RADIUS + SPHERE_POSITION;
+        vec3 lightVector = spherePosition - v_vertex.xyz;
+        float sqDist = dot(lightVector, lightVector);
+        vec3 L = normalize(lightVector);
+
+        vec3 illuminance = lightColor * clamp(dot(sphereNormal, -L), 0.0, 1.0) / (lightPdf * sqDist);
+
+        light += pbrSpecular(V, N, L, illuminance, reflectance0, reflectance90, alphaRoughnessSq);
+    }
+
+    return light / float(SAMPLE_COUNT);
+}
+
 void main(void)
 {
-    vec2 uv = v_uv;// * 3.0;
+    vec2 uv = v_uv;
 
     const vec3 normal = vec3(0.0, 1.0, 0.0);
     const vec3 tangent = vec3(1.0, 0.0, 0.0);
@@ -127,45 +190,22 @@ void main(void)
 
     // Directional Light
     {
+        vec3 L = vec3(0.0, 1.0, 0.0);
         const vec3 lightColor = vec3(1.0, 0.9, 0.9);
 
-        vec3 L = vec3(0.0, 1.0, 0.0);
-        vec3 H = normalize(V + L);
-
-        float VdotH = dot(V, H);
-        float NdotL = dot(N, L);
-        float NdotV = dot(N, V);
-        float NdotH = dot(N, H);
-
-        vec3 F = specularReflection(reflectance0, reflectance90, VdotH);
-        float Vis = visibilityOcclusion(alphaRoughnessSq, NdotL, NdotV);
-        float D = microfacetDistribution(alphaRoughnessSq, NdotH);
-
-        vec3 specularContribution = F * Vis * D;
-
-        lighting += specularContribution * lightColor * NdotL;
+        lighting += pbrSpecular(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
     }
 
     // Point Light
     {
-        const vec3 lightPosition = vec3(0.0, 0.5, 0.0);
-        const vec3 lightColor = vec3(1.0, 0.9, 0.9);
+        // const vec3 lightPosition = vec3(0.0, 0.5, 0.0);
+        const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
-        vec3 L = normalize(lightPosition - v_vertex.xyz);
-        vec3 H = normalize(V + L);
+        // vec3 L = normalize(lightPosition - v_vertex.xyz);
 
-        float VdotH = dot(V, H);
-        float NdotL = dot(N, L);
-        float NdotV = dot(N, V);
-        float NdotH = dot(N, H);
+        // lighting += pbrSpecular(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
 
-        vec3 F = specularReflection(reflectance0, reflectance90, VdotH);
-        float Vis = visibilityOcclusion(alphaRoughnessSq, NdotL, NdotV);
-        float D = microfacetDistribution(alphaRoughnessSq, NdotH);
-
-        vec3 specularContribution = F * Vis * D;
-
-        lighting += specularContribution * lightColor * NdotL;
+        lighting += evaluateSphereLightBruteForce(V, N, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
     }
 
     fragColor = vec4(lighting, 1.0);

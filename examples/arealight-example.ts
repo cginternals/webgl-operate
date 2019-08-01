@@ -1,13 +1,14 @@
 
 /* spellchecker: disable */
 
-import { vec2, vec3 } from 'gl-matrix';
+import { mat4, vec2, vec3 } from 'gl-matrix';
 
 import {
     Camera,
     Canvas,
     Context,
     DefaultFramebuffer,
+    GeosphereGeometry,
     Invalidate,
     MouseEventProvider,
     Navigation,
@@ -32,6 +33,10 @@ export class AreaLightRenderer extends Renderer {
     protected _navigation: Navigation;
 
     protected _plane: PlaneGeometry;
+    protected _lightSphere: GeosphereGeometry;
+
+    protected _lightPosition: vec3;
+
     protected _albedoTexture: Texture2D;
     protected _roughnessTexture: Texture2D;
     protected _metallicTexture: Texture2D;
@@ -39,7 +44,11 @@ export class AreaLightRenderer extends Renderer {
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
+    protected _uModel: WebGLUniformLocation;
     protected _uEye: WebGLUniformLocation;
+
+    protected _lightProgram: Program;
+    protected _uViewProjectionLight: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
 
@@ -67,11 +76,15 @@ export class AreaLightRenderer extends Renderer {
         this._plane.initialize();
         this._plane.scale = vec2.fromValues(3.0, 3.0);
 
+        this._lightSphere = new GeosphereGeometry(context, 'LightSphere', 0.25);
+        this._lightSphere.initialize();
+
+        this._lightPosition = vec3.fromValues(0.0, 0.5, 0.0);
+
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
         const frag = new Shader(context, gl.FRAGMENT_SHADER, 'arealight.frag');
         frag.initialize(require('./data/arealight.frag'));
-
 
         this._program = new Program(context, 'AreaLightProgram');
         this._program.initialize([vert, frag], false);
@@ -81,15 +94,31 @@ export class AreaLightRenderer extends Renderer {
         this._program.link();
         this._program.bind();
 
-
         this._uViewProjection = this._program.uniform('u_viewProjection');
+        this._uModel = this._program.uniform('u_model');
         this._uEye = this._program.uniform('u_eye');
 
-        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, this._plane.transformation);
         gl.uniform1i(this._program.uniform('u_albedoTexture'), 0);
         gl.uniform1i(this._program.uniform('u_roughnessTexture'), 1);
         gl.uniform1i(this._program.uniform('u_metallicTexture'), 2);
         gl.uniform1i(this._program.uniform('u_normalTexture'), 3);
+
+        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, this._plane.transformation);
+
+        // Program for rendering the light source
+        const lightFrag = new Shader(context, gl.FRAGMENT_SHADER, 'light.frag');
+        lightFrag.initialize(require('./data/light.frag'));
+
+        this._lightProgram = new Program(context, 'LightProgram');
+        this._lightProgram.initialize([vert, lightFrag], false);
+
+        this._lightProgram.attribute('a_vertex', this._lightSphere.vertexLocation);
+        this._lightProgram.link();
+        this._lightProgram.bind();
+
+        const m = mat4.create();
+        gl.uniformMatrix4fv(this._lightProgram.uniform('u_model'), gl.FALSE, mat4.translate(m, m, this._lightPosition));
+        this._uViewProjectionLight = this._lightProgram.uniform('u_viewProjection');
 
         /**
          * Textures taken from https://3dtextures.me/2018/11/19/metal-001/ and modified
@@ -150,6 +179,7 @@ export class AreaLightRenderer extends Renderer {
         super.uninitialize();
 
         this._plane.uninitialize();
+        this._lightSphere.uninitialize();
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
@@ -211,12 +241,22 @@ export class AreaLightRenderer extends Renderer {
         this._plane.draw();
         this._plane.unbind();
 
-        this._program.unbind();
-
         this._albedoTexture.unbind(gl.TEXTURE0);
         this._roughnessTexture.unbind(gl.TEXTURE1);
         this._metallicTexture.unbind(gl.TEXTURE2);
         this._normalTexture.unbind(gl.TEXTURE3);
+
+        this._program.unbind();
+
+        // Render light source
+        this._lightProgram.bind();
+        gl.uniformMatrix4fv(this._uViewProjectionLight, gl.GL_FALSE, this._camera.viewProjection);
+
+        this._lightSphere.bind();
+        this._lightSphere.draw();
+        this._lightSphere.unbind();
+
+        this._lightProgram.unbind();
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
