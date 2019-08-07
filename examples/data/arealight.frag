@@ -94,7 +94,7 @@ float microfacetDistribution(float alphaRoughnessSq, float NdotH)
     return alphaRoughnessSq / (M_PI * f * f);
 }
 
-vec3 pbrSpecular(vec3 V, vec3 N, vec3 L, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq)
+vec3 pbrSpecular(vec3 V, vec3 N, vec3 L, vec3 illuminance, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq, float D_normalization)
 {
     vec3 H = normalize(V + L);
 
@@ -109,11 +109,11 @@ vec3 pbrSpecular(vec3 V, vec3 N, vec3 L, vec3 lightColor, vec3 reflectance0, vec
 
     vec3 F = specularReflection(reflectance0, reflectance90, VdotH);
     float Vis = visibilityOcclusion(alphaRoughnessSq, NdotL, NdotV);
-    float D = microfacetDistribution(alphaRoughnessSq, NdotH);
+    float D = microfacetDistribution(alphaRoughnessSq, NdotH) * D_normalization;
 
     vec3 specularContribution = F * Vis * D;
 
-    return specularContribution * NdotL * lightColor;
+    return specularContribution * NdotL * illuminance;
 }
 
 // Adapted from "Moving Frostbite to PBR"
@@ -137,7 +137,8 @@ vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflect
 
     vec3 light = vec3(0.0);
 
-    float lightPdf = 1.0 / (4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS);
+    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
+    float pdf = 1.0 / sphereArea;
 
     for (int i = 0; i < SAMPLE_COUNT; ++i) {
         float r1 = rand(v_uv + vec2(float(i)));
@@ -149,12 +150,45 @@ vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflect
         float sqDist = dot(lightVector, lightVector);
         vec3 L = normalize(lightVector);
 
-        vec3 illuminance = lightColor * clamp(dot(sphereNormal, -L), 0.0, 1.0) / (lightPdf * sqDist);
+        // turn this from an area integral to a solid angle integral
+        float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
+        vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
+        vec3 integralSample = L_i / lightPdf;
 
-        light += pbrSpecular(V, N, L, illuminance, reflectance0, reflectance90, alphaRoughnessSq);
+        light += pbrSpecular(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
     }
 
     return light / float(SAMPLE_COUNT);
+}
+
+// See "Real Shading in Unreal Engine 4"
+vec3 evaluateSphereLightKaris(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughness) {
+    const vec3 SPHERE_POSITION = vec3(1.0, 0.5, 0.0);
+    const float SPHERE_RADIUS = 0.25;
+
+    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
+
+    vec3 R = reflect(V, N);
+    vec3 L_center = SPHERE_POSITION - v_vertex.xyz;
+    vec3 centerToRay = dot(L_center, R) * R - L_center;
+    vec3 closestPoint = L_center + centerToRay * clamp(SPHERE_RADIUS / length(centerToRay), 0.0, 1.0);
+    vec3 L = normalize(closestPoint);
+    float sqDist = dot(closestPoint, closestPoint);
+
+    // Since we only take one sample we want to get the total light power
+    // We need to convert units since lightColor is in W / sr*m^2
+    // Multiply by PI to get W / m^2 (since we assume a lambertian light source and the integral of cos over hemisphere sums to PI)
+    // Then multiply by area to get W
+    vec3 lightPower = M_PI * sphereArea * lightColor;
+    // Estimate the irradiance from total light power
+    // Note: this formula is an approximation that assumes the light source is a point light at the newly calculated light position
+    vec3 irradiance = lightPower / (4.0 * M_PI * sqDist);
+
+    // This normalization factor given by Karis should be used to scale the NDF
+    float normalization = alphaRoughness / (alphaRoughness + SPHERE_RADIUS / (2.0 * sqrt(sqDist)));
+    normalization = normalization * normalization;
+
+    return pbrSpecular(V, N, L, irradiance, reflectance0, reflectance90, alphaRoughness * alphaRoughness, normalization);
 }
 
 void main(void)
@@ -175,6 +209,7 @@ void main(void)
 
     float roughness = texture(u_roughnessTexture, uv).r;
     roughness = pow(roughness, GAMMA);
+    roughness = clamp(roughness + 0.3, 0.0, 1.0);
 
     float alphaRoughness = roughness * roughness;
     float alphaRoughnessSq = alphaRoughness * alphaRoughness;
@@ -193,19 +228,21 @@ void main(void)
         vec3 L = vec3(0.0, 1.0, 0.0);
         const vec3 lightColor = vec3(1.0, 0.9, 0.9);
 
-        lighting += pbrSpecular(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
+        lighting += pbrSpecular(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
     }
 
-    // Point Light
+    // Area Light Reference
     {
-        // const vec3 lightPosition = vec3(0.0, 0.5, 0.0);
         const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
-        // vec3 L = normalize(lightPosition - v_vertex.xyz);
-
-        // lighting += pbrSpecular(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
-
         lighting += evaluateSphereLightBruteForce(V, N, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
+    }
+
+    // Area Light (Karis MRP approximation)
+    {
+        const vec3 lightColor = vec3(1.0, 0.5, 0.5);
+
+        lighting += evaluateSphereLightKaris(V, N, lightColor, reflectance0, reflectance90, alphaRoughness);
     }
 
     fragColor = vec4(lighting, 1.0);
