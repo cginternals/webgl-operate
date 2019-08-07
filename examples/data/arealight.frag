@@ -127,12 +127,12 @@ vec3 uniformSampleSphere(float u1, float u2)
 }
 
 float rand(vec2 co){
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+    return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
 }
 
 vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
     const int SAMPLE_COUNT = 128;
-    const vec3 SPHERE_POSITION = vec3(0.0, 0.5, 0.0);
+    const vec3 SPHERE_POSITION = vec3(-1.0, 0.5, 0.0);
     const float SPHERE_RADIUS = 0.25;
 
     vec3 light = vec3(0.0);
@@ -163,7 +163,7 @@ vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflect
 
 // See "Real Shading in Unreal Engine 4"
 vec3 evaluateSphereLightKaris(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughness) {
-    const vec3 SPHERE_POSITION = vec3(1.0, 0.5, 0.0);
+    const vec3 SPHERE_POSITION = vec3(0.0, 0.5, 0.0);
     const float SPHERE_RADIUS = 0.25;
 
     float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
@@ -189,6 +189,85 @@ vec3 evaluateSphereLightKaris(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0
     normalization = normalization * normalization;
 
     return pbrSpecular(V, N, L, irradiance, reflectance0, reflectance90, alphaRoughness * alphaRoughness, normalization);
+}
+
+// Adapted from "Real Shading in Unreal Engine 4"
+vec3 importanceSampleGGX(vec2 Xi, float alphaRoughnessSq, vec3 N)
+{
+    float Phi = 2.0 * M_PI * Xi.x;
+    float CosTheta = sqrt((1.0 - Xi.y) / (1.0 + (alphaRoughnessSq - 1.0) * Xi.y));
+    float SinTheta = sqrt(1.0 - CosTheta * CosTheta);
+
+    vec3 H;
+    H.x = SinTheta * cos(Phi);
+    H.y = SinTheta * sin(Phi);
+    H.z = CosTheta;
+    vec3 UpVector = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+    vec3 TangentX = normalize(cross( UpVector, N));
+    vec3 TangentY = cross(N, TangentX);
+    // Tangent to world space
+    return TangentX * H.x + TangentY * H.y + N * H.z;
+}
+
+// https://gist.github.com/wwwtyro/beecc31d65d1004f5a9d
+float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr) {
+    // - r0: ray origin
+    // - rd: normalized ray direction
+    // - s0: sphere center
+    // - sr: sphere radius
+    // - Returns distance from r0 to first intersecion with sphere,
+    //   or -1.0 if no intersection.
+    float a = dot(rd, rd);
+    vec3 s0_r0 = r0 - s0;
+    float b = 2.0 * dot(rd, s0_r0);
+    float c = dot(s0_r0, s0_r0) - (sr * sr);
+    if (b*b - 4.0*a*c < 0.0) {
+        return -1.0;
+    }
+    return (-b + sqrt((b*b) - 4.0*a*c))/(2.0*a);
+}
+
+vec3 evaluateSphereLightImportanceSampleGGX(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
+    const int SAMPLE_COUNT = 128;
+    const vec3 SPHERE_POSITION = vec3(1.0, 0.5, 0.0);
+    const float SPHERE_RADIUS = 0.25;
+
+    vec3 light = vec3(0.0);
+
+    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
+
+    for (int i = 0; i < SAMPLE_COUNT; ++i) {
+        float r1 = rand(v_uv + vec2(float(i)));
+        float r2 = rand(v_uv + vec2(float(i * 3)));
+
+        vec3 H = importanceSampleGGX(vec2(r1, r2), alphaRoughnessSq, N);
+        vec3 sampleDir = reflect(V, H);
+        float t = raySphereIntersect(v_vertex.xyz, sampleDir, SPHERE_POSITION, SPHERE_RADIUS);
+
+        if (t == -1.0) continue;
+
+        float NdotH = clamp(dot(N, H), 0.0, 1.0);
+        float VdotH = clamp(dot(V, H), 0.0, 1.0);
+
+        vec3 spherePosition = v_vertex.xyz + t * sampleDir;
+        vec3 sphereNormal = normalize(spherePosition - SPHERE_POSITION);
+        // TODO: optimize this
+        // math behind calculating the pdf: https://schuttejoe.github.io/post/ggximportancesamplingpart1/
+        float pdf = microfacetDistribution(alphaRoughnessSq, NdotH) * NdotH / (4.0 * VdotH);
+
+        vec3 lightVector = spherePosition - v_vertex.xyz;
+        float sqDist = dot(lightVector, lightVector);
+        vec3 L = normalize(lightVector);
+
+        // turn this from an area integral to a solid angle integral
+        float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
+        vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
+        vec3 integralSample = L_i / lightPdf;
+
+        light += pbrSpecular(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
+    }
+
+    return light / float(SAMPLE_COUNT);
 }
 
 void main(void)
@@ -243,6 +322,13 @@ void main(void)
         const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
         lighting += evaluateSphereLightKaris(V, N, lightColor, reflectance0, reflectance90, alphaRoughness);
+    }
+
+    // Area Light Importance Sampling GGX
+    {
+        const vec3 lightColor = vec3(1.0, 0.5, 0.5);
+
+        lighting += evaluateSphereLightImportanceSampleGGX(V, N, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
     }
 
     fragColor = vec4(lighting, 1.0);
