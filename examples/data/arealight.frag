@@ -94,7 +94,7 @@ float microfacetDistribution(float alphaRoughnessSq, float NdotH)
     return alphaRoughnessSq / (M_PI * f * f);
 }
 
-vec3 pbrSpecular(vec3 V, vec3 N, vec3 L, vec3 illuminance, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq, float D_normalization)
+vec3 specularBrdf(vec3 V, vec3 N, vec3 L, vec3 illuminance, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq, float D_normalization)
 {
     vec3 H = normalize(V + L);
 
@@ -116,6 +116,29 @@ vec3 pbrSpecular(vec3 V, vec3 N, vec3 L, vec3 illuminance, vec3 reflectance0, ve
     return specularContribution * NdotL * illuminance;
 }
 
+// Importance sampling with GGX introduces the pdf: D * NdotH / (4.0 * VdotH)
+// Therefore D cancels out
+vec3 specularBrdfGGXImportanceSampled(vec3 V, vec3 N, vec3 L, vec3 illuminance, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq)
+{
+    vec3 H = normalize(V + L);
+
+    float VdotH = clamp(dot(V, H), 0.0, 1.0);
+    float NdotL = clamp(dot(N, L), 0.0, 1.0);
+    float NdotV = clamp(dot(N, V), 0.0, 1.0);
+    float NdotH = clamp(dot(N, H), 0.0, 1.0);
+
+    if (NdotL < 0.0 && NdotV < 0.0) {
+        return vec3(0.0);
+    }
+
+    vec3 F = specularReflection(reflectance0, reflectance90, VdotH);
+    float Vis = visibilityOcclusion(alphaRoughnessSq, NdotL, NdotV);
+
+    vec3 specularContribution = F * Vis;
+
+    return specularContribution * NdotL * illuminance;
+}
+
 // Adapted from "Moving Frostbite to PBR"
 vec3 uniformSampleSphere(float u1, float u2)
 {
@@ -132,11 +155,13 @@ float rand(vec2 co){
 
 vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
     const int SAMPLE_COUNT = 128;
-    const vec3 SPHERE_POSITION = vec3(-1.0, 0.5, 0.0);
+    const vec3 SPHERE_POSITION = vec3(-2.0, 0.5, 0.0);
     const float SPHERE_RADIUS = 0.25;
 
     vec3 light = vec3(0.0);
 
+    // Could we flip the sphere normal if it points away from shaded point and adjust the area accordingly?
+    // This would double the ffective sample count
     float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
     float pdf = 1.0 / sphereArea;
 
@@ -155,7 +180,7 @@ vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflect
         vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
         vec3 integralSample = L_i / lightPdf;
 
-        light += pbrSpecular(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
+        light += specularBrdf(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
     }
 
     return light / float(SAMPLE_COUNT);
@@ -188,7 +213,7 @@ vec3 evaluateSphereLightKaris(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0
     float normalization = alphaRoughness / (alphaRoughness + SPHERE_RADIUS / (2.0 * sqrt(sqDist)));
     normalization = normalization * normalization;
 
-    return pbrSpecular(V, N, L, irradiance, reflectance0, reflectance90, alphaRoughness * alphaRoughness, normalization);
+    return specularBrdf(V, N, L, irradiance, reflectance0, reflectance90, alphaRoughness * alphaRoughness, normalization);
 }
 
 // Adapted from "Real Shading in Unreal Engine 4"
@@ -210,7 +235,7 @@ vec3 importanceSampleGGX(vec2 Xi, float alphaRoughnessSq, vec3 N)
 }
 
 // https://gist.github.com/wwwtyro/beecc31d65d1004f5a9d
-float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr) {
+float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr, out bool hit) {
     // - r0: ray origin
     // - rd: normalized ray direction
     // - s0: sphere center
@@ -222,14 +247,16 @@ float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr) {
     float b = 2.0 * dot(rd, s0_r0);
     float c = dot(s0_r0, s0_r0) - (sr * sr);
     if (b*b - 4.0*a*c < 0.0) {
-        return -1.0;
+        hit = false;
     }
+
+    hit = true;
     return (-b + sqrt((b*b) - 4.0*a*c))/(2.0*a);
 }
 
 vec3 evaluateSphereLightImportanceSampleGGX(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
     const int SAMPLE_COUNT = 128;
-    const vec3 SPHERE_POSITION = vec3(1.0, 0.5, 0.0);
+    const vec3 SPHERE_POSITION = vec3(2.0, 0.5, 0.0);
     const float SPHERE_RADIUS = 0.25;
 
     vec3 light = vec3(0.0);
@@ -241,30 +268,33 @@ vec3 evaluateSphereLightImportanceSampleGGX(vec3 V, vec3 N, vec3 lightColor, vec
         float r2 = rand(v_uv + vec2(float(i * 3)));
 
         vec3 H = importanceSampleGGX(vec2(r1, r2), alphaRoughnessSq, N);
-        vec3 sampleDir = reflect(V, H);
-        float t = raySphereIntersect(v_vertex.xyz, sampleDir, SPHERE_POSITION, SPHERE_RADIUS);
+        H = normalize(H);
 
-        if (t == -1.0) continue;
+        vec3 sampleDir = reflect(V, H);
+
+        bool hit;
+        float t = raySphereIntersect(v_vertex.xyz, sampleDir, SPHERE_POSITION, SPHERE_RADIUS, hit);
+
+        if (!hit) continue;
 
         float NdotH = clamp(dot(N, H), 0.0, 1.0);
         float VdotH = clamp(dot(V, H), 0.0, 1.0);
 
+        // Math behind calculating the pdf: https://schuttejoe.github.io/post/ggximportancesamplingpart1/
+        // Note that the D term is not included since it cancels out with the BRDF
+        float pdf = NdotH / (4.0 * VdotH);
+
         vec3 spherePosition = v_vertex.xyz + t * sampleDir;
         vec3 sphereNormal = normalize(spherePosition - SPHERE_POSITION);
-        // TODO: optimize this
-        // math behind calculating the pdf: https://schuttejoe.github.io/post/ggximportancesamplingpart1/
-        float pdf = microfacetDistribution(alphaRoughnessSq, NdotH) * NdotH / (4.0 * VdotH);
 
         vec3 lightVector = spherePosition - v_vertex.xyz;
         float sqDist = dot(lightVector, lightVector);
         vec3 L = normalize(lightVector);
 
-        // turn this from an area integral to a solid angle integral
-        float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
         vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
-        vec3 integralSample = L_i / lightPdf;
+        vec3 integralSample = L_i / pdf;
 
-        light += pbrSpecular(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
+        light += specularBrdfGGXImportanceSampled(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq);
     }
 
     return light / float(SAMPLE_COUNT);
@@ -307,7 +337,7 @@ void main(void)
         vec3 L = vec3(0.0, 1.0, 0.0);
         const vec3 lightColor = vec3(1.0, 0.9, 0.9);
 
-        lighting += pbrSpecular(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
+        lighting += specularBrdf(V, N, L, lightColor, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
     }
 
     // Area Light Reference
