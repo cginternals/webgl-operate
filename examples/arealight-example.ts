@@ -87,8 +87,8 @@ export class AreaLightRenderer extends Renderer {
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
-        const frag = new Shader(context, gl.FRAGMENT_SHADER, 'arealight.frag');
-        frag.initialize(require('./data/arealight.frag'));
+        const frag = new Shader(context, gl.FRAGMENT_SHADER, 'arealight/mesh.frag');
+        frag.initialize(require('./data/arealight/mesh.frag'));
 
         this._program = new Program(context, 'AreaLightProgram');
         this._program.initialize([vert, frag], false);
@@ -112,7 +112,7 @@ export class AreaLightRenderer extends Renderer {
 
         // Program for rendering the light source
         const lightFrag = new Shader(context, gl.FRAGMENT_SHADER, 'light.frag');
-        lightFrag.initialize(require('./data/light.frag'));
+        lightFrag.initialize(require('./data/arealight/light.frag'));
 
         this._lightProgram = new Program(context, 'LightProgram');
         this._lightProgram.initialize([vert, lightFrag], false);

@@ -1,7 +1,7 @@
 
 precision lowp float;
 
-@import ../../source/shaders/facade.frag;
+@import ../../../source/shaders/facade.frag;
 
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
