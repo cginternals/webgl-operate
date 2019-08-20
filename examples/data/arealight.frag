@@ -10,6 +10,7 @@ uniform sampler2D u_metallicTexture;
 uniform sampler2D u_normalTexture;
 
 uniform vec3 u_eye;
+uniform float u_roughness;
 
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
@@ -149,73 +150,6 @@ vec3 uniformSampleSphere(float u1, float u2)
     return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 }
 
-float rand(vec2 co){
-    return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
-}
-
-vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
-    const int SAMPLE_COUNT = 128;
-    const vec3 SPHERE_POSITION = vec3(-2.0, 0.5, 0.0);
-    const float SPHERE_RADIUS = 0.25;
-
-    vec3 light = vec3(0.0);
-
-    // Could we flip the sphere normal if it points away from shaded point and adjust the area accordingly?
-    // This would double the ffective sample count
-    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
-    float pdf = 1.0 / sphereArea;
-
-    for (int i = 0; i < SAMPLE_COUNT; ++i) {
-        float r1 = rand(v_uv + vec2(float(i)));
-        float r2 = rand(v_uv + vec2(float(i * 3)));
-
-        vec3 sphereNormal = uniformSampleSphere(r1, r2);
-        vec3 spherePosition = sphereNormal * SPHERE_RADIUS + SPHERE_POSITION;
-        vec3 lightVector = spherePosition - v_vertex.xyz;
-        float sqDist = dot(lightVector, lightVector);
-        vec3 L = normalize(lightVector);
-
-        // turn this from an area integral to a solid angle integral
-        float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
-        vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
-        vec3 integralSample = L_i / lightPdf;
-
-        light += specularBrdf(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
-    }
-
-    return light / float(SAMPLE_COUNT);
-}
-
-// See "Real Shading in Unreal Engine 4"
-vec3 evaluateSphereLightKaris(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughness) {
-    const vec3 SPHERE_POSITION = vec3(0.0, 0.5, 0.0);
-    const float SPHERE_RADIUS = 0.25;
-
-    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
-
-    vec3 R = reflect(V, N);
-    vec3 L_center = SPHERE_POSITION - v_vertex.xyz;
-    vec3 centerToRay = dot(L_center, R) * R - L_center;
-    vec3 closestPoint = L_center + centerToRay * clamp(SPHERE_RADIUS / length(centerToRay), 0.0, 1.0);
-    vec3 L = normalize(closestPoint);
-    float sqDist = dot(closestPoint, closestPoint);
-
-    // Since we only take one sample we want to get the total light power
-    // We need to convert units since lightColor is in W / sr*m^2
-    // Multiply by PI to get W / m^2 (since we assume a lambertian light source and the integral of cos over hemisphere sums to PI)
-    // Then multiply by area to get W
-    vec3 lightPower = M_PI * sphereArea * lightColor;
-    // Estimate the irradiance from total light power
-    // Note: this formula is an approximation that assumes the light source is a point light at the newly calculated light position
-    vec3 irradiance = lightPower / (4.0 * M_PI * sqDist);
-
-    // This normalization factor given by Karis should be used to scale the NDF
-    float normalization = alphaRoughness / (alphaRoughness + SPHERE_RADIUS / (2.0 * sqrt(sqDist)));
-    normalization = normalization * normalization;
-
-    return specularBrdf(V, N, L, irradiance, reflectance0, reflectance90, alphaRoughness * alphaRoughness, normalization);
-}
-
 // Adapted from "Real Shading in Unreal Engine 4"
 vec3 importanceSampleGGX(vec2 Xi, float alphaRoughnessSq, vec3 N)
 {
@@ -251,12 +185,75 @@ float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr, out bool hit) {
     }
 
     hit = true;
-    return (-b + sqrt((b*b) - 4.0*a*c))/(2.0*a);
+    return (-b - sqrt((b*b) - 4.0*a*c))/(2.0*a);
+}
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+// https://learnopengl.com/PBR/IBL/Specular-IBL
+float RadicalInverse_VdC(uint bits)
+{
+    bits = (bits << 16u) | (bits >> 16u);
+    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+    return float(bits) * 2.3283064365386963e-10; // / 0x100000000
+}
+
+vec2 Hammersley(uint i, uint N)
+{
+    return vec2(float(i)/float(N), RadicalInverse_VdC(i));
+}
+
+vec2 Nth_weyl(int n) { // borrowed from https://www.shadertoy.com/view/3lsXW2
+    return fract(vec2(n*12664745, n*9560333)/exp2(24.));
+}
+
+vec3 evaluateSphereLightBruteForce(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
+    const int SAMPLE_COUNT = 16;
+    const vec3 SPHERE_POSITION = vec3(-1.0, 0.5, -1.0);
+    const float SPHERE_RADIUS = 0.25;
+
+    vec3 light = vec3(0.0);
+
+    // Could we flip the sphere normal if it points away from shaded point and adjust the area accordingly?
+    // This would double the ffective sample count
+    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
+    float pdf = 1.0 / sphereArea;
+
+    for (int i = 0; i < SAMPLE_COUNT; ++i) {
+        vec2 u = Nth_weyl(int(v_uv.x * v_uv.y * 4324231.8) + i);
+        // vec2 u = Hammersley(uint(i), uint(SAMPLE_COUNT - 1));
+        // vec2 u = vec2(rand(v_uv + vec2(float(i))), rand(v_uv + vec2(float(i * 3))));
+
+        vec3 sphereNormal = uniformSampleSphere(u.x, u.y);
+
+        // if (dot(sphereNormal, normalize(SPHERE_POSITION - v_vertex.xyz)) > 0.0) {
+        //     sphereNormal = -sphereNormal;
+        // }
+
+        vec3 spherePosition = sphereNormal * SPHERE_RADIUS + SPHERE_POSITION;
+        vec3 lightVector = spherePosition - v_vertex.xyz;
+        float sqDist = dot(lightVector, lightVector);
+        vec3 L = normalize(lightVector);
+
+        // turn this from an area integral to a solid angle integral
+        float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
+        vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
+        vec3 integralSample = L_i / lightPdf;
+
+        light += specularBrdf(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughnessSq, 1.0);
+    }
+
+    return light / float(SAMPLE_COUNT);
 }
 
 vec3 evaluateSphereLightImportanceSampleGGX(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughnessSq) {
-    const int SAMPLE_COUNT = 128;
-    const vec3 SPHERE_POSITION = vec3(2.0, 0.5, 0.0);
+    const int SAMPLE_COUNT = 16;
+    const vec3 SPHERE_POSITION = vec3(1.0, 0.5, -1.0);
     const float SPHERE_RADIUS = 0.25;
 
     vec3 light = vec3(0.0);
@@ -264,18 +261,18 @@ vec3 evaluateSphereLightImportanceSampleGGX(vec3 V, vec3 N, vec3 lightColor, vec
     float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
 
     for (int i = 0; i < SAMPLE_COUNT; ++i) {
-        float r1 = rand(v_uv + vec2(float(i)));
-        float r2 = rand(v_uv + vec2(float(i * 3)));
+        vec2 u = Nth_weyl(int(v_uv.x * v_uv.y * 4324231.8) + i);
+        // vec2 u = Hammersley(uint(i), uint(SAMPLE_COUNT));
+        // vec2 u = vec2(rand(v_uv + vec2(float(i))), rand(v_uv + vec2(float(i * 3))));
 
-        vec3 H = importanceSampleGGX(vec2(r1, r2), alphaRoughnessSq, N);
-        H = normalize(H);
+        vec3 H = importanceSampleGGX(u, alphaRoughnessSq, N);
 
         vec3 sampleDir = reflect(V, H);
 
         bool hit;
         float t = raySphereIntersect(v_vertex.xyz, sampleDir, SPHERE_POSITION, SPHERE_RADIUS, hit);
 
-        if (!hit) continue;
+        if (!hit || t >= 0.0) continue;
 
         float NdotH = clamp(dot(N, H), 0.0, 1.0);
         float VdotH = clamp(dot(V, H), 0.0, 1.0);
@@ -300,6 +297,73 @@ vec3 evaluateSphereLightImportanceSampleGGX(vec3 V, vec3 N, vec3 lightColor, vec
     return light / float(SAMPLE_COUNT);
 }
 
+// See "Real Shading in Unreal Engine 4"
+vec3 evaluateSphereLightKaris(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughness) {
+    const vec3 SPHERE_POSITION = vec3(-1.0, 0.5, 1.0);
+    const float SPHERE_RADIUS = 0.25;
+
+    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
+
+    vec3 R = reflect(V, N);
+    vec3 L_center = SPHERE_POSITION - v_vertex.xyz;
+    vec3 centerToRay = dot(L_center, R) * R - L_center;
+    vec3 closestPoint = L_center + centerToRay * clamp(SPHERE_RADIUS / length(centerToRay), 0.0, 1.0);
+    vec3 L = normalize(closestPoint);
+    float sqDist = dot(closestPoint, closestPoint);
+
+    // Since we only take one sample we want to get the total light power
+    // We need to convert units since lightColor is in W / sr*m^2
+    // Multiply by PI to get W / m^2 (since we assume a lambertian light source and the integral of cos over hemisphere sums to PI)
+    // Then multiply by area to get W
+    vec3 lightPower = M_PI * sphereArea * lightColor;
+    // Estimate the irradiance from total light power
+    // Note: this formula is an approximation that assumes the light source is a point light at the newly calculated light position
+    vec3 irradiance = lightPower / (4.0 * M_PI * sqDist);
+
+    // This normalization factor given by Karis should be used to scale the NDF
+    float normalization = alphaRoughness / (alphaRoughness + SPHERE_RADIUS / (2.0 * sqrt(sqDist)));
+    normalization = normalization * normalization;
+
+    return specularBrdf(V, N, L, irradiance, reflectance0, reflectance90, alphaRoughness * alphaRoughness, normalization);
+}
+
+vec3 evaluateSphereLightNew(vec3 V, vec3 N, vec3 lightColor, vec3 reflectance0, vec3 reflectance90, float alphaRoughness) {
+    const vec3 SPHERE_POSITION = vec3(1.0, 0.5, 1.0);
+    const float SPHERE_RADIUS = 0.25;
+
+    float sphereArea = 4.0 * M_PI * SPHERE_RADIUS * SPHERE_RADIUS;
+    float pdf = 1.0 / sphereArea;
+
+    vec3 R = reflect(V, N);
+    vec3 L_center = SPHERE_POSITION - v_vertex.xyz;
+    vec3 centerToRay = dot(L_center, R) * R - L_center;
+    vec3 closestPoint = L_center + centerToRay * clamp(SPHERE_RADIUS / length(centerToRay), 0.0, 1.0);
+
+    // Determine best approximation ray for integral
+    vec3 L_phi_o = normalize(L_center);
+    vec3 L_phi_i = normalize(closestPoint);
+    vec3 L = normalize(mix(L_phi_o, L_phi_i, 0.5));
+
+    // Calculate intersection with sphere to get distance and light normal
+    bool hit;
+    float t = raySphereIntersect(v_vertex.xyz, L, SPHERE_POSITION, SPHERE_RADIUS, hit);
+
+    // if (!hit || t >= 0.0) return vec3(0.0);
+
+    vec3 spherePosition = v_vertex.xyz + t * L;
+    vec3 sphereNormal = normalize(spherePosition - SPHERE_POSITION);
+
+    vec3 lightVector = spherePosition - v_vertex.xyz;
+    float sqDist = dot(lightVector, lightVector);
+
+    // turn this from an area integral to a solid angle integral
+    float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
+    vec3 L_i = lightColor; // incoming radiance from light source (unit: W / sr*m^2)
+    vec3 integralSample = L_i / lightPdf;
+
+    return specularBrdf(V, N, L, integralSample, reflectance0, reflectance90, alphaRoughness * alphaRoughness, 1.0);
+}
+
 void main(void)
 {
     vec2 uv = v_uv;
@@ -318,7 +382,10 @@ void main(void)
 
     float roughness = texture(u_roughnessTexture, uv).r;
     roughness = pow(roughness, GAMMA);
-    roughness = clamp(roughness + 0.3, 0.0, 1.0);
+
+    // roughness = clamp(roughness + 0.3, 0.0, 1.0);
+    // roughness = clamp(roughness + 0.6, 0.0, 1.0);
+    roughness = 0.5;
 
     float alphaRoughness = roughness * roughness;
     float alphaRoughnessSq = alphaRoughness * alphaRoughness;
@@ -359,6 +426,13 @@ void main(void)
         const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
         lighting += evaluateSphereLightImportanceSampleGGX(V, N, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
+    }
+
+    // Area Light - new approximation
+    {
+        const vec3 lightColor = vec3(1.0, 0.5, 0.5);
+
+        lighting += evaluateSphereLightNew(V, N, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
     }
 
     fragColor = vec4(lighting, 1.0);

@@ -35,6 +35,8 @@ export class AreaLightRenderer extends Renderer {
     protected _plane: PlaneGeometry;
     protected _lightSphere: GeosphereGeometry;
 
+    protected _roughness: number;
+
     protected _lightPosition: vec3;
 
     protected _albedoTexture: Texture2D;
@@ -46,6 +48,7 @@ export class AreaLightRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
     protected _uEye: WebGLUniformLocation;
+    protected _uRoughness: WebGLUniformLocation;
 
     protected _lightProgram: Program;
     protected _uViewProjectionLight: WebGLUniformLocation;
@@ -71,6 +74,7 @@ export class AreaLightRenderer extends Renderer {
 
         const gl = context.gl;
 
+        this._roughness = 0.5;
 
         this._plane = new PlaneGeometry(context, 'Plane');
         this._plane.initialize();
@@ -97,6 +101,7 @@ export class AreaLightRenderer extends Renderer {
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
         this._uEye = this._program.uniform('u_eye');
+        this._uRoughness = this._program.uniform('u_roughness');
 
         gl.uniform1i(this._program.uniform('u_albedoTexture'), 0);
         gl.uniform1i(this._program.uniform('u_roughnessTexture'), 1);
@@ -236,6 +241,7 @@ export class AreaLightRenderer extends Renderer {
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
         gl.uniform3fv(this._uEye, this._camera.eye);
+        gl.uniform1f(this._uRoughness, this._roughness);
 
         this._plane.bind();
         this._plane.draw();
