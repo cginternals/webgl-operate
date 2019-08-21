@@ -36,18 +36,18 @@ export class Icosahedron {
         const a = t * i;
 
         const vertices: Array<vec3> = [
-            vec3.fromValues(-i, a, 0),
-            vec3.fromValues(i, a, 0),
+            vec3.fromValues(-i, +a, 0),
+            vec3.fromValues(+i, +a, 0),
             vec3.fromValues(-i, -a, 0),
-            vec3.fromValues(i, -a, 0),
-            vec3.fromValues(0, -i, a),
-            vec3.fromValues(0, i, a),
+            vec3.fromValues(+i, -a, 0),
+            vec3.fromValues(0, -i, +a),
+            vec3.fromValues(0, +i, +a),
             vec3.fromValues(0, -i, -a),
-            vec3.fromValues(0, i, -a),
-            vec3.fromValues(a, 0, -i),
-            vec3.fromValues(a, 0, i),
+            vec3.fromValues(0, +i, -a),
+            vec3.fromValues(+a, 0, -i),
+            vec3.fromValues(+a, 0, +i),
             vec3.fromValues(-a, 0, -i),
-            vec3.fromValues(-a, 0, i),
+            vec3.fromValues(-a, 0, +i),
         ];
 
         return vertices;

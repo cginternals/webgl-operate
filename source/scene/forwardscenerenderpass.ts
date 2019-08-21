@@ -18,7 +18,11 @@ import { TransformComponent } from './transformcomponent';
 
 
 /**
- * @todo add description
+ * This class renders a SceneNode hierarchy. It uses one single program for rendering the whole scene.
+ * If different programs are necessary to render a scene, multiple SceneNodes should be used for each
+ * program that is used.
+ * This renderpass calls callbacks such as `updateModelTransform`, which have to be set by the renderer
+ * using this renderpass.
  */
 export class ForwardSceneRenderPass extends SceneRenderPass {
 
@@ -52,59 +56,33 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     bindUniforms: () => void;
 
     /**
-     * Creates a ...
-     * @param context - @todo comment
+     * Creates a pass that renders a SceneNode and all of its children.
+     * @param context - @todo The WebGL context for rendering the scene.
      */
     constructor(context: Context) {
         super();
         this._context = context;
-
-        /** @todo */
     }
-
 
     @Initializable.initialize()
     initialize(): boolean {
-        // const gl = this._context.gl;
-
-        /** @todo create shaders, programs, fbos, etc. - checkout label render pass for example */
-
         return true;
     }
 
     @Initializable.uninitialize()
-    uninitialize(): void {
+    uninitialize(): void { }
 
-        /** @todo create shaders, programs, fbos, etc. - checkout label render pass for example */
-
-    }
-
-
-    /**
-     * @todo comment
-     */
-    prepare(): void {
-
-        /** @todo prepare for immediate (probably multiple) frame invocations (mostly useful in multi-frame sampling) */
-
-    }
-
+    prepare(): void { }
 
     /**
      * @param override - If enabled, everything will be updated, regardless of tracked alterations.
      */
     @Initializable.assert_initialized()
-    update(override: boolean = false): void {
-        // const gl = this._context.gl;
-
-        /** @todo  checkout label render pass update for reference */
-
-        // this._scene ... from SceneNodeRenderer ...
-
-    }
+    update(override: boolean = false): void { }
 
     /**
-     * @todo comment
+     * Triggers rendering a frame of the given hierarchy. All nodes in the hierarchy will be visited recursively
+     * and rendered. If nodes contain transformations, they are applied and used for the whole subtree.
      */
     @Initializable.assert_initialized()
     frame(): void {
@@ -148,7 +126,16 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         gl.disable(gl.BLEND);
     }
 
+    /**
+     * Renders the current node and all children if there are any.
+     * @param node - Node to render
+     * @param transform - The transformation that should be applied to this node
+     */
     renderNode(node: SceneNode, transform: mat4): void {
+        assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
+        assert(this.updateViewProjectionTransform !== undefined,
+            `View Projection transform function needs to be initialized.`);
+
         const nodeTransform = mat4.clone(transform);
 
         const transformComponents = node.componentsOfType('TransformComponent');

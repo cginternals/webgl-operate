@@ -1,15 +1,18 @@
 
+/* spellchecker: disable */
+
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
-    BoxGeometry,
     Camera,
     Canvas,
     Context,
+    CuboidGeometry,
     DefaultFramebuffer,
     ForwardSceneRenderPass,
     Framebuffer,
     GeometryComponent,
+    GeosphereGeometry,
     Invalidate,
     Material,
     MouseEventProvider,
@@ -18,13 +21,15 @@ import {
     Renderer,
     SceneNode,
     Shader,
-    SphereGeometry,
     Texture2D,
     TransformComponent,
     Wizard,
 } from 'webgl-operate';
 
 import { Example } from './example';
+
+/* spellchecker: enable */
+
 
 // tslint:disable:max-classes-per-file
 
@@ -76,8 +81,13 @@ export class SceneRenderer extends Renderer {
         vert.initialize(require('./data/mesh.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
         frag.initialize(require('./data/mesh.frag'));
+
         this._program = new Program(this._context, 'MeshProgram');
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, frag], false);
+
+        this._aMeshVertex = this._program.attribute('a_vertex', 0);
+        this._aMeshTexCoord = this._program.attribute('a_texCoord', 1);
+        this._program.link();
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
@@ -94,7 +104,7 @@ export class SceneRenderer extends Renderer {
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 0.0, 3.0);
-        this._camera.near = 0.1;
+        this._camera.near = 1.0;
         this._camera.far = 8.0;
 
         /* Create and configure navigation */
@@ -224,8 +234,8 @@ export class SceneRenderer extends Renderer {
 
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
-        texture.initialize(128, 128, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
-        texture.fetch('./data/logo.png', false).then(() => {
+        texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
+        texture.fetch('./data/concrete_floor_02_diff_1k.webp', false).then(() => {
             this.invalidate(true);
         });
 
@@ -235,7 +245,7 @@ export class SceneRenderer extends Renderer {
         material.textured = true;
 
         /* Create geometry. */
-        const geometry = new SphereGeometry(
+        const geometry = new GeosphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -267,7 +277,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new SphereGeometry(
+        const geometry = new GeosphereGeometry(
             this._context,
             'mesh',
             1.0,
@@ -299,11 +309,7 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new BoxGeometry(
-            this._context,
-            'mesh',
-            1.0, 1.0, 1.0,
-            true);
+        const geometry = new CuboidGeometry(this._context, 'mesh', true);
 
         geometry.initialize(this._aMeshVertex, this._aMeshTexCoord);
 

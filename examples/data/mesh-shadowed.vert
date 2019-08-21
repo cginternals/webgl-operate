@@ -2,6 +2,7 @@
 precision lowp float;
 
 @import ../../source/shaders/facade.vert;
+@import ../../source/shaders/ndcoffset;
 
 
 #if __VERSION__ == 100
@@ -16,6 +17,8 @@ precision lowp float;
 uniform mat4 u_viewProjection;
 uniform mat4 u_model;
 
+uniform vec2 u_ndcOffset;
+
 
 varying vec4 v_vertex;
 varying vec2 v_uv;
@@ -26,5 +29,8 @@ void main()
     v_vertex = u_model * vec4(a_vertex, 1.0);
     v_uv = a_texCoord;
 
-    gl_Position = u_viewProjection *  v_vertex;
+    vec4 vertex = u_viewProjection *  v_vertex;
+    ndcOffset(vertex, u_ndcOffset);
+
+    gl_Position = vertex;
 }
