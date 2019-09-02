@@ -47,14 +47,17 @@ export class GLTFHelper {
         if (name === 'TEXCOORD_1') {
             return 4;
         }
-        if (name === 'JOINTS_0') {
+        if (name === 'TEXCOORD_2') {
             return 5;
         }
-        if (name === 'WEIGHTS_0') {
+        if (name === 'JOINTS_0') {
             return 6;
         }
-        if (name === 'COLOR_0') {
+        if (name === 'WEIGHTS_0') {
             return 7;
+        }
+        if (name === 'COLOR_0') {
+            return 8;
         }
 
         log(LogLevel.Warning, `Unknown attribute name '${name}' encountered. \

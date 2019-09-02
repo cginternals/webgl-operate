@@ -62,7 +62,7 @@ uniform mediump int u_geometryFlags;
 uniform mediump int u_pbrFlags;
 uniform vec3 u_eye;
 
-varying vec2 v_uv[2];
+varying vec2 v_uv[3];
 varying vec4 v_color;
 varying vec3 v_position;
 
