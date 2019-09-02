@@ -15,6 +15,7 @@ const int HAS_COLORS            = 1 << 3;
     attribute vec4 a_tangent;
     attribute vec2 a_texcoord_0;
     attribute vec2 a_texcoord_1;
+    attribute vec2 a_texcoord_2;
     attribute vec4 a_joints;
     attribute vec4 a_weights;
     attribute vec4 a_color;
@@ -24,9 +25,10 @@ const int HAS_COLORS            = 1 << 3;
     layout (location = 2) in vec4 a_tangent;
     layout (location = 3) in vec2 a_texcoord_0;
     layout (location = 4) in vec2 a_texcoord_1;
-    layout (location = 5) in vec4 a_joints;
-    layout (location = 6) in vec4 a_weights;
-    layout (location = 7) in vec4 a_color;
+    layout (location = 5) in vec2 a_texcoord_2;
+    layout (location = 6) in vec4 a_joints;
+    layout (location = 7) in vec4 a_weights;
+    layout (location = 8) in vec4 a_color;
 #endif
 
 uniform mat4 u_model;
@@ -35,7 +37,7 @@ uniform mat3 u_normalMatrix;
 
 uniform mediump int u_geometryFlags;
 
-varying vec2 v_uv[2];
+varying vec2 v_uv[3];
 varying vec4 v_color;
 varying vec3 v_position;
 
@@ -65,9 +67,11 @@ void main(void)
     if (checkFlag(HAS_UV)) {
         v_uv[0] = a_texcoord_0;
         v_uv[1] = a_texcoord_1;
+        v_uv[2] = a_texcoord_2;
     } else {
         v_uv[0] = vec2(0., 0.);
         v_uv[1] = vec2(0., 0.);
+        v_uv[2] = vec2(0., 0.);
     }
 
     if (checkFlag(HAS_COLORS)) {

@@ -207,6 +207,7 @@ export class GLTFLoader {
             }
 
             material.metallicFactor = pbrInfo!.metallicFactor || 1;
+            material.roughnessFactor = pbrInfo!.roughnessFactor || 1;
 
             this._resourceManager.add(material, [materialInfo.name, identifier]);
             materialId++;
@@ -394,7 +395,7 @@ export class GLTFLoader {
             if (semantic === 'COLOR_0') {
                 geometryFlags |= GLTFShaderFlags.HAS_COLORS;
             }
-            if (semantic === 'TEXCOORD_0' || semantic === 'TEXCOORD_1') {
+            if (semantic === 'TEXCOORD_0' || semantic === 'TEXCOORD_1' || semantic === 'TEXCOORD_2') {
                 geometryFlags |= GLTFShaderFlags.HAS_UV;
             }
 
