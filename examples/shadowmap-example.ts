@@ -68,7 +68,7 @@ class ShadowMapRenderer extends Renderer {
 
         this._plane = new PlaneGeometry(context, 'plane');
         this._plane.initialize();
-        this._plane.scale = vec2.fromValues(10, 10);
+        this._plane.scale = vec2.fromValues(20, 20);
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
@@ -133,7 +133,7 @@ class ShadowMapRenderer extends Renderer {
 
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024], [512, 512]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.VarianceShadowMapping, [1024, 1024], [512, 512]);
 
         return true;
     }

@@ -16,20 +16,28 @@ float hardShadowCompare(sampler2D depths, vec2 uv, float compare, float offset)
     return step(compare + offset, depth);
 }
 
-float linstep(float low, float high, float v)
+float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
 {
-  return clamp((v - low) / (high - low), 0.0, 1.0);
-}
+    vec2 moments = texture(depths, uv).rg;
 
-float VSMCompare(sampler2D depths, vec2 uv, float compare, float offset)
-{
-  vec2 moments = texture(depths, uv).rg;
+    float p = 0.0;
 
-  float p = smoothstep(compare + offset, compare + offset, moments.x);
-  float variance = max(moments.y - moments.x * moments.x, - 0.00001);
-  float d = compare - moments.x;
-  float p_max = linstep(0.2, 1.0, variance / (variance + d*d));
-  return clamp(max(p, p_max), 0.0, 1.0);
+    // Surface is fully lit, as the current fragment is before the light occluder
+    if (compare <= moments.x)
+        p = 1.0;
+
+    // The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
+    // How likely this pixel is to be lit (p_max)
+    float variance = moments.y - (moments.x * moments.x);
+    variance = max(variance, minVariance);
+
+    float d = compare - moments.x;
+    float p_max = variance / (variance + d*d);
+
+    // Correct light bleeding
+    p_max = smoothstep(0.4, 1.0, p_max);
+
+    return max(p, p_max);
 }
 
 // vec4 calculateShadowColor(vec4 objectColor, float visibility, float intensity, vec4 shadowColor, float colorIntensity)
