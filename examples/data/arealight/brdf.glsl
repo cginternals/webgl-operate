@@ -79,9 +79,13 @@ vec3 specularBrdfGGX(vec3 L, LightingInfo info, float D_normalization)
         return vec3(0.0);
     }
 
+    // Fix numerical issues in the microfacet distribution when alphaRoughnessSq is very close to 0
+    // This still introduces some error but fixes values approching infinity, which mess up the whole calculation
+    float clampedAlphaRoughness = clamp(info.alphaRoughnessSq, 0.0000001, 1.0);
+
     vec3 F = specularReflection(info.reflectance0, info.reflectance90, VdotH);
     float Vis = visibilityOcclusion(info.alphaRoughnessSq, NdotL, NdotV);
-    float D = microfacetDistribution(info.alphaRoughnessSq, NdotH) * D_normalization;
+    float D = microfacetDistribution(clampedAlphaRoughness, NdotH) * D_normalization;
 
     return F * Vis * D;
 }

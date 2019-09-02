@@ -17,8 +17,6 @@ vec3 sphereLightBruteForce(SphereLight light, LightingInfo info)
 
     vec3 lightAccumulator = vec3(0.0);
 
-    // Could we flip the sphere normal if it points away from shaded point and adjust the area accordingly?
-    // This would double the ffective sample count
     float sphereArea = 4.0 * M_PI * light.radius * light.radius;
     float pdf = 1.0 / sphereArea;
 
@@ -36,7 +34,7 @@ vec3 sphereLightBruteForce(SphereLight light, LightingInfo info)
 
         // turn this from an area integral to a solid angle integral
         float lightPdf = pdf * sqDist / clamp(dot(sphereNormal, -L), 0.0, 1.0);
-        vec3 L_i = light.luminance; // incoming radiance from light source (unit: W / sr*m^2)
+        vec3 L_i = light.luminance; // incoming lumincance from light source (unit: cd / m^2)
         vec3 integralSample = L_i / lightPdf;
 
         float NdotL = clamp(dot(L, info.incidentNormal), 0.0, 1.0);

@@ -71,10 +71,12 @@ void main(void)
     vec3 N = normalize(normalSample * 2.0 - 1.0);
     N = normalize(TBN * N);
 
+    N = vec3(0.0, 1.0, 0.0);
+
     vec3 V = normalize(u_eye - v_vertex.xyz);
 
     float roughness = 0.5;
-    float metallic = 0.0;
+    float metallic = 1.0;
 
     LightingInfo info;
     info.incidentPosition = v_vertex.xyz;
@@ -93,13 +95,16 @@ void main(void)
 
     vec3 lighting = vec3(0.0);
 
-    // // Directional Light
-    // {
-    //     vec3 L = vec3(0.0, 1.0, 0.0);
-    //     const vec3 lightColor = vec3(1.0, 0.9, 0.9);
+    // Directional Light
+    {
+        vec3 L = vec3(0.0, 1.0, 0.0);
+        const vec3 lightColor = vec3(1.0, 0.9, 0.9);
 
-    //     lighting += specularBrdfGGX(L, lightColor, info, 1.0);
-    // }
+        float NdotL = clamp(dot(N, L), 0.0, 1.0);
+
+        lighting += diffuseBrdf(info) * NdotL;
+        lighting += specularBrdfGGX(L, info, 1.0) * NdotL;
+    }
 
     // Area Light Reference
     {
@@ -112,16 +117,16 @@ void main(void)
         lighting += sphereLightBruteForce(light, info);
     }
 
-    // // Area Light Importance Sampling GGX
-    // {
-    //     const vec3 lightCenter = vec3(1.0, 0.5, -1.0);
-    //     const float lightRadius = 0.25;
-    //     const vec3 lightColor = vec3(1.0, 0.5, 0.5);
+    // Area Light Importance Sampling GGX
+    {
+        const vec3 lightCenter = vec3(1.0, 0.5, -1.0);
+        const float lightRadius = 0.25;
+        const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
-    //     SphereLight light = SphereLight(lightCenter, lightRadius, lightColor);
+        SphereLight light = SphereLight(lightCenter, lightRadius, lightColor);
 
-    //     lighting += specularSphereLightImportanceSampleGGX(light, info);
-    // }
+        lighting += specularSphereLightImportanceSampleGGX(light, info);
+    }
 
     // Area Light (Karis MRP approximation)
     {
