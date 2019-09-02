@@ -1,19 +1,23 @@
 
-vec2 calculateDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
+float SMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
 {
-    float depth = (length(lightViewVertex) - lightNearPlane) / (lightFarPlane - lightNearPlane);
-
-    float dx = dFdx(depth);
-    float dy = dFdy(depth);
-    float moment = pow(depth, 2.0) + 0.25 * (dx*dx + dy*dy);
-
-    return vec2(depth, moment);
+    return (length(lightViewVertex) - lightNearPlane) / (lightFarPlane - lightNearPlane);
 }
 
-float hardShadowCompare(sampler2D depths, vec2 uv, float compare, float offset)
+float SMCompare(sampler2D depths, vec2 uv, float compare, float offset)
 {
     float depth = texture(depths, uv).r;
     return step(compare + offset, depth);
+}
+
+vec2 VSMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
+{
+    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+
+    vec2 df = vec2(dFdx(depth), dFdy(depth));
+    float moment = depth * depth + 0.25 * dot(df, df);
+
+    return vec2(depth, moment);
 }
 
 float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
@@ -38,6 +42,18 @@ float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
     p_max = smoothstep(0.4, 1.0, p_max);
 
     return max(p, p_max);
+}
+
+float ESMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane, float c)
+{
+    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+    return exp(c * depth);
+}
+
+float ESMCompare(sampler2D depths, vec2 uv, float compare, float c)
+{
+    float expDepth = texture(depths, uv).r;
+    return clamp(expDepth * exp(-c  * compare), 0.0, 1.0);
 }
 
 // vec4 calculateShadowColor(vec4 objectColor, float visibility, float intensity, vec4 shadowColor, float colorIntensity)

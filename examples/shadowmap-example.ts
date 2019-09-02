@@ -68,7 +68,7 @@ class ShadowMapRenderer extends Renderer {
 
         this._plane = new PlaneGeometry(context, 'plane');
         this._plane.initialize();
-        this._plane.scale = vec2.fromValues(20, 20);
+        this._plane.scale = vec2.fromValues(100, 100);
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
@@ -83,7 +83,7 @@ class ShadowMapRenderer extends Renderer {
         this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
         this._light.near = 3.0;
-        this._light.far = 9.0;
+        this._light.far = 15.0;
 
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh-shadowed.vert');
@@ -178,6 +178,7 @@ class ShadowMapRenderer extends Renderer {
         this._shadowPass.frame(() => {
             this._shadowProgram.bind();
             this.drawCuboids(this._uModelS);
+            this.drawPlane(this._uModelS);
             this._shadowProgram.unbind();
         });
 

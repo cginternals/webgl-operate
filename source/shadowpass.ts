@@ -36,7 +36,7 @@ export class ShadowPass extends Initializable {
     get shadowMapTexture(): Texture2D {
         if (this._shadowType === ShadowPass.ShadowMappingType.HardShadowMapping) {
             return this._shadowMapTexture;
-        } else if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        } else if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping || this._shadowType === ShadowPass.ShadowMappingType.ExponentialShadowMapping) {
             return this._blurTexture;
         }
 
@@ -100,10 +100,10 @@ export class ShadowPass extends Initializable {
         this._shadowMapFBO = new Framebuffer(this._context);
         this._shadowMapFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._shadowMapTexture]
             , [gl.DEPTH_ATTACHMENT, this._shadowMapRenderbuffer]]);
-        this._shadowMapFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
+        this._shadowMapFBO.clearColor([Math.exp(80.0), 1.0, 1.0, 1.0]);
         this._shadowMapFBO.clearDepth(1.0);
 
-        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping || this._shadowType === ShadowPass.ShadowMappingType.ExponentialShadowMapping) {
             // Setup GaussFilter
             this._gaussFilter = new GaussFilter(this._context);
             this._gaussFilter.kernelSize = 21;
@@ -148,7 +148,7 @@ export class ShadowPass extends Initializable {
         this._shadowMapRenderbuffer.uninitialize();
         this._shadowMapTexture.uninitialize();
 
-        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping || this._shadowType === ShadowPass.ShadowMappingType.ExponentialShadowMapping) {
             this._intermediateBlurFBO.uninitialize();
             this._intermediateBlurTexture.uninitialize();
 
@@ -173,7 +173,7 @@ export class ShadowPass extends Initializable {
 
         gl.disable(gl.DEPTH_TEST);
 
-        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping) {
+        if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping || this._shadowType === ShadowPass.ShadowMappingType.ExponentialShadowMapping) {
             // Blur the variance shadow map in two passes
             gl.viewport(0, 0, this._intermediateBlurFBO.width, this._intermediateBlurFBO.height);
             this._intermediateBlurFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
@@ -191,6 +191,7 @@ export namespace ShadowPass {
     export enum ShadowMappingType {
         HardShadowMapping = 0,
         VarianceShadowMapping = 1,
+        ExponentialShadowMapping = 2,
     }
 
 }

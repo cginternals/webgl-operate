@@ -29,5 +29,5 @@ varying vec4 v_vertex;
 
 void main(void)
 {
-    fragColor = vec4(calculateDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1]), 0.0, 1.0);
+    fragColor = vec4(ESMDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1], 80.0), 0.0, 0.0, 1.0);
 }
