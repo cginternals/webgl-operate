@@ -172,6 +172,7 @@ export class ShadowPass extends Initializable {
         callback();
 
         gl.disable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
 
         if (this.hasBlur) {
             // Blur the variance shadow map in two passes
