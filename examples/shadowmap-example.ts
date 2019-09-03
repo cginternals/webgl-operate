@@ -133,7 +133,7 @@ class ShadowMapRenderer extends Renderer {
 
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.VarianceShadowMapping, [1024, 1024], [512, 512]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.VarianceShadowMapping, [1024, 1024], [1024, 1024]);
 
         return true;
     }
@@ -220,7 +220,7 @@ class ShadowMapRenderer extends Renderer {
         const M = mat4.create();
         for (let i = 0; i < this._cuboids.length; ++i) {
 
-            const x = i * 0.5 - 0.75;
+            const x = i * 1.0 - 1.5;
             const y = this._cuboids[i].extent[1] * 0.5;
 
             mat4.fromTranslation(M, vec3.fromValues(-x, y, 0.0));

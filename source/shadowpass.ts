@@ -100,14 +100,14 @@ export class ShadowPass extends Initializable {
         this._shadowMapFBO = new Framebuffer(this._context);
         this._shadowMapFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._shadowMapTexture]
             , [gl.DEPTH_ATTACHMENT, this._shadowMapRenderbuffer]]);
-        this._shadowMapFBO.clearColor([Math.exp(80.0), 1.0, 1.0, 1.0]);
+        this._shadowMapFBO.clearColor([1.0, 1.0, 1.0, 1.0]);
         this._shadowMapFBO.clearDepth(1.0);
 
         if (this._shadowType === ShadowPass.ShadowMappingType.VarianceShadowMapping || this._shadowType === ShadowPass.ShadowMappingType.ExponentialShadowMapping) {
             // Setup GaussFilter
             this._gaussFilter = new GaussFilter(this._context);
             this._gaussFilter.kernelSize = 21;
-            this._gaussFilter.standardDeviation = 5;
+            this._gaussFilter.standardDeviation = this._gaussFilter.kernelSize / 6;
             this._gaussFilter.initialize();
 
             // Setup intermediate blur

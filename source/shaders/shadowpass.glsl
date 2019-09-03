@@ -39,7 +39,7 @@ float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
     float p_max = variance / (variance + d*d);
 
     // Correct light bleeding
-    p_max = smoothstep(0.4, 1.0, p_max);
+    p_max = smoothstep(0.3, 1.0, p_max);
 
     return max(p, p_max);
 }
