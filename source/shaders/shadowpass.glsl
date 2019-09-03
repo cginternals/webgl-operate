@@ -20,10 +20,8 @@ vec2 VSMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
     return vec2(depth, moment);
 }
 
-float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
+float chebyshevUpperBound(vec2 moments, float compare, float minVariance, float lightBleedingReduction)
 {
-    vec2 moments = texture(depths, uv).rg;
-
     float p = 0.0;
 
     // Surface is fully lit, as the current fragment is before the light occluder
@@ -39,21 +37,54 @@ float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
     float p_max = variance / (variance + d*d);
 
     // Correct light bleeding
-    p_max = smoothstep(0.3, 1.0, p_max);
+    p_max = smoothstep(lightBleedingReduction, 1.0, p_max);
 
     return max(p, p_max);
 }
 
-float ESMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane, float c)
+float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
 {
-    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
-    return exp(c * depth);
+    vec2 moments = texture(depths, uv).rg;
+    return chebyshevUpperBound(moments, compare, minVariance, 0.3);
 }
 
-float ESMCompare(sampler2D depths, vec2 uv, float compare, float c)
+float ESMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane, float exponent)
+{
+    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+    return exp(exponent * depth);
+}
+
+float ESMCompare(sampler2D depths, vec2 uv, float compare, float exponent)
 {
     float expDepth = texture(depths, uv).r;
-    return clamp(expDepth * exp(-c  * compare), 0.0, 1.0);
+    return clamp(expDepth * exp(-exponent  * compare), 0.0, 1.0);
+}
+
+vec2 EVSMWarpDepth(float depth, vec2 exponents)
+{
+    depth = depth * 2.0 - 1.0;
+    float pos =  exp( exponents.x * depth);
+    float neg = -exp(-exponents.y * depth);
+    return vec2(pos, neg);
+}
+
+vec4 EVSMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane, vec2 exponents)
+{
+    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+    vec2 warpedDepth = EVSMWarpDepth(depth, exponents);
+    return vec4(warpedDepth, warpedDepth * warpedDepth);
+}
+
+float EVSMCompare(sampler2D depths, vec2 uv, float compare, vec2 exponents)
+{
+    vec4 moments = texture(depths, uv);
+    vec2 warpedCompare = EVSMWarpDepth(compare, exponents);
+    vec2 depthScale = 0.0001 * exponents * warpedCompare;
+    vec2 minVariance = depthScale * depthScale;
+    return min(
+        chebyshevUpperBound(moments.xz, warpedCompare.x, minVariance.x, 0.0),
+        chebyshevUpperBound(moments.yw, warpedCompare.y, minVariance.y, 0.0)
+    );
 }
 
 // vec4 calculateShadowColor(vec4 objectColor, float visibility, float intensity, vec4 shadowColor, float colorIntensity)

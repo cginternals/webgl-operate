@@ -133,7 +133,7 @@ class ShadowMapRenderer extends Renderer {
 
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.VarianceShadowMapping, [1024, 1024], [1024, 1024]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.ExponentialVarianceShadowMapping, [1024, 1024], [1024, 1024]);
 
         return true;
     }

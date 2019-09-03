@@ -48,7 +48,8 @@ void main(void)
     vec2 shadow_uv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
 
     //float visibility = ESMCompare(u_shadowMap, shadow_uv, light_depth, 80.0);
-    float visibility = VSMCompare(u_shadowMap, shadow_uv, light_depth, 0.0004);
+    //float visibility = VSMCompare(u_shadowMap, shadow_uv, light_depth, 0.0004);
+    float visibility = EVSMCompare(u_shadowMap, shadow_uv, light_depth, vec2(30.0, 10.0));
 
     if (any(greaterThan(shadow_uv, vec2(1.0))) || any(lessThan(shadow_uv, vec2(0.0)))) {
         visibility = 1.0;
