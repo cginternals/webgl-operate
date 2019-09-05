@@ -22,6 +22,7 @@ export class ShadowPass extends Initializable {
     protected _shadowMapRenderbuffer: Renderbuffer;
 
     protected _gaussFilter: GaussFilter;
+    protected _gaussFilterKernelSize: GLsizei = 21;
 
     protected _intermediateBlurFBO: Framebuffer;
     protected _intermediateBlurTexture: Texture2D;
@@ -42,6 +43,22 @@ export class ShadowPass extends Initializable {
 
     get hasBlur(): boolean {
         return this._shadowType !== ShadowPass.ShadowMappingType.HardShadowMapping;
+    }
+
+    get blurSize(): GLsizei {
+        return this._gaussFilterKernelSize;
+    }
+
+    set blurSize(blurSize: GLsizei) {
+        if (blurSize === this._gaussFilterKernelSize) {
+            return;
+        }
+
+        if (this._gaussFilter !== undefined) {
+            this._gaussFilter.kernelSize = blurSize;
+            this._gaussFilter.standardDeviation = blurSize / 6.0;
+        }
+        this._gaussFilterKernelSize = blurSize;
     }
 
     @Initializable.assert_initialized()
@@ -106,8 +123,8 @@ export class ShadowPass extends Initializable {
         if (this.hasBlur) {
             // Setup GaussFilter
             this._gaussFilter = new GaussFilter(this._context);
-            this._gaussFilter.kernelSize = 21;
-            this._gaussFilter.standardDeviation = this._gaussFilter.kernelSize / 6;
+            this._gaussFilter.kernelSize = this._gaussFilterKernelSize;
+            this._gaussFilter.standardDeviation = this._gaussFilterKernelSize / 6.0;
             this._gaussFilter.initialize();
 
             // Setup intermediate blur
