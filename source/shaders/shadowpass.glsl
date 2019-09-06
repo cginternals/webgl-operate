@@ -1,7 +1,13 @@
 
-float SMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
+vec2 SMCoordinates(vec4 worldPosition, mat4 shadowViewProjection)
 {
-    return (length(lightViewVertex) - lightNearPlane) / (lightFarPlane - lightNearPlane);
+    vec4 transformed = shadowViewProjection * worldPosition;
+    return transformed.xy / transformed.w * 0.5 + 0.5;
+}
+
+float SMDepth(vec3 worldPosition, vec3 lightPosition, vec2 lightNearFar)
+{
+    return (distance(worldPosition, lightPosition) - lightNearFar.x) / (lightNearFar.y - lightNearFar.x);
 }
 
 float SMCompare(sampler2D depths, vec2 uv, float compare, float offset)
@@ -10,9 +16,9 @@ float SMCompare(sampler2D depths, vec2 uv, float compare, float offset)
     return step(compare + offset, depth);
 }
 
-vec2 VSMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane)
+vec2 VSMDepths(vec3 worldPosition, vec3 lightPosition, vec2 lightNearFar)
 {
-    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+    float depth = SMDepths(worldPosition, lightPosition, lightNearFar);
 
     vec2 df = vec2(dFdx(depth), dFdy(depth));
     float moment = depth * depth + 0.25 * dot(df, df);
@@ -48,9 +54,9 @@ float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
     return chebyshevUpperBound(moments, compare, minVariance, 0.3);
 }
 
-float ESMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane, float exponent)
+float ESMDepths(vec3 worldPosition, vec3 lightPosition, vec2 lightNearFar, float exponent)
 {
-    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+    float depth = SMDepths(worldPosition, lightPosition, lightNearFar);
     return exp(exponent * depth);
 }
 
@@ -68,9 +74,9 @@ vec2 EVSMWarpDepth(float depth, vec2 exponents)
     return vec2(pos, neg);
 }
 
-vec4 EVSMDepths(vec3 lightViewVertex, float lightNearPlane, float lightFarPlane, vec2 exponents)
+vec4 EVSMDepths(vec3 worldPosition, vec3 lightPosition, vec2 lightNearFar, vec2 exponents)
 {
-    float depth = SMDepths(lightViewVertex, lightNearPlane, lightFarPlane);
+    float depth = SMDepths(worldPosition, lightPosition, lightNearFar);
     vec2 warpedDepth = EVSMWarpDepth(depth, exponents);
     return vec4(warpedDepth, warpedDepth * warpedDepth);
 }
