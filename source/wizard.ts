@@ -76,6 +76,7 @@ export class Wizard {
 
         /* In this case, no specialized internal formats are available. */
         if (context.isWebGL1) {
+            assert([gl.RGB, gl.RGBA].includes(target), "target must be gl.RGB or gl.RGBA in WebGL 1");
             return [target, type, query];
         }
 
@@ -84,6 +85,10 @@ export class Wizard {
                 return [[gl.RGBA32F, gl.RGBA16F, gl.RGBA8][internalFormatIndex], type, query];
             case gl.RGB:
                 return [[gl.RGB32F, gl.RGB16F, gl.RGB8][internalFormatIndex], type, query];
+            case gl.RG:
+                return [[gl.RG32F, gl.RG16F, gl.RG8][internalFormatIndex], type, query];
+            case gl.RED:
+                return [[gl.R32F, gl.R16F, gl.R8][internalFormatIndex], type, query];
             default:
                 assert(false, `internal format querying is not yet supported for formats other than RGBA, RGB`);
         }
