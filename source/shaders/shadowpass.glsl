@@ -48,10 +48,10 @@ float chebyshevUpperBound(vec2 moments, float compare, float minVariance, float 
     return max(p, p_max);
 }
 
-float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance)
+float VSMCompare(sampler2D depths, vec2 uv, float compare, float minVariance, float lightBleedingReduction)
 {
     vec2 moments = texture(depths, uv).rg;
-    return chebyshevUpperBound(moments, compare, minVariance, 0.3);
+    return chebyshevUpperBound(moments, compare, minVariance, lightBleedingReduction);
 }
 
 float ESMDepth(vec3 worldPosition, vec3 lightPosition, vec2 lightNearFar, float exponent)
@@ -81,15 +81,15 @@ vec4 EVSMDepth(vec3 worldPosition, vec3 lightPosition, vec2 lightNearFar, vec2 e
     return vec4(warpedDepth, warpedDepth * warpedDepth);
 }
 
-float EVSMCompare(sampler2D depths, vec2 uv, float compare, vec2 exponents)
+float EVSMCompare(sampler2D depths, vec2 uv, float compare, vec2 exponents, float lightBleedingReduction)
 {
     vec4 moments = texture(depths, uv);
     vec2 warpedCompare = EVSMWarpDepth(compare, exponents);
     vec2 depthScale = 0.0001 * exponents * warpedCompare;
     vec2 minVariance = depthScale * depthScale;
     return min(
-        chebyshevUpperBound(moments.xz, warpedCompare.x, minVariance.x, 0.0),
-        chebyshevUpperBound(moments.yw, warpedCompare.y, minVariance.y, 0.0)
+        chebyshevUpperBound(moments.xz, warpedCompare.x, minVariance.x, lightBleedingReduction),
+        chebyshevUpperBound(moments.yw, warpedCompare.y, minVariance.y, lightBleedingReduction)
     );
 }
 
