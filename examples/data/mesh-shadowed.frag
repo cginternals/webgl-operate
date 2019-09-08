@@ -44,9 +44,10 @@ void main(void)
     float light_depth = SMDepth(v_vertex.xyz, u_lightPosition, u_lightNearFar);
     vec2 shadow_uv = SMCoordinates(v_vertex, u_lightViewProjection);
 
+    //float visibility = SMCompare(u_shadowMap, shadow_uv, light_depth, shadowBias);
     //float visibility = ESMCompare(u_shadowMap, shadow_uv, light_depth, 80.0);
     //float visibility = VSMCompare(u_shadowMap, shadow_uv, light_depth, 0.0004, 0.3);
-    float visibility = EVSMCompare(u_shadowMap, shadow_uv, light_depth, vec2(30.0, 10.0), 0.0);
+    float visibility = EVSMCompare(u_shadowMap, shadow_uv, light_depth, vec2(30.0, 10.0), 0.3);
 
     if (any(greaterThan(shadow_uv, vec2(1.0))) || any(lessThan(shadow_uv, vec2(0.0)))) {
         visibility = 1.0;

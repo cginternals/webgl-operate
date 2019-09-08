@@ -83,7 +83,7 @@ class ShadowMapRenderer extends Renderer {
         this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
         this._light.near = 3.0;
-        this._light.far = 15.0;
+        this._light.far = 20.0;
 
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh-shadowed.vert');
@@ -153,8 +153,7 @@ class ShadowMapRenderer extends Renderer {
 
     protected onUpdate(): boolean {
         this._navigation.update();
-
-        return true;
+        return this._camera.altered;
     }
 
     protected onPrepare(): void {
@@ -173,13 +172,15 @@ class ShadowMapRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
-        const gl = this._context.gl;
+        const gl = this._context.gl as WebGLRenderingContext;
 
         this._shadowPass.frame(() => {
+            gl.enable(gl.DEPTH_TEST);
             this._shadowProgram.bind();
             this.drawCuboids(this._uModelS);
             this.drawPlane(this._uModelS);
             this._shadowProgram.unbind();
+            gl.disable(gl.DEPTH_TEST);
         });
 
         this._defaultFBO.bind();
@@ -189,17 +190,16 @@ class ShadowMapRenderer extends Renderer {
 
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE0);
 
-        gl.uniform1i(this._uColored, true);
+        gl.uniform1i(this._uColored, Number(true));
         this.drawCuboids(this._uModel);
 
-        gl.uniform1i(this._uColored, false);
+        gl.uniform1i(this._uColored, Number(false));
         this.drawPlane(this._uModel);
 
         this._program.unbind();
@@ -207,7 +207,6 @@ class ShadowMapRenderer extends Renderer {
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
     }
 
     protected onSwap(): void {
@@ -220,7 +219,7 @@ class ShadowMapRenderer extends Renderer {
         const M = mat4.create();
         for (let i = 0; i < this._cuboids.length; ++i) {
 
-            const x = i * 1.0 - 1.5;
+            const x = i * 0.5 - 0.75;
             const y = this._cuboids[i].extent[1] * 0.5;
 
             mat4.fromTranslation(M, vec3.fromValues(-x, y, 0.0));
