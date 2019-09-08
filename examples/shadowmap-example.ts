@@ -51,13 +51,13 @@ class ShadowMapRenderer extends Renderer {
         /* touchEventProvider: TouchEventProvider */): boolean {
 
         context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives',
-            'WEBGL_color_buffer_float', 'OES_texture_float']);
+            'WEBGL_color_buffer_float', 'OES_texture_float', 'OES_texture_float_linear']);
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
         this._defaultFBO.bind();
 
-        const gl = context.gl;
+        const gl = context.gl as WebGLRenderingContext;
 
 
         this._cuboids = new Array(4);
@@ -100,8 +100,8 @@ class ShadowMapRenderer extends Renderer {
         this._program.bind();
 
         gl.uniform2f(this._program.uniform('u_lightNearFar'), this._light.near, this._light.far);
-        gl.uniformMatrix4fv(this._program.uniform('u_lightView'), gl.GL_FALSE, this._light.view);
-        gl.uniformMatrix4fv(this._program.uniform('u_lightProjection'), gl.GL_FALSE, this._light.projection);
+        gl.uniformMatrix4fv(this._program.uniform('u_lightViewProjection'), false, this._light.viewProjection);
+        gl.uniform3fv(this._program.uniform('u_lightPosition'), this._light.eye);
 
         gl.uniform1i(this._program.uniform('u_shadowMap'), 0);
 
@@ -122,8 +122,8 @@ class ShadowMapRenderer extends Renderer {
         this._shadowProgram.bind();
 
         gl.uniform2f(this._shadowProgram.uniform('u_lightNearFar'), this._light.near, this._light.far);
-        gl.uniformMatrix4fv(this._shadowProgram.uniform('u_lightView'), gl.GL_FALSE, this._light.view);
-        gl.uniformMatrix4fv(this._shadowProgram.uniform('u_lightProjection'), gl.GL_FALSE, this._light.projection);
+        gl.uniformMatrix4fv(this._shadowProgram.uniform('u_lightViewProjection'), false, this._light.viewProjection);
+        gl.uniform3fv(this._shadowProgram.uniform('u_lightPosition'), this._light.eye);
 
         this._uModelS = this._shadowProgram.uniform('u_model');
 

@@ -13,8 +13,8 @@ precision lowp float;
 
 
 uniform vec2 u_lightNearFar;
-uniform mat4 u_lightView;
-uniform mat4 u_lightProjection;
+uniform mat4 u_lightViewProjection;
+uniform vec3 u_lightPosition;
 
 uniform bool u_colored;
 
@@ -41,15 +41,12 @@ const float shadowBias = -0.002;
 
 void main(void)
 {
-    vec4 vLightViewSpace = u_lightView * v_vertex;
-    vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
-
-    float light_depth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
-    vec2 shadow_uv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
+    float light_depth = SMDepth(v_vertex.xyz, u_lightPosition, u_lightNearFar);
+    vec2 shadow_uv = SMCoordinates(v_vertex, u_lightViewProjection);
 
     //float visibility = ESMCompare(u_shadowMap, shadow_uv, light_depth, 80.0);
-    //float visibility = VSMCompare(u_shadowMap, shadow_uv, light_depth, 0.0004);
-    float visibility = EVSMCompare(u_shadowMap, shadow_uv, light_depth, vec2(30.0, 10.0));
+    //float visibility = VSMCompare(u_shadowMap, shadow_uv, light_depth, 0.0004, 0.3);
+    float visibility = EVSMCompare(u_shadowMap, shadow_uv, light_depth, vec2(30.0, 10.0), 0.0);
 
     if (any(greaterThan(shadow_uv, vec2(1.0))) || any(lessThan(shadow_uv, vec2(0.0)))) {
         visibility = 1.0;

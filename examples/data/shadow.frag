@@ -13,6 +13,7 @@ precision highp float;
 
 
 uniform vec2 u_lightNearFar;
+uniform vec3 u_lightPosition;
 
 
 #if __VERSION__ == 100
@@ -29,7 +30,7 @@ varying vec4 v_vertex;
 
 void main(void)
 {
-    //fragColor = vec4(ESMDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1], 80.0), 0.0, 0.0, 1.0);
-    //fragColor = vec4(VSMDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1]), 0.0, 1.0);
-    fragColor = EVSMDepths(v_vertex.xyz, u_lightNearFar[0], u_lightNearFar[1], vec2(30.0, 10.0));
+    //fragColor = vec4(ESMDepth(v_vertex.xyz, u_lightPosition, u_lightNearFar, 80.0), 0.0, 0.0, 1.0);
+    //fragColor = vec4(VSMDepth(v_vertex.xyz, u_lightPosition, u_lightNearFar), 0.0, 1.0);
+    fragColor = EVSMDepth(v_vertex.xyz, u_lightPosition, u_lightNearFar, vec2(30.0, 10.0));
 }
