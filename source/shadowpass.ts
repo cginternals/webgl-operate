@@ -1,11 +1,12 @@
 
-import { assert } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { GaussFilter } from './gaussfilter';
 import { Initializable } from './initializable';
 import { Renderbuffer } from './renderbuffer';
 import { Texture2D } from './texture2d';
+import { Wizard } from './wizard';
 
 import { GLsizei2 } from './tuples';
 
@@ -92,15 +93,34 @@ export class ShadowPass extends Initializable {
             this._blurredShadowMapSize = this._shadowMapSize;
         }
 
-        const gl = this._context.gl;
+        const gl = this._context.gl as WebGLRenderingContext;
         const gl2facade = this._context.gl2facade;
 
-        let internalFormat = gl.RGBA32F;
-        let format = gl.RGBA;
+        let format: GLenum = gl.RGBA;
+        if (this._context.isWebGL2) {
+            const gl2 = this._context.gl as WebGL2RenderingContext;
+            switch (this._shadowType) {
+                case ShadowPass.ShadowMappingType.HardShadowMapping:
+                case ShadowPass.ShadowMappingType.ExponentialShadowMapping:
+                    format = gl2.RED;
+                    break;
+                case ShadowPass.ShadowMappingType.VarianceShadowMapping:
+                    format = gl2.RG;
+                    break;
+            }
+        }
+
+        const [internalFormat, type] = Wizard.queryInternalTextureFormat(this._context, format, Wizard.Precision.float);
+        if (this._shadowType !== ShadowPass.ShadowMappingType.HardShadowMapping && type !== gl.FLOAT) {
+            log(LogLevel.Warning, "floating point textures are not supported, falling back to HardShadowMapping");
+            this._shadowType = ShadowPass.ShadowMappingType.HardShadowMapping;
+        }
+
         let filter = gl.LINEAR;
-        if (this._context.isWebGL1) {
-            internalFormat = gl.RGBA;
-            format = gl.RGBA;
+        if (type === gl.FLOAT && !this._context.supportsTextureFloatLinear) {
+            filter = gl.NEAREST;
+        }
+        if (type === gl2facade.HALF_FLOAT && !this._context.supportsTextureHalfFloatLinear) {
             filter = gl.NEAREST;
         }
 
