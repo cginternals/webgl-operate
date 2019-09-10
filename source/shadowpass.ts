@@ -190,7 +190,7 @@ export class ShadowPass extends Initializable {
             this._intermediateBlurTexture.uninitialize();
 
             this._blurFBO.uninitialize();
-            this._intermediateBlurTexture.uninitialize();
+            this._blurTexture.uninitialize();
 
             this._gaussFilter.uninitialize();
         }
