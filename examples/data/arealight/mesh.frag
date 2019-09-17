@@ -75,7 +75,7 @@ void main(void)
 
     vec3 V = normalize(u_eye - v_vertex.xyz);
 
-    float roughness = 0.5;
+    float roughness = 0.2;
     float metallic = 1.0;
 
     LightingInfo info;
@@ -108,7 +108,7 @@ void main(void)
 
     // Area Light Reference
     {
-        const vec3 lightCenter = vec3(-1.0, 0.5, -1.0);
+        const vec3 lightCenter = vec3(-1.5, 0.5, 0.0);
         const float lightRadius = 0.25;
         const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
@@ -119,7 +119,7 @@ void main(void)
 
     // Area Light Importance Sampling GGX
     {
-        const vec3 lightCenter = vec3(1.0, 0.5, -1.0);
+        const vec3 lightCenter = vec3(0.0, 0.5, 0.0);
         const float lightRadius = 0.25;
         const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
@@ -130,7 +130,7 @@ void main(void)
 
     // Area Light (Karis MRP approximation)
     {
-        const vec3 lightCenter = vec3(-1.0, 0.5, 1.0);
+        const vec3 lightCenter = vec3(1.5, 0.5, 0.0);
         const float lightRadius = 0.25;
         const vec3 lightColor = vec3(1.0, 0.5, 0.5);
 
@@ -139,13 +139,6 @@ void main(void)
         lighting += diffuseSphereLightApproximated(light, info);
         lighting += specularSphereLightKaris(light, info);
     }
-
-    // // Area Light - new approximation
-    // {
-    //     const vec3 lightColor = vec3(1.0, 0.5, 0.5);
-
-    //     lighting += specularSphereLightNew(V, N, lightColor, reflectance0, reflectance90, alphaRoughnessSq);
-    // }
 
     fragColor = vec4(lighting, 1.0);
     fragColor.rgb = toneMapUncharted(fragColor.rgb);
