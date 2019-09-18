@@ -220,8 +220,15 @@ export class GLTFLoader {
                 material.baseColorFactor = vec4.fromValues.apply(undefined, pbrInfo!.baseColorFactor);
             }
 
-            material.metallicFactor = pbrInfo!.metallicFactor || 1;
-            material.roughnessFactor = pbrInfo!.roughnessFactor || 1;
+            material.metallicFactor = 1.0;
+            if (pbrInfo!.metallicFactor !== undefined) {
+                material.metallicFactor = pbrInfo!.metallicFactor;
+            }
+
+            material.roughnessFactor = 1.0;
+            if (pbrInfo!.roughnessFactor !== undefined) {
+                material.roughnessFactor = pbrInfo!.roughnessFactor;
+            }
 
             this._resourceManager.add(material, [materialInfo.name, identifier]);
             materialId++;
