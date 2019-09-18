@@ -19,6 +19,15 @@
         "disabled": false
     },
     {
+        "target": "thesis-renderer",
+        "title": "Thesis",
+        "authors": [
+            "p-otto"
+        ],
+        "caption": "PBR renderer showcasing different methods of physically plausible lighting.",
+        "disabled": false
+    },
+    {
         "target": "volume-vis",
         "title": "Volume Visualizer",
         "authors": [

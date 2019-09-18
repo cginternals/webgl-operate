@@ -8,7 +8,8 @@ module.exports = {
     entry: {
         'cornell-box': ['cornell-box/cornellbox.ts'],
         'cubescape': ['cubescape/cubescape.ts'],
-        'gltf-renderer': ['gltf-renderer/gltfrenderer.ts']
+        'gltf-renderer': ['gltf-renderer/gltfrenderer.ts'],
+        'thesis-renderer': ['thesis-renderer/thesisrenderer.ts']
     },
     devtool: 'source-map',
     output: {
