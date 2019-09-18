@@ -12,6 +12,7 @@ import {
     ForwardSceneRenderPass,
     Framebuffer,
     Geometry,
+    GLTFAlphaMode,
     GLTFLoader,
     GLTFPbrMaterial,
     GLTFPrimitive,
@@ -79,6 +80,8 @@ export class ThesisRenderer extends Renderer {
     protected _uRoughnessFactor: WebGLUniformLocation;
     protected _uEmissiveFactor: WebGLUniformLocation;
     protected _uNormalScale: WebGLUniformLocation;
+    protected _uBlendMode: WebGLUniformLocation;
+    protected _uBlendCutoff: WebGLUniformLocation;
 
     protected _uSpecularEnvironment: WebGLUniformLocation;
     protected _uBRDFLookupTable: WebGLUniformLocation;
@@ -144,18 +147,14 @@ export class ThesisRenderer extends Renderer {
         this._uRoughnessFactor = this._program.uniform('u_roughnessFactor');
         this._uEmissiveFactor = this._program.uniform('u_emissiveFactor');
         this._uNormalScale = this._program.uniform('u_normalScale');
+        this._uBlendMode = this._program.uniform('u_blendMode');
+        this._uBlendCutoff = this._program.uniform('u_blendCutoff');
 
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
         this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
 
-        /* Create and configure camera. */
-
+        /* Camera will be setup by the scenes */
         this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 3.0, 1.0);
-        this._camera.near = 0.1;
-        this._camera.far = 32.0;
 
         /* Create and configure navigation */
 
@@ -263,12 +262,20 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1f(this._uNormalScale, pbrMaterial.normalScale);
             gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
 
-            // TODO: support MASK blendmode
-            if (pbrMaterial.alphaMode === 'BLEND') {
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_COLOR, gl.DST_COLOR);
-            } else {
+            if (pbrMaterial.alphaMode === GLTFAlphaMode.OPAQUE) {
                 gl.disable(gl.BLEND);
+                gl.uniform1i(this._uBlendMode, 0);
+            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.MASK) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.uniform1i(this._uBlendMode, 1);
+                gl.uniform1f(this._uBlendCutoff, pbrMaterial.alphaCutoff);
+            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.BLEND) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.uniform1i(this._uBlendMode, 2);
+            } else {
+                auxiliaries.log(auxiliaries.LogLevel.Warning, 'Unknown blend mode encountered.');
             }
         };
 
@@ -332,14 +339,7 @@ export class ThesisRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
-        const gl = this._context.gl;
-
-        // TODO: proper handling of transparent materials in the loader
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
         this._forwardPass.frame();
-        console.log(this._camera.eye);
     }
 
     protected onSwap(): void {
