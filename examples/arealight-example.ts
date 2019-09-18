@@ -1,22 +1,22 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec2, vec3 } from 'gl-matrix';
 
 import {
     Camera,
     Canvas,
     Context,
-    GeosphereGeometry,
     DefaultFramebuffer,
+    GeosphereGeometry,
     Invalidate,
     MouseEventProvider,
     Navigation,
+    PlaneGeometry,
     Program,
     Renderer,
     Shader,
     Texture2D,
-    TextureCube,
     Wizard,
 } from 'webgl-operate';
 
@@ -27,22 +27,31 @@ import { Example } from './example';
 
 // tslint:disable:max-classes-per-file
 
-export class ImageBasedLightingRenderer extends Renderer {
+export class AreaLightRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _sphere: GeosphereGeometry;
+    protected _plane: PlaneGeometry;
+    protected _lightSphere: GeosphereGeometry;
+
+    protected _roughness: number;
+
+    protected _lightPosition: vec3;
+
     protected _albedoTexture: Texture2D;
     protected _roughnessTexture: Texture2D;
     protected _metallicTexture: Texture2D;
     protected _normalTexture: Texture2D;
-    protected _brdfLUT: Texture2D;
-    protected _cubemap: TextureCube;
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
+    protected _uModel: WebGLUniformLocation;
     protected _uEye: WebGLUniformLocation;
+    protected _uRoughness: WebGLUniformLocation;
+
+    protected _lightProgram: Program;
+    protected _uViewProjectionLight: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
 
@@ -65,39 +74,56 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         const gl = context.gl;
 
+        this._roughness = 0.5;
 
-        this._sphere = new GeosphereGeometry(context, 'Sphere');
-        this._sphere.initialize();
+        this._plane = new PlaneGeometry(context, 'Plane');
+        this._plane.initialize();
+        this._plane.scale = vec2.fromValues(3.0, 3.0);
 
+        this._lightSphere = new GeosphereGeometry(context, 'LightSphere', 0.25);
+        this._lightSphere.initialize();
+
+        this._lightPosition = vec3.fromValues(0.0, 0.5, 0.0);
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
-        const frag = new Shader(context, gl.FRAGMENT_SHADER, 'imagebasedlighting.frag');
-        frag.initialize(require('./data/imagebasedlighting.frag'));
+        const frag = new Shader(context, gl.FRAGMENT_SHADER, 'arealight/mesh.frag');
+        frag.initialize(require('./data/arealight/mesh.frag'));
 
-
-        this._program = new Program(context, 'CubeProgram');
+        this._program = new Program(context, 'AreaLightProgram');
         this._program.initialize([vert, frag], false);
 
-        this._program.attribute('a_vertex', this._sphere.vertexLocation);
-        this._program.attribute('a_texCoord', this._sphere.texCoordLocation);
+        this._program.attribute('a_vertex', this._plane.vertexLocation);
+        this._program.attribute('a_texCoord', this._plane.texCoordLocation);
         this._program.link();
         this._program.bind();
 
-
         this._uViewProjection = this._program.uniform('u_viewProjection');
+        this._uModel = this._program.uniform('u_model');
         this._uEye = this._program.uniform('u_eye');
+        this._uRoughness = this._program.uniform('u_roughness');
 
-        const identity = mat4.identity(mat4.create());
-        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, identity);
         gl.uniform1i(this._program.uniform('u_albedoTexture'), 0);
         gl.uniform1i(this._program.uniform('u_roughnessTexture'), 1);
         gl.uniform1i(this._program.uniform('u_metallicTexture'), 2);
         gl.uniform1i(this._program.uniform('u_normalTexture'), 3);
-        gl.uniform1i(this._program.uniform('u_cubemap'), 4);
-        gl.uniform1i(this._program.uniform('u_brdfLUT'), 5);
 
-        gl.uniform1i(this._program.uniform('u_textured'), false);
+        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, this._plane.transformation);
+
+        // Program for rendering the light source
+        const lightFrag = new Shader(context, gl.FRAGMENT_SHADER, 'light.frag');
+        lightFrag.initialize(require('./data/arealight/light.frag'));
+
+        this._lightProgram = new Program(context, 'LightProgram');
+        this._lightProgram.initialize([vert, lightFrag], false);
+
+        this._lightProgram.attribute('a_vertex', this._lightSphere.vertexLocation);
+        this._lightProgram.link();
+        this._lightProgram.bind();
+
+        const m = mat4.create();
+        gl.uniformMatrix4fv(this._lightProgram.uniform('u_model'), gl.FALSE, mat4.translate(m, m, this._lightPosition));
+        this._uViewProjectionLight = this._lightProgram.uniform('u_viewProjection');
 
         /**
          * Textures taken from https://3dtextures.me/2018/11/19/metal-001/ and modified
@@ -138,41 +164,12 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._normalTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false);
 
-        this._brdfLUT = new Texture2D(context, 'BRDFLookUpTable');
-        this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
-        this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
-        this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
-        this._brdfLUT.fetch('./data/imagebasedlighting/brdfLUT.png');
-
-        const internalFormatAndType = Wizard.queryInternalTextureFormat(
-            this._context, gl.RGBA, Wizard.Precision.byte);
-
-        this._cubemap = new TextureCube(context, 'Cubemap');
-        this._cubemap.initialize(512, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
-
-        const MIPMAP_LEVELS = 9;
-
-        this._cubemap.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
-        this._cubemap.levels(0, MIPMAP_LEVELS - 1);
-
-        for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
-            this._cubemap.fetch({
-                positiveX: `./data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `./data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `./data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `./data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `./data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `./data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
-            }, mipLevel);
-        }
-
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
+        this._camera.eye = vec3.fromValues(0.0, 2.0, 3.0);
         this._camera.near = 1.0;
         this._camera.far = 8.0;
-
 
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
@@ -186,7 +183,8 @@ export class ImageBasedLightingRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        this._sphere.uninitialize();
+        this._plane.uninitialize();
+        this._lightSphere.uninitialize();
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
@@ -239,25 +237,32 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._roughnessTexture.bind(gl.TEXTURE1);
         this._metallicTexture.bind(gl.TEXTURE2);
         this._normalTexture.bind(gl.TEXTURE3);
-        this._cubemap.bind(gl.TEXTURE4);
-        this._brdfLUT.bind(gl.TEXTURE5);
 
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
         gl.uniform3fv(this._uEye, this._camera.eye);
+        gl.uniform1f(this._uRoughness, this._roughness);
 
-        this._sphere.bind();
-        this._sphere.draw();
-        this._sphere.unbind();
-
-        this._program.unbind();
+        this._plane.bind();
+        this._plane.draw();
+        this._plane.unbind();
 
         this._albedoTexture.unbind(gl.TEXTURE0);
         this._roughnessTexture.unbind(gl.TEXTURE1);
         this._metallicTexture.unbind(gl.TEXTURE2);
         this._normalTexture.unbind(gl.TEXTURE3);
-        this._cubemap.unbind(gl.TEXTURE4);
-        this._brdfLUT.unbind(gl.TEXTURE5);
+
+        this._program.unbind();
+
+        // Render light source
+        this._lightProgram.bind();
+        gl.uniformMatrix4fv(this._uViewProjectionLight, gl.GL_FALSE, this._camera.viewProjection);
+
+        this._lightSphere.bind();
+        this._lightSphere.draw();
+        this._lightSphere.unbind();
+
+        this._lightProgram.unbind();
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
@@ -268,10 +273,10 @@ export class ImageBasedLightingRenderer extends Renderer {
 }
 
 
-export class ImageBasedLightingExample extends Example {
+export class AreaLightExample extends Example {
 
     private _canvas: Canvas;
-    private _renderer: ImageBasedLightingRenderer;
+    private _renderer: AreaLightRenderer;
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
@@ -280,7 +285,7 @@ export class ImageBasedLightingExample extends Example {
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
 
-        this._renderer = new ImageBasedLightingRenderer();
+        this._renderer = new AreaLightRenderer();
         this._canvas.renderer = this._renderer;
 
         return true;
@@ -295,7 +300,7 @@ export class ImageBasedLightingExample extends Example {
         return this._canvas;
     }
 
-    get renderer(): ImageBasedLightingRenderer {
+    get renderer(): AreaLightRenderer {
         return this._renderer;
     }
 
