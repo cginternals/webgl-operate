@@ -262,6 +262,14 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1f(this._uRoughnessFactor, pbrMaterial.roughnessFactor);
             gl.uniform1f(this._uNormalScale, pbrMaterial.normalScale);
             gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
+
+            // TODO: support MASK blendmode
+            if (pbrMaterial.alphaMode === 'BLEND') {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_COLOR, gl.DST_COLOR);
+            } else {
+                gl.disable(gl.BLEND);
+            }
         };
 
         this.loadAsset();

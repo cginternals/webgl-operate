@@ -308,7 +308,7 @@ void main(void)
     }
 
     // NOTE: the spec mandates to ignore any alpha value in 'OPAQUE' mode
-    float alpha = 1.0;
+    float alpha = baseColor.a;
     // float alpha = mix(1.0, baseColor.a, u_AlphaBlend);
     // if (u_AlphaCutoff > 0.0) {
     //     alpha = step(u_AlphaCutoff, baseColor.a);
