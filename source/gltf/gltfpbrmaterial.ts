@@ -22,6 +22,12 @@ export enum GLTFShaderFlags {
     USE_TEX_LOD = 1 << 10,
 }
 
+export enum GLTFAlphaMode {
+    OPAQUE,
+    MASK,
+    BLEND,
+}
+
 export class GLTFPbrMaterial extends Material {
 
     protected _baseColorTexture: Texture2D | undefined;
@@ -37,6 +43,9 @@ export class GLTFPbrMaterial extends Material {
     protected _isDoubleSided: boolean;
     protected _normalScale: number;
 
+    protected _alphaMode: GLTFAlphaMode;
+    protected _alphaCutoff: number;
+
     public baseColorTexCoord: number;
     public metallicRoughnessTexCoord: number;
     public normalTexCoord: number;
@@ -51,6 +60,9 @@ export class GLTFPbrMaterial extends Material {
         this.normalTexCoord = 0;
         this.occlusionTexCoord = 0;
         this.emissiveTexCoord = 0;
+
+        this._alphaMode = GLTFAlphaMode.OPAQUE;
+        this._alphaCutoff = 1.0;
 
         this._baseColorFactor = vec4.fromValues(1, 1, 1, 1);
         this._metallicFactor = 1;
@@ -146,6 +158,22 @@ export class GLTFPbrMaterial extends Material {
 
     get isDoubleSided(): boolean {
         return this._isDoubleSided;
+    }
+
+    set alphaMode(alphaMode: GLTFAlphaMode) {
+        this._alphaMode = alphaMode;
+    }
+
+    get alphaMode(): GLTFAlphaMode {
+        return this._alphaMode;
+    }
+
+    set alphaCutoff(val: number) {
+        this._alphaCutoff = val;
+    }
+
+    get alphaCutoff(): number {
+        return this._alphaCutoff;
     }
 
     get flags(): number {

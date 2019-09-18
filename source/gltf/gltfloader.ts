@@ -6,7 +6,7 @@ import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 
 import { GLTFHelper } from './gltfhelper';
 import { GLTFMesh } from './gltfmesh';
-import { GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
+import { GLTFPbrMaterial, GLTFShaderFlags, GLTFAlphaMode } from './gltfpbrmaterial';
 import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
 
 import { assert, log, LogLevel } from '../auxiliaries';
@@ -178,6 +178,20 @@ export class GLTFLoader {
             material.emissiveFactor = vec3.fromValues(0, 0, 0);
             if (materialInfo.emissiveFactor !== undefined) {
                 material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor);
+            }
+
+            material.alphaMode = GLTFAlphaMode.OPAQUE;
+
+            if (materialInfo.alphaMode === 'MASK') {
+                material.alphaMode = GLTFAlphaMode.MASK;
+
+                if (materialInfo.alphaCutoff === undefined) {
+                    log(LogLevel.Warning,
+                        `Material ${materialInfo.name} has alphaMode MASK but does not specify an alphaCutoff`);
+                }
+                material.alphaCutoff = materialInfo.alphaCutoff!;
+            } else if (materialInfo.alphaMode === 'BLEND') {
+                material.alphaMode = GLTFAlphaMode.BLEND;
             }
 
             material.isDoubleSided = materialInfo.doubleSided || false;
