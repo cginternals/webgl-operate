@@ -6,7 +6,7 @@ import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 
 import { GLTFHelper } from './gltfhelper';
 import { GLTFMesh } from './gltfmesh';
-import { GLTFPbrMaterial, GLTFShaderFlags, GLTFAlphaMode } from './gltfpbrmaterial';
+import { GLTFAlphaMode, GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
 import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
 
 import { assert, log, LogLevel } from '../auxiliaries';
