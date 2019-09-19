@@ -46,10 +46,10 @@ export class GLTFLoader {
         this._resourceManager = new ResourceManager(this._context);
         this._scenes = new Array<SceneNode>();
 
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glsl_default.vert');
-        vert.initialize(require('./shaders/glsl_default.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glsl_default.frag');
-        frag.initialize(require('./shaders/glsl_default.frag'));
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
+        vert.initialize(require('./shaders/gltf_default.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_default.frag');
+        frag.initialize(require('./shaders/gltf_default.frag'));
         this._pbrProgram = new Program(this._context, 'GLTFPbrProgram');
         this._pbrProgram.initialize([vert, frag]);
     }
