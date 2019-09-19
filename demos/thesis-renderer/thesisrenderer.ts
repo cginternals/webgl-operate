@@ -30,6 +30,7 @@ import {
 import { Scene } from './scene';
 
 import { Demo } from '../demo';
+import { SphereLight } from './arealight';
 
 // tslint:disable:max-classes-per-file
 
@@ -111,6 +112,8 @@ export class ThesisRenderer extends Renderer {
             'http://127.0.0.1:8001/italian_kitchen/scene.gltf',
             new Camera(vec3.fromValues(-10, 30, 50), vec3.fromValues(0, 15, 0)),
             0.1, 512);
+        this._kitchenScene.addLight(new SphereLight(
+            vec3.fromValues(25, 0, 0), 2.0, vec3.fromValues(1, 1, 1)));
 
         this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
         this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
