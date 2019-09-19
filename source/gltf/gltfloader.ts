@@ -222,12 +222,12 @@ export class GLTFLoader {
 
             material.metallicFactor = 1.0;
             if (pbrInfo!.metallicFactor !== undefined) {
-                material.metallicFactor = pbrInfo!.metallicFactor;
+                material.metallicFactor = pbrInfo!.metallicFactor!;
             }
 
             material.roughnessFactor = 1.0;
             if (pbrInfo!.roughnessFactor !== undefined) {
-                material.roughnessFactor = pbrInfo!.roughnessFactor;
+                material.roughnessFactor = pbrInfo!.roughnessFactor!;
             }
 
             this._resourceManager.add(material, [materialInfo.name, identifier]);
