@@ -6,7 +6,7 @@ import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 
 import { GLTFHelper } from './gltfhelper';
 import { GLTFMesh } from './gltfmesh';
-import { GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
+import { GLTFPbrMaterial, GLTFShaderFlags, GLTFAlphaMode } from './gltfpbrmaterial';
 import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
 
 import { assert, log, LogLevel } from '../auxiliaries';
@@ -46,10 +46,10 @@ export class GLTFLoader {
         this._resourceManager = new ResourceManager(this._context);
         this._scenes = new Array<SceneNode>();
 
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glsl_default.vert');
-        vert.initialize(require('./shaders/glsl_default.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glsl_default.frag');
-        frag.initialize(require('./shaders/glsl_default.frag'));
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
+        vert.initialize(require('./shaders/gltf_default.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_default.frag');
+        frag.initialize(require('./shaders/gltf_default.frag'));
         this._pbrProgram = new Program(this._context, 'GLTFPbrProgram');
         this._pbrProgram.initialize([vert, frag]);
     }
@@ -180,6 +180,20 @@ export class GLTFLoader {
                 material.emissiveFactor = vec3.fromValues.apply(undefined, materialInfo.emissiveFactor);
             }
 
+            material.alphaMode = GLTFAlphaMode.OPAQUE;
+
+            if (materialInfo.alphaMode === 'MASK') {
+                material.alphaMode = GLTFAlphaMode.MASK;
+
+                if (materialInfo.alphaCutoff === undefined) {
+                    log(LogLevel.Warning,
+                        `Material ${materialInfo.name} has alphaMode MASK but does not specify an alphaCutoff`);
+                }
+                material.alphaCutoff = materialInfo.alphaCutoff!;
+            } else if (materialInfo.alphaMode === 'BLEND') {
+                material.alphaMode = GLTFAlphaMode.BLEND;
+            }
+
             material.isDoubleSided = materialInfo.doubleSided || false;
 
             const pbrInfo = materialInfo.pbrMetallicRoughness;
@@ -206,8 +220,15 @@ export class GLTFLoader {
                 material.baseColorFactor = vec4.fromValues.apply(undefined, pbrInfo!.baseColorFactor);
             }
 
-            material.metallicFactor = pbrInfo!.metallicFactor || 1;
-            material.roughnessFactor = pbrInfo!.roughnessFactor || 1;
+            material.metallicFactor = 1.0;
+            if (pbrInfo!.metallicFactor !== undefined) {
+                material.metallicFactor = pbrInfo!.metallicFactor;
+            }
+
+            material.roughnessFactor = 1.0;
+            if (pbrInfo!.roughnessFactor !== undefined) {
+                material.roughnessFactor = pbrInfo!.roughnessFactor;
+            }
 
             this._resourceManager.add(material, [materialInfo.name, identifier]);
             materialId++;
