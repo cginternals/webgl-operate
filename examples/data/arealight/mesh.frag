@@ -2,7 +2,7 @@
 precision lowp float;
 
 @import ../../../source/shaders/facade.frag;
-@import ./arealight;
+@import ../../../source/shaders/arealight;
 
 
 uniform sampler2D u_albedoTexture;
