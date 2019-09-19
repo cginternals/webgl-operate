@@ -17,6 +17,8 @@ export class Scene {
         this._camera = camera;
         this._camera.near = nearPlane;
         this._camera.far = farPlane;
+
+        this._lights = new Array();
     }
 
     addLight(light: SphereLight): void {

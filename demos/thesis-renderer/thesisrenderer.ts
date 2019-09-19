@@ -22,6 +22,7 @@ import {
     Navigation,
     Program,
     Renderer,
+    Shader,
     Texture2D,
     TextureCube,
     Wizard,
@@ -121,7 +122,13 @@ export class ThesisRenderer extends Renderer {
         this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._framebuffer.initialize();
 
-        this._program = this._loader.pbrProgram;
+        /* Initialize program, we do not use the default gltf shader here */
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
+        vert.initialize(require('../../source/gltf/shaders/gltf_default.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_default.frag');
+        frag.initialize(require('./data/gltf_thesis.frag'));
+        this._program = new Program(this._context, 'GLTFPbrProgram');
+        this._program.initialize([vert, frag]);
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
