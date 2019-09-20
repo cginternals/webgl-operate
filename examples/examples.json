@@ -18,6 +18,12 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
+        "target": "colorscale-example",
+        "title": "Color Scale",
+        "object": "ColorScaleExample",
+        "caption": "Minimalistic scene featuring color scales."
+    },
+    {
         "target": "canvassize-example",
         "title": "Canvas Size",
         "object": "CanvasSizeExample",
