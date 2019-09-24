@@ -127,9 +127,13 @@ export class Color {
     static lab2xyz(lab: GLclampf3): GLclampf3 {
         const labF = clampf3(lab, 'LAB input');
 
+        // const yr = (labF[0] * 100.0 + 16.0) / 116.0;
+        // const xr = labF[1] * 100.0 / 500.0 + yr;
+        // const zr = yr - labF[2] * 100.0 / 200.0;
+
         const yr = (labF[0] * 100.0 + 16.0) / 116.0;
-        const xr = labF[1] * 100 / 500.0 + yr;
-        const zr = yr - labF[2] * 100 / 200.0;
+        const xr = (labF[1] * 256.0 - 128.0) / 500.0 + yr;
+        const zr = yr - (labF[2] * 256.0 - 128) / 200.0;
 
         const yr3 = yr * yr * yr;
         const xr3 = xr * xr * xr;
@@ -158,9 +162,9 @@ export class Color {
         const z = xyzF[2] > 0.008856 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
 
         return clampf3([
-            0.01 * (116.0 * y - 16.0),
-            0.01 * (500.0 * (x - y)),
-            0.01 * (200.0 * (y - z))]);
+            (116.0 * y - 16.0) / 100.0,
+            ((500.0 * (x - y)) + 128.0) / 256.0,
+            ((200.0 * (y - z)) + 128.0) / 256.0]);
     }
 
 

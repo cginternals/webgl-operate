@@ -56,6 +56,8 @@ class ColorScaleRenderer extends Renderer {
     protected _labelNearest7: Position2DLabel;
     protected _labelNearest8: Position2DLabel;
 
+    protected _labelLAB: Position2DLabel;
+
     protected _camera: Camera;
 
     protected _defaultFBO: DefaultFramebuffer;
@@ -177,6 +179,9 @@ class ColorScaleRenderer extends Renderer {
      */
     protected setupScene(): void {
 
+        // test interpolation
+        this._labelLAB = new Position2DLabel(new Text(`| should be violet |`), Label.Type.Static);
+
         // generated color
         this._labelGenerated1 = new Position2DLabel(new Text(`| generated 0 |`), Label.Type.Dynamic);
         this._labelGenerated2 = new Position2DLabel(new Text(`| generated 1 |`), Label.Type.Dynamic);
@@ -214,28 +219,44 @@ class ColorScaleRenderer extends Renderer {
             this._labelNearest1, this._labelNearest2, this._labelNearest3, this._labelNearest4, this._labelNearest5,
             this._labelNearest6, this._labelNearest7, this._labelNearest8];
 
-        this._labelPass.labels = [...generatedLabels, ...linearLabels, ...nearestLabels];
+        this._labelPass.labels = [this._labelLAB, ...generatedLabels, ...linearLabels, ...nearestLabels];
 
         for (const label of this._labelPass.labels) {
             label.fontSize = 17;
             label.fontSizeUnit = Label.Unit.Pixel;
         }
 
+        // const colors = [
+        //     255, 255, 255, 255,
+        //     254, 213, 0, 255,
+        //     254, 134, 0, 255,
+        //     230, 36, 38, 255,
+        // ];
+
         const colors = [
-            255, 255, 255, 255,
-            254, 213, 0, 255,
-            254, 134, 0, 255,
-            230, 36, 38, 255,
+            255, 0, 0, 255,
+            0, 0, 255, 255,
         ];
 
-        const colorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGBA, 4);
+        // const colors = [
+        //     255, 255, 255, 255,
+        //     0, 0, 0, 255,
+        // ];
+
+        const stepCount = 4.0; // colors.length / 4.0;
+        const colorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGBA, stepCount, [0, 1.0]);
 
         for (const color of colorScale.colors) {
             console.log('>>>>GENERATED COLOR', color.rgba);
         }
 
+        this._labelLAB.color = colorScale.lerp(0.5, Color.Space.LAB)!;
+
+        console.log('>>>>>', Color.lab2rgb([0.70, 0.05, 0.10]));
+
         let i = 0;
         for (const label of generatedLabels) {
+            i %= stepCount;
             label.color.fromRGB(...colorScale.colors[i].rgba);
             i++;
         }
@@ -244,10 +265,8 @@ class ColorScaleRenderer extends Renderer {
         let l = nearestLabels.length;
         colorScale.hint = ColorScale.InterpolationHint.Nearest;
         for (const label of nearestLabels) {
-            console.log('>>>lerpNearest_________________________');
-            console.log('>>>lerpNearest', i, i / l);
-            const r = colorScale.lerp(i / l, Color.Space.RGB)!;
-            console.log('>>>lerpNearest Result', r.rgba);
+            const r = colorScale.lerp(i / l, Color.Space.LAB)!;
+            console.log('>>>lerpNearest Result', i, i / l, r.rgba);
             label.color = r;
             i++;
         }
@@ -256,10 +275,8 @@ class ColorScaleRenderer extends Renderer {
         l = linearLabels.length;
         colorScale.hint = ColorScale.InterpolationHint.Linear;
         for (const label of linearLabels) {
-            console.log('>>>lerpLinear_________________________');
-            console.log('>>>lerpLinear', i, i / l);
-            const r = colorScale.lerp(i / l, Color.Space.RGB)!;
-            console.log('>>>lerpLinear Result', r.rgba);
+            const r = colorScale.lerp(i / l, Color.Space.LAB)!;
+            console.log('>>>lerpLinear Result', i, i / l, r.rgba);
             label.color = r;
             i++;
         }
@@ -338,6 +355,7 @@ export class ColorScaleExample extends Example {
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
+        this._canvas.clearColor = new Color();
 
         this._renderer = new ColorScaleRenderer();
         this._canvas.renderer = this._renderer;

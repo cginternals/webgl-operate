@@ -225,7 +225,7 @@ export class ColorScale {
                 break;
             }
             const a = (position - positions[lower]) / (positions[upper] - positions[lower]);
-            scale._colors.push(Color.mix(colors[lower], colors[upper], a, Color.Space.RGB));
+            scale._colors.push(Color.mix(colors[lower], colors[upper], a, Color.Space.LAB));
         }
         return scale;
     }
@@ -267,14 +267,11 @@ export class ColorScale {
         }
 
         // tslint:disable-next-line: max-line-length
-        // assert(upper < this._colors.length, `expected upper not exceed maximum color index: ${upper} < ${this._colors.length}`);
+        assert(upper < this._colors.length, `expected upper not exceed maximum color index: ${upper} < ${this._colors.length}`);
 
         if (this._hint === ColorScale.InterpolationHint.Nearest) {
-            console.log('>>>nearest', posIndex, '-', lower, '<', upper, '-', posIndex, '?', lower, ':', upper);
-            console.log('>>>>nearest', posIndex - lower <= upper - posIndex ? lower : upper);
             return this._colors[posIndex - lower <= upper - posIndex ? lower : upper];
         }
-        console.log('>>>linear', lower, upper, posIndex, posIndex - lower);
         return Color.mix(this._colors[lower], this._colors[upper], posIndex - lower, space);
     }
 
