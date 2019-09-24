@@ -292,6 +292,7 @@ export class ThesisRenderer extends Renderer {
                 gl.uniform1f(this._uBlendCutoff, pbrMaterial.alphaCutoff);
             } else if (pbrMaterial.alphaMode === GLTFAlphaMode.BLEND) {
                 gl.enable(gl.BLEND);
+                // We premultiply in the shader
                 gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 gl.uniform1i(this._uBlendMode, 2);
             } else {
@@ -439,12 +440,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `../examples/data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `../examples/data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `../examples/data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `../examples/data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `../examples/data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `../examples/data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }

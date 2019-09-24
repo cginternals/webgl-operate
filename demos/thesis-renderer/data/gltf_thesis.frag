@@ -236,5 +236,5 @@ void main(void)
     }
 
     // TODO: tonemapping
-    fragColor = vec4(pow(color, vec3(1.0/2.2)), alpha);
+    fragColor = vec4(pow(color, vec3(1.0/2.2)) * alpha, alpha);
 }
