@@ -5,6 +5,8 @@ import { mat3, mat4, vec3 } from 'gl-matrix';
 import { auxiliaries } from 'webgl-operate';
 
 import {
+    AccumulatePass,
+    BlitPass,
     Camera,
     Canvas,
     Context,
@@ -20,7 +22,9 @@ import {
     Material,
     MouseEventProvider,
     Navigation,
+    NdcFillingTriangle,
     Program,
+    Renderbuffer,
     Renderer,
     Shader,
     Texture2D,
@@ -45,14 +49,20 @@ export class ThesisRenderer extends Renderer {
     protected _navigation: Navigation;
 
     protected _forwardPass: ForwardSceneRenderPass;
+    protected _accumulatePass: AccumulatePass;
+    protected _blitPass: BlitPass;
 
     protected _camera: Camera;
 
     protected _datsunScene: Scene;
     protected _kitchenScene: Scene;
 
-    protected _texture: Texture2D;
-    protected _framebuffer: Framebuffer;
+    protected _intermediateFBO: Framebuffer;
+    protected _colorRenderTexture: Texture2D;
+    protected _depthRenderbuffer: Renderbuffer;
+
+    protected _defaultFramebuffer: Framebuffer;
+    protected _ndcTriangle: NdcFillingTriangle;
     protected _program: Program;
     protected _emptyTexture: Texture2D;
 
@@ -105,6 +115,7 @@ export class ThesisRenderer extends Renderer {
         /* touchEventProvider: TouchEventProvider */): boolean {
 
         const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
 
         this._loader = new GLTFLoader(this._context);
 
@@ -125,8 +136,11 @@ export class ThesisRenderer extends Renderer {
         this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
         this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
 
-        this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
-        this._framebuffer.initialize();
+        this._defaultFramebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
+        this._defaultFramebuffer.initialize();
+
+        this._ndcTriangle = new NdcFillingTriangle(this._context);
+        this._ndcTriangle.initialize();
 
         /* Initialize program, we do not use the default gltf shader here */
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
@@ -181,13 +195,20 @@ export class ThesisRenderer extends Renderer {
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
 
+        /**
+         * Setup intermediate FBO and textures
+         */
+        this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
+        this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
+        this._intermediateFBO = new Framebuffer(this._context, 'IntermediateFBO');
+
         /* Create and configure forward pass. */
 
         this._forwardPass = new ForwardSceneRenderPass(context);
         this._forwardPass.initialize();
 
         this._forwardPass.camera = this._camera;
-        this._forwardPass.target = this._framebuffer;
+        this._forwardPass.target = this._intermediateFBO;
 
         this._forwardPass.program = this._program;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
@@ -300,6 +321,17 @@ export class ThesisRenderer extends Renderer {
             }
         };
 
+        this._accumulatePass = new AccumulatePass(context);
+        this._accumulatePass.initialize(this._ndcTriangle);
+        this._accumulatePass.precision = this._framePrecision;
+        this._accumulatePass.texture = this._colorRenderTexture;
+
+        this._blitPass = new BlitPass(this._context);
+        this._blitPass.initialize(this._ndcTriangle);
+        this._blitPass.readBuffer = gl2facade.COLOR_ATTACHMENT0;
+        this._blitPass.drawBuffer = gl.BACK;
+        this._blitPass.target = this._defaultFramebuffer;
+
         this.loadAsset();
         this.loadEnvironmentMap();
 
@@ -353,7 +385,21 @@ export class ThesisRenderer extends Renderer {
      * camera-updates.
      */
     protected onPrepare(): void {
+        const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
+
+        if (!this._intermediateFBO.initialized) {
+            this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
+                this._context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
+            this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
+            this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
+                , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
+            this._intermediateFBO.clearColor([0.4, 0.4, 0.4, 1.0]);
+        }
+
         this._forwardPass.prepare();
+
+        this._accumulatePass.update();
 
         this._altered.reset();
         this._camera.altered = false;
@@ -361,9 +407,13 @@ export class ThesisRenderer extends Renderer {
 
     protected onFrame(frameNumber: number): void {
         this._forwardPass.frame();
+        this._accumulatePass.frame(frameNumber);
     }
 
     protected onSwap(): void {
+        this._blitPass.framebuffer = this._accumulatePass.framebuffer ?
+            this._accumulatePass.framebuffer : this._blitPass.framebuffer = this._intermediateFBO;
+        this._blitPass.frame();
     }
 
     /**
@@ -458,7 +508,7 @@ export class ThesisDemo extends Demo {
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
-        this._canvas = new Canvas(element, { antialias: true });
+        this._canvas = new Canvas(element);
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
