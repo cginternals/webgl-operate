@@ -85,6 +85,10 @@ export class ThesisRenderer extends Renderer {
     protected _uBlendMode: WebGLUniformLocation;
     protected _uBlendCutoff: WebGLUniformLocation;
 
+    protected _uSphereLightCenter: WebGLUniformLocation;
+    protected _uSphereLightRadius: WebGLUniformLocation;
+    protected _uSphereLightLuminance: WebGLUniformLocation;
+
     protected _uSpecularEnvironment: WebGLUniformLocation;
     protected _uBRDFLookupTable: WebGLUniformLocation;
 
@@ -108,13 +112,15 @@ export class ThesisRenderer extends Renderer {
             'http://127.0.0.1:8001/1972_datsun_240k_gt/scene.gltf',
             new Camera(vec3.fromValues(-400, 500, 2000), vec3.fromValues(0, -160, 0)),
             1, 3000);
+        this._datsunScene.addLight(new SphereLight(
+            vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(15, 15, 15)));
 
         this._kitchenScene = new Scene(
             'http://127.0.0.1:8001/italian_kitchen/scene.gltf',
             new Camera(vec3.fromValues(-10, 30, 50), vec3.fromValues(0, 15, 0)),
             0.1, 512);
         this._kitchenScene.addLight(new SphereLight(
-            vec3.fromValues(25, 0, 0), 2.0, vec3.fromValues(1, 1, 1)));
+            vec3.fromValues(0, 20, 10), 4.0, vec3.fromValues(15, 15, 15)));
 
         this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
         this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
@@ -125,9 +131,9 @@ export class ThesisRenderer extends Renderer {
         /* Initialize program, we do not use the default gltf shader here */
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
         vert.initialize(require('../../source/gltf/shaders/gltf_default.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_default.frag');
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis.frag');
         frag.initialize(require('./data/gltf_thesis.frag'));
-        this._program = new Program(this._context, 'GLTFPbrProgram');
+        this._program = new Program(this._context, 'ThesisPbrProgram');
         this._program.initialize([vert, frag]);
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
@@ -159,6 +165,10 @@ export class ThesisRenderer extends Renderer {
         this._uNormalScale = this._program.uniform('u_normalScale');
         this._uBlendMode = this._program.uniform('u_blendMode');
         this._uBlendCutoff = this._program.uniform('u_blendCutoff');
+
+        this._uSphereLightCenter = this._program.uniform('u_sphereLight.center');
+        this._uSphereLightRadius = this._program.uniform('u_sphereLight.radius');
+        this._uSphereLightLuminance = this._program.uniform('u_sphereLight.luminance');
 
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
         this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
@@ -263,7 +273,7 @@ export class ThesisRenderer extends Renderer {
             }
 
             /**
-             * Factors
+             * Material properties
              */
             gl.uniform4fv(this._uBaseColorFactor, pbrMaterial.baseColorFactor);
             gl.uniform3fv(this._uEmissiveFactor, pbrMaterial.emissiveFactor);
@@ -359,9 +369,11 @@ export class ThesisRenderer extends Renderer {
      * Load asset from URI specified by the HTML select
      */
     protected loadAsset(): void {
+        const gl = this._context.gl;
+
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
 
-        let scene = undefined;
+        let scene: Scene | undefined;
         if (assetSelect.value === 'Datsun') {
             scene = this._datsunScene;
         } else if (assetSelect.value === 'Kitchen') {
@@ -369,6 +381,10 @@ export class ThesisRenderer extends Renderer {
         }
 
         auxiliaries.assert(scene !== undefined, `Unknown scene ${assetSelect.value}.`);
+
+        if (scene === undefined) {
+            return;
+        }
 
         this._camera = scene!.camera;
         this.updateCamera();
@@ -381,11 +397,21 @@ export class ThesisRenderer extends Renderer {
                 this._forwardPass.scene = this._loader.defaultScene;
                 this._invalidate(true);
             });
+
+        /**
+         * Update lights
+         */
+        this._program.bind();
+        gl.uniform3fv(this._uSphereLightCenter, scene.lights[0].center);
+        gl.uniform1f(this._uSphereLightRadius, scene.lights[0].radius);
+        gl.uniform3fv(this._uSphereLightLuminance, scene.lights[0].luminance);
+        this._program.unbind();
     }
 
     protected updateCamera(): void {
         this._forwardPass.camera = this._camera;
         this._navigation.camera = this._camera;
+        this._camera.altered = true;
     }
 
     /**

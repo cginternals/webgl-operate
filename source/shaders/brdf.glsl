@@ -11,6 +11,7 @@
 // [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
 
+#undef M_PI
 #define M_PI 3.14159265359
 
 struct LightingInfo {
@@ -23,6 +24,7 @@ struct LightingInfo {
     vec3 specularColor;
     vec3 reflectance0;
     vec3 reflectance90;
+    float perceptualRoughness;
     float alphaRoughness;
     float alphaRoughnessSq;
 };
