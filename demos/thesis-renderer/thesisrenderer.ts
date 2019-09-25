@@ -6,6 +6,7 @@ import { auxiliaries } from 'webgl-operate';
 
 import {
     AccumulatePass,
+    AntiAliasingKernel,
     BlitPass,
     Camera,
     Canvas,
@@ -72,6 +73,9 @@ export class ThesisRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
     protected _uNormalMatrix: WebGLUniformLocation;
+
+    protected _ndcOffsetKernel: AntiAliasingKernel;
+    protected _uNdcOffset: WebGLUniformLocation;
 
     protected _uBaseColor: WebGLUniformLocation;
     protected _uBaseColorTexCoord: WebGLUniformLocation;
@@ -143,8 +147,8 @@ export class ThesisRenderer extends Renderer {
         this._ndcTriangle.initialize();
 
         /* Initialize program, we do not use the default gltf shader here */
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
-        vert.initialize(require('../../source/gltf/shaders/gltf_default.vert'));
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
+        vert.initialize(require('./data/gltf_thesis.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis.frag');
         frag.initialize(require('./data/gltf_thesis.frag'));
         this._program = new Program(this._context, 'ThesisPbrProgram');
@@ -168,6 +172,8 @@ export class ThesisRenderer extends Renderer {
 
         this._uOcclusion = this._program.uniform('u_occlusion');
         this._uOcclusionTexCoord = this._program.uniform('u_occlusionTexCoord');
+
+        this._uNdcOffset = this._program.uniform('u_ndcOffset');
 
         this._uEye = this._program.uniform('u_eye');
         this._uGeometryFlags = this._program.uniform('u_geometryFlags');
@@ -315,6 +321,7 @@ export class ThesisRenderer extends Renderer {
                 gl.enable(gl.BLEND);
                 // We premultiply in the shader
                 gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
                 gl.uniform1i(this._uBlendMode, 2);
             } else {
                 auxiliaries.log(auxiliaries.LogLevel.Warning, 'Unknown blend mode encountered.');
@@ -397,6 +404,10 @@ export class ThesisRenderer extends Renderer {
             this._intermediateFBO.clearColor([0.4, 0.4, 0.4, 1.0]);
         }
 
+        if (this._altered.multiFrameNumber) {
+            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+        }
+
         this._forwardPass.prepare();
 
         this._accumulatePass.update();
@@ -406,6 +417,15 @@ export class ThesisRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
+        const gl = this._context.gl;
+
+        this._program.bind();
+
+        const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
+        ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
+        ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
+        gl.uniform2fv(this._uNdcOffset, ndcOffset);
+
         this._forwardPass.frame();
         this._accumulatePass.frame(frameNumber);
     }
@@ -509,7 +529,7 @@ export class ThesisDemo extends Demo {
     initialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
-        this._canvas.controller.multiFrameNumber = 1;
+        this._canvas.controller.multiFrameNumber = 32;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
 
