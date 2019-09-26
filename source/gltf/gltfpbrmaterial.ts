@@ -5,6 +5,7 @@ import { Context } from '../context';
 import { Material } from '../scene';
 import { Texture2D } from '../texture2d';
 
+// These flags are used by the sample glTF renderer. See {@link https://github.com/KhronosGroup/glTF-Sample-Viewer}
 export enum GLTFShaderFlags {
     // vertex shader + fragment shader
     HAS_NORMALS = 1,

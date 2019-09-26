@@ -61,7 +61,6 @@ export { ShadowPass } from './shadowpass';
 export * from './core/index';
 export * from './scene/index';
 export * from './text/index';
-export * from './gltf/index';
 
 
 /* AUXILIARIES */
