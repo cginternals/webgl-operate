@@ -124,15 +124,16 @@ export class ThesisRenderer extends Renderer {
         this._loader = new GLTFLoader(this._context);
 
         this._datsunScene = new Scene(
-            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene.gltf',
-            new Camera(vec3.fromValues(-400, 500, 2000), vec3.fromValues(0, -160, 0)),
+            // 'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
+            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size/scene_fixed_size.gltf',
+            new Camera(vec3.fromValues(-1.9631, 1.89, -6.548), vec3.fromValues(0.292, -0.327, 0.13)),
             1, 3000);
         this._datsunScene.addLight(new SphereLight(
             vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(15, 15, 15)));
 
         this._kitchenScene = new Scene(
-            'http://127.0.0.1:8001/italian_kitchen/scene.gltf',
-            new Camera(vec3.fromValues(-10, 30, 50), vec3.fromValues(0, 15, 0)),
+            'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
+            new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             0.1, 512);
         this._kitchenScene.addLight(new SphereLight(
             vec3.fromValues(0, 20, 10), 4.0, vec3.fromValues(15, 15, 15)));
@@ -215,6 +216,7 @@ export class ThesisRenderer extends Renderer {
 
         this._forwardPass.camera = this._camera;
         this._forwardPass.target = this._intermediateFBO;
+        this._forwardPass.clearColor = [0.4, 0.4, 0.4, 1.0];
 
         this._forwardPass.program = this._program;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
@@ -371,10 +373,10 @@ export class ThesisRenderer extends Renderer {
      * @returns whether to redraw
      */
     protected onUpdate(): boolean {
-        if (this._altered.frameSize) {
+        if (this._altered.frameSize || this._camera.altered) {
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
         }
-        if (this._altered.canvasSize) {
+        if (this._altered.canvasSize || this._camera.altered) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
         }
         if (this._altered.clearColor) {
@@ -401,11 +403,15 @@ export class ThesisRenderer extends Renderer {
             this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
             this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
                 , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
-            this._intermediateFBO.clearColor([0.4, 0.4, 0.4, 1.0]);
         }
 
         if (this._altered.multiFrameNumber) {
             this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+        }
+
+        if (this._altered.frameSize) {
+            this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
+            this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
         }
 
         this._forwardPass.prepare();
@@ -480,6 +486,14 @@ export class ThesisRenderer extends Renderer {
     }
 
     protected updateCamera(): void {
+        // focal length of 50mm
+        this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
+        this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+        // Convert from horizontal to vertical FOV
+        const horizontalFOV = 39.6 * auxiliaries.DEG2RAD;
+        const verticalFOV = 2.0 * Math.atan(Math.tan(horizontalFOV / 2.0) * (1.0 / this._camera.aspect));
+        this._camera.fovy = verticalFOV * auxiliaries.RAD2DEG;
+
         this._forwardPass.camera = this._camera;
         this._navigation.camera = this._camera;
         this._camera.altered = true;
