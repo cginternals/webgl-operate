@@ -31,6 +31,13 @@ export class GLTFHelper {
         return gl.TRIANGLES;
     }
 
+    /**
+     * Map gltf attribute names to vertex shader positions.
+     * If you supply a shader it needs to reflect these bindings.
+     * @todo Make this possible to modify when loading a glTF model.
+     * @param name - Name of the glTF attribute.
+     * See {@link https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#meshes}
+     */
     static nameToAttributeIndex(name: string): number {
         if (name === 'POSITION') {
             return 0;

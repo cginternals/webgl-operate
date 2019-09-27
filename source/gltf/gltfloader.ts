@@ -6,7 +6,7 @@ import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 
 import { GLTFHelper } from './gltfhelper';
 import { GLTFMesh } from './gltfmesh';
-import { GLTFPbrMaterial, GLTFShaderFlags, GLTFAlphaMode } from './gltfpbrmaterial';
+import { GLTFAlphaMode, GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
 import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
 
 import { assert, log, LogLevel } from '../auxiliaries';
@@ -222,12 +222,12 @@ export class GLTFLoader {
 
             material.metallicFactor = 1.0;
             if (pbrInfo!.metallicFactor !== undefined) {
-                material.metallicFactor = pbrInfo!.metallicFactor;
+                material.metallicFactor = pbrInfo!.metallicFactor!;
             }
 
             material.roughnessFactor = 1.0;
             if (pbrInfo!.roughnessFactor !== undefined) {
-                material.roughnessFactor = pbrInfo!.roughnessFactor;
+                material.roughnessFactor = pbrInfo!.roughnessFactor!;
             }
 
             this._resourceManager.add(material, [materialInfo.name, identifier]);
