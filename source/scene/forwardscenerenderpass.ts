@@ -49,6 +49,13 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     /** @see {@link program} */
     protected _program: Program;
 
+    /**
+     * These maps are used to map from a material to all geometries using this material.
+     * Alongside the geometry a transform is saved, that is generated during a preprocessing traverse.
+     */
+    protected _opaqueGeometryMap: Map<Material, Array<[Geometry, mat4]>>;
+    protected _transparentGeometryMap: Map<Material, Array<[Geometry, mat4]>>;
+
     updateModelTransform: (matrix: mat4) => void;
     updateViewProjectionTransform: (matrix: mat4) => void;
     bindMaterial: (material: Material) => void;
@@ -62,6 +69,100 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     constructor(context: Context) {
         super();
         this._context = context;
+
+        this._opaqueGeometryMap = new Map();
+        this._transparentGeometryMap = new Map();
+    }
+
+    /**
+     * Sort all geometries by their material and save their transform given by a scene traversal.
+     * With this information, rendering can be sped up later on by avoiding material changes
+     * during rendering of the scene.
+     */
+    protected preprocessScene(): void {
+        assert(this._scene !== undefined, 'Scene was undefined during preprocessing.');
+
+        if (this._scene === undefined) {
+            return;
+        }
+
+        this._opaqueGeometryMap.clear();
+        this._transparentGeometryMap.clear();
+
+        this.preprocessNode(this._scene!, mat4.create());
+    }
+
+    /**
+     * Handle a single node during preprocessing. Each GeometryComponent of the node will be added
+     * to the preprocessing maps.
+     * Afterwards all children of the node will also be processed recursively.
+     */
+    protected preprocessNode(node: SceneNode, transform: mat4): void {
+        const nodeTransform = mat4.clone(transform);
+
+        const transformComponents = node.componentsOfType('TransformComponent');
+        assert(transformComponents.length <= 1, `SceneNode can not have more than one transform component`);
+
+        if (transformComponents.length === 1) {
+            const transformComponent = transformComponents[0] as TransformComponent;
+            mat4.mul(nodeTransform, nodeTransform, transformComponent.transform);
+        }
+
+        const geometryComponents = node.componentsOfType('GeometryComponent');
+
+        for (const geometryComponent of geometryComponents) {
+            const currentComponent = geometryComponent as GeometryComponent;
+            const material = currentComponent.material;
+            const geometry = currentComponent.geometry;
+
+            if (material.isTransparent) {
+                let map = this._transparentGeometryMap.get(material);
+                if (map === undefined) {
+                    map = [];
+                }
+
+                map.push([geometry, nodeTransform]);
+                this._transparentGeometryMap.set(material, map);
+            } else {
+                let map = this._opaqueGeometryMap.get(material);
+                if (map === undefined) {
+                    map = [];
+                }
+
+                map.push([geometry, nodeTransform]);
+                this._opaqueGeometryMap.set(material, map);
+            }
+        }
+
+        if (node.nodes === undefined) {
+            return;
+        }
+
+        for (const child of node.nodes) {
+            this.preprocessNode(child, nodeTransform);
+        }
+    }
+
+    /**
+     * Render a preprocessed map, where geometries are already sorted by material.
+     * Thus, each material only needs to be bound once.
+     */
+    protected renderGeometryMap(map: Map<Material, Array<[Geometry, mat4]>>): void {
+        for (const material of Array.from(map.keys())) {
+            this.bindMaterial(material);
+
+            const geometryTuples = map.get(material)!;
+            for (const [geometry, transform] of geometryTuples) {
+                geometry.bind();
+                if (this.bindGeometry !== undefined) {
+                    this.bindGeometry(geometry);
+                }
+                this.updateModelTransform(transform);
+
+                geometry.draw();
+                geometry.unbind();
+            }
+        }
     }
 
     @Initializable.initialize()
@@ -118,65 +219,21 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         if (this.bindUniforms !== undefined) {
             this.bindUniforms();
         }
-        this.renderNode(this._scene!, mat4.create());
+        this.updateViewProjectionTransform(this._camera.viewProjection);
+
+        /**
+         * Render geometries by material.
+         * First render opaque materials, then transparent ones.
+         */
+        this.renderGeometryMap(this._opaqueGeometryMap);
+        this.renderGeometryMap(this._transparentGeometryMap);
+
         this._program.unbind();
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
     }
-
-    /**
-     * Renders the current node and all children if there are any.
-     * @param node - Node to render
-     * @param transform - The transformation that should be applied to this node
-     */
-    renderNode(node: SceneNode, transform: mat4): void {
-        assert(this.updateModelTransform !== undefined, `Model transform function needs to be initialized.`);
-        assert(this.updateViewProjectionTransform !== undefined,
-            `View Projection transform function needs to be initialized.`);
-
-        const nodeTransform = mat4.clone(transform);
-
-        const transformComponents = node.componentsOfType('TransformComponent');
-        assert(transformComponents.length <= 1, `SceneNode can not have more than one transform component`);
-
-        if (transformComponents.length === 1) {
-            const transformComponent = transformComponents[0] as TransformComponent;
-            mat4.mul(nodeTransform, nodeTransform, transformComponent.transform);
-        }
-
-        const geometryComponents = node.componentsOfType('GeometryComponent');
-
-        // TODO: allow different orders via visitor
-        for (const geometryComponent of geometryComponents) {
-            const currentComponent = geometryComponent as GeometryComponent;
-            const material = currentComponent.material;
-            const geometry = currentComponent.geometry;
-
-            geometry.bind();
-
-            if (this.bindGeometry !== undefined) {
-                this.bindGeometry(geometry);
-            }
-            this.bindMaterial(material);
-            this.updateModelTransform(nodeTransform);
-            this.updateViewProjectionTransform(this._camera.viewProjection);
-
-            geometry.draw();
-
-            geometry.unbind();
-        }
-
-        if (!node.nodes) {
-            return;
-        }
-
-        for (const child of node.nodes) {
-            this.renderNode(child, nodeTransform);
-        }
-    }
-
 
     /**
      * Sets the framebuffer the quads are rendered to.

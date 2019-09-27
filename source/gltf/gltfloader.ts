@@ -190,8 +190,10 @@ export class GLTFLoader {
                         `Material ${materialInfo.name} has alphaMode MASK but does not specify an alphaCutoff`);
                 }
                 material.alphaCutoff = materialInfo.alphaCutoff!;
+
             } else if (materialInfo.alphaMode === 'BLEND') {
                 material.alphaMode = GLTFAlphaMode.BLEND;
+                material.isTransparent = true;
             }
 
             material.isDoubleSided = materialInfo.doubleSided || false;
