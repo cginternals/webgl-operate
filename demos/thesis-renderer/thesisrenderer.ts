@@ -124,9 +124,8 @@ export class ThesisRenderer extends Renderer {
         this._loader = new GLTFLoader(this._context);
 
         this._datsunScene = new Scene(
-            // 'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
-            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size/scene_fixed_size.gltf',
-            new Camera(vec3.fromValues(-1.9631, 1.89, -6.548), vec3.fromValues(0.292, -0.327, 0.13)),
+            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
+            new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             1, 3000);
         this._datsunScene.addLight(new SphereLight(
             vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(15, 15, 15)));
@@ -216,7 +215,6 @@ export class ThesisRenderer extends Renderer {
 
         this._forwardPass.camera = this._camera;
         this._forwardPass.target = this._intermediateFBO;
-        this._forwardPass.clearColor = [0.4, 0.4, 0.4, 1.0];
 
         this._forwardPass.program = this._program;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
@@ -341,7 +339,6 @@ export class ThesisRenderer extends Renderer {
         this._blitPass.drawBuffer = gl.BACK;
         this._blitPass.target = this._defaultFramebuffer;
 
-        this.loadAsset();
         this.loadEnvironmentMap();
 
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
@@ -379,9 +376,6 @@ export class ThesisRenderer extends Renderer {
         if (this._altered.canvasSize || this._camera.altered) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
         }
-        if (this._altered.clearColor) {
-            this._forwardPass.clearColor = this._clearColor;
-        }
 
         this._navigation.update();
         this._forwardPass.update();
@@ -396,6 +390,10 @@ export class ThesisRenderer extends Renderer {
     protected onPrepare(): void {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
+
+        if (this._forwardPass.scene === undefined) {
+            this.loadAsset();
+        }
 
         if (!this._intermediateFBO.initialized) {
             this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
@@ -414,9 +412,13 @@ export class ThesisRenderer extends Renderer {
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
         }
 
-        this._forwardPass.prepare();
+        if (this._altered.clearColor) {
+            this._intermediateFBO.clearColor(this._clearColor);
+            this._forwardPass.clearColor = this._clearColor;
+        }
 
         this._accumulatePass.update();
+        this._forwardPass.prepare();
 
         this._altered.reset();
         this._camera.altered = false;
@@ -460,6 +462,7 @@ export class ThesisRenderer extends Renderer {
         auxiliaries.assert(scene !== undefined, `Unknown scene ${assetSelect.value}.`);
 
         if (scene === undefined) {
+            auxiliaries.log(auxiliaries.LogLevel.Error, `Scene ${assetSelect.value} could not be loaded.`);
             return;
         }
 
