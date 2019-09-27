@@ -7,8 +7,8 @@ import {
     Camera,
     Canvas,
     Context,
-    GeosphereGeometry,
     DefaultFramebuffer,
+    GeosphereGeometry,
     Invalidate,
     MouseEventProvider,
     Navigation,
@@ -46,6 +46,8 @@ export class ImageBasedLightingRenderer extends Renderer {
 
     protected _defaultFBO: DefaultFramebuffer;
 
+    protected _promises: Array<Promise<void>>;
+    protected _isLoaded: boolean;
 
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
@@ -59,22 +61,24 @@ export class ImageBasedLightingRenderer extends Renderer {
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
 
+        this._promises = new Array();
+
+        this.showSpinner();
+        this._isLoaded = false;
+
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
         this._defaultFBO.bind();
 
         const gl = context.gl;
 
-
         this._sphere = new GeosphereGeometry(context, 'Sphere');
         this._sphere.initialize();
-
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
         const frag = new Shader(context, gl.FRAGMENT_SHADER, 'imagebasedlighting.frag');
         frag.initialize(require('./data/imagebasedlighting.frag'));
-
 
         this._program = new Program(context, 'CubeProgram');
         this._program.initialize([vert, frag], false);
@@ -83,7 +87,6 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._program.attribute('a_texCoord', this._sphere.texCoordLocation);
         this._program.link();
         this._program.bind();
-
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uEye = this._program.uniform('u_eye');
@@ -107,42 +110,39 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._albedoTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._albedoTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._albedoTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-
-        this._albedoTexture.fetch('./data/imagebasedlighting/Metal_001_basecolor.png', false).then(() => {
-            const gl = context.gl;
-
-            this._program.bind();
-            gl.uniform1i(this._program.uniform('u_textured'), true);
-
-            this.invalidate(true);
-        });
+        this._promises.push(
+            this._albedoTexture.fetch('./data/imagebasedlighting/Metal_001_basecolor.png', false));
 
         this._roughnessTexture = new Texture2D(context, 'RoughnessTexture');
         this._roughnessTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._roughnessTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._roughnessTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._roughnessTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._roughnessTexture.fetch('./data/imagebasedlighting/Metal_001_roughness.png', false);
+        this._promises.push(
+            this._roughnessTexture.fetch('./data/imagebasedlighting/Metal_001_roughness.png', false));
 
         this._metallicTexture = new Texture2D(context, 'MetallicTexture');
         this._metallicTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._metallicTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._metallicTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._metallicTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._metallicTexture.fetch('./data/imagebasedlighting/Metal_001_metallic.png', false);
+        this._promises.push(
+            this._metallicTexture.fetch('./data/imagebasedlighting/Metal_001_metallic.png', false));
 
         this._normalTexture = new Texture2D(context, 'NormalTexture');
         this._normalTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._normalTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._normalTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._normalTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false);
+        this._promises.push(
+            this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false));
 
         this._brdfLUT = new Texture2D(context, 'BRDFLookUpTable');
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
-        this._brdfLUT.fetch('./data/imagebasedlighting/brdfLUT.png');
+        this._promises.push(
+            this._brdfLUT.fetch('./data/imagebasedlighting/brdfLUT.png'));
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
@@ -156,15 +156,22 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._cubemap.levels(0, MIPMAP_LEVELS - 1);
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
-            this._cubemap.fetch({
-                positiveX: `./data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `./data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `./data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `./data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `./data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `./data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
-            }, mipLevel);
+            this._promises.push(
+                this._cubemap.fetch({
+                    positiveX: `./data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
+                    negativeX: `./data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
+                    positiveY: `./data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
+                    negativeY: `./data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
+                    positiveZ: `./data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
+                    negativeZ: `./data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
+                }, mipLevel));
         }
+
+        Promise.all(this._promises).then(() => {
+            this._isLoaded = true;
+            this.hideSpinner();
+            this.invalidate(true);
+        });
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
@@ -172,7 +179,6 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
         this._camera.near = 1.0;
         this._camera.far = 8.0;
-
 
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
@@ -227,7 +233,18 @@ export class ImageBasedLightingRenderer extends Renderer {
         const gl = this._context.gl;
 
         this._defaultFBO.bind();
+
+        if (!this._isLoaded) {
+            this._defaultFBO.clearColor([0.0, 0.0, 0.0, 0.0]);
+        } else {
+            this._defaultFBO.clearColor(this._clearColor);
+        }
+
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+
+        if (!this._isLoaded) {
+            return;
+        }
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
@@ -265,6 +282,21 @@ export class ImageBasedLightingRenderer extends Renderer {
 
     protected onSwap(): void { }
 
+    /**
+     * Show a spinner that indicates that the example is still loading.
+     */
+    protected showSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'inline';
+    }
+
+    /**
+     * Hide the loading spinner.
+     */
+    protected hideSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'none';
+    }
 }
 
 

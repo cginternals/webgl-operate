@@ -63,28 +63,24 @@ void main(void)
 
     vec3 view = normalize(u_eye - v_vertex.xyz);
 
-    if (u_textured) {
-        vec3 albedoColor = texture(u_albedoTexture, v_uv).rgb;
-        albedoColor = pow(albedoColor, vec3(GAMMA));
+    vec3 albedoColor = texture(u_albedoTexture, v_uv).rgb;
+    albedoColor = pow(albedoColor, vec3(GAMMA));
 
-        vec3 normalSample = texture(u_normalTexture, v_uv).rgb;
-        vec3 normal = normalize(normalSample * 2.0 - 1.0);
-        normal = normalize(TBN * normal);
+    vec3 normalSample = texture(u_normalTexture, v_uv).rgb;
+    vec3 normal = normalize(normalSample * 2.0 - 1.0);
+    normal = normalize(TBN * normal);
 
-        float roughness = texture(u_roughnessTexture, v_uv).r;
-        roughness = pow(roughness, GAMMA);
+    float roughness = texture(u_roughnessTexture, v_uv).r;
+    roughness = pow(roughness, GAMMA);
 
-        float metallic = texture(u_metallicTexture, v_uv).r;
-        metallic = pow(metallic, GAMMA);
+    float metallic = texture(u_metallicTexture, v_uv).r;
+    metallic = pow(metallic, GAMMA);
 
-        const vec3 f0 = vec3(0.04);
-        vec3 diffuseColor = albedoColor * (vec3(1.0) - f0) * (1.0 - metallic);
-        vec3 specularColor = mix(f0, albedoColor, metallic);
+    const vec3 f0 = vec3(0.04);
+    vec3 diffuseColor = albedoColor * (vec3(1.0) - f0) * (1.0 - metallic);
+    vec3 specularColor = mix(f0, albedoColor, metallic);
 
-        vec3 IBL = getIBLContribution(normal, view, roughness, diffuseColor, specularColor);
-        fragColor = vec4(IBL, 1.0);
-        fragColor.rgb = toneMapUncharted(fragColor.rgb);
-    } else {
-        fragColor = vec4(v_vertex.xyz * 0.5 + 0.5, 1.0);
-    }
+    vec3 IBL = getIBLContribution(normal, view, roughness, diffuseColor, specularColor);
+    fragColor = vec4(IBL, 1.0);
+    fragColor.rgb = toneMapUncharted(fragColor.rgb);
 }
