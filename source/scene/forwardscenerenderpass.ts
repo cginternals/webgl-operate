@@ -1,4 +1,5 @@
 
+import { mat4 } from 'gl-matrix';
 import { assert } from '../auxiliaries';
 import { GLclampf4, GLfloat2 } from '../tuples';
 
@@ -6,11 +7,11 @@ import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
 import { Context } from '../context';
 import { Framebuffer } from '../framebuffer';
+import { Geometry } from '../geometry';
 import { Initializable } from '../initializable';
-
-import { mat4 } from 'gl-matrix';
 import { Program } from '../program';
 import { GeometryComponent } from './geometrycomponent';
+import { Material } from './material';
 import { SceneNode } from './scenenode';
 import { SceneRenderPass } from './scenerenderpass';
 import { TransformComponent } from './transformcomponent';
@@ -50,6 +51,9 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
     updateModelTransform: (matrix: mat4) => void;
     updateViewProjectionTransform: (matrix: mat4) => void;
+    bindMaterial: (material: Material) => void;
+    bindGeometry: (geometry: Geometry) => void;
+    bindUniforms: () => void;
 
     /**
      * Creates a pass that renders a SceneNode and all of its children.
@@ -85,11 +89,22 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         assert(this._target && this._target.valid, `valid target expected`);
         assert(this._program && this._program.valid, `valid program expected`);
 
+        assert(this.updateModelTransform !== undefined,
+            `Model transform function needs to be initialized.`);
+        assert(this.updateViewProjectionTransform !== undefined,
+            `View Projection transform function needs to be initialized.`);
+        assert(this.bindMaterial !== undefined,
+            `Material binding function needs to be initialized.`);
+
         if (this._scene === undefined) {
             return;
         }
 
         const gl = this._context.gl;
+
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.enable(gl.DEPTH_TEST);
 
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
@@ -99,7 +114,16 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
+        this._program.bind();
+        if (this.bindUniforms !== undefined) {
+            this.bindUniforms();
+        }
         this.renderNode(this._scene!, mat4.create());
+        this._program.unbind();
+
+        gl.cullFace(gl.BACK);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
     }
 
     /**
@@ -124,8 +148,6 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         const geometryComponents = node.componentsOfType('GeometryComponent');
 
-        this._program.bind();
-
         // TODO: allow different orders via visitor
         for (const geometryComponent of geometryComponents) {
             const currentComponent = geometryComponent as GeometryComponent;
@@ -133,18 +155,18 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
             const geometry = currentComponent.geometry;
 
             geometry.bind();
-            material.bind();
 
+            if (this.bindGeometry !== undefined) {
+                this.bindGeometry(geometry);
+            }
+            this.bindMaterial(material);
             this.updateModelTransform(nodeTransform);
             this.updateViewProjectionTransform(this._camera.viewProjection);
 
             geometry.draw();
 
-            material.unbind();
             geometry.unbind();
         }
-
-        this._program.unbind();
 
         if (!node.nodes) {
             return;
