@@ -34,6 +34,7 @@ import {
 } from 'webgl-operate';
 
 import { Scene } from './scene';
+import { PostProcessingPass } from './postprocessingpass';
 
 import { Demo } from '../demo';
 import { DiskLight, SphereLight } from './arealight';
@@ -52,6 +53,7 @@ export class ThesisRenderer extends Renderer {
     protected _forwardPass: ForwardSceneRenderPass;
     protected _accumulatePass: AccumulatePass;
     protected _blitPass: BlitPass;
+    protected _postProcessingPass: PostProcessingPass;
 
     protected _camera: Camera;
 
@@ -338,10 +340,14 @@ export class ThesisRenderer extends Renderer {
             }
         };
 
+        this._postProcessingPass = new PostProcessingPass(context);
+        this._postProcessingPass.initialize(this._ndcTriangle);
+        this._postProcessingPass.texture = this._colorRenderTexture;
+
         this._accumulatePass = new AccumulatePass(context);
         this._accumulatePass.initialize(this._ndcTriangle);
         this._accumulatePass.precision = this._framePrecision;
-        this._accumulatePass.texture = this._colorRenderTexture;
+        this._accumulatePass.texture = this._postProcessingPass.targetTexture;
 
         this._blitPass = new BlitPass(this._context);
         this._blitPass.initialize(this._ndcTriangle);
@@ -407,7 +413,7 @@ export class ThesisRenderer extends Renderer {
 
         if (!this._intermediateFBO.initialized) {
             this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
-                this._context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
+                this._context.isWebGL2 ? gl.RGBA32F : gl.RGBA, gl.RGBA, gl.FLOAT);
             this._depthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
             this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
                 , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
@@ -427,8 +433,9 @@ export class ThesisRenderer extends Renderer {
             this._forwardPass.clearColor = this._clearColor;
         }
 
-        this._accumulatePass.update();
         this._forwardPass.prepare();
+        this._postProcessingPass.update();
+        this._accumulatePass.update();
 
         this._altered.reset();
         this._camera.altered = false;
@@ -445,12 +452,12 @@ export class ThesisRenderer extends Renderer {
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
 
         this._forwardPass.frame();
+        this._postProcessingPass.frame();
         this._accumulatePass.frame(frameNumber);
     }
 
     protected onSwap(): void {
-        this._blitPass.framebuffer = this._accumulatePass.framebuffer ?
-            this._accumulatePass.framebuffer : this._blitPass.framebuffer = this._intermediateFBO;
+        this._blitPass.framebuffer = this._accumulatePass.framebuffer!;
         this._blitPass.frame();
     }
 
