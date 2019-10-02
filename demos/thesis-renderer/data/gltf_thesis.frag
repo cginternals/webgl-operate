@@ -46,7 +46,11 @@ uniform sampler2D u_occlusion;
 uniform samplerCube u_specularEnvironment;
 uniform sampler2D u_brdfLUT;
 
-uniform SphereLight u_sphereLight;
+#define MAX_LIGHTS 6
+uniform int u_numSphereLights;
+uniform SphereLight u_sphereLights[MAX_LIGHTS];
+uniform int u_numDiskLights;
+uniform DiskLight u_diskLights[MAX_LIGHTS];
 
 uniform int u_baseColorTexCoord;
 uniform int u_normalTexCoord;
@@ -213,8 +217,16 @@ void main(void)
 
     // Analytical lighting
     vec3 color = vec3(0.0);
-    color += diffuseSphereLightApproximated(u_sphereLight, info);
-    color += specularSphereLightKaris(u_sphereLight, info);
+
+    for (int i = 0; i < u_numSphereLights; ++i) {
+        color += diffuseSphereLightApproximated(u_sphereLights[i], info);
+        color += specularSphereLightKaris(u_sphereLights[i], info);
+    }
+
+    for (int i = 0; i < u_numDiskLights; ++i) {
+        color += diffuseDiskLightApproximated(u_diskLights[i], info);
+        color += specularDiskLightKaris(u_diskLights[i], info);
+    }
 
     // Environment lighting
     vec3 environmentLight = getIBLContribution(info);

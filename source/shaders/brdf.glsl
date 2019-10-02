@@ -1,3 +1,5 @@
+#line 1
+
 // PBR implementation adapted from https://github.com/KhronosGroup/glTF-Sample-Viewer/blob/master/src/shaders/metallic-roughness.frag
 // commit 6f1fb2d
 

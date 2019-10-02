@@ -3,14 +3,15 @@ import {
     Camera,
 } from 'webgl-operate';
 
-import { SphereLight } from './arealight';
+import { DiskLight, SphereLight } from './arealight';
 
 export class Scene {
     protected _uri: string;
     protected _camera: Camera;
     protected _farPlane: number;
 
-    protected _lights: Array<SphereLight>;
+    protected _sphereLights: Array<SphereLight>;
+    protected _diskLights: Array<DiskLight>;
 
     constructor(uri: string, camera: Camera, nearPlane: number, farPlane: number) {
         this._uri = uri;
@@ -18,11 +19,16 @@ export class Scene {
         this._camera.near = nearPlane;
         this._camera.far = farPlane;
 
-        this._lights = new Array();
+        this._sphereLights = new Array();
+        this._diskLights = new Array();
     }
 
-    addLight(light: SphereLight): void {
-        this._lights.push(light);
+    addSphereLight(light: SphereLight): void {
+        this._sphereLights.push(light);
+    }
+
+    addDiskLight(light: DiskLight): void {
+        this._diskLights.push(light);
     }
 
     get uri(): string {
@@ -33,7 +39,11 @@ export class Scene {
         return this._camera;
     }
 
-    get lights(): Array<SphereLight> {
-        return this._lights;
+    get sphereLights(): Array<SphereLight> {
+        return this._sphereLights;
+    }
+
+    get diskLights(): Array<DiskLight> {
+        return this._diskLights;
     }
 }

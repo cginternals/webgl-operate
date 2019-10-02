@@ -36,7 +36,7 @@ import {
 import { Scene } from './scene';
 
 import { Demo } from '../demo';
-import { SphereLight } from './arealight';
+import { DiskLight, SphereLight } from './arealight';
 
 // tslint:disable:max-classes-per-file
 
@@ -127,15 +127,25 @@ export class ThesisRenderer extends Renderer {
             'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             1, 3000);
-        this._datsunScene.addLight(new SphereLight(
+        this._datsunScene.addSphereLight(new SphereLight(
             vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(15, 15, 15)));
 
         this._kitchenScene = new Scene(
             'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             0.1, 512);
-        this._kitchenScene.addLight(new SphereLight(
-            vec3.fromValues(0, 20, 10), 4.0, vec3.fromValues(15, 15, 15)));
+        this._kitchenScene.addDiskLight(new DiskLight(
+            vec3.fromValues(-0.54, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+        this._kitchenScene.addDiskLight(new DiskLight(
+            vec3.fromValues(0.88, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+        this._kitchenScene.addDiskLight(new DiskLight(
+            vec3.fromValues(1.62, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+        this._kitchenScene.addDiskLight(new DiskLight(
+            vec3.fromValues(0.16, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+        this._kitchenScene.addDiskLight(new DiskLight(
+            vec3.fromValues(1.92, 1.6, -0.86), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+        this._kitchenScene.addDiskLight(new DiskLight(
+            vec3.fromValues(1.92, 1.6, -0.22), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
 
         this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
         this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
@@ -448,8 +458,6 @@ export class ThesisRenderer extends Renderer {
      * Load asset from URI specified by the HTML select
      */
     protected loadAsset(): void {
-        const gl = this._context.gl;
-
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
 
         let scene: Scene | undefined;
@@ -468,6 +476,7 @@ export class ThesisRenderer extends Renderer {
 
         this._camera = scene!.camera;
         this.updateCamera();
+        this.updateLights(scene!);
 
         this._forwardPass.scene = undefined;
 
@@ -477,14 +486,32 @@ export class ThesisRenderer extends Renderer {
                 this._forwardPass.scene = this._loader.defaultScene;
                 this._invalidate(true);
             });
+    }
 
-        /**
-         * Update lights
-         */
+    protected updateLights(scene: Scene): void {
+        const gl = this._context.gl;
+
         this._program.bind();
-        gl.uniform3fv(this._uSphereLightCenter, scene.lights[0].center);
-        gl.uniform1f(this._uSphereLightRadius, scene.lights[0].radius);
-        gl.uniform3fv(this._uSphereLightLuminance, scene.lights[0].luminance);
+        gl.uniform1i(this._program.uniform('u_numSphereLights'), scene.sphereLights.length);
+
+        let i = 0;
+        for (const sphereLight of scene.sphereLights) {
+            gl.uniform3fv(this._program.uniform(`u_sphereLights[${i}].center`), sphereLight.center);
+            gl.uniform1f(this._program.uniform(`u_sphereLights[${i}].radius`), sphereLight.radius);
+            gl.uniform3fv(this._program.uniform(`u_sphereLights[${i}].luminance`), sphereLight.luminance);
+            i++;
+        }
+
+        gl.uniform1i(this._program.uniform('u_numDiskLights'), scene.diskLights.length);
+
+        for (const diskLight of scene.diskLights) {
+            gl.uniform3fv(this._program.uniform(`u_diskLights[${i}].center`), diskLight.center);
+            gl.uniform1f(this._program.uniform(`u_diskLights[${i}].radius`), diskLight.radius);
+            gl.uniform3fv(this._program.uniform(`u_diskLights[${i}].luminance`), diskLight.luminance);
+            gl.uniform3fv(this._program.uniform(`u_diskLights[${i}].direction`), diskLight.direction);
+            i++;
+        }
+
         this._program.unbind();
     }
 

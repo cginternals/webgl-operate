@@ -1,9 +1,17 @@
+#line 1
 
 @import ./sampling;
 @import ./brdf;
 
 struct SphereLight {
     vec3 center;
+    float radius;
+    vec3 luminance;
+};
+
+struct DiskLight {
+    vec3 center;
+    vec3 direction;
     float radius;
     vec3 luminance;
 };
@@ -62,6 +70,16 @@ vec3 diffuseSphereLightApproximated(SphereLight light, LightingInfo info)
     float NdotL = clamp(dot(L, info.incidentNormal), 0.0, 1.0);
 
     return diffuseBrdf(info) * light.luminance * illuminance * NdotL;
+}
+
+vec3 diffuseDiskLightApproximated(DiskLight light, LightingInfo info)
+{
+    vec3 Lunormalized = light.center - info.incidentPosition;
+    vec3 L = normalize(Lunormalized);
+
+    SphereLight sphereLight = SphereLight(light.center, light.radius, light.luminance);
+    float diskFactor = smoothstep(-0.1, 0.1, -dot(L, light.direction));
+    return diffuseSphereLightApproximated(sphereLight, info) * diskFactor;
 }
 
 // This function uses Monte Carlo importance sampling to evaluate a spherical light source.
@@ -144,4 +162,13 @@ vec3 specularSphereLightKaris(SphereLight light, LightingInfo info)
     float NdotL = clamp(dot(L, info.incidentNormal), 0.0, 1.0);
 
     return specularBrdfGGX(L, info, normalization) * irradiance * NdotL;
+}
+
+vec3 specularDiskLightKaris(DiskLight light, LightingInfo info) {
+    vec3 Lunormalized = light.center - info.incidentPosition;
+    vec3 L = normalize(Lunormalized);
+
+    SphereLight sphereLight = SphereLight(light.center, light.radius, light.luminance);
+    float diskFactor = smoothstep(-0.1, 0.1, -dot(L, light.direction));
+    return specularSphereLightKaris(sphereLight, info) * diskFactor;
 }
