@@ -208,7 +208,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._cubeMap = new TextureCube(this._context);
         this._cubeMap.initialize(592, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._cubeMap.load({
+        this._cubeMap.fetch({
             positiveX: 'data/cube-map-px.jpg', negativeX: 'data/cube-map-nx.jpg',
             positiveY: 'data/cube-map-py.jpg', negativeY: 'data/cube-map-ny.jpg',
             positiveZ: 'data/cube-map-pz.jpg', negativeZ: 'data/cube-map-nz.jpg',
