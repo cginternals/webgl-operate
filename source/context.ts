@@ -356,7 +356,12 @@ export class Context {
             return;
         }
 
+        // Only handle masquerade here and not within each supports-query?
         for (const extension of extensions) {
+            if (this._mask && this._mask.extensionsConceal.indexOf(extension) > -1) {
+                continue;
+            }
+
             this._extensions.push(extension);
         }
 
@@ -874,7 +879,13 @@ export class Context {
      * Provides the context's extension hash. The hash can be used for context masquerade.
      */
     hash(): string {
-        return ExtensionsHash.encode(this._backend as Context.BackendType, this._extensions);
+        // Handle masquerade
+        let extensions = this._extensions;
+        if (this._mask) {
+            extensions = extensions.filter((extension) => this._mask!.extensionsConceal.indexOf(extension) === -1);
+        }
+
+        return ExtensionsHash.encode(this._backend as Context.BackendType, extensions);
     }
 
     /**
