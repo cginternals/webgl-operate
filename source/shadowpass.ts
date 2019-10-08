@@ -107,12 +107,17 @@ export class ShadowPass extends Initializable {
                 case ShadowPass.ShadowMappingType.VarianceShadowMapping:
                     format = gl2.RG;
                     break;
+                case ShadowPass.ShadowMappingType.ExponentialVarianceShadowMapping:
+                    format = gl2.RGBA;
+                    break;
+                default:
+                    assert(false, 'Unexpected value for shadowType');
             }
         }
 
         const [internalFormat, type] = Wizard.queryInternalTextureFormat(this._context, format, Wizard.Precision.float);
         if (this._shadowType !== ShadowPass.ShadowMappingType.HardShadowMapping && type !== gl.FLOAT) {
-            log(LogLevel.Warning, "floating point textures are not supported, falling back to HardShadowMapping");
+            log(LogLevel.Warning, 'floating point textures are not supported, falling back to HardShadowMapping');
             this._shadowType = ShadowPass.ShadowMappingType.HardShadowMapping;
         }
 

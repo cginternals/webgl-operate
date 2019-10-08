@@ -76,7 +76,7 @@ export class Wizard {
 
         /* In this case, no specialized internal formats are available. */
         if (context.isWebGL1) {
-            assert([gl.RGB, gl.RGBA].includes(target), "target must be gl.RGB or gl.RGBA in WebGL 1");
+            assert([gl.RGB, gl.RGBA].includes(target), 'target must be gl.RGB or gl.RGBA in WebGL 1');
             return [target, type, query];
         }
 
