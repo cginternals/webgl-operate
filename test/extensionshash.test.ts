@@ -6,7 +6,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 import { Context } from '../source/context';
-import { WEBGL2_EXTENSIONS } from '../source/extensions';
+import { WEBGL1_EXTENSIONS, WEBGL2_EXTENSIONS } from '../source/extensions';
 import { ExtensionsHash } from '../source/extensionshash';
 
 /* spellchecker: enable */
@@ -107,7 +107,7 @@ describe('ExtensionsHash', () => {
         expect(ExtensionsHash.decode('1+0000')[1]).to.deep.equal(FIRST_6_000_EXTENSIONS);
     });
 
-    it('should complement a set of extensions', () => {
+    it('should complement a set of extensions for webgl2', () => {
         const SOME_WEBGL2_EXTS = ['EXT_color_buffer_float', 'EXT_disjoint_timer_query_webgl2',
             'EXT_texture_filter_anisotropic', 'OES_texture_float_linear', 'OES_texture_half_float_linear'];
         const complement = ExtensionsHash.complement('webgl2', SOME_WEBGL2_EXTS);
@@ -117,6 +117,17 @@ describe('ExtensionsHash', () => {
 
         expect(WEBGL2_EXTENSIONS).to.contains.members(complement);
         expect(WEBGL2_EXTENSIONS).to.contains.members(SOME_WEBGL2_EXTS);
+    });
+
+    it('should complement a set of extensions for webgl1', () => {
+        const SOME_WEBGL1_EXTS = ['ANGLE_instanced_arrays', 'WEBGL_draw_buffers'];
+        const complement = ExtensionsHash.complement('webgl1', SOME_WEBGL1_EXTS);
+        expect(complement.length + SOME_WEBGL1_EXTS.length).to.equal(WEBGL1_EXTENSIONS.length);
+
+        expect(complement).to.not.deep.include(SOME_WEBGL1_EXTS);
+
+        expect(WEBGL1_EXTENSIONS).to.contains.members(complement);
+        expect(WEBGL1_EXTENSIONS).to.contains.members(SOME_WEBGL1_EXTS);
     });
 
 });
