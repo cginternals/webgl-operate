@@ -1,0 +1,28 @@
+extends demo.pug
+
+
+block canvas
+
+  canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
+
+  div.row
+    div.col
+      .form-group.row
+        label(for = 'asset-select').col-md-1.col-form-label Asset:
+        .col-md-2
+          select.custom-select.custom-select-sm.multiple#asset-select
+            option(value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxTextured/glTF/BoxTextured.gltf') Textured Cube
+            option(value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Cube/glTF/Cube.gltf') PBR Cube
+            option(value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Sponza/glTF/Sponza.gltf') Sponza
+            option(value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf') Sci-Fi Helmet
+            option(value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf') PBR Test Spheres
+            option(value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MultiUVTest/glTF/MultiUVTest.gltf') Multi UV Test
+
+  //block breakdown
+  //  p This should describe the demo in much more detail, e.g., referring to relevant code snippets and resources
+  //
+  //  include ../partials/code.pug
+  //  +code('demo-code', 'const demo.code.for.breakdown = here;', 'Some demo code for source break down:')
+
+block onload
+  script window.onload = function () { clipboard(); demo(new GltfDemo(), 'demo-canvas'); }
