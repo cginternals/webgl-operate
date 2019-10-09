@@ -32,10 +32,10 @@ export class TriangleRenderer extends Renderer {
     protected _navigation: Navigation;
 
     protected _triangle = new Float32Array([
-        // X, Y, Z
-        0.0, 2.0, 0.0,
-        2.0, -2.0, 0.0,
-        -2.0, -2.0, 0.0,
+        // X, Y, Z          tex_x, tex_y
+        0.0, 2.0, 0.0, 0.5, 0.0,
+        2.0, -2.0, 0.0, 0.0, 1.0,
+        -2.0, -2.0, 0.0, 1.0, 1.0,
     ]);
     protected _vertexLocation: GLuint;
     protected _uvCoordLocation: GLuint;
@@ -92,11 +92,21 @@ export class TriangleRenderer extends Renderer {
             3,                      // Number of elements per attribute
             gl.FLOAT,               // Type of elements
             gl.FALSE,
-            3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
             0, // Offset from the beginning of a single vertex to this attribute
         );
 
+        gl.vertexAttribPointer(
+            this._uvCoordLocation,   // Attribute Location
+            2,                      // Number of elements per attribute
+            gl.FLOAT,               // Type of elements
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            3 * Float32Array.BYTES_PER_ELEMENT, // Offset from the beginning of a single vertex to this attribute
+        );
+
         gl.enableVertexAttribArray(this._vertexLocation);
+        gl.enableVertexAttribArray(this._uvCoordLocation);
 
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
@@ -112,13 +122,11 @@ export class TriangleRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/blue_painted_planks_diff_1k_modified.webp', false).then(() => {
+        this._texture.fetch('./data/all-seeing-eye-1698551_640.webp', false).then(() => {
             const gl = context.gl;
 
             this._program.bind();
-            // TODO add texture
-            // gl.uniform1i(this._program.uniform('u_textured'), true);
-            gl.uniform1i(this._program.uniform('u_textured'), false);
+            gl.uniform1i(this._program.uniform('u_textured'), true);
             console.log('enabled texture.');
 
             this.invalidate(true);
@@ -194,8 +202,8 @@ export class TriangleRenderer extends Renderer {
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
-        // bind buffer and draw
         gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
+
         gl.drawArrays(gl.TRIANGLES, 0, 3);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, Buffer.DEFAULT_BUFFER);
