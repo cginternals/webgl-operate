@@ -16,7 +16,6 @@ import {
     Renderer,
     Shader,
     Texture2D,
-    VertexArray,
     Wizard,
 } from 'webgl-operate';
 
@@ -32,42 +31,21 @@ export class TriangleRenderer extends Renderer {
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _triangle: Float32Array;
+    protected _triangle = new Float32Array([
+        // X, Y, Z
+        0.0, 2.0, 0.0,
+        2.0, -2.0, 0.0,
+        -2.0, -2.0, 0.0,
+    ]);
     protected _vertexLocation: GLuint;
     protected _uvCoordLocation: GLuint;
-    protected _vertexArray: VertexArray;
-    protected _buffers = new Array<Buffer>();
-    protected _count: GLsizei;
+    protected _buffer: WebGLBuffer;
     protected _texture: Texture2D;
 
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
-
-
-    /**
-     * Binds all buffer object(s) to their associated attribute binding points (pre-defined index/indices). This
-     * function is passed to the initialization of this geometries vertex array object.
-     * @param indices - Indices passed on geometry initialization by inheritor (sequence as in buffers).
-     */
-    protected bindBuffers(indices: Array<GLuint>): void {
-        this._buffers[0].attribEnable(this._vertexLocation, 3, this._vertexArray.context.gl.FLOAT,
-            false, 5 * 4, 0, true, false);
-        this._buffers[0].attribEnable(this._uvCoordLocation, 2, this._vertexArray.context.gl.FLOAT,
-            false, 5 * 4, 3 * 4, false, false);
-    }
-
-    /**
-     * Unbinds all buffer objects and disables their binding points. This function is passed to the uninitialization
-     * of this geometries vertex array object.
-     * @param indices - Indices passed on geometry initialization by inheritor (sequence as in buffers).
-     */
-    protected unbindBuffers(indices: Array<GLuint>): void {
-        this._buffers[0].attribDisable(this._vertexLocation, true, true);
-        this._buffers[0].attribDisable(this._uvCoordLocation, false, true);
-        this._buffers[1].unbind();
-    }
 
 
     /**
@@ -88,32 +66,10 @@ export class TriangleRenderer extends Renderer {
 
         const gl = context.gl;
 
-        this._triangle = new Float32Array([0.0, -1.0, 0.0,
-            1.0, 1.0, 0.0,
-            1.0, -1.0, 0.0]);
-        const identifier = 'triangle-example';
-        this._vertexArray = new VertexArray(context, identifier + 'VAO');
-        const vertexVBO = new Buffer(context, identifier + 'VBO');
-        const indexBuffer = new Buffer(context, identifier + 'IndicesVBO');
-        this._buffers.push(vertexVBO);
-        this._buffers.push(indexBuffer);
-        // this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.0, 2.0, 2.0]);
+        this._buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this._triangle, gl.STATIC_DRAW);
 
-
-        // this._cuboid.initialize();
-        this._vertexLocation = 0;
-        this._uvCoordLocation = 1;
-        let valid = true;
-        const targets: Array<GLenum> = [gl.ARRAY_BUFFER, gl.ELEMENT_ARRAY_BUFFER];
-        const indices: Array<GLuint> = [this._vertexLocation, this._uvCoordLocation];
-        for (let i = 0; i < this._buffers.length; ++i) {
-            valid = valid && this._buffers[i].initialize(targets[i]);
-        }
-
-        this._vertexArray.initialize(() => this.bindBuffers(indices), () => this.unbindBuffers(indices));
-        this._buffers[0].data(this._triangle, gl.STATIC_DRAW);
-        this._buffers[1].data(new Uint8Array([0, 1, 2]), gl.STATIC_DRAW);
-        this._count = 3;
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
@@ -124,13 +80,23 @@ export class TriangleRenderer extends Renderer {
         this._program = new Program(context, 'TriangleProgram');
         this._program.initialize([vert, frag], false);
 
-        // this._program.attribute('a_vertex', this._cuboid.vertexLocation);
-        // this._program.attribute('a_texCoord', this._cuboid.uvCoordLocation);
-
-        this._program.attribute('a_vertex', this._vertexLocation);
-        this._program.attribute('a_texCoord', this._uvCoordLocation);
         this._program.link();
         this._program.bind();
+
+        this._vertexLocation = this._program.attribute('a_vertex', this._vertexLocation);
+        this._uvCoordLocation = this._program.attribute('a_texCoord', this._uvCoordLocation);
+
+
+        gl.vertexAttribPointer(
+            this._vertexLocation,   // Attribute Location
+            3,                      // Number of elements per attribute
+            gl.FLOAT,               // Type of elements
+            gl.FALSE,
+            3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            0, // Offset from the beginning of a single vertex to this attribute
+        );
+
+        gl.enableVertexAttribArray(this._vertexLocation);
 
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
@@ -153,10 +119,10 @@ export class TriangleRenderer extends Renderer {
             // TODO add texture
             // gl.uniform1i(this._program.uniform('u_textured'), true);
             gl.uniform1i(this._program.uniform('u_textured'), false);
+            console.log('enabled texture.');
 
             this.invalidate(true);
         });
-
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
@@ -178,10 +144,8 @@ export class TriangleRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        // this._cuboid.uninitialize();
-        this._vertexArray.uninitialize();
-        this._buffers.forEach((buffer) => buffer.uninitialize());
         this._program.uninitialize();
+        this._context.gl.deleteBuffer(this._buffer);
 
         this._defaultFBO.uninitialize();
     }
@@ -225,30 +189,21 @@ export class TriangleRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        gl.enable(gl.DEPTH_TEST);
-
         this._texture.bind(gl.TEXTURE0);
 
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
-        // this._cuboid.bind();
-        // this._cuboid.draw();
-        // this._cuboid.unbind();
+        // bind buffer and draw
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-        // this._vertexArray.bind();
-        console.log("onFrame");
-        // gl.drawElements(gl.TRIANGLE_STRIP, this._count, gl.UNSIGNED_BYTE, 0);
-        // this._vertexArray.unbind();
+        gl.bindBuffer(gl.ARRAY_BUFFER, Buffer.DEFAULT_BUFFER);
 
         this._program.unbind();
 
         this._texture.unbind(gl.TEXTURE0);
 
-        gl.cullFace(gl.BACK);
-        gl.disable(gl.CULL_FACE);
     }
 
     protected onSwap(): void { }
