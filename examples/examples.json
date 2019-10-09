@@ -6,6 +6,12 @@
         "caption": "Minimalistic scene featuring a textured unit cube."
     },
     {
+        "target": "triangle-example",
+        "title": "Triangle",
+        "object": "TriangleExample",
+        "caption": "Minimalistic scene featuring a rendered Triangle."
+    },
+    {
         "target": "shadowmap-example",
         "title": "Shadow Mapping",
         "object": "ShadowMapExample",
