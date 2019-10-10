@@ -24,7 +24,6 @@ export class GL2Facade {
 
     /**
      * @param context - Wrapped gl context for function resolution.
-     * @param extensions - Identifiers of mandatory extensions for which the support is asserted.
      */
     constructor(context: Context) {
         assert(context !== undefined, `gl2 facade expects a valid WebGL context`);
