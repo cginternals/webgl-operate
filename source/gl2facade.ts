@@ -216,7 +216,7 @@ export class GL2Facade {
     vertexAttribDivisor: (index: GLuint, divisor: GLuint) => void;
 
     /**
-     * Evaluate wether or not ANGLE_instanced_arrays is supported (either by extension or in WebGL2 by default) and, if
+     * Evaluate whether or not ANGLE_instanced_arrays is supported (either by extension or in WebGL2 by default) and, if
      * supported, binds the associated functions.
      * @param context - WebGL context to query extension support in
      */
@@ -251,10 +251,9 @@ export class GL2Facade {
     drawBuffers: ((buffers: Array<GLenum>) => void) | undefined = undefined;
 
     /**
-     * Evaluate wether or not WEBGL_draw_buffers is supported (either by extension or in WebGL2 by default) and, if
+     * Evaluate whether or not WEBGL_draw_buffers is supported (either by extension or in WebGL2 by default) and, if
      * supported, binds the associated functions.
      * @param context - WebGL context to query extension support in.
-     * @returns - True if WEBGL_draw_buffers is supported and associated functions are bound.
      */
     protected queryDrawBuffersSupport(context: Context): void {
         if (!context.isWebGL2 && !context.supportsDrawBuffers) {
