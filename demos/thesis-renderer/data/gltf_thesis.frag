@@ -14,6 +14,7 @@ precision highp float;
 @import ../../../source/shaders/facade.frag;
 @import ../../../source/shaders/arealight;
 @import ../../../source/shaders/tonemapping;
+@import ../../../source/shaders/shadowpass;
 
 #line 17
 
@@ -45,6 +46,7 @@ uniform sampler2D u_occlusion;
 
 uniform samplerCube u_specularEnvironment;
 uniform sampler2D u_brdfLUT;
+uniform sampler2D u_shadowMap;
 
 #define MAX_LIGHTS 6
 uniform int u_numSphereLights;
@@ -69,6 +71,11 @@ uniform float u_blendCutoff;
 uniform mediump int u_geometryFlags;
 uniform mediump int u_pbrFlags;
 uniform vec3 u_eye;
+uniform vec2 u_lightNearFar;
+uniform mat4 u_lightView;
+uniform mat4 u_lightProjection;
+
+uniform int u_frameNumber;
 
 varying vec2 v_uv[3];
 varying vec4 v_color;
@@ -218,15 +225,32 @@ void main(void)
     // Analytical lighting
     vec3 color = vec3(0.0);
 
-    for (int i = 0; i < u_numSphereLights; ++i) {
-        color += diffuseSphereLightApproximated(u_sphereLights[i], info);
-        color += specularSphereLightKaris(u_sphereLights[i], info);
+    // for (int i = 0; i < u_numSphereLights; ++i) {
+    //     color += diffuseSphereLightApproximated(u_sphereLights[i], info);
+    //     color += specularSphereLightKaris(u_sphereLights[i], info);
+    // }
+
+    vec4 vLightViewSpace = u_lightView * vec4(v_position, 1.0);
+    vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
+
+    float lightDepth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
+    vec2 shadowUv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
+
+    const float shadowBias = -0.0002;
+    float visibility = hardShadowCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
+
+    if (any(greaterThan(shadowUv, vec2(1.0))) || any(lessThan(shadowUv, vec2(0.0)))) {
+        visibility = 1.0;
     }
 
-    for (int i = 0; i < u_numDiskLights; ++i) {
-        color += diffuseDiskLightApproximated(u_diskLights[i], info);
-        color += specularDiskLightKaris(u_diskLights[i], info);
-    }
+    int currentLight = u_frameNumber % u_numDiskLights;
+    color += diffuseDiskLightApproximated(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
+    color += specularDiskLightKaris(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
+
+    // for (int i = 0; i < u_numDiskLights; ++i) {
+    //     color += diffuseDiskLightApproximated(u_diskLights[i], info);
+    //     color += specularDiskLightKaris(u_diskLights[i], info);
+    // }
 
     // Environment lighting
     vec3 environmentLight = getIBLContribution(info);

@@ -221,18 +221,27 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         }
         this.updateViewProjectionTransform(this._camera.viewProjection);
 
-        /**
-         * Render geometries by material.
-         * First render opaque materials, then transparent ones.
-         */
-        this.renderGeometryMap(this._opaqueGeometryMap);
-        this.renderGeometryMap(this._transparentGeometryMap);
+        this.drawCalls();
 
         this._program.unbind();
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
+    }
+
+    /**
+     * Encapsulates the draw calls made to webgl. This is useful if state should not be changed before rendering,
+     * e.g. for shadow mapping.
+     */
+    @Initializable.assert_initialized()
+    drawCalls(): void {
+        /**
+         * Render geometries by material.
+         * First render opaque materials, then transparent ones.
+         */
+        this.renderGeometryMap(this._opaqueGeometryMap);
+        this.renderGeometryMap(this._transparentGeometryMap);
     }
 
     /**

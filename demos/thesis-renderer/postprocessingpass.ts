@@ -88,7 +88,7 @@ export class PostProcessingPass extends Initializable {
         const textureSize = this._texture.size;
 
         if (!this._targetTexture.initialized) {
-            const internalFormat = Wizard.queryInternalTextureFormat(this._context, gl.RGBA, gl.FLOAT);
+            const internalFormat = Wizard.queryInternalTextureFormat(this._context, gl.RGBA, Wizard.Precision.float);
             this._targetTexture.initialize(textureSize[0], textureSize[1],
                 internalFormat[0], gl.RGBA, internalFormat[1]);
         }
@@ -137,5 +137,9 @@ export class PostProcessingPass extends Initializable {
 
     get targetTexture(): Texture2D {
         return this._targetTexture;
+    }
+
+    get framebuffer(): Framebuffer {
+        return this._frameBuffer;
     }
 }

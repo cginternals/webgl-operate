@@ -1,5 +1,5 @@
 
-import { mat3, mat4, vec3 } from 'gl-matrix';
+import { mat3, mat4, vec2, vec3 } from 'gl-matrix';
 
 
 import { auxiliaries } from 'webgl-operate';
@@ -31,10 +31,11 @@ import {
     Texture2D,
     TextureCube,
     Wizard,
+    ShadowPass,
 } from 'webgl-operate';
 
-import { Scene } from './scene';
 import { PostProcessingPass } from './postprocessingpass';
+import { Scene } from './scene';
 
 import { Demo } from '../demo';
 import { DiskLight, SphereLight } from './arealight';
@@ -54,6 +55,7 @@ export class ThesisRenderer extends Renderer {
     protected _accumulatePass: AccumulatePass;
     protected _blitPass: BlitPass;
     protected _postProcessingPass: PostProcessingPass;
+    protected _shadowPass: ShadowPass;
 
     protected _camera: Camera;
 
@@ -67,6 +69,7 @@ export class ThesisRenderer extends Renderer {
     protected _defaultFramebuffer: Framebuffer;
     protected _ndcTriangle: NdcFillingTriangle;
     protected _program: Program;
+    protected _shadowProgram: Program;
     protected _emptyTexture: Texture2D;
 
     protected _specularEnvironment: TextureCube;
@@ -78,6 +81,7 @@ export class ThesisRenderer extends Renderer {
 
     protected _ndcOffsetKernel: AntiAliasingKernel;
     protected _uNdcOffset: WebGLUniformLocation;
+    protected _uFrameNumber: WebGLUniformLocation;
 
     protected _uBaseColor: WebGLUniformLocation;
     protected _uBaseColorTexCoord: WebGLUniformLocation;
@@ -107,6 +111,16 @@ export class ThesisRenderer extends Renderer {
 
     protected _uSpecularEnvironment: WebGLUniformLocation;
     protected _uBRDFLookupTable: WebGLUniformLocation;
+    protected _uShadowMap: WebGLUniformLocation;
+
+    protected _uLightView: WebGLUniformLocation;
+    protected _uLightProjection: WebGLUniformLocation;
+    protected _uLightNearFar: WebGLUniformLocation;
+
+    protected _uModelS: WebGLUniformLocation;
+    protected _uViewS: WebGLUniformLocation;
+    protected _uViewProjectionS: WebGLUniformLocation;
+    protected _uLightNearFarS: WebGLUniformLocation;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -186,6 +200,7 @@ export class ThesisRenderer extends Renderer {
         this._uOcclusionTexCoord = this._program.uniform('u_occlusionTexCoord');
 
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
+        this._uFrameNumber = this._program.uniform('u_frameNumber');
 
         this._uEye = this._program.uniform('u_eye');
         this._uGeometryFlags = this._program.uniform('u_geometryFlags');
@@ -204,6 +219,24 @@ export class ThesisRenderer extends Renderer {
 
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
         this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
+        this._uShadowMap = this._program.uniform('u_shadowMap');
+
+        this._uLightView = this._program.uniform('u_lightView');
+        this._uLightProjection = this._program.uniform('u_lightProjection');
+        this._uLightNearFar = this._program.uniform('u_lightNearFar');
+
+        /* Initialize shadow program */
+        const shadowVert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
+        shadowVert.initialize(require('./data/gltf_thesis.vert'));
+        const shadowFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis_shadow.frag');
+        shadowFrag.initialize(require('./data/gltf_thesis_shadow.frag'));
+        this._shadowProgram = new Program(this._context, 'ThesisShadowProgram');
+        this._shadowProgram.initialize([shadowVert, shadowFrag]);
+
+        this._uModelS = this._shadowProgram.uniform('u_model');
+        this._uViewS = this._shadowProgram.uniform('u_view');
+        this._uViewProjectionS = this._shadowProgram.uniform('u_viewProjection');
+        this._uLightNearFarS = this._shadowProgram.uniform('u_lightNearFar');
 
         /* Camera will be setup by the scenes */
         this._camera = new Camera();
@@ -229,16 +262,6 @@ export class ThesisRenderer extends Renderer {
         this._forwardPass.target = this._intermediateFBO;
 
         this._forwardPass.program = this._program;
-        this._forwardPass.updateModelTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
-
-            const normalMatrix = mat3.create();
-            mat3.normalFromMat4(normalMatrix, matrix);
-            gl.uniformMatrix3fv(this._uNormalMatrix, gl.GL_FALSE, normalMatrix);
-        };
-        this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
-        };
         this._forwardPass.bindUniforms = () => {
             gl.uniform3fv(this._uEye, this._camera.eye);
 
@@ -249,105 +272,25 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1i(this._uEmissive, 4);
             gl.uniform1i(this._uSpecularEnvironment, 5);
             gl.uniform1i(this._uBRDFLookupTable, 6);
+            gl.uniform1i(this._uShadowMap, 7);
 
             this._specularEnvironment.bind(gl.TEXTURE5);
             this._brdfLUT.bind(gl.TEXTURE6);
         };
-        this._forwardPass.bindGeometry = (geometry: Geometry) => {
-            const primitive = geometry as GLTFPrimitive;
-            gl.uniform1i(this._uGeometryFlags, primitive.flags);
+        this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
         };
-        this._forwardPass.bindMaterial = (material: Material) => {
-            const pbrMaterial = material as GLTFPbrMaterial;
-            auxiliaries.assert(pbrMaterial !== undefined, `Material ${material.name} is not a PBR material.`);
-
-            /**
-             * Base color texture
-             */
-            if (pbrMaterial.baseColorTexture !== undefined) {
-                pbrMaterial.baseColorTexture.bind(gl.TEXTURE0);
-                gl.uniform1i(this._uBaseColorTexCoord, pbrMaterial.baseColorTexCoord);
-            } else {
-                this._emptyTexture.bind(gl.TEXTURE0);
-            }
-
-            /**
-             * Metallic Roughness texture
-             */
-            if (pbrMaterial.metallicRoughnessTexture !== undefined) {
-                pbrMaterial.metallicRoughnessTexture.bind(gl.TEXTURE1);
-                gl.uniform1i(this._uMetallicRoughnessTexCoord, pbrMaterial.metallicRoughnessTexCoord);
-            } else {
-                this._emptyTexture.bind(gl.TEXTURE1);
-            }
-
-            /**
-             * Normal texture
-             */
-            if (pbrMaterial.normalTexture !== undefined) {
-                pbrMaterial.normalTexture.bind(gl.TEXTURE2);
-                gl.uniform1i(this._uNormalTexCoord, pbrMaterial.normalTexCoord);
-            } else {
-                this._emptyTexture.bind(gl.TEXTURE2);
-            }
-
-            /**
-             * Occlusion texture
-             */
-            if (pbrMaterial.occlusionTexture !== undefined) {
-                pbrMaterial.occlusionTexture.bind(gl.TEXTURE3);
-                gl.uniform1i(this._uOcclusionTexCoord, pbrMaterial.occlusionTexCoord);
-            } else {
-                this._emptyTexture.bind(gl.TEXTURE3);
-            }
-
-            /**
-             * Emission texture
-             */
-            if (pbrMaterial.emissiveTexture !== undefined) {
-                pbrMaterial.emissiveTexture.bind(gl.TEXTURE4);
-                gl.uniform1i(this._uEmissiveTexCoord, pbrMaterial.emissiveTexCoord);
-            } else {
-                this._emptyTexture.bind(gl.TEXTURE4);
-            }
-
-            /**
-             * Material properties
-             */
-            gl.uniform4fv(this._uBaseColorFactor, pbrMaterial.baseColorFactor);
-            gl.uniform3fv(this._uEmissiveFactor, pbrMaterial.emissiveFactor);
-            gl.uniform1f(this._uMetallicFactor, pbrMaterial.metallicFactor);
-            gl.uniform1f(this._uRoughnessFactor, pbrMaterial.roughnessFactor);
-            gl.uniform1f(this._uNormalScale, pbrMaterial.normalScale);
-            gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
-
-            if (pbrMaterial.alphaMode === GLTFAlphaMode.OPAQUE) {
-                gl.disable(gl.BLEND);
-                gl.uniform1i(this._uBlendMode, 0);
-            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.MASK) {
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                gl.uniform1i(this._uBlendMode, 1);
-                gl.uniform1f(this._uBlendCutoff, pbrMaterial.alphaCutoff);
-            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.BLEND) {
-                gl.enable(gl.BLEND);
-                // We premultiply in the shader
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-                gl.uniform1i(this._uBlendMode, 2);
-            } else {
-                auxiliaries.log(auxiliaries.LogLevel.Warning, 'Unknown blend mode encountered.');
-            }
-        };
-
-        this._postProcessingPass = new PostProcessingPass(context);
-        this._postProcessingPass.initialize(this._ndcTriangle);
-        this._postProcessingPass.texture = this._colorRenderTexture;
 
         this._accumulatePass = new AccumulatePass(context);
         this._accumulatePass.initialize(this._ndcTriangle);
         this._accumulatePass.precision = this._framePrecision;
-        this._accumulatePass.texture = this._postProcessingPass.targetTexture;
+        this._accumulatePass.texture = this._colorRenderTexture;
+
+        this._postProcessingPass = new PostProcessingPass(context);
+        this._postProcessingPass.initialize(this._ndcTriangle);
+
+        this._shadowPass = new ShadowPass(context);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024]);
 
         this._blitPass = new BlitPass(this._context);
         this._blitPass.initialize(this._ndcTriangle);
@@ -434,8 +377,10 @@ export class ThesisRenderer extends Renderer {
         }
 
         this._forwardPass.prepare();
-        this._postProcessingPass.update();
         this._accumulatePass.update();
+
+        this._postProcessingPass.texture = this._accumulatePass.framebuffer!.texture(gl2facade.COLOR_ATTACHMENT0)!;
+        this._postProcessingPass.update();
 
         this._altered.reset();
         this._camera.altered = false;
@@ -443,21 +388,156 @@ export class ThesisRenderer extends Renderer {
 
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
+
+        const currentLight = frameNumber % this._kitchenScene.diskLights.length;
+        const light = this._kitchenScene.diskLights[currentLight];
+        const offset = vec3.random(vec3.create(), light.radius);
+        const eye = vec3.add(vec3.create(), light.center, offset);
+        const center = vec3.add(vec3.create(), light.center, light.direction);
+        const lightCamera = new Camera();
+
+        lightCamera.eye = eye;
+        lightCamera.center = center;
+        lightCamera.up = vec3.fromValues(1.0, 0.0, 0.0);
+        lightCamera.near = 0.1;
+        lightCamera.far = 30.0;
+        lightCamera.fovy = 160.0;
+        const lightNearFar = vec2.fromValues(lightCamera.near, lightCamera.far);
+
+        this._shadowPass.frame(() => {
+            this._shadowProgram.bind();
+
+            gl.uniformMatrix4fv(this._uViewProjectionS, gl.GL_FALSE, lightCamera.viewProjection);
+            gl.uniformMatrix4fv(this._uViewS, gl.GL_FALSE, lightCamera.view);
+            gl.uniform2fv(this._uLightNearFarS, lightNearFar);
+
+            this._forwardPass.bindMaterial = (_: Material) => { };
+            this._forwardPass.bindGeometry = (_: Geometry) => { };
+            this._forwardPass.updateModelTransform = (matrix: mat4) => {
+                gl.uniformMatrix4fv(this._uModelS, gl.GL_FALSE, matrix);
+            };
+            this._forwardPass.drawCalls();
+
+            this._shadowProgram.unbind();
+        });
 
         this._program.bind();
+        gl.uniform1i(this._uFrameNumber, frameNumber);
+        gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, lightCamera.view);
+        gl.uniformMatrix4fv(this._uLightProjection, gl.GL_FALSE, lightCamera.projection);
+        gl.uniform2fv(this._uLightNearFar, lightNearFar);
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
         ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
         ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
 
+        this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
+
+        this._forwardPass.bindMaterial = (material: Material) => {
+            const pbrMaterial = material as GLTFPbrMaterial;
+            auxiliaries.assert(pbrMaterial !== undefined, `Material ${material.name} is not a PBR material.`);
+
+            /**
+             * Base color texture
+             */
+            if (pbrMaterial.baseColorTexture !== undefined) {
+                pbrMaterial.baseColorTexture.bind(gl.TEXTURE0);
+                gl.uniform1i(this._uBaseColorTexCoord, pbrMaterial.baseColorTexCoord);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE0);
+            }
+
+            /**
+             * Metallic Roughness texture
+             */
+            if (pbrMaterial.metallicRoughnessTexture !== undefined) {
+                pbrMaterial.metallicRoughnessTexture.bind(gl.TEXTURE1);
+                gl.uniform1i(this._uMetallicRoughnessTexCoord, pbrMaterial.metallicRoughnessTexCoord);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE1);
+            }
+
+            /**
+             * Normal texture
+             */
+            if (pbrMaterial.normalTexture !== undefined) {
+                pbrMaterial.normalTexture.bind(gl.TEXTURE2);
+                gl.uniform1i(this._uNormalTexCoord, pbrMaterial.normalTexCoord);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE2);
+            }
+
+            /**
+             * Occlusion texture
+             */
+            if (pbrMaterial.occlusionTexture !== undefined) {
+                pbrMaterial.occlusionTexture.bind(gl.TEXTURE3);
+                gl.uniform1i(this._uOcclusionTexCoord, pbrMaterial.occlusionTexCoord);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE3);
+            }
+
+            /**
+             * Emission texture
+             */
+            if (pbrMaterial.emissiveTexture !== undefined) {
+                pbrMaterial.emissiveTexture.bind(gl.TEXTURE4);
+                gl.uniform1i(this._uEmissiveTexCoord, pbrMaterial.emissiveTexCoord);
+            } else {
+                this._emptyTexture.bind(gl.TEXTURE4);
+            }
+
+            /**
+             * Material properties
+             */
+            gl.uniform4fv(this._uBaseColorFactor, pbrMaterial.baseColorFactor);
+            gl.uniform3fv(this._uEmissiveFactor, pbrMaterial.emissiveFactor);
+            gl.uniform1f(this._uMetallicFactor, pbrMaterial.metallicFactor);
+            gl.uniform1f(this._uRoughnessFactor, pbrMaterial.roughnessFactor);
+            gl.uniform1f(this._uNormalScale, pbrMaterial.normalScale);
+            gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
+
+            if (pbrMaterial.alphaMode === GLTFAlphaMode.OPAQUE) {
+                gl.disable(gl.BLEND);
+                gl.uniform1i(this._uBlendMode, 0);
+            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.MASK) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.uniform1i(this._uBlendMode, 1);
+                gl.uniform1f(this._uBlendCutoff, pbrMaterial.alphaCutoff);
+            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.BLEND) {
+                gl.enable(gl.BLEND);
+                // We premultiply in the shader
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+                gl.uniform1i(this._uBlendMode, 2);
+            } else {
+                auxiliaries.log(auxiliaries.LogLevel.Warning, 'Unknown blend mode encountered.');
+            }
+        };
+        this._forwardPass.bindGeometry = (geometry: Geometry) => {
+            const primitive = geometry as GLTFPrimitive;
+            gl.uniform1i(this._uGeometryFlags, primitive.flags);
+        };
+        this._forwardPass.updateModelTransform = (matrix: mat4) => {
+            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
+
+            const normalMatrix = mat3.create();
+            mat3.normalFromMat4(normalMatrix, matrix);
+            gl.uniformMatrix3fv(this._uNormalMatrix, gl.GL_FALSE, normalMatrix);
+        };
         this._forwardPass.frame();
-        this._postProcessingPass.frame();
+
         this._accumulatePass.frame(frameNumber);
+
+        this._postProcessingPass.texture = this._accumulatePass.framebuffer!.texture(gl2facade.COLOR_ATTACHMENT0)!;
+        this._postProcessingPass.frame();
     }
 
     protected onSwap(): void {
-        this._blitPass.framebuffer = this._accumulatePass.framebuffer!;
+        this._blitPass.framebuffer = this._postProcessingPass.framebuffer;
         this._blitPass.frame();
     }
 
@@ -580,8 +660,8 @@ export class ThesisDemo extends Demo {
     initialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
-        this._canvas.controller.multiFrameNumber = 32;
-        this._canvas.framePrecision = Wizard.Precision.byte;
+        this._canvas.controller.multiFrameNumber = 60;
+        this._canvas.framePrecision = Wizard.Precision.float;
         this._canvas.frameScale = [1.0, 1.0];
 
         this._renderer = new ThesisRenderer();
