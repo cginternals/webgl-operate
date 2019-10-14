@@ -151,17 +151,17 @@ export class ThesisRenderer extends Renderer {
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             0.1, 512);
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(-0.54, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(-0.54, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(0.88, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(0.88, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(1.62, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(1.62, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(0.16, 1.6, -1.17), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(0.16, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(1.92, 1.6, -0.86), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(1.92, 1.6, -0.86), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(1.92, 1.6, -0.22), 0.2, vec3.fromValues(15, 15, 15), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(1.92, 1.6, -0.22), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
 
         this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
         this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);

@@ -236,6 +236,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
      */
     @Initializable.assert_initialized()
     drawCalls(): void {
+        if (this._scene === undefined) {
+            return;
+        }
+
         /**
          * Render geometries by material.
          * First render opaque materials, then transparent ones.
