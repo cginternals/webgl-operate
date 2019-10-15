@@ -305,6 +305,11 @@ export class ThesisRenderer extends Renderer {
             this.loadAsset();
         };
 
+        const debugSelect = window.document.getElementById('debug-select')! as HTMLSelectElement;
+        debugSelect.onchange = (_) => {
+            this.setDebugMode();
+        };
+
         return true;
     }
 
@@ -573,6 +578,31 @@ export class ThesisRenderer extends Renderer {
                 this._forwardPass.scene = this._loader.defaultScene;
                 this._invalidate(true);
             });
+    }
+
+    protected setDebugMode() {
+        const gl = this._context.gl;
+
+        const debugSelect = window.document.getElementById('debug-select')! as HTMLSelectElement;
+
+        let debugMode = 0;
+        if (debugSelect.value === 'Final') {
+            debugMode = 0;
+        } else if (debugSelect.value === 'Flat') {
+            debugMode = 1;
+        } else if (debugSelect.value === 'IBL') {
+            debugMode = 2;
+        } else if (debugSelect.value === 'Light sources') {
+            debugMode = 3;
+        } else if (debugSelect.value === 'Illuminance') {
+            debugMode = 4;
+        }
+
+        this._program.bind();
+        gl.uniform1i(this._program.uniform('u_debugMode'), debugMode);
+        this._program.unbind();
+
+        this._invalidate(true);
     }
 
     protected updateLights(scene: Scene): void {

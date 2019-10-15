@@ -76,6 +76,7 @@ uniform mat4 u_lightView;
 uniform mat4 u_lightProjection;
 
 uniform int u_frameNumber;
+uniform int u_debugMode;
 
 varying vec2 v_uv[3];
 varying vec4 v_color;
@@ -146,18 +147,16 @@ vec3 getIBLContribution(LightingInfo info)
     vec2 brdfSamplePoint = vec2(NdotV, info.perceptualRoughness);
     vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
 
-    // vec4 diffuseSample = textureCube(u_DiffuseEnvSampler, n);
+    // TODO: proper diffuse preconvolution
+    vec4 diffuseSample = textureLod(u_specularEnvironment, info.incidentNormal, MIP_COUNT);
     vec4 specularSample = textureLod(u_specularEnvironment, reflection, lod);
 
-    // TODO: proper diffuse preconvolution
-    vec3 diffuseLight = vec3(0.2);
-    // vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
+    vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
 
     vec3 diffuse = diffuseLight * info.diffuseColor;
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
 
-    // return specular;
     return diffuse + specular;
 }
 
@@ -184,6 +183,10 @@ void main(void)
         baseColor = SRGBtoLINEAR(texture(u_baseColor, v_uv[u_baseColorTexCoord])) * u_baseColorFactor;
     } else {
         baseColor = u_baseColorFactor;
+    }
+
+    if (u_debugMode == 4) { // Illuminance
+        baseColor = vec4(1.0);
     }
 
     // spec: COLOR_0 ... acts as an additional linear multiplier to baseColor
@@ -222,14 +225,16 @@ void main(void)
         alphaRoughness * alphaRoughness
     );
 
-    // Analytical lighting
     vec3 color = vec3(0.0);
+    vec3 lightSources = vec3(0.0);
 
-    // for (int i = 0; i < u_numSphereLights; ++i) {
-    //     color += diffuseSphereLightApproximated(u_sphereLights[i], info);
-    //     color += specularSphereLightKaris(u_sphereLights[i], info);
-    // }
+    // Sphere lights
+    for (int i = 0; i < u_numSphereLights; ++i) {
+        lightSources += diffuseSphereLightApproximated(u_sphereLights[i], info);
+        lightSources += specularSphereLightKaris(u_sphereLights[i], info);
+    }
 
+    // Disk lights with shadow mapping
     vec4 vLightViewSpace = u_lightView * vec4(v_position, 1.0);
     vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
 
@@ -244,13 +249,15 @@ void main(void)
     }
 
     int currentLight = u_frameNumber % u_numDiskLights;
-    color += diffuseDiskLightApproximated(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
-    color += specularDiskLightKaris(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
+    lightSources += diffuseDiskLightApproximated(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
+    lightSources += specularDiskLightKaris(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
 
     // for (int i = 0; i < u_numDiskLights; ++i) {
-    //     color += diffuseDiskLightApproximated(u_diskLights[i], info);
-    //     color += specularDiskLightKaris(u_diskLights[i], info);
+    //     lightSources += diffuseDiskLightApproximated(u_diskLights[i], info);
+    //     lightSources += specularDiskLightKaris(u_diskLights[i], info);
     // }
+
+    color += lightSources;
 
     // Environment lighting
     vec3 environmentLight = getIBLContribution(info);
@@ -274,4 +281,14 @@ void main(void)
     }
 
     fragColor = vec4(color * alpha, alpha);
+
+    if (u_debugMode == 1) { // flat
+        fragColor = vec4(baseColor.rgb, alpha);
+    }
+    else if (u_debugMode == 2) { // IBL
+        fragColor = vec4(environmentLight, alpha);
+    }
+    else if (u_debugMode == 3) { // Light sources
+        fragColor = vec4(lightSources, alpha);
+    }
 }
