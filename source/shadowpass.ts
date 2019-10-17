@@ -12,6 +12,7 @@ import { GLsizei2 } from './tuples';
 
 
 export class ShadowPass extends Initializable {
+
     protected _context: Context;
 
     protected _shadowType: ShadowPass.ShadowMappingType;
@@ -43,7 +44,7 @@ export class ShadowPass extends Initializable {
     }
 
     get hasBlur(): boolean {
-        return this._shadowType !== ShadowPass.ShadowMappingType.HardShadowMapping;
+        return this._shadowType !== ShadowPass.ShadowMappingType.HardLinear;
     }
 
     get blurSize(): GLsizei {
@@ -100,14 +101,14 @@ export class ShadowPass extends Initializable {
         if (this._context.isWebGL2) {
             const gl2 = this._context.gl as WebGL2RenderingContext;
             switch (this._shadowType) {
-                case ShadowPass.ShadowMappingType.HardShadowMapping:
-                case ShadowPass.ShadowMappingType.ExponentialShadowMapping:
+                case ShadowPass.ShadowMappingType.HardLinear:
+                case ShadowPass.ShadowMappingType.HardExponential:
                     format = gl2.RED;
                     break;
-                case ShadowPass.ShadowMappingType.VarianceShadowMapping:
+                case ShadowPass.ShadowMappingType.SoftLinear:
                     format = gl2.RG;
                     break;
-                case ShadowPass.ShadowMappingType.ExponentialVarianceShadowMapping:
+                case ShadowPass.ShadowMappingType.SoftExponential:
                     format = gl2.RGBA;
                     break;
                 default:
@@ -116,9 +117,9 @@ export class ShadowPass extends Initializable {
         }
 
         const [internalFormat, type] = Wizard.queryInternalTextureFormat(this._context, format, Wizard.Precision.float);
-        if (this._shadowType !== ShadowPass.ShadowMappingType.HardShadowMapping && type !== gl.FLOAT) {
-            log(LogLevel.Warning, 'floating point textures are not supported, falling back to HardShadowMapping');
-            this._shadowType = ShadowPass.ShadowMappingType.HardShadowMapping;
+        if (this._shadowType !== ShadowPass.ShadowMappingType.HardLinear && type !== gl.FLOAT) {
+            log(LogLevel.Warning, 'floating point textures are not supported, falling back to HardLinear');
+            this._shadowType = ShadowPass.ShadowMappingType.HardLinear;
         }
 
         let filter = gl.LINEAR;
@@ -232,10 +233,10 @@ export class ShadowPass extends Initializable {
 export namespace ShadowPass {
 
     export enum ShadowMappingType {
-        HardShadowMapping = 0,
-        VarianceShadowMapping = 1,
-        ExponentialShadowMapping = 2,
-        ExponentialVarianceShadowMapping = 3,
+        HardLinear = 0,
+        SoftLinear = 1,
+        HardExponential = 2,
+        SoftExponential = 3,
     }
 
 }

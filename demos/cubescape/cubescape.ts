@@ -85,7 +85,7 @@ class CubescapeRenderer extends Renderer {
         gl.enable(gl.DEPTH_TEST);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         gl.uniform1i(this._program.uniform('u_numcubes'), this._geometry.count);
         gl.uniform1f(this._program.uniform('u_time'), window.performance.now() * 0.0002);
         this._terrain.bind(gl.TEXTURE0);

@@ -179,7 +179,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._blit.target = this._defaultFBO;
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardLinear, [1024, 1024]);
 
         return true;
     }
@@ -331,7 +331,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
             const y = this._cuboids[i].extent[1] * 0.5;
 
             mat4.fromTranslation(M, vec3.fromValues(-x, y, 0.0));
-            gl.uniformMatrix4fv(model, gl.GL_FALSE, M);
+            gl.uniformMatrix4fv(model, false, M);
 
             this._cuboids[i].bind();
             this._cuboids[i].draw();
@@ -341,7 +341,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
     protected drawPlane(model: WebGLUniformLocation): void {
         const gl = this._context.gl;
 
-        gl.uniformMatrix4fv(model, gl.GL_FALSE, this._plane.transformation);
+        gl.uniformMatrix4fv(model, false, this._plane.transformation);
         this._plane.bind();
         this._plane.draw();
     }
