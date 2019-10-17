@@ -139,32 +139,32 @@ export class ExtensionsHash {
         assert(hash.length === expectedHashLength,
             `expected hash of version ${version} to have a length of ${expectedHashLength}, given ${hash}`);
 
-        const supported = new Array<string>();
+        const strived = new Array<string>();
         for (let i = 1; i < hash.length; ++i) {
             const bitfield = ExtensionsHash.decode64(hash[i]);
             const offset = (i - 1) * 6;
 
             /* loop explicitly unrolled */
             if (bitfield & 0b100000) {
-                supported.push(extensions[offset + 0]);
+                strived.push(extensions[offset + 0]);
             }
             if (bitfield & 0b010000) {
-                supported.push(extensions[offset + 1]);
+                strived.push(extensions[offset + 1]);
             }
             if (bitfield & 0b001000) {
-                supported.push(extensions[offset + 2]);
+                strived.push(extensions[offset + 2]);
             }
             if (bitfield & 0b000100) {
-                supported.push(extensions[offset + 3]);
+                strived.push(extensions[offset + 3]);
             }
             if (bitfield & 0b000010) {
-                supported.push(extensions[offset + 4]);
+                strived.push(extensions[offset + 4]);
             }
             if (bitfield & 0b000001) {
-                supported.push(extensions[offset + 5]);
+                strived.push(extensions[offset + 5]);
             }
         }
-        return [backend, supported];
+        return [backend, strived];
     }
 
     /**
