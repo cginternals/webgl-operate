@@ -73,6 +73,14 @@ describe('ContextMasquerade', () => {
         expect(masquerade.extensionsConceal).to.include('WEBGL_draw_buffers');
     });
 
+    it('should be initializable from hash w.r.t. draw buffers extension', () => {
+        const masquerade = ContextMasquerade.fromHash('1Q+++Z');
+        expect(masquerade.backend).to.equal('webgl1');
+        expect(masquerade.extensionsStrive).to.not.include('WEBGL_draw_buffers');
+        expect(masquerade.functionsUndefine).to.be.empty;
+        expect(masquerade.extensionsConceal).to.include('WEBGL_draw_buffers');
+    });
+
     it('should be initializable by GET using hash', () => {
         const getParameterStub = sandbox.stub(aux, 'GETparameter');
         getParameterStub.returns('1w0000');
