@@ -47,6 +47,7 @@ uniform sampler2D u_occlusion;
 uniform samplerCube u_specularEnvironment;
 uniform sampler2D u_brdfLUT;
 uniform sampler2D u_shadowMap;
+uniform sampler2D u_depth;
 
 #define MAX_LIGHTS 6
 uniform int u_numSphereLights;
@@ -75,6 +76,10 @@ uniform vec2 u_lightNearFar;
 uniform mat4 u_lightView;
 uniform mat4 u_lightProjection;
 
+uniform mat4 u_viewProjection;
+uniform mat4 u_view;
+uniform vec2 u_cameraNearFar;
+
 uniform int u_frameNumber;
 uniform int u_debugMode;
 
@@ -95,10 +100,9 @@ bool checkFlag(int flag) {
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 getNormal()
+vec3 getNormal(out mat3 TBN)
 {
     // Retrieve the tangent space matrix
-    mat3 tbn;
     if (!checkGeometryFlag(HAS_TANGENTS)) {
         vec3 pos_dx = dFdx(v_position);
         vec3 pos_dy = dFdy(v_position);
@@ -114,19 +118,19 @@ vec3 getNormal()
 
             t = normalize(t - ng * dot(ng, t));
             vec3 b = normalize(cross(ng, t));
-            tbn = mat3(t, b, ng);
+            TBN = mat3(t, b, ng);
         }
     else { // HAS_TANGENTS
-        tbn = v_TBN;
+        TBN = v_TBN;
     }
 
     vec3 n;
     if (checkFlag(HAS_NORMALMAP)) {
         n = texture(u_normal, v_uv[u_normalTexCoord]).rgb;
-        n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_normalScale, u_normalScale, 1.0)));
+        n = normalize(TBN * ((2.0 * n - 1.0) * vec3(u_normalScale, u_normalScale, 1.0)));
     } else {
         // The tbn matrix is linearly interpolated, so we need to re-normalize
-        n = normalize(tbn[2].xyz);
+        n = normalize(TBN[2].xyz);
     }
 
     // reverse backface normals
@@ -135,7 +139,7 @@ vec3 getNormal()
     return n;
 }
 
-vec3 getIBLContribution(LightingInfo info)
+vec3 getIBLContribution(LightingInfo info, mat3 TBN)
 {
     float NdotV = clamp(dot(info.incidentNormal, info.view), 0.0, 1.0);
 
@@ -154,7 +158,24 @@ vec3 getIBLContribution(LightingInfo info)
     vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
 
-    vec3 diffuse = diffuseLight * info.diffuseColor;
+    const float SSAOSize = 0.2;
+
+    float random1 = rand(vec2(float(u_frameNumber) * 73.8, float(u_frameNumber) * 54.9));
+    float random2 = rand(vec2(float(u_frameNumber) * 23.1, float(u_frameNumber) * 94.3));
+    vec3 diffuseSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
+    diffuseSampleOffset *= SSAOSize;
+    vec3 diffuseSamplePoint = info.incidentPosition + diffuseSampleOffset;
+    vec4 diffuseSampleProj = u_viewProjection * vec4(diffuseSamplePoint, 1.0);
+    vec2 diffuseSampleUV = (diffuseSampleProj / diffuseSampleProj.w).xy * 0.5 + 0.5;
+    vec4 diffuseSampleView = u_view * vec4(diffuseSamplePoint, 1.0);
+    diffuseSampleView /= diffuseSampleView.w;
+    float diffuseSampleDepth = length(diffuseSampleView.xyz);
+    diffuseSampleDepth = (diffuseSampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
+
+    float compareDepth = texture(u_depth, diffuseSampleUV).r;
+    float visibility = step(diffuseSampleDepth, compareDepth);
+
+    vec3 diffuse = diffuseLight * info.diffuseColor * visibility;
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
 
     return diffuse + specular;
@@ -207,8 +228,9 @@ void main(void)
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
-    vec3 N = getNormal();                         // normal at surface point
-    vec3 V = normalize(u_eye - v_position);        // Vector from surface point to camera
+    mat3 TBN;
+    vec3 N = getNormal(TBN); // normal at surface point
+    vec3 V = normalize(u_eye - v_position); // Vector from surface point to camera
 
     LightingInfo info = LightingInfo(
         v_position,
@@ -260,7 +282,7 @@ void main(void)
     color += lightSources;
 
     // Environment lighting
-    vec3 environmentLight = getIBLContribution(info);
+    vec3 environmentLight = getIBLContribution(info, TBN);
     color += environmentLight;
 
     // Emissive lighting

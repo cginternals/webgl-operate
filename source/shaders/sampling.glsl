@@ -7,7 +7,17 @@ vec3 uniformSampleSphere(float u1, float u2)
 {
     float phi = 2.0 * M_PI * u2;
     float cosTheta = 1.0 - 2.0 * u1;
-    float sinTheta = sqrt(max (0.0 , 1.0 - cosTheta * cosTheta));
+    float sinTheta = sqrt(max (0.0, 1.0 - cosTheta * cosTheta));
+
+    return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+}
+
+// Adapted from "Moving Frostbite to PBR"
+vec3 uniformSampleHemisphere(float u1, float u2)
+{
+    float phi = 2.0 * M_PI * u2;
+    float cosTheta = 1.0 - u1;
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
 
     return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 }

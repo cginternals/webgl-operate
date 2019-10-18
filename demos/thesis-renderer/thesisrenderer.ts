@@ -81,8 +81,10 @@ export class ThesisRenderer extends Renderer {
     protected _brdfLUT: Texture2D;
 
     protected _uViewProjection: WebGLUniformLocation;
+    protected _uView: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
     protected _uNormalMatrix: WebGLUniformLocation;
+    protected _uCameraNearFar: WebGLUniformLocation;
 
     protected _ndcOffsetKernel: AntiAliasingKernel;
     protected _uNdcOffset: WebGLUniformLocation;
@@ -117,6 +119,7 @@ export class ThesisRenderer extends Renderer {
     protected _uSpecularEnvironment: WebGLUniformLocation;
     protected _uBRDFLookupTable: WebGLUniformLocation;
     protected _uShadowMap: WebGLUniformLocation;
+    protected _uDepth: WebGLUniformLocation;
 
     protected _uLightView: WebGLUniformLocation;
     protected _uLightProjection: WebGLUniformLocation;
@@ -191,8 +194,10 @@ export class ThesisRenderer extends Renderer {
         this._program.initialize([vert, frag]);
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
+        this._uView = this._program.uniform('u_view');
         this._uModel = this._program.uniform('u_model');
         this._uNormalMatrix = this._program.uniform('u_normalMatrix');
+        this._uCameraNearFar = this._program.uniform('u_cameraNearFar');
 
         this._uBaseColor = this._program.uniform('u_baseColor');
         this._uBaseColorTexCoord = this._program.uniform('u_baseColorTexCoord');
@@ -230,6 +235,7 @@ export class ThesisRenderer extends Renderer {
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
         this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
         this._uShadowMap = this._program.uniform('u_shadowMap');
+        this._uDepth = this._program.uniform('u_depth');
 
         this._uLightView = this._program.uniform('u_lightView');
         this._uLightProjection = this._program.uniform('u_lightProjection');
@@ -303,6 +309,7 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1i(this._uSpecularEnvironment, 5);
             gl.uniform1i(this._uBRDFLookupTable, 6);
             gl.uniform1i(this._uShadowMap, 7);
+            gl.uniform1i(this._uDepth, 8);
 
             this._specularEnvironment.bind(gl.TEXTURE5);
             this._brdfLUT.bind(gl.TEXTURE6);
@@ -399,9 +406,9 @@ export class ThesisRenderer extends Renderer {
 
         if (!this._preDepthFBO.initialized) {
             this._depthTexture.initialize(this._frameSize[0], this._frameSize[1],
-                /* this._context.isWebGL2 ? gl.R32F : */ gl.RGBA,
-                /* this._context.isWebGL2 ? gl.RED : */ gl.RGBA,
-                /* gl.FLOAT */ gl.UNSIGNED_BYTE);
+                this._context.isWebGL2 ? gl.R32F : gl.RGBA,
+                this._context.isWebGL2 ? gl.RED : gl.RGBA,
+                gl.FLOAT);
             this._preDepthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
             this._preDepthFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._depthTexture]
                 , [gl.DEPTH_ATTACHMENT, this._preDepthRenderbuffer]]);
@@ -434,7 +441,7 @@ export class ThesisRenderer extends Renderer {
     protected preDepthPass(): void {
         const gl = this._context.gl;
 
-        this._preDepthFBO.bind();
+        this._preDepthFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
         gl.viewport(0, 0, this._preDepthFBO.width, this._preDepthFBO.height);
 
         this._depthProgram.bind();
@@ -495,9 +502,11 @@ export class ThesisRenderer extends Renderer {
 
         this._program.bind();
         gl.uniform1i(this._uFrameNumber, frameNumber);
+        gl.uniformMatrix4fv(this._uView, gl.GL_FALSE, this._camera.view);
         gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, lightCamera.view);
         gl.uniformMatrix4fv(this._uLightProjection, gl.GL_FALSE, lightCamera.projection);
         gl.uniform2fv(this._uLightNearFar, lightNearFar);
+        gl.uniform2fv(this._uCameraNearFar, vec2.fromValues(this._camera.near, this._camera.far));
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
         ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
@@ -505,6 +514,7 @@ export class ThesisRenderer extends Renderer {
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
+        this._depthTexture.bind(gl.TEXTURE8);
 
         this._forwardPass.program = this._program;
         this._forwardPass.target = this._intermediateFBO;

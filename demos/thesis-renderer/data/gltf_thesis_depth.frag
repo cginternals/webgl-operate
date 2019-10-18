@@ -29,7 +29,8 @@ varying vec3 v_position;
 void main(void)
 {
     vec4 viewPosition = u_view * vec4(v_position, 1.0);
+    viewPosition /= viewPosition.w;
 
-    float depth = (length(viewPosition) - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
+    float depth = (length(viewPosition.xyz) - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
     fragColor = vec4(depth, 0.0, 0.0, 1.0);
 }
