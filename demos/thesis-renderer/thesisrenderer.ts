@@ -28,10 +28,10 @@ import {
     Renderbuffer,
     Renderer,
     Shader,
+    ShadowPass,
     Texture2D,
     TextureCube,
     Wizard,
-    ShadowPass,
 } from 'webgl-operate';
 
 import { PostProcessingPass } from './postprocessingpass';
@@ -65,6 +65,11 @@ export class ThesisRenderer extends Renderer {
     protected _intermediateFBO: Framebuffer;
     protected _colorRenderTexture: Texture2D;
     protected _depthRenderbuffer: Renderbuffer;
+
+    protected _preDepthFBO: Framebuffer;
+    protected _depthTexture: Texture2D;
+    protected _preDepthRenderbuffer: Renderbuffer;
+    protected _depthProgram: Program;
 
     protected _defaultFramebuffer: Framebuffer;
     protected _ndcTriangle: NdcFillingTriangle;
@@ -122,6 +127,11 @@ export class ThesisRenderer extends Renderer {
     protected _uViewProjectionS: WebGLUniformLocation;
     protected _uLightNearFarS: WebGLUniformLocation;
 
+    protected _uModelD: WebGLUniformLocation;
+    protected _uViewProjectionD: WebGLUniformLocation;
+    protected _uViewD: WebGLUniformLocation;
+    protected _uCameraNearFarD: WebGLUniformLocation;
+
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
      * @param context - valid context to create the object for.
@@ -142,14 +152,14 @@ export class ThesisRenderer extends Renderer {
         this._datsunScene = new Scene(
             'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
-            1, 3000);
+            1, 10);
         this._datsunScene.addSphereLight(new SphereLight(
             vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(15, 15, 15)));
 
         this._kitchenScene = new Scene(
             'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
-            0.1, 512);
+            0.1, 10);
         this._kitchenScene.addDiskLight(new DiskLight(
             vec3.fromValues(-0.54, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
         this._kitchenScene.addDiskLight(new DiskLight(
@@ -238,6 +248,19 @@ export class ThesisRenderer extends Renderer {
         this._uViewProjectionS = this._shadowProgram.uniform('u_viewProjection');
         this._uLightNearFarS = this._shadowProgram.uniform('u_lightNearFar');
 
+        /* Initialize pre depth program */
+        const depthVert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
+        depthVert.initialize(require('./data/gltf_thesis.vert'));
+        const depthFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis_depth.frag');
+        depthFrag.initialize(require('./data/gltf_thesis_depth.frag'));
+        this._depthProgram = new Program(this._context, 'ThesisDepthProgram');
+        this._depthProgram.initialize([depthVert, depthFrag]);
+
+        this._uViewD = this._depthProgram.uniform('u_view');
+        this._uViewProjectionD = this._depthProgram.uniform('u_viewProjection');
+        this._uCameraNearFarD = this._depthProgram.uniform('u_cameraNearFar');
+        this._uModelD = this._depthProgram.uniform('u_model');
+
         /* Camera will be setup by the scenes */
         this._camera = new Camera();
 
@@ -252,6 +275,13 @@ export class ThesisRenderer extends Renderer {
         this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
         this._depthRenderbuffer = new Renderbuffer(this._context, 'DepthRenderbuffer');
         this._intermediateFBO = new Framebuffer(this._context, 'IntermediateFBO');
+
+        /**
+         * Setup pre depth FBO
+         */
+        this._preDepthFBO = new Framebuffer(this._context, 'PreDepthFBO');
+        this._depthTexture = new Texture2D(this._context, 'DepthTexture');
+        this._preDepthRenderbuffer = new Renderbuffer(this._context, 'PreDepthRenderbuffer');
 
         /* Create and configure forward pass. */
 
@@ -367,6 +397,16 @@ export class ThesisRenderer extends Renderer {
                 , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
         }
 
+        if (!this._preDepthFBO.initialized) {
+            this._depthTexture.initialize(this._frameSize[0], this._frameSize[1],
+                /* this._context.isWebGL2 ? gl.R32F : */ gl.RGBA,
+                /* this._context.isWebGL2 ? gl.RED : */ gl.RGBA,
+                /* gl.FLOAT */ gl.UNSIGNED_BYTE);
+            this._preDepthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
+            this._preDepthFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._depthTexture]
+                , [gl.DEPTH_ATTACHMENT, this._preDepthRenderbuffer]]);
+        }
+
         if (this._altered.multiFrameNumber) {
             this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
         }
@@ -391,9 +431,35 @@ export class ThesisRenderer extends Renderer {
         this._camera.altered = false;
     }
 
+    protected preDepthPass(): void {
+        const gl = this._context.gl;
+
+        this._preDepthFBO.bind();
+        gl.viewport(0, 0, this._preDepthFBO.width, this._preDepthFBO.height);
+
+        this._depthProgram.bind();
+        gl.uniform2fv(this._uCameraNearFarD, vec2.fromValues(this._camera.near, this._camera.far));
+        gl.uniformMatrix4fv(this._uViewD, gl.FALSE, this._camera.view);
+        gl.uniformMatrix4fv(this._uViewProjectionD, gl.FALSE, this._camera.viewProjection);
+
+        this._forwardPass.program = this._depthProgram;
+        this._forwardPass.target = this._preDepthFBO;
+        this._forwardPass.bindMaterial = (_: Material) => { };
+        this._forwardPass.bindGeometry = (_: Geometry) => { };
+        this._forwardPass.updateModelTransform = (matrix: mat4) => {
+            gl.uniformMatrix4fv(this._uModelD, gl.GL_FALSE, matrix);
+        };
+
+        this._forwardPass.drawCalls();
+    }
+
     protected onFrame(frameNumber: number): void {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
+
+        if (frameNumber === 0) {
+            this.preDepthPass();
+        }
 
         const currentLight = frameNumber % this._kitchenScene.diskLights.length;
         const light = this._kitchenScene.diskLights[currentLight];
@@ -440,6 +506,8 @@ export class ThesisRenderer extends Renderer {
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
 
+        this._forwardPass.program = this._program;
+        this._forwardPass.target = this._intermediateFBO;
         this._forwardPass.bindMaterial = (material: Material) => {
             const pbrMaterial = material as GLTFPbrMaterial;
             auxiliaries.assert(pbrMaterial !== undefined, `Material ${material.name} is not a PBR material.`);
