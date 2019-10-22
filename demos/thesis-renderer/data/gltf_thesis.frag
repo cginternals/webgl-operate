@@ -77,7 +77,9 @@ uniform mat4 u_lightView;
 uniform mat4 u_lightProjection;
 
 uniform mat4 u_viewProjection;
+uniform mat4 u_projection;
 uniform mat4 u_view;
+uniform mat3 u_viewNormalMatrix;
 uniform vec2 u_cameraNearFar;
 
 uniform int u_frameNumber;
@@ -139,6 +141,37 @@ vec3 getNormal(out mat3 TBN)
     return n;
 }
 
+float ssaoSample(LightingInfo info) {
+    const float SSAOSize = 0.2;
+
+    vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
+
+    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
+    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
+    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
+
+    // generate matrix to transform from tangent to view space
+    vec3 viewNormal = normalize(u_viewNormalMatrix * info.incidentNormal);
+    vec3 random = normalize(vec3(0.0, 1.0, 1.0));
+    vec3 t = normalize(random - viewNormal * dot(random, viewNormal));
+    vec3 b = cross(viewNormal, t);
+    mat3 TBN = mat3(t, b, viewNormal);
+
+    vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
+
+    viewSampleOffset *= SSAOSize * random3;
+    vec3 viewSamplePoint = viewPosition + viewSampleOffset;
+    vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
+    vec2 sampleUV = (ndcSamplePoint / ndcSamplePoint.w).xy * 0.5 + 0.5;
+    float sampleDepth = length(viewSamplePoint);
+    sampleDepth = (sampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
+
+    float compareDepth = texture(u_depth, sampleUV).r;
+    // range check fixes halos when depths are very different
+    float rangeCheck = abs(compareDepth - sampleDepth) < SSAOSize ? 1.0 : 0.0;
+    return step(compareDepth, sampleDepth) * rangeCheck;
+}
+
 vec3 getIBLContribution(LightingInfo info, mat3 TBN)
 {
     float NdotV = clamp(dot(info.incidentNormal, info.view), 0.0, 1.0);
@@ -158,26 +191,9 @@ vec3 getIBLContribution(LightingInfo info, mat3 TBN)
     vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
 
-    const float SSAOSize = 0.2;
+    float diffuseOcclusion = ssaoSample(info);
 
-    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
-    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
-    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
-    vec3 diffuseSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
-    diffuseSampleOffset *= SSAOSize * random3;
-    vec3 diffuseSamplePoint = info.incidentPosition + diffuseSampleOffset;
-    vec4 diffuseSampleProj = u_viewProjection * vec4(diffuseSamplePoint, 1.0);
-    vec2 diffuseSampleUV = (diffuseSampleProj / diffuseSampleProj.w).xy * 0.5 + 0.5;
-    vec4 diffuseSampleView = u_view * vec4(diffuseSamplePoint, 1.0);
-    diffuseSampleView /= diffuseSampleView.w;
-    float diffuseSampleDepth = length(diffuseSampleView.xyz);
-    diffuseSampleDepth = (diffuseSampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
-
-    float compareDepth = texture(u_depth, diffuseSampleUV).r;
-    float rangeCheck = abs(compareDepth - diffuseSampleDepth) < SSAOSize ? 1.0 : 0.0;
-    float occlusion = step(compareDepth, diffuseSampleDepth) * rangeCheck;
-
-    vec3 diffuse = diffuseLight * info.diffuseColor * (1.0 - occlusion);
+    vec3 diffuse = diffuseLight * info.diffuseColor * (1.0 - diffuseOcclusion);
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
 
     return diffuse + specular;

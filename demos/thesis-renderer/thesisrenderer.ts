@@ -62,6 +62,7 @@ export class ThesisRenderer extends Renderer {
     protected _currentScene: Scene;
     protected _datsunScene: Scene;
     protected _kitchenScene: Scene;
+    protected _cornellScene: Scene;
 
     protected _intermediateFBO: Framebuffer;
     protected _colorRenderTexture: Texture2D;
@@ -83,8 +84,10 @@ export class ThesisRenderer extends Renderer {
 
     protected _uViewProjection: WebGLUniformLocation;
     protected _uView: WebGLUniformLocation;
+    protected _uProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
     protected _uNormalMatrix: WebGLUniformLocation;
+    protected _uViewNormalMatrix: WebGLUniformLocation;
     protected _uCameraNearFar: WebGLUniformLocation;
 
     protected _ndcOffsetKernel: AntiAliasingKernel;
@@ -153,8 +156,14 @@ export class ThesisRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
+        this._cornellScene = new Scene('http://127.0.0.1:8001/cornell_box/scene_fixed_size.glb',
+            new Camera(vec3.fromValues(-0.255, 3.09, -8.0), vec3.fromValues(0.135, 1.192, -0.46)),
+            0.2, 20);
+        this._cornellScene.addDiskLight(new DiskLight(
+            vec3.fromValues(0.13, 2.32, -0.23), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+
         this._datsunScene = new Scene(
-            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size2.glb',
+            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             0.2, 30);
         this._datsunScene.addDiskLight(new DiskLight(
@@ -202,8 +211,10 @@ export class ThesisRenderer extends Renderer {
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uView = this._program.uniform('u_view');
+        this._uProjection = this._program.uniform('u_projection');
         this._uModel = this._program.uniform('u_model');
         this._uNormalMatrix = this._program.uniform('u_normalMatrix');
+        this._uViewNormalMatrix = this._program.uniform('u_viewNormalMatrix');
         this._uCameraNearFar = this._program.uniform('u_cameraNearFar');
 
         this._uBaseColor = this._program.uniform('u_baseColor');
@@ -510,10 +521,15 @@ export class ThesisRenderer extends Renderer {
         this._program.bind();
         gl.uniform1i(this._uFrameNumber, frameNumber);
         gl.uniformMatrix4fv(this._uView, gl.GL_FALSE, this._camera.view);
+        gl.uniformMatrix4fv(this._uProjection, gl.GL_FALSE, this._camera.projection);
         gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, lightCamera.view);
         gl.uniformMatrix4fv(this._uLightProjection, gl.GL_FALSE, lightCamera.projection);
         gl.uniform2fv(this._uLightNearFar, lightNearFar);
         gl.uniform2fv(this._uCameraNearFar, vec2.fromValues(this._camera.near, this._camera.far));
+
+        const viewNormalMatrix = mat3.create();
+        mat3.normalFromMat4(viewNormalMatrix, this._camera.view);
+        gl.uniformMatrix3fv(this._uViewNormalMatrix, gl.GL_FALSE, viewNormalMatrix);
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
         ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
@@ -642,6 +658,8 @@ export class ThesisRenderer extends Renderer {
             scene = this._datsunScene;
         } else if (assetSelect.value === 'Kitchen') {
             scene = this._kitchenScene;
+        } else if (assetSelect.value === 'Cornell') {
+            scene = this._cornellScene;
         }
 
         auxiliaries.assert(scene !== undefined, `Unknown scene ${assetSelect.value}.`);
