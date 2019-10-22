@@ -160,10 +160,11 @@ vec3 getIBLContribution(LightingInfo info, mat3 TBN)
 
     const float SSAOSize = 0.2;
 
-    float random1 = rand(vec2(float(u_frameNumber) * 73.8, float(u_frameNumber) * 54.9));
-    float random2 = rand(vec2(float(u_frameNumber) * 23.1, float(u_frameNumber) * 94.3));
+    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
+    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
+    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
     vec3 diffuseSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
-    diffuseSampleOffset *= SSAOSize;
+    diffuseSampleOffset *= SSAOSize * random3;
     vec3 diffuseSamplePoint = info.incidentPosition + diffuseSampleOffset;
     vec4 diffuseSampleProj = u_viewProjection * vec4(diffuseSamplePoint, 1.0);
     vec2 diffuseSampleUV = (diffuseSampleProj / diffuseSampleProj.w).xy * 0.5 + 0.5;
@@ -173,9 +174,10 @@ vec3 getIBLContribution(LightingInfo info, mat3 TBN)
     diffuseSampleDepth = (diffuseSampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
 
     float compareDepth = texture(u_depth, diffuseSampleUV).r;
-    float visibility = step(diffuseSampleDepth, compareDepth);
+    float rangeCheck = abs(compareDepth - diffuseSampleDepth) < SSAOSize ? 1.0 : 0.0;
+    float occlusion = step(compareDepth, diffuseSampleDepth) * rangeCheck;
 
-    vec3 diffuse = diffuseLight * info.diffuseColor * visibility;
+    vec3 diffuse = diffuseLight * info.diffuseColor * (1.0 - occlusion);
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
 
     return diffuse + specular;
@@ -232,11 +234,14 @@ void main(void)
     vec3 N = getNormal(TBN); // normal at surface point
     vec3 V = normalize(u_eye - v_position); // Vector from surface point to camera
 
+    vec4 ndcPosition = u_viewProjection * vec4(v_position, 1.0);
+    vec2 uv = (ndcPosition / ndcPosition.w).xy * 0.5 + 0.5;
+
     LightingInfo info = LightingInfo(
         v_position,
         N,
         V,
-        vec2(0.0), // TODO: remove uv from shaders or pass it
+        uv,
 
         diffuseColor,
         specularColor,
@@ -263,7 +268,7 @@ void main(void)
     float lightDepth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
     vec2 shadowUv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
 
-    const float shadowBias = -0.0002;
+    const float shadowBias = -0.0004;
     float visibility = hardShadowCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
 
     if (any(greaterThan(shadowUv, vec2(1.0))) || any(lessThan(shadowUv, vec2(0.0)))) {

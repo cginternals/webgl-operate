@@ -38,7 +38,7 @@ import { PostProcessingPass } from './postprocessingpass';
 import { Scene } from './scene';
 
 import { Demo } from '../demo';
-import { DiskLight, SphereLight } from './arealight';
+import { DiskLight } from './arealight';
 
 // tslint:disable:max-classes-per-file
 
@@ -59,6 +59,7 @@ export class ThesisRenderer extends Renderer {
 
     protected _camera: Camera;
 
+    protected _currentScene: Scene;
     protected _datsunScene: Scene;
     protected _kitchenScene: Scene;
 
@@ -153,11 +154,17 @@ export class ThesisRenderer extends Renderer {
         this._loader = new GLTFLoader(this._context);
 
         this._datsunScene = new Scene(
-            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
+            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size2.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
-            1, 10);
-        this._datsunScene.addSphereLight(new SphereLight(
-            vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(200, 200, 200)));
+            0.2, 30);
+        this._datsunScene.addDiskLight(new DiskLight(
+            vec3.fromValues(-3.04, 3.0, -1.4), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+        this._datsunScene.addDiskLight(new DiskLight(
+            vec3.fromValues(2.62, 3.0, -1.4), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+        this._datsunScene.addDiskLight(new DiskLight(
+            vec3.fromValues(-2.12, 3.0, 2.1), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+        this._datsunScene.addDiskLight(new DiskLight(
+            vec3.fromValues(2.14, 3.0, 2.1), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
 
         this._kitchenScene = new Scene(
             'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
@@ -468,8 +475,8 @@ export class ThesisRenderer extends Renderer {
             this.preDepthPass();
         }
 
-        const currentLight = frameNumber % this._kitchenScene.diskLights.length;
-        const light = this._kitchenScene.diskLights[currentLight];
+        const currentLight = frameNumber % this._currentScene.diskLights.length;
+        const light = this._currentScene.diskLights[currentLight];
         const offset = vec3.random(vec3.create(), light.radius);
         const eye = vec3.add(vec3.create(), light.center, offset);
         const center = vec3.add(vec3.create(), light.center, light.direction);
@@ -480,7 +487,7 @@ export class ThesisRenderer extends Renderer {
         lightCamera.up = vec3.fromValues(1.0, 0.0, 0.0);
         lightCamera.near = 0.1;
         lightCamera.far = 30.0;
-        lightCamera.fovy = 160.0;
+        lightCamera.fovy = 150.0;
         const lightNearFar = vec2.fromValues(lightCamera.near, lightCamera.far);
 
         this._shadowPass.frame(() => {
@@ -644,6 +651,8 @@ export class ThesisRenderer extends Renderer {
             return;
         }
 
+        this._currentScene = scene;
+
         this._camera = scene!.camera;
         this.updateCamera();
         this.updateLights(scene!);
@@ -658,7 +667,7 @@ export class ThesisRenderer extends Renderer {
             });
     }
 
-    protected setDebugMode() {
+    protected setDebugMode(): void {
         const gl = this._context.gl;
 
         const debugSelect = window.document.getElementById('debug-select')! as HTMLSelectElement;
@@ -768,7 +777,7 @@ export class ThesisDemo extends Demo {
     initialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
-        this._canvas.controller.multiFrameNumber = 60;
+        this._canvas.controller.multiFrameNumber = 120;
         this._canvas.framePrecision = Wizard.Precision.float;
         this._canvas.frameScale = [1.0, 1.0];
 
