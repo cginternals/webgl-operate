@@ -157,7 +157,7 @@ export class ThesisRenderer extends Renderer {
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             1, 10);
         this._datsunScene.addSphereLight(new SphereLight(
-            vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(15, 15, 15)));
+            vec3.fromValues(0, 500, 0), 60.0, vec3.fromValues(200, 200, 200)));
 
         this._kitchenScene = new Scene(
             'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
