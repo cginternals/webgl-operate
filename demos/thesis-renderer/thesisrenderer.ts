@@ -478,13 +478,8 @@ export class ThesisRenderer extends Renderer {
         this._forwardPass.drawCalls();
     }
 
-    protected onFrame(frameNumber: number): void {
+    protected shadowPass(frameNumber: number): void {
         const gl = this._context.gl;
-        const gl2facade = this._context.gl2facade;
-
-        if (frameNumber === 0) {
-            this.preDepthPass();
-        }
 
         const currentLight = frameNumber % this._currentScene.diskLights.length;
         const light = this._currentScene.diskLights[currentLight];
@@ -518,13 +513,32 @@ export class ThesisRenderer extends Renderer {
             this._shadowProgram.unbind();
         });
 
+        // Update mesh programs values for shadow map application
         this._program.bind();
-        gl.uniform1i(this._uFrameNumber, frameNumber);
-        gl.uniformMatrix4fv(this._uView, gl.GL_FALSE, this._camera.view);
-        gl.uniformMatrix4fv(this._uProjection, gl.GL_FALSE, this._camera.projection);
         gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, lightCamera.view);
         gl.uniformMatrix4fv(this._uLightProjection, gl.GL_FALSE, lightCamera.projection);
         gl.uniform2fv(this._uLightNearFar, lightNearFar);
+        this._program.unbind();
+    }
+
+    protected onFrame(frameNumber: number): void {
+        const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
+
+        if (frameNumber === 0) {
+            this.preDepthPass();
+        }
+
+        if (frameNumber > 0) {
+            this.shadowPass(frameNumber);
+        }
+
+        this._program.bind();
+
+        // Update per frame uniforms
+        gl.uniform1i(this._uFrameNumber, frameNumber);
+        gl.uniformMatrix4fv(this._uView, gl.GL_FALSE, this._camera.view);
+        gl.uniformMatrix4fv(this._uProjection, gl.GL_FALSE, this._camera.projection);
         gl.uniform2fv(this._uCameraNearFar, vec2.fromValues(this._camera.near, this._camera.far));
 
         const viewNormalMatrix = mat3.create();

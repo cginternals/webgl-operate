@@ -102,8 +102,9 @@ bool checkFlag(int flag) {
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 getNormal(out mat3 TBN)
+vec3 getNormal()
 {
+    mat3 TBN;
     // Retrieve the tangent space matrix
     if (!checkGeometryFlag(HAS_TANGENTS)) {
         vec3 pos_dx = dFdx(v_position);
@@ -158,8 +159,8 @@ float ssaoSample(LightingInfo info) {
     mat3 TBN = mat3(t, b, viewNormal);
 
     vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
-
     viewSampleOffset *= SSAOSize * random3;
+
     vec3 viewSamplePoint = viewPosition + viewSampleOffset;
     vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
     vec2 sampleUV = (ndcSamplePoint / ndcSamplePoint.w).xy * 0.5 + 0.5;
@@ -172,7 +173,7 @@ float ssaoSample(LightingInfo info) {
     return step(compareDepth, sampleDepth) * rangeCheck;
 }
 
-vec3 getIBLContribution(LightingInfo info, mat3 TBN)
+vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
 {
     float NdotV = clamp(dot(info.incidentNormal, info.view), 0.0, 1.0);
 
@@ -191,7 +192,10 @@ vec3 getIBLContribution(LightingInfo info, mat3 TBN)
     vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
 
-    float diffuseOcclusion = ssaoSample(info);
+    float diffuseOcclusion = 0.0;
+    if (applyOcclusion) {
+        diffuseOcclusion = ssaoSample(info);
+    }
 
     vec3 diffuse = diffuseLight * info.diffuseColor * (1.0 - diffuseOcclusion);
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
@@ -246,8 +250,7 @@ void main(void)
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
-    mat3 TBN;
-    vec3 N = getNormal(TBN); // normal at surface point
+    vec3 N = getNormal(); // normal at surface point
     vec3 V = normalize(u_eye - v_position); // Vector from surface point to camera
 
     vec4 ndcPosition = u_viewProjection * vec4(v_position, 1.0);
@@ -278,32 +281,30 @@ void main(void)
     }
 
     // Disk lights with shadow mapping
-    vec4 vLightViewSpace = u_lightView * vec4(v_position, 1.0);
-    vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
+    if (u_frameNumber > 0) {
+        vec4 vLightViewSpace = u_lightView * vec4(v_position, 1.0);
+        vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
 
-    float lightDepth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
-    vec2 shadowUv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
+        float lightDepth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
+        vec2 shadowUv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
 
-    const float shadowBias = -0.0004;
-    float visibility = hardShadowCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
+        const float shadowBias = -0.0004;
+        float visibility = hardShadowCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
 
-    if (any(greaterThan(shadowUv, vec2(1.0))) || any(lessThan(shadowUv, vec2(0.0)))) {
-        visibility = 1.0;
+        if (any(greaterThan(shadowUv, vec2(1.0))) || any(lessThan(shadowUv, vec2(0.0)))) {
+            visibility = 1.0;
+        }
+
+        int currentLight = u_frameNumber % u_numDiskLights;
+        lightSources += diffuseDiskLightApproximated(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
+        lightSources += specularDiskLightKaris(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
     }
-
-    int currentLight = u_frameNumber % u_numDiskLights;
-    lightSources += diffuseDiskLightApproximated(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
-    lightSources += specularDiskLightKaris(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
-
-    // for (int i = 0; i < u_numDiskLights; ++i) {
-    //     lightSources += diffuseDiskLightApproximated(u_diskLights[i], info);
-    //     lightSources += specularDiskLightKaris(u_diskLights[i], info);
-    // }
 
     color += lightSources;
 
     // Environment lighting
-    vec3 environmentLight = getIBLContribution(info, TBN);
+    bool applyOcclusion = u_frameNumber > 0;
+    vec3 environmentLight = getIBLContribution(info, applyOcclusion);
     color += environmentLight;
 
     // Emissive lighting
