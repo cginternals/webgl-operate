@@ -114,6 +114,8 @@ export class Canvas extends Resizable {
     /** @see {@link touchEventProvider} */
     protected _touchEventProvider: TouchEventProvider;
 
+    protected _lostContextExtension: WEBGL_lose_context | undefined;
+
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -155,6 +157,8 @@ export class Canvas extends Resizable {
         this.configureController(dataset);
 
         this.configureSizeAndScale(dataset);
+
+        this.configureContextLostAndRestore();
 
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
@@ -243,6 +247,26 @@ export class Canvas extends Resizable {
         this._frameSize = dataFrameSize ? tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
 
         this.onResize(); // invokes frameScaleNext and frameSizeNext
+    }
+
+    /**
+     *
+     */
+    protected configureContextLostAndRestore(): void {
+        this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
+        this._element.addEventListener("webglcontextlost", (event) => {
+            event.preventDefault();
+            this._controller.cancel();
+
+            if (this._renderer) {
+                this._renderer.discard();
+            }
+        }, false);
+        this._element.addEventListener("webglcontextrestored", (event) => {
+            const renderer = this._renderer;
+            this.unbind();
+            this.bind(renderer);
+        }, false);
     }
 
 
@@ -682,5 +706,21 @@ export class Canvas extends Resizable {
      */
     get touchEventProvider(): TouchEventProvider {
         return this._touchEventProvider;
+    }
+
+    public testLoseContext(): void {
+        if (this._lostContextExtension === undefined) {
+            return;
+        }
+
+        this._lostContextExtension.loseContext();
+    }
+
+    public testRestoreContext(): void {
+        if (this._lostContextExtension === undefined) {
+            return;
+        }
+
+        this._lostContextExtension.restoreContext();
     }
 }

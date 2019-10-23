@@ -164,6 +164,11 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     protected abstract onUninitialize(): void;
 
+    /**
+     * Actual discard call specified by inheritor.
+     */
+    // protected abstract onDiscard(): void;
+
 
     /**
      * Actual update call specified by inheritor. This is invoked in order to check if rendering of a frame is required
@@ -233,6 +238,19 @@ export abstract class Renderer extends Initializable implements Controllable {
         this.onUninitialize();
     }
 
+
+    /**
+     * Should discard all assets and uninitialize all stages. `super.discard()` should always be call first when
+     * overriding this function.
+     */
+    @Initializable.discard()
+    public discard(): void {
+        this.onDiscard();
+    }
+
+    protected onDiscard(): void {
+
+    }
 
     /**
      *

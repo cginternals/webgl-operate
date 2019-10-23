@@ -244,7 +244,7 @@ export class Controller {
     /**
      * Cancel a pending frame invocation (if existing).
      */
-    protected cancel(): void {
+    public cancel(): void {
         if (this._pendingRequest === 0) {
             logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
             return;
