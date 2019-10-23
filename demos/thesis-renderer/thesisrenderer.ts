@@ -525,7 +525,7 @@ export class ThesisRenderer extends Renderer {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
-        if (frameNumber === 0) {
+        if (frameNumber === 1) {
             this.preDepthPass();
         }
 
