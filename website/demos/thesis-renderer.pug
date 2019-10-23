@@ -8,20 +8,33 @@ block canvas
   div.row
     div.col
       .form-group.row
-        label(for = 'asset-select').col-md-1.col-form-label Asset:
-        .col-md-2
+        label(for = 'asset-select').col-md-2.col-form-label Asset:
+        .col-md-10
           select.custom-select.custom-select-sm.multiple#asset-select
             option(value='Cornell') Cornell
             option(value='Kitchen') Kitchen
             option(value='Datsun') Datsun
-        label(for = 'debug-select').col-md-1.col-form-label Debug Mode:
-        .col-md-2
+      .form-group.row
+        label(for = 'debug-select').col-md-2.col-form-label Debug Mode:
+        .col-md-10
           select.custom-select.custom-select-sm.multiple#debug-select
             option(value='Final') Final
             option(value='Flat') Flat
             option(value='IBL') IBL
             option(value='Light sources') Light sources
             option(value='Illuminance') Illuminance
+      .form-group.row
+        label(for = 'ssao-range').col-md-2.col-form-label SSAO Range:
+        .col-md-10
+          input(type = 'range', min = '5', max = '100', value = '20').form-control-range#ssao-range
+      .form-group.row
+        label(for = 'exposure-range').col-md-2.col-form-label Exposure:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '10').form-control-range#exposure-range
+      .form-group.row
+        label(for = 'ibl-range').col-md-2.col-form-label IBL strength:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '50').form-control-range#ibl-range
 
   //block breakdown
   //  p This should describe the demo in much more detail, e.g., referring to relevant code snippets and resources

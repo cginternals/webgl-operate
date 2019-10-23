@@ -125,6 +125,10 @@ export class ThesisRenderer extends Renderer {
     protected _uShadowMap: WebGLUniformLocation;
     protected _uDepth: WebGLUniformLocation;
 
+    protected _uSSAORange: WebGLUniformLocation;
+    protected _uExposure: WebGLUniformLocation;
+    protected _uIBLStrength: WebGLUniformLocation;
+
     protected _uLightView: WebGLUniformLocation;
     protected _uLightProjection: WebGLUniformLocation;
     protected _uLightNearFar: WebGLUniformLocation;
@@ -259,6 +263,9 @@ export class ThesisRenderer extends Renderer {
         this._uLightProjection = this._program.uniform('u_lightProjection');
         this._uLightNearFar = this._program.uniform('u_lightNearFar');
 
+        this._uSSAORange = this._program.uniform('u_ssaoRange');
+        this._uIBLStrength = this._program.uniform('u_iblStrength');
+
         /* Initialize shadow program */
         const shadowVert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
         shadowVert.initialize(require('./data/gltf_thesis.vert'));
@@ -364,6 +371,30 @@ export class ThesisRenderer extends Renderer {
         debugSelect.onchange = (_) => {
             this.setDebugMode();
         };
+
+        const exposureRange = window.document.getElementById('exposure-range')! as HTMLInputElement;
+        exposureRange.onchange = (_) => {
+            this._postProcessingPass.exposure = parseFloat(exposureRange.value) / 10.0;
+            this._invalidate(true);
+        };
+
+        const iblRange = window.document.getElementById('ibl-range')! as HTMLInputElement;
+        iblRange.onchange = (_) => {
+            this._program.bind();
+            gl.uniform1f(this._uIBLStrength, parseFloat(iblRange.value) / 50.0);
+            this._program.unbind();
+            this._invalidate(true);
+        };
+        iblRange.onchange(new Event(''));
+
+        const ssaoRange = window.document.getElementById('ssao-range')! as HTMLInputElement;
+        ssaoRange.onchange = (_) => {
+            this._program.bind();
+            gl.uniform1f(this._uSSAORange, parseFloat(ssaoRange.value) / 100.0);
+            this._program.unbind();
+            this._invalidate(true);
+        };
+        ssaoRange.onchange(new Event(''));
 
         return true;
     }
@@ -790,12 +821,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `http://127.0.0.1:8002/artificial/studio010/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }

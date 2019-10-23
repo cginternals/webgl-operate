@@ -12,11 +12,13 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 
+uniform float u_exposure;
+
 varying vec2 v_uv;
 
 
 void main(void)
 {
     vec4 inputColor = texture(u_texture, v_uv);
-    fragColor = vec4(toneMapUncharted(inputColor.rgb), 1.0);
+    fragColor = vec4(toneMapUncharted(inputColor.rgb * u_exposure), 1.0);
 }

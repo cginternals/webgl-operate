@@ -84,6 +84,8 @@ uniform vec2 u_cameraNearFar;
 
 uniform int u_frameNumber;
 uniform int u_debugMode;
+uniform float u_iblStrength;
+uniform float u_ssaoRange;
 
 varying vec2 v_uv[3];
 varying vec4 v_color;
@@ -143,8 +145,6 @@ vec3 getNormal()
 }
 
 float ssaoSample(LightingInfo info) {
-    const float SSAOSize = 0.2;
-
     vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
 
     float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
@@ -159,7 +159,7 @@ float ssaoSample(LightingInfo info) {
     mat3 TBN = mat3(t, b, viewNormal);
 
     vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
-    viewSampleOffset *= SSAOSize * random3;
+    viewSampleOffset *= u_ssaoRange * random3;
 
     vec3 viewSamplePoint = viewPosition + viewSampleOffset;
     vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
@@ -169,7 +169,7 @@ float ssaoSample(LightingInfo info) {
 
     float compareDepth = texture(u_depth, sampleUV).r;
     // range check fixes halos when depths are very different
-    float rangeCheck = abs(compareDepth - sampleDepth) < SSAOSize ? 1.0 : 0.0;
+    float rangeCheck = abs(compareDepth - sampleDepth) < u_ssaoRange ? 1.0 : 0.0;
     return step(compareDepth, sampleDepth) * rangeCheck;
 }
 
@@ -189,8 +189,8 @@ vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
     vec4 diffuseSample = textureLod(u_specularEnvironment, info.incidentNormal, MIP_COUNT);
     vec4 specularSample = textureLod(u_specularEnvironment, reflection, lod);
 
-    vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
-    vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
+    vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb * u_iblStrength;
+    vec3 specularLight = SRGBtoLINEAR(specularSample).rgb * u_iblStrength;
 
     float diffuseOcclusion = 0.0;
     if (applyOcclusion) {

@@ -61,6 +61,8 @@ export class PostProcessingPass extends Initializable {
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         this._program.unbind();
 
+        this.exposure = 1.0;
+
         return true;
     }
 
@@ -133,6 +135,14 @@ export class PostProcessingPass extends Initializable {
 
     set texture(texture: Texture2D) {
         this._texture = texture;
+    }
+
+    set exposure(exposure: number) {
+        const gl = this._context.gl;
+
+        this._program.bind();
+        gl.uniform1f(this._program.uniform('u_exposure'), exposure);
+        this._program.unbind();
     }
 
     get targetTexture(): Texture2D {
