@@ -256,16 +256,10 @@ export class Canvas extends Resizable {
         this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
         this._element.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
-            this._controller.cancel();
-
-            if (this._renderer) {
-                this._renderer.discard();
-            }
+            this.onContextLost();
         }, false);
         this._element.addEventListener('webglcontextrestored', (event) => {
-            const renderer = this._renderer;
-            this.unbind();
-            this.bind(renderer);
+            this.onContextRestore();
         }, false);
     }
 
@@ -320,6 +314,21 @@ export class Canvas extends Resizable {
             /* Swapping here fixes flickering while resizing the canvas for safari. */
             this._renderer.swap();
         }
+    }
+
+    protected onContextLost(): void {
+        this._controller.pause();
+
+        if (this._renderer) {
+            this._renderer.discard();
+        }
+    }
+
+    protected onContextRestore(): void {
+        const renderer = this._renderer;
+        this._controller.unpause();
+        this.unbind();
+        this.bind(renderer);
     }
 
     /**

@@ -118,6 +118,10 @@ class EnvironmentProjectionRenderer extends Renderer {
         }
     }
 
+    protected onDiscard(): void {
+        // TODO: implement discard?
+    }
+
     protected onUpdate(): boolean {
         this._navigation.update();
         return this._altered.any || this._camera.altered;

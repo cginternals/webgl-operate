@@ -198,6 +198,10 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._shadowPass.uninitialize();
     }
 
+    protected onDiscard(): void {
+        // TODO: implement discard?
+    }
+
     protected onUpdate(): boolean {
         this._navigation.update();
         return this._camera.altered;

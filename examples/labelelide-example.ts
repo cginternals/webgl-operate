@@ -101,6 +101,10 @@ class LabelElideRenderer extends Renderer {
         this._labelPass.uninitialize();
     }
 
+    protected onDiscard(): void {
+        // TODO: implement discard?
+    }
+
     /**
      * This is invoked in order to check if rendering of a frame is required by means of implementation specific
      * evaluation (e.g., lazy non continuous rendering). Regardless of the return value a new frame (preparation,

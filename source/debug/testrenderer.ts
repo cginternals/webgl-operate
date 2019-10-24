@@ -131,6 +131,10 @@ namespace debug {
             this._accumulate.uninitialize();
         }
 
+        protected onDiscard(): void {
+            // TODO: implement discard?
+        }
+
 
         protected onUpdate(): boolean {
             this._testNavigation.update();

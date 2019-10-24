@@ -167,7 +167,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Actual discard call specified by inheritor.
      */
-    // protected abstract onDiscard(): void;
+    protected abstract onDiscard(): void;
 
 
     /**
@@ -200,11 +200,6 @@ export abstract class Renderer extends Initializable implements Controllable {
      * the browser.
      */
     protected onSwap(): void { /* default empty impl. */ }
-
-
-    protected onDiscard(): void {
-
-    }
 
 
     /**

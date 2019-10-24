@@ -363,6 +363,20 @@ export class Controller {
         this.request();
     }
 
+    /**
+     * Cancel a pending frame invocation (if existing).
+     */
+    protected cancel(): void {
+        if (this._pendingRequest === 0) {
+            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
+            return;
+        }
+        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
+
+        window.cancelAnimationFrame(this._pendingRequest);
+        this._pendingRequest = 0;
+    }
+
 
     /**
      * Utility for communicating this._multiFrameNumber changes to its associated subject.
@@ -441,21 +455,6 @@ export class Controller {
             return;
         }
         this.request(Controller.RequestType.Prepare);
-    }
-
-
-    /**
-     * Cancel a pending frame invocation (if existing).
-     */
-    cancel(): void {
-        if (this._pendingRequest === 0) {
-            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
-            return;
-        }
-        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
-
-        window.cancelAnimationFrame(this._pendingRequest);
-        this._pendingRequest = 0;
     }
 
 

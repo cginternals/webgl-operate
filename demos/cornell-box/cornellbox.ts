@@ -368,6 +368,10 @@ export class CornellBoxRenderer extends Renderer {
         this._blit.uninitialize();
     }
 
+    protected onDiscard(): void {
+        // TODO: implement discard?
+    }
+
 
     // https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
     shuffle(deck: Array<vec3>) {
