@@ -45,6 +45,8 @@ class LabelElideRenderer extends Renderer {
 
     protected _fontFace: FontFace | undefined;
 
+    protected _interval: number | undefined;
+
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
      * @param context - valid context to create the object for.
@@ -99,10 +101,23 @@ class LabelElideRenderer extends Renderer {
 
         this._defaultFBO.uninitialize();
         this._labelPass.uninitialize();
+
+        if (this._interval !== undefined) {
+            clearTimeout(this._interval);
+            this._interval = undefined;
+        }
     }
 
     protected onDiscard(): void {
         // TODO: implement discard?
+
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+
+        if (this._interval !== undefined) {
+            clearTimeout(this._interval);
+            this._interval = undefined;
+        }
     }
 
     /**
@@ -226,7 +241,11 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
         this._labelPass.labels = [this._labelSize
             , this._labelLeft, this._labelRight, this._labelMiddle, this._labelCustom];
 
-        setInterval(() => {
+        this._interval = setInterval(() => {
+            if (!this.initialized) {
+                return;
+            }
+
             const size = 16 + Math.sin(performance.now() * 0.001) * 4.0;
             this._labelSize.text.text = `// label.fontSize = ${size.toFixed(2)} (${this._labelSize.fontSizeUnit})`;
 
@@ -237,7 +256,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             this._labelCustom.ellipsis = '.'.repeat(Math.floor(Math.sin(performance.now() * 0.001) * 4.0) + 5);
 
             this.invalidate();
-        }, 1000.0 / 60.0);
+        }, 1000.0 / 60.0) as unknown as number;
 
     }
 

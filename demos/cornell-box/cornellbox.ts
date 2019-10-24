@@ -201,12 +201,14 @@ export class CornellBoxRenderer extends Renderer {
             this._extensions = true;
         }
 
-        this._camera = new Camera();
-        this._camera.eye = _gEye;
-        this._camera.center = _gCenter;
-        this._camera.up = _gUp;
-        this._camera.near = 0.1;
-        this._camera.far = 4.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.eye = _gEye;
+            this._camera.center = _gCenter;
+            this._camera.up = _gUp;
+            this._camera.near = 0.1;
+            this._camera.far = 4.0;
+        }
 
         // Initialize navigation
         this._navigation = new Navigation(callback, mouseEventProvider);
@@ -370,6 +372,10 @@ export class CornellBoxRenderer extends Renderer {
 
     protected onDiscard(): void {
         // TODO: implement discard?
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
 

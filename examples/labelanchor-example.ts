@@ -103,6 +103,9 @@ class LabelAnchorRenderer extends Renderer {
 
     protected onDiscard(): void {
         // TODO: implement discard?
+
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
     /**
