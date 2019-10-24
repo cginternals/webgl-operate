@@ -210,7 +210,7 @@ class ColorScaleRenderer extends Renderer {
 
 
         const generatedLabels = [
-            this._labelGenerated1, this._labelGenerated2, this._labelGenerated3, this._labelGenerated4]
+            this._labelGenerated1, this._labelGenerated2, this._labelGenerated3, this._labelGenerated4];
 
         const linearLabels = [
             this._labelLinear1, this._labelLinear2, this._labelLinear3, this._labelLinear4, this._labelLinear5,
