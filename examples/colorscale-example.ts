@@ -180,7 +180,7 @@ class ColorScaleRenderer extends Renderer {
     protected setupScene(): void {
 
         // test interpolation
-        this._labelLAB = new Position2DLabel(new Text(`| should be violet |`), Label.Type.Static);
+        this._labelLAB = new Position2DLabel(new Text(`| should be violet-ish |`), Label.Type.Static);
 
         // generated color
         this._labelGenerated1 = new Position2DLabel(new Text(`| generated 0 |`), Label.Type.Dynamic);
@@ -251,8 +251,6 @@ class ColorScaleRenderer extends Renderer {
         }
 
         this._labelLAB.color = colorScale.lerp(0.5, Color.Space.LAB)!;
-
-        console.log('>>>>>', Color.lab2rgb([0.70, 0.05, 0.10]));
 
         let i = 0;
         for (const label of generatedLabels) {

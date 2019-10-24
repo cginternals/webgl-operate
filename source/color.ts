@@ -133,7 +133,7 @@ export class Color {
 
         const yr = (labF[0] * 100.0 + 16.0) / 116.0;
         const xr = (labF[1] * 256.0 - 128.0) / 500.0 + yr;
-        const zr = yr - (labF[2] * 256.0 - 128) / 200.0;
+        const zr = yr - (labF[2] * 256.0 - 128.0) / 200.0;
 
         const yr3 = yr * yr * yr;
         const xr3 = xr * xr * xr;
@@ -157,9 +157,9 @@ export class Color {
         const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
 
         /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
-        const x = xyzF[0] > 0.008856 ? Math.pow(xyzF[0], 1.0 / 3.0) : (7.787 * xyzF[0]) + (16.0 / 116.0);
-        const y = xyzF[1] > 0.008856 ? Math.pow(xyzF[1], 1.0 / 3.0) : (7.787 * xyzF[1]) + (16.0 / 116.0);
-        const z = xyzF[2] > 0.008856 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
+        const x = xyzF[0] > 0.008856 ? Math.cbrt(xyzF[0]) : (7.787 * xyzF[0]) + (16.0 / 116.0);
+        const y = xyzF[1] > 0.008856 ? Math.cbrt(xyzF[1]) : (7.787 * xyzF[1]) + (16.0 / 116.0);
+        const z = xyzF[2] > 0.008856 ? Math.cbrt(xyzF[2]) : (7.787 * xyzF[2]) + (16.0 / 116.0);
 
         return clampf3([
             (116.0 * y - 16.0) / 100.0,
@@ -181,9 +181,9 @@ export class Color {
         const b = xyz[0] * +0.01344 + xyz[1] * -0.11836 + xyz[2] * +1.01517;
 
         return clampf3([
-            Math.pow(r, 1.0 / 2.19921875),
-            Math.pow(g, 1.0 / 2.19921875),
-            Math.pow(b, 1.0 / 2.19921875)]);
+            r >= 0 ? Math.pow(r, 1.0 / 2.19921875) : 0,
+            g >= 0 ? Math.pow(g, 1.0 / 2.19921875) : 0,
+            b >= 0 ? Math.pow(b, 1.0 / 2.19921875) : 0]);
 
         // Standard-RGB
         // let r = xyz[0] * +3.2406 + xyz[1] * -1.5372 + xyz[2] * -0.4986;
