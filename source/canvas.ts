@@ -254,7 +254,7 @@ export class Canvas extends Resizable {
      */
     protected configureContextLostAndRestore(): void {
         this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
-        this._element.addEventListener("webglcontextlost", (event) => {
+        this._element.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
             this._controller.cancel();
 
@@ -262,7 +262,7 @@ export class Canvas extends Resizable {
                 this._renderer.discard();
             }
         }, false);
-        this._element.addEventListener("webglcontextrestored", (event) => {
+        this._element.addEventListener('webglcontextrestored', (event) => {
             const renderer = this._renderer;
             this.unbind();
             this.bind(renderer);

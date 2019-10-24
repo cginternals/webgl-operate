@@ -241,20 +241,6 @@ export class Controller {
         return false;
     }
 
-    /**
-     * Cancel a pending frame invocation (if existing).
-     */
-    public cancel(): void {
-        if (this._pendingRequest === 0) {
-            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
-            return;
-        }
-        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
-
-        window.cancelAnimationFrame(this._pendingRequest);
-        this._pendingRequest = 0;
-    }
-
     protected invoke(type: Controller.RequestType): void {
         assert(this._pendingRequest !== 0, `manual/explicit invocation not anticipated`);
         assert(this._controllable !== undefined, `expected valid controllable for invocation`);
@@ -455,6 +441,21 @@ export class Controller {
             return;
         }
         this.request(Controller.RequestType.Prepare);
+    }
+
+
+    /**
+     * Cancel a pending frame invocation (if existing).
+     */
+    cancel(): void {
+        if (this._pendingRequest === 0) {
+            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
+            return;
+        }
+        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
+
+        window.cancelAnimationFrame(this._pendingRequest);
+        this._pendingRequest = 0;
     }
 
 

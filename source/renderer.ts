@@ -202,6 +202,11 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected onSwap(): void { /* default empty impl. */ }
 
 
+    protected onDiscard(): void {
+
+    }
+
+
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
      * that are shared between multiple stages. Note that `super.initialize()` should always be call first when
@@ -246,10 +251,6 @@ export abstract class Renderer extends Initializable implements Controllable {
     @Initializable.discard()
     public discard(): void {
         this.onDiscard();
-    }
-
-    protected onDiscard(): void {
-
     }
 
     /**
