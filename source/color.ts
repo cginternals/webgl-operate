@@ -127,10 +127,8 @@ export class Color {
     static lab2xyz(lab: GLclampf3): GLclampf3 {
         const labF = clampf3(lab, 'LAB input');
 
-        // const yr = (labF[0] * 100.0 + 16.0) / 116.0;
-        // const xr = labF[1] * 100.0 / 500.0 + yr;
-        // const zr = yr - labF[2] * 100.0 / 200.0;
-
+        // the following computation assumes different ranges:
+        // L: [0, 100], a: [-128, 128], b: [-128, 128]
         const yr = (labF[0] * 100.0 + 16.0) / 116.0;
         const xr = (labF[1] * 256.0 - 128.0) / 500.0 + yr;
         const zr = yr - (labF[2] * 256.0 - 128.0) / 200.0;
