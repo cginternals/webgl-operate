@@ -120,8 +120,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         }
     }
 
-    protected onDiscard(): void {
-        // TODO: implement discard?
+    protected onDiscarded(): void {
         this._altered.alter('canvasSize');
     }
 

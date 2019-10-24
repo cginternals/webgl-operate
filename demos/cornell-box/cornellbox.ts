@@ -370,8 +370,7 @@ export class CornellBoxRenderer extends Renderer {
         this._blit.uninitialize();
     }
 
-    protected onDiscard(): void {
-        // TODO: implement discard?
+    protected onDiscarded(): void {
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
         this._altered.alter('frameSize');

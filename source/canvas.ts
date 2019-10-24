@@ -320,7 +320,7 @@ export class Canvas extends Resizable {
         this._controller.pause();
 
         if (this._renderer) {
-            this._renderer.discard();
+            this._renderer.discarded();
         }
     }
 

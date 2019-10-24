@@ -153,8 +153,7 @@ class ShadowMapRenderer extends Renderer {
         this._shadowPass.uninitialize();
     }
 
-    protected onDiscard(): void {
-        // TODO: implement discard?
+    protected onDiscarded(): void {
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
         this._altered.alter('frameSize');

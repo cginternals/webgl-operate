@@ -131,8 +131,11 @@ namespace debug {
             this._accumulate.uninitialize();
         }
 
-        protected onDiscard(): void {
-            // TODO: implement discard?
+        protected onDiscarded(): void {
+            this._altered.alter('frameSize');
+            this._altered.alter('multiFrameNumber');
+            this._altered.alter('framePrecision');
+            this._altered.alter('clearColor');
         }
 
 

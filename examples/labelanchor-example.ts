@@ -101,9 +101,7 @@ class LabelAnchorRenderer extends Renderer {
         this._labelPass.uninitialize();
     }
 
-    protected onDiscard(): void {
-        // TODO: implement discard?
-
+    protected onDiscarded(): void {
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
     }

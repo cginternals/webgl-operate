@@ -129,8 +129,9 @@ void main(void)
         this._defaultFBO.uninitialize();
     }
 
-    protected onDiscard(): void {
+    protected onDiscarded(): void {
         // TODO: implement discard?
+        this._altered.alter('clearColor');
     }
 
     /**

@@ -200,8 +200,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._defaultFBO.uninitialize();
     }
 
-    protected onDiscard(): void {
-        // TODO: implement discard?
+    protected onDiscarded(): void {
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
     }

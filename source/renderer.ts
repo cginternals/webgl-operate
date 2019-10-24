@@ -167,7 +167,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * Actual discard call specified by inheritor.
      */
-    protected abstract onDiscard(): void;
+    protected abstract onDiscarded(): void;
 
 
     /**
@@ -240,12 +240,12 @@ export abstract class Renderer extends Initializable implements Controllable {
 
 
     /**
-     * Should discard all assets and uninitialize all stages. `super.discard()` should always be call first when
+     * Should discard all assets and uninitialize all stages. `super.discarded()` should always be call first when
      * overriding this function.
      */
     @Initializable.discard()
-    public discard(): void {
-        this.onDiscard();
+    public discarded(): void {
+        this.onDiscarded();
     }
 
     /**
