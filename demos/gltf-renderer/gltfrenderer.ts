@@ -125,12 +125,14 @@ export class GltfRenderer extends Renderer {
 
         /* Create and configure camera. */
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 3.0, 1.0);
-        this._camera.near = 0.1;
-        this._camera.far = 32.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(0.0, 3.0, 1.0);
+            this._camera.near = 0.1;
+            this._camera.far = 32.0;
+        }
 
         /* Create and configure navigation */
 
@@ -258,6 +260,9 @@ export class GltfRenderer extends Renderer {
 
     protected onDiscard(): void {
         // TODO: implement discard?
+        this._altered.alter('frameSize');
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
     /**
