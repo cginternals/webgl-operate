@@ -365,4 +365,16 @@ export class Camera {
         this._altered = status;
     }
 
+    /**
+     * Returns a deep copy of the camera.
+     */
+    public copy(): Camera {
+        const copiedCamera = new Camera(this.eye, this.center, this.up);
+        copiedCamera.fovy = this.fovy;
+        copiedCamera.near = this.near;
+        copiedCamera.far = this.far;
+        copiedCamera.viewport = this.viewport;
+        copiedCamera.aspect = this.aspect;
+        return copiedCamera;
+    }
 }
