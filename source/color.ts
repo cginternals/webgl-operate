@@ -120,7 +120,7 @@ export class Color {
 
 
     /**
-     * Converts a color from LAB space to XYZ space.
+     * Converts a color from LAB space to XYZ space (D65/2° illuminant)
      * @param lab - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
