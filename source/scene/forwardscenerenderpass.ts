@@ -203,7 +203,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         const gl = this._context.gl;
 
-        gl.enable(gl.CULL_FACE);
+        gl.disable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 

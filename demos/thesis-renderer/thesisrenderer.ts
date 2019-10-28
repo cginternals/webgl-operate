@@ -164,37 +164,75 @@ export class ThesisRenderer extends Renderer {
             new Camera(vec3.fromValues(-0.255, 3.09, -8.0), vec3.fromValues(0.135, 1.192, -0.46)),
             0.2, 20);
         this._cornellScene.addDiskLight(new DiskLight(
-            vec3.fromValues(0.13, 2.32, -0.23), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(0.13, 2.32, -0.23), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0), 90.0));
 
         this._datsunScene = new Scene(
             'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             0.2, 30);
         this._datsunScene.addDiskLight(new DiskLight(
-            vec3.fromValues(-3.04, 3.0, -1.4), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(-3.04, 3.0, -1.4),
+            0.3,
+            vec3.fromValues(302, 302, 302),
+            vec3.fromValues(0.67636, -0.66746, 0.31148),
+            110.0));
         this._datsunScene.addDiskLight(new DiskLight(
-            vec3.fromValues(2.62, 3.0, -1.4), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(2.62, 3.0, -1.4),
+            0.3,
+            vec3.fromValues(302, 302, 302),
+            vec3.fromValues(-0.62057, -0.71058, 0.33160),
+            110.0));
         this._datsunScene.addDiskLight(new DiskLight(
-            vec3.fromValues(-2.12, 3.0, 2.1), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(-2.12, 3.0, 2.1),
+            0.3,
+            vec3.fromValues(302, 302, 302),
+            vec3.fromValues(0.50102, -0.70899, -0.49629),
+            110.0));
         this._datsunScene.addDiskLight(new DiskLight(
-            vec3.fromValues(2.14, 3.0, 2.1), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(2.14, 3.0, 2.1),
+            0.3,
+            vec3.fromValues(302, 302, 302),
+            vec3.fromValues(-0.50454, -0.70731, -0.49511),
+            110.0));
 
         this._kitchenScene = new Scene(
             'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             0.1, 10);
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(-0.54, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(-0.54, 1.6, -1.17),
+            0.05,
+            vec3.fromValues(301, 301, 301),
+            vec3.fromValues(0, -1, 0),
+            160.0));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(0.88, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(0.88, 1.6, -1.17),
+            0.05, vec3.fromValues(301, 301, 301),
+            vec3.fromValues(0, -1, 0),
+            160.0));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(1.62, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(1.62, 1.6, -1.17),
+            0.05,
+            vec3.fromValues(301, 301, 301),
+            vec3.fromValues(0, -1, 0), 160.0));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(0.16, 1.6, -1.17), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(0.16, 1.6, -1.17),
+            0.05,
+            vec3.fromValues(301, 301, 301),
+            vec3.fromValues(0, -1, 0),
+            160.0));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(1.92, 1.6, -0.86), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(1.92, 1.6, -0.86),
+            0.05,
+            vec3.fromValues(301, 301, 301),
+            vec3.fromValues(0, -1, 0),
+            160.0));
         this._kitchenScene.addDiskLight(new DiskLight(
-            vec3.fromValues(1.92, 1.6, -0.22), 0.05, vec3.fromValues(301, 301, 301), vec3.fromValues(0, -1, 0)));
+            vec3.fromValues(1.92, 1.6, -0.22),
+            0.05,
+            vec3.fromValues(301, 301, 301),
+            vec3.fromValues(0, -1, 0),
+            160.0));
 
         this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
         this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
@@ -524,7 +562,7 @@ export class ThesisRenderer extends Renderer {
         lightCamera.up = vec3.fromValues(1.0, 0.0, 0.0);
         lightCamera.near = 0.1;
         lightCamera.far = 30.0;
-        lightCamera.fovy = 150.0;
+        lightCamera.fovy = light.fovy;
         const lightNearFar = vec2.fromValues(lightCamera.near, lightCamera.far);
 
         this._shadowPass.frame(() => {

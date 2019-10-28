@@ -20,11 +20,13 @@ export class DiskLight {
     public radius: number;
     public luminance: vec3;
     public direction: vec3;
+    public fovy: number;
 
-    constructor(center: vec3, radius: number, luminance: vec3, direction: vec3) {
+    constructor(center: vec3, radius: number, luminance: vec3, direction: vec3, fovy: number) {
         this.center = center;
         this.radius = radius;
         this.luminance = luminance;
         this.direction = direction;
+        this.fovy = fovy;
     }
 }
