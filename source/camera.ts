@@ -340,6 +340,8 @@ export class Camera {
             return this._viewProjection;
         }
         this._viewProjection = mat4.multiply(m4(), this.projection, this.view);
+        console.log(this._viewProjection);
+        console.log(this.postViewProjection);
         this._viewProjection = mat4.multiply(m4(), this._viewProjection, this.postViewProjection);
         return this._viewProjection;
     }

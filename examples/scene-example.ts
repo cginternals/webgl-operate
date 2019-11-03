@@ -96,7 +96,7 @@ export class SceneRenderer extends Renderer {
         this._uTextured = this._program.uniform('u_textured');
 
         this._aMeshVertex = this._program.attribute('a_vertex', 0);
-        this._aMeshTexCoord = this._program.attribute('a_texcoord', 1);
+        this._aMeshTexCoord = this._program.attribute('a_texCoord', 1);
 
         /* Create and configure camera. */
 

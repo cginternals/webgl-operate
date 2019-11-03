@@ -66,5 +66,11 @@
         "object": "Label3DExample",
         "caption": "Static/dynamic text that can be positioned in 3D space.",
         "disabled": true
+    },
+    {
+        "target": "tiled-scene-renderer-example",
+        "title": "Tiled Scene Renderer",
+        "object": "TiledSceneRendererExample",
+        "caption": "Rendering of a scene with the Tiled Renderer."
     }
 ]

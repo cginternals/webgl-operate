@@ -56,7 +56,7 @@ export class TiledRenderer {
 
         const tableIndices = [0, 0];
         tableIndices[0] = index % this.numberOfYTiles();
-        tableIndices[1] = index - (Math.floor(index / tableIndices[0])) * tableIndices[0];
+        tableIndices[1] = index - (Math.floor(index / this.numberOfYTiles())) * this.numberOfYTiles();
 
         const paddedTileCenter = [0, 0];
         paddedTileCenter[0] = tableIndices[0] * this.tileSize[0] + this.tileSize[0] / 2;
@@ -68,10 +68,10 @@ export class TiledRenderer {
 
         const paddedTileSize = [this.tileSize[0] + this.padding, this.tileSize[1] + this.padding];
 
-        const translationVec = new vec3([-paddedTileCenterNDC[0], -paddedTileCenterNDC[1], 1]);
+        const translationVec = vec3.fromValues(-paddedTileCenterNDC[0], -paddedTileCenterNDC[1], 0);
 
         // TODO numerical instable
-        const scaleVec = new vec3([viewport[0] / paddedTileSize[0], viewport[1] / paddedTileSize[1], 1]);
+        const scaleVec = vec3.fromValues(viewport[0] / paddedTileSize[0], viewport[1] / paddedTileSize[1], 1);
 
         const translateMatrix = mat4.translate(m4(), mat4.identity(m4()), translationVec);
         const tileNDCCorrectionMatrix = mat4.scale(m4(), translateMatrix, scaleVec);
