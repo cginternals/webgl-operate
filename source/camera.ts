@@ -67,6 +67,10 @@ export class Camera {
     /** @see {@link viewProjectionInverse} */
     protected _viewProjectionInverse: mat4 | undefined | null;
 
+
+    /** @see {@link postViewProjection} */
+    protected _postViewProjection: mat4 | undefined;
+
     /** @see {@link altered} */
     protected _altered = false;
 
@@ -101,7 +105,8 @@ export class Camera {
      * eye, center, and up changes. The projection should be invalidated on fovy, viewport, near, and far changes.
      * The view projection invalidates whenever either one or both view and projection are to be invalidated.
      */
-    protected invalidate(invalidateView: boolean, invalidateProjection: boolean): void {
+    protected invalidate(invalidateView: boolean, invalidateProjection: boolean,
+        invalidateOnlyViewProjection: boolean = false): void {
         if (invalidateView) {
             this._view = undefined;
             this._viewInverse = undefined;
@@ -110,7 +115,7 @@ export class Camera {
             this._projection = undefined;
             this._projectionInverse = undefined;
         }
-        if (invalidateView || invalidateProjection) {
+        if (invalidateView || invalidateProjection || invalidateOnlyViewProjection) {
             this._viewProjection = undefined;
             this._viewProjectionInverse = undefined;
         }
@@ -335,6 +340,7 @@ export class Camera {
             return this._viewProjection;
         }
         this._viewProjection = mat4.multiply(m4(), this.projection, this.view);
+        this._viewProjection = mat4.multiply(m4(), this._viewProjection, this.postViewProjection);
         return this._viewProjection;
     }
 
@@ -348,6 +354,27 @@ export class Camera {
         }
         this._viewProjectionInverse = mat4.invert(m4(), this.viewProjection);
         return this._viewProjectionInverse;
+    }
+
+    /**
+     * Returns the matrix which contains the operations that are applied to the viewProjection matrix.
+     * For now this is only used by the TiledRenderer to adjust the NDC-coordinates to the tile.
+     */
+    get postViewProjection(): mat4 {
+        if (this._postViewProjection) {
+            return this._postViewProjection;
+        } else {
+            return mat4.identity(m4());
+        }
+    }
+
+    /**
+     * Sets the matrix which contains the operations that are applied to the viewProjection matrix.
+     * For now this is only used by the TiledRenderer to adjust the NDC-coordinates to the tile.
+     */
+    set postViewProjection(matrix: mat4) {
+        this._postViewProjection = matrix;
+        this.invalidate(false, false, true);
     }
 
     /**

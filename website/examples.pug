@@ -20,9 +20,15 @@ block content
               else
                 a(href = `/examples/${example.target}.html` target = 'example' class = index == 0 ? 'active' : '').example-link #{example.title}
 
-      .col-lg-9.col-md-9.col-sm-8
+      .col-lg-6.col-md-3.col-sm-4
         .embed-responsive.embed-responsive-16by9
           iframe(name = 'example' src = `/examples/${examples[0].target}.html`
+            frameborder = 0 marginwidth = 0 marginheight = 0
+            allow-scripts allowfullscreen).embed-responsive-item
+
+      .col-lg-3.col-md-3.col-sm-2
+        .embed-responsive.embed-responsive-16by9
+          iframe(name = 'example2' src = `/examples/${examples[7].target}.html`
             frameborder = 0 marginwidth = 0 marginheight = 0
             allow-scripts allowfullscreen).embed-responsive-item
 
