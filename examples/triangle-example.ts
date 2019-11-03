@@ -122,7 +122,7 @@ export class TriangleRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/all-seeing-eye-1698551_640.webp', false).then(() => {
+        this._texture.fetch('./data/triangle-texture.webp', false).then(() => {
             const gl = context.gl;
 
             this._program.bind();
