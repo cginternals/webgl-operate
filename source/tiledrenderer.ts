@@ -28,6 +28,8 @@ export class TiledRenderer {
      */
     protected tileSize: GLsizei2;
 
+    // CAUTION: Padding currently broken since camera.viewport is between 0-1 and
+    // does not give the pixel-size of the canvas.
     constructor(camera: Camera, tileSize: GLsizei2, padding: number) {
         this.camera = camera;
         this.tileCamera = camera.copy();
@@ -55,7 +57,6 @@ export class TiledRenderer {
         const viewport = this.camera.viewport;
 
         const tableIndices = [0, 0];
-        // TODO irgendwat scheint hier faul zu sein lol...
         tableIndices[0] = index % this.numberOfYTiles();
         tableIndices[1] = index - (Math.floor(index / this.numberOfYTiles())) * this.numberOfYTiles();
 
