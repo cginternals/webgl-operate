@@ -164,7 +164,11 @@ export class ThesisRenderer extends Renderer {
             new Camera(vec3.fromValues(-0.255, 3.09, -8.0), vec3.fromValues(0.135, 1.192, -0.46)),
             0.2, 20);
         this._cornellScene.addDiskLight(new DiskLight(
-            vec3.fromValues(0.13, 2.32, -0.23), 0.3, vec3.fromValues(302, 302, 302), vec3.fromValues(0, -1, 0), 90.0));
+            vec3.fromValues(0.13, 2.32, -0.23),
+            0.3,
+            vec3.fromValues(302, 302, 302),
+            vec3.fromValues(0, -1, 0),
+            90.0));
 
         this._datsunScene = new Scene(
             'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
@@ -554,7 +558,7 @@ export class ThesisRenderer extends Renderer {
         const light = this._currentScene.diskLights[currentLight];
         const offset = vec3.random(vec3.create(), light.radius);
         const eye = vec3.add(vec3.create(), light.center, offset);
-        const center = vec3.add(vec3.create(), light.center, light.direction);
+        const center = vec3.add(vec3.create(), eye, light.direction);
         const lightCamera = new Camera();
 
         lightCamera.eye = eye;
