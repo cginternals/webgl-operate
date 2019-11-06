@@ -111,20 +111,11 @@ export class TiledSceneRenderer extends Renderer {
         /* Test Tiled Renderer */
 
         const tiledRenderer = new TiledRenderer(camera, [camera.viewport[0] / 2, camera.viewport[1] / 2], 0);
-        console.log('Camera Logs: \n');
-        this.matrixPrint(camera.viewProjection);
-        console.log('Tiled Camera Logs: \n');
-        console.log(tiledRenderer.numberOfYTiles());
-        console.log(tiledRenderer.numberOfXTiles());
-        console.log(tiledRenderer.numberOFTiles());
-        this.matrixPrint(tiledRenderer.linearTileAt(0).viewProjection);
 
         /* Create and configure navigation */
 
-        // this._navigation = new Navigation(callback, mouseEventProvider);
-        // this._navigation.camera = this._camera;
         this._navigation = new Navigation(callback, mouseEventProvider);
-        this._camera = tiledRenderer.linearTileAt(3);
+        this._camera = tiledRenderer.linearTileAt(1);
         this._navigation.camera = this._camera;
 
 
@@ -276,12 +267,6 @@ export class TiledSceneRenderer extends Renderer {
         node.addComponent(sphere);
 
         return node;
-    }
-
-    protected matrixPrint(matrix: mat4): void {
-        for (let i = 0; i < 4; ++i) {
-            console.log(matrix[i] + ' ' + matrix[i + 1] + ' ' + matrix[i + 2] + ' ' + matrix[i + 3]);
-        }
     }
 
     protected generateSphere2Node(parent: SceneNode): SceneNode {

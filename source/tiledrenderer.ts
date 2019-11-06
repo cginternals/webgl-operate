@@ -57,8 +57,10 @@ export class TiledRenderer {
         const viewport = this.camera.viewport;
 
         const tableIndices = [0, 0];
-        tableIndices[0] = index % this.numberOfYTiles();
-        tableIndices[1] = index - (Math.floor(index / this.numberOfYTiles())) * this.numberOfYTiles();
+        tableIndices[0] = index % this.numberOfXTiles();
+        // tableIndices[1] = index - (Math.floor(index / this.numberOfYTiles())) * this.numberOfYTiles();
+        tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfXTiles());
+        console.log('row: ' + tableIndices[1] + ' column: ' + tableIndices[0]);
 
         const paddedTileCenter = [0, 0];
         paddedTileCenter[0] = tableIndices[0] * this.tileSize[0] + this.tileSize[0] / 2;
