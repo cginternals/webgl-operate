@@ -3,7 +3,7 @@ extends demo.pug
 
 block canvas
 
-  canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
+  canvas(id = 'demo-canvas', data-backend = 'auto', width = '1920', height = '1080')
 
   div.row
     div.col
@@ -27,6 +27,10 @@ block canvas
         label(for = 'ssao-range').col-md-2.col-form-label SSAO Range:
         .col-md-10
           input(type = 'range', min = '5', max = '100', value = '20').form-control-range#ssao-range
+      .form-group.row
+        label(for = 'ssr-range').col-md-2.col-form-label SSR Range:
+        .col-md-10
+          input(type = 'range', min = '5', max = '100', value = '70').form-control-range#ssr-range
       .form-group.row
         label(for = 'exposure-range').col-md-2.col-form-label Exposure:
         .col-md-10

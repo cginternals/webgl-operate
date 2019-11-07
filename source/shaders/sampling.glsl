@@ -23,21 +23,13 @@ vec3 uniformSampleHemisphere(float u1, float u2)
 }
 
 // Adapted from "Real Shading in Unreal Engine 4"
-vec3 importanceSampleGGX(vec2 Xi, float alphaRoughnessSq, vec3 N)
+vec3 importanceSampleGGX(vec2 Xi, float alphaRoughnessSq)
 {
     float Phi = 2.0 * M_PI * Xi.x;
     float CosTheta = sqrt((1.0 - Xi.y) / (1.0 + (alphaRoughnessSq - 1.0) * Xi.y));
     float SinTheta = sqrt(1.0 - CosTheta * CosTheta);
 
-    vec3 H;
-    H.x = SinTheta * cos(Phi);
-    H.y = SinTheta * sin(Phi);
-    H.z = CosTheta;
-    vec3 UpVector = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
-    vec3 TangentX = normalize(cross( UpVector, N));
-    vec3 TangentY = cross(N, TangentX);
-    // Tangent to world space
-    return TangentX * H.x + TangentY * H.y + N * H.z;
+    return vec3(SinTheta * cos(Phi), SinTheta * sin(Phi), CosTheta);
 }
 
 // Calculate intersection between a ray and a sphere

@@ -86,52 +86,52 @@ vec3 diffuseDiskLightApproximated(DiskLight light, LightingInfo info)
 // By generating more rays towards the BRDF lobe, shiny materials are rendered with lower variance
 // However, for diffuse materials the variance may increase
 // This can be used alongside sampling a towards light source by using Multiple Importance Sampling (MIS)
-vec3 specularSphereLightImportanceSampleGGX(SphereLight light, LightingInfo info)
-{
-    const int SAMPLE_COUNT = 16;
+// vec3 specularSphereLightImportanceSampleGGX(SphereLight light, LightingInfo info)
+// {
+//     const int SAMPLE_COUNT = 16;
 
-    vec3 lightAccumulator = vec3(0.0);
+//     vec3 lightAccumulator = vec3(0.0);
 
-    float sphereArea = 4.0 * M_PI * light.radius * light.radius;
+//     float sphereArea = 4.0 * M_PI * light.radius * light.radius;
 
-    for (int i = 0; i < SAMPLE_COUNT; ++i) {
-        vec2 u = weyl(int(info.uv.x * info.uv.y * 4324231.8) + i);
-        // vec2 u = hammersley(uint(i), uint(SAMPLE_COUNT));
-        // vec2 u = vec2(rand(v_uv + vec2(float(i))), rand(v_uv + vec2(float(i * 3))));
+//     for (int i = 0; i < SAMPLE_COUNT; ++i) {
+//         vec2 u = weyl(int(info.uv.x * info.uv.y * 4324231.8) + i);
+//         // vec2 u = hammersley(uint(i), uint(SAMPLE_COUNT));
+//         // vec2 u = vec2(rand(v_uv + vec2(float(i))), rand(v_uv + vec2(float(i * 3))));
 
-        vec3 H = importanceSampleGGX(u, info.alphaRoughnessSq, info.incidentNormal);
+//         vec3 H = importanceSampleGGX(u, info.alphaRoughnessSq, info.incidentNormal);
 
-        vec3 sampleDir = reflect(info.view, H);
+//         vec3 sampleDir = reflect(info.view, H);
 
-        bool hit;
-        float t = raySphereIntersect(info.incidentPosition, sampleDir, light.center, light.radius, hit);
+//         bool hit;
+//         float t = raySphereIntersect(info.incidentPosition, sampleDir, light.center, light.radius, hit);
 
-        if (!hit || t >= 0.0) continue;
+//         if (!hit || t >= 0.0) continue;
 
-        float NdotH = clamp(dot(info.incidentNormal, H), 0.0, 1.0);
-        float VdotH = clamp(dot(info.view, H), 0.0, 1.0);
+//         float NdotH = clamp(dot(info.incidentNormal, H), 0.0, 1.0);
+//         float VdotH = clamp(dot(info.view, H), 0.0, 1.0);
 
-        // Math behind calculating the pdf: https://schuttejoe.github.io/post/ggximportancesamplingpart1/
-        // Note that the D term is not included since it cancels out with the BRDF
-        float pdf = NdotH / (4.0 * VdotH);
+//         // Math behind calculating the pdf: https://schuttejoe.github.io/post/ggximportancesamplingpart1/
+//         // Note that the D term is not included since it cancels out with the BRDF
+//         float pdf = NdotH / (4.0 * VdotH);
 
-        vec3 spherePosition = info.incidentPosition + t * sampleDir;
-        vec3 sphereNormal = normalize(spherePosition - light.center);
+//         vec3 spherePosition = info.incidentPosition + t * sampleDir;
+//         vec3 sphereNormal = normalize(spherePosition - light.center);
 
-        vec3 lightVector = spherePosition - info.incidentPosition;
-        float sqDist = dot(lightVector, lightVector);
-        vec3 L = normalize(lightVector);
+//         vec3 lightVector = spherePosition - info.incidentPosition;
+//         float sqDist = dot(lightVector, lightVector);
+//         vec3 L = normalize(lightVector);
 
-        vec3 L_i = light.luminance; // incoming radiance from light source (unit: W / sr*m^2)
-        vec3 integralSample = L_i / pdf;
+//         vec3 L_i = light.luminance; // incoming radiance from light source (unit: W / sr*m^2)
+//         vec3 integralSample = L_i / pdf;
 
-        float NdotL = clamp(dot(L, info.incidentNormal), 0.0, 1.0);
+//         float NdotL = clamp(dot(L, info.incidentNormal), 0.0, 1.0);
 
-        lightAccumulator += specularBrdfGGXImportanceSampled(L, info) * integralSample * NdotL;
-    }
+//         lightAccumulator += specularBrdfGGXImportanceSampled(L, info) * integralSample * NdotL;
+//     }
 
-    return lightAccumulator / float(SAMPLE_COUNT);
-}
+//     return lightAccumulator / float(SAMPLE_COUNT);
+// }
 
 // This function approximates a spherical area light by using a "Most Representative Point", which is treated as a point light.
 // This approach does not have proper energy conservation, however Karis gives an approximate normalization factor for the NDF.

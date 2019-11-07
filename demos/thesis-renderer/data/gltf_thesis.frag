@@ -47,7 +47,8 @@ uniform sampler2D u_occlusion;
 uniform samplerCube u_specularEnvironment;
 uniform sampler2D u_brdfLUT;
 uniform sampler2D u_shadowMap;
-uniform sampler2D u_depth;
+uniform sampler2D u_lastFrame;
+uniform sampler2D u_normalDepth;
 
 #define MAX_LIGHTS 6
 uniform int u_numSphereLights;
@@ -86,6 +87,7 @@ uniform int u_frameNumber;
 uniform int u_debugMode;
 uniform float u_iblStrength;
 uniform float u_ssaoRange;
+uniform float u_ssrRange;
 
 varying vec2 v_uv[3];
 varying vec4 v_color;
@@ -167,10 +169,51 @@ float ssaoSample(LightingInfo info) {
     float sampleDepth = length(viewSamplePoint);
     sampleDepth = (sampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
 
-    float compareDepth = texture(u_depth, sampleUV).r;
+    float compareDepth = texture(u_normalDepth, sampleUV).a;
     // range check fixes halos when depths are very different
     float rangeCheck = abs(compareDepth - sampleDepth) < u_ssaoRange ? 1.0 : 0.0;
     return step(compareDepth, sampleDepth) * rangeCheck;
+}
+
+vec3 ssrSample(LightingInfo info, out bool hit) {
+    vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
+
+    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
+    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
+    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
+
+    // generate matrix to transform from tangent to view space
+    vec3 viewNormal = normalize(u_viewNormalMatrix * info.incidentNormal);
+    vec3 random = normalize(vec3(0.0, 1.0, 1.0));
+    vec3 t = normalize(random - viewNormal * dot(random, viewNormal));
+    vec3 b = cross(viewNormal, t);
+    mat3 TBN = mat3(t, b, viewNormal);
+
+    vec3 viewHalfNormal = TBN * importanceSampleGGX(vec2(random1, random2), info.alphaRoughnessSq);
+    vec3 viewSampleOffset = reflect(-u_viewNormalMatrix * info.view, viewHalfNormal);
+    viewSampleOffset *= u_ssrRange * random3;
+
+    vec3 viewSamplePoint = viewPosition + viewSampleOffset;
+    vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
+    vec2 sampleUV = (ndcSamplePoint / ndcSamplePoint.w).xy * 0.5 + 0.5;
+    float sampleDepth = length(viewSamplePoint);
+    sampleDepth = (sampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
+
+    vec4 normalDepth = texture(u_normalDepth, sampleUV);
+    vec3 hitNormal = normalDepth.rgb;
+    float compareDepth = normalDepth.a;
+
+    // range check fixes halos when depths are very different
+    float rangeCheck = abs(compareDepth - sampleDepth) < u_ssrRange ? 1.0 : 0.0;
+    float check = step(compareDepth, sampleDepth) * rangeCheck;
+
+    hit = true;
+    if (check <= 0.0) {
+        hit = false;
+        return vec3(0.0);
+    }
+
+    return texture(u_lastFrame, sampleUV).rgb * clamp(dot(hitNormal, -info.incidentNormal), 0.0, 1.0);
 }
 
 vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
@@ -193,12 +236,19 @@ vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb * u_iblStrength;
 
     float diffuseOcclusion = 0.0;
+    vec3 specularReflection = vec3(0.0);
+    bool specularReflectionHit = false;
     if (applyOcclusion) {
         diffuseOcclusion = ssaoSample(info);
+        specularReflection = ssrSample(info, specularReflectionHit);
     }
 
     vec3 diffuse = diffuseLight * info.diffuseColor * (1.0 - diffuseOcclusion);
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
+
+    if (specularReflectionHit) {
+        specular = specularReflection * info.specularColor;
+    }
 
     return diffuse + specular;
 }
@@ -322,6 +372,11 @@ void main(void)
     }
     else if (u_blendMode == 2) {
         alpha = baseColor.a;
+    }
+
+    // Workaround: lighting produces inf or nan, find out where
+    if (any(isinf(color)) || any(isnan(color))) {
+        color = vec3(0.0);
     }
 
     fragColor = vec4(color * alpha, alpha);

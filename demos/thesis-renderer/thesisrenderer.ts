@@ -69,7 +69,7 @@ export class ThesisRenderer extends Renderer {
     protected _depthRenderbuffer: Renderbuffer;
 
     protected _preDepthFBO: Framebuffer;
-    protected _depthTexture: Texture2D;
+    protected _normalDepthTexture: Texture2D;
     protected _preDepthRenderbuffer: Renderbuffer;
     protected _depthProgram: Program;
 
@@ -123,9 +123,11 @@ export class ThesisRenderer extends Renderer {
     protected _uSpecularEnvironment: WebGLUniformLocation;
     protected _uBRDFLookupTable: WebGLUniformLocation;
     protected _uShadowMap: WebGLUniformLocation;
-    protected _uDepth: WebGLUniformLocation;
+    protected _uLastFrame: WebGLUniformLocation;
+    protected _uNormalDepth: WebGLUniformLocation;
 
     protected _uSSAORange: WebGLUniformLocation;
+    protected _uSSRRange: WebGLUniformLocation;
     protected _uExposure: WebGLUniformLocation;
     protected _uIBLStrength: WebGLUniformLocation;
 
@@ -298,14 +300,16 @@ export class ThesisRenderer extends Renderer {
 
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
         this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
+        this._uLastFrame = this._program.uniform('u_lastFrame');
         this._uShadowMap = this._program.uniform('u_shadowMap');
-        this._uDepth = this._program.uniform('u_depth');
+        this._uNormalDepth = this._program.uniform('u_normalDepth');
 
         this._uLightView = this._program.uniform('u_lightView');
         this._uLightProjection = this._program.uniform('u_lightProjection');
         this._uLightNearFar = this._program.uniform('u_lightNearFar');
 
         this._uSSAORange = this._program.uniform('u_ssaoRange');
+        this._uSSRRange = this._program.uniform('u_ssrRange');
         this._uIBLStrength = this._program.uniform('u_iblStrength');
 
         /* Initialize shadow program */
@@ -353,7 +357,7 @@ export class ThesisRenderer extends Renderer {
          * Setup pre depth FBO
          */
         this._preDepthFBO = new Framebuffer(this._context, 'PreDepthFBO');
-        this._depthTexture = new Texture2D(this._context, 'DepthTexture');
+        this._normalDepthTexture = new Texture2D(this._context, 'NormalDepthTexture');
         this._preDepthRenderbuffer = new Renderbuffer(this._context, 'PreDepthRenderbuffer');
 
         /* Create and configure forward pass. */
@@ -376,7 +380,8 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1i(this._uSpecularEnvironment, 5);
             gl.uniform1i(this._uBRDFLookupTable, 6);
             gl.uniform1i(this._uShadowMap, 7);
-            gl.uniform1i(this._uDepth, 8);
+            gl.uniform1i(this._uNormalDepth, 8);
+            gl.uniform1i(this._uLastFrame, 9);
 
             this._specularEnvironment.bind(gl.TEXTURE5);
             this._brdfLUT.bind(gl.TEXTURE6);
@@ -438,6 +443,15 @@ export class ThesisRenderer extends Renderer {
         };
         ssaoRange.onchange(new Event(''));
 
+        const ssrRange = window.document.getElementById('ssr-range')! as HTMLInputElement;
+        ssrRange.onchange = (_) => {
+            this._program.bind();
+            gl.uniform1f(this._uSSRRange, parseFloat(ssrRange.value) / 100.0);
+            this._program.unbind();
+            this._invalidate(true);
+        };
+        ssrRange.onchange(new Event(''));
+
         return true;
     }
 
@@ -496,12 +510,12 @@ export class ThesisRenderer extends Renderer {
         }
 
         if (!this._preDepthFBO.initialized) {
-            this._depthTexture.initialize(this._frameSize[0], this._frameSize[1],
-                this._context.isWebGL2 ? gl.R32F : gl.RGBA,
-                this._context.isWebGL2 ? gl.RED : gl.RGBA,
+            this._normalDepthTexture.initialize(this._frameSize[0], this._frameSize[1],
+                this._context.isWebGL2 ? gl.RGBA32F : gl.RGBA,
+                this._context.isWebGL2 ? gl.RGBA : gl.RGBA,
                 gl.FLOAT);
             this._preDepthRenderbuffer.initialize(this._frameSize[0], this._frameSize[1], gl.DEPTH_COMPONENT16);
-            this._preDepthFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._depthTexture]
+            this._preDepthFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._normalDepthTexture]
                 , [gl.DEPTH_ATTACHMENT, this._preDepthRenderbuffer]]);
         }
 
@@ -624,7 +638,10 @@ export class ThesisRenderer extends Renderer {
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
-        this._depthTexture.bind(gl.TEXTURE8);
+        this._normalDepthTexture.bind(gl.TEXTURE8);
+
+        const lastFrame = this._accumulatePass.framebuffer!.texture(gl2facade.COLOR_ATTACHMENT0)!;
+        lastFrame.bind(gl.TEXTURE9);
 
         this._forwardPass.program = this._program;
         this._forwardPass.target = this._intermediateFBO;
