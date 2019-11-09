@@ -402,8 +402,9 @@ export class Camera {
         copiedCamera.fovy = this.fovy;
         copiedCamera.near = this.near;
         copiedCamera.far = this.far;
-        copiedCamera.viewport = this.viewport;
+        copiedCamera.viewport = [this.viewport[0], this.viewport[1]];
         copiedCamera.aspect = this.aspect;
+        copiedCamera.postViewProjection = this.postViewProjection;
         return copiedCamera;
     }
 }

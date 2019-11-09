@@ -1,91 +1,300 @@
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 import { log, LogLevel } from './auxiliaries';
 import { Camera } from './camera';
 import { m4 } from './gl-matrix-extensions';
-import { GLsizei2 } from './tuples';
 
 
 export class TiledRenderer {
 
-    /**
-     * The Camera which viewport should be tiled. It is assumed to be constant.
-     */
-    protected camera: Camera;
+    // make all configurations to properties like in the camera
+    // and add the comments and only overwrite values if they are new
+    // no constructor
+    // iteration per enum (see camera)
+    // add update call for index
+    //
 
+    // look for jsDoc code example integration (see: texture2d)
     /**
-     * A copy of the camera which is used to return the tiled cameras.
+     * tiledRendere = new TiledRenderer();
+     * tiledRenderer.sourceCamera = camera;
+     * tiledRenderer.sourceViewportSize = canvSiz;
+     * tiledRenderer.tileSize = [128, 128];
+     * tiledRenderer.padding = vec4(); //TODO needs change: in css order: top, right, bottom, left
+     * tileCamera = tileRendere.camera;
+     * tileRenderer.algorithm = TileRenderer.IteratorAlgorithm.ScanLine;
+     * offset;
+     * variant 1:
+     * for (let i = 0; i < tileRenderer.numberOfTiles(); ++i){
+     *      tiledRenderer.tile = i; // property
+     *      offset = tileRenderer.offset;
+     *      "render"
+     * }
+     * variant 2:
+     * while(tileRender.nextTile()){
+     *      "render"
+     * }
      */
-    protected tileCamera: Camera;
 
-    /**
-     * Determines the padding in pixels for the rendering.
-     */
-    protected padding: number;
+    /** @see {@link eye} */
+    protected _camera: Camera | undefined;
 
-    /**
-     * Determines the size of a tile.
-     * Index: 0: width = x-coord, 1: height = y-coord.
-     */
-    protected tileSize: GLsizei2;
+    /** @see {@link sourceCamera} */
+    protected _sourceCamera: Camera | undefined;
 
-    // CAUTION: Padding currently broken since camera.viewport is between 0-1 and
-    // does not give the pixel-size of the canvas.
-    constructor(camera: Camera, tileSize: GLsizei2, padding: number) {
-        this.camera = camera;
-        this.tileCamera = camera.copy();
-        this.tileSize = tileSize;
-        this.padding = padding;
+    /** @see {@link tile} */
+    protected _tile = -1;
+
+    /** @see {@link sourceViewPort} */
+    protected _sourceViewPort: [number, number] | undefined;
+
+    /** @see {@link tileSize} */
+    protected _tileSize: [number, number] | undefined;
+
+    /** @see {@link padding} */
+    protected _padding: vec4 = vec4.fromValues(0, 0, 0, 0);
+
+    /** @see {@link algorithm} */
+    protected _algorithm: TiledRenderer.IterationAlgorithm = TiledRenderer.IterationAlgorithm.ScanLine;
+
+    protected _valid: boolean;
+    protected _currentOffset: [number, number] = [0, 0];
+
+    protected getTileIndexOfLinearAlgorithm(): number {
+        if (this._algorithm === TiledRenderer.IterationAlgorithm.ScanLine) {
+            return this._tile;
+        } else {
+            return 0;
+        }
     }
 
-
-    public numberOfXTiles(): number {
-        return Math.ceil(this.camera.height / this.tileSize[1]);
+    protected getPaddedTileSize(): [number, number] {
+        return [this.padding[1] + this.padding[3] + this.tileSize[0],
+        this.padding[0] + this.padding[2] + this.tileSize[1]];
     }
 
-    public numberOfYTiles(): number {
-        return Math.ceil(this.camera.width / this.tileSize[0]);
+    public nextTile(): boolean {
+        if (this.tile >= this.numberOFTiles() - 1) {
+            return false;
+        }
+        if (this.tile < 0) {
+            this.tile = 0;
+        }
+        ++this.tile;
+        this.update();
+        return true;
     }
 
-    public linearTileAt(index: number): Camera {
-        // write an error to the console and return linearTileAt(0) if an invalid index is requested.
+    /**
+     * Updates the camera view frustum to current tile based on
+     * the souceViewPort, tileSize and the padding.
+     * If the tile is less than zero, the camera is set to the first tile.
+     * If the tile is too high, the camera is not updated and remains in the last valid state.
+     * @returns - the offset of the new camera tile.
+     */
+    public update(): [number, number] {
+        // do nothing and return the last offset if no property has changed.
+        if (this._valid) {
+            return this._currentOffset;
+        }
+        this._valid = true;
+        const index = this.getTileIndexOfLinearAlgorithm();
+        const viewport = this.sourceViewPort;
+        const paddedTileSize = this.getPaddedTileSize();
+
+        // If an invalid index is requested: Do not change the camera and return the last valid tile offset.
         if (this.numberOFTiles() <= index || 0 > index) {
             log(LogLevel.Warning, `index:${index} is out of bounds: ${this.numberOfXTiles()}
                 . Returning the first Tile`);
-            return this.linearTileAt(0);
+            return this._currentOffset;
         }
 
-        const viewport = this.camera.viewport;
-
+        // Calculate column (0) and row (1) index of the current tile.
         const tableIndices = [0, 0];
         tableIndices[0] = index % this.numberOfXTiles();
-        // tableIndices[1] = index - (Math.floor(index / this.numberOfYTiles())) * this.numberOfYTiles();
         tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfXTiles());
-        console.log('row: ' + tableIndices[1] + ' column: ' + tableIndices[0]);
 
+        // Calculate the padded tile center coordinates in the viewport-space.
         const paddedTileCenter = [0, 0];
-        paddedTileCenter[0] = tableIndices[0] * this.tileSize[0] + this.tileSize[0] / 2;
-        paddedTileCenter[1] = tableIndices[1] * this.tileSize[1] + this.tileSize[1] / 2;
+        paddedTileCenter[0] = tableIndices[0] * this.tileSize[0] + paddedTileSize[0] / 2;
+        paddedTileCenter[1] = tableIndices[1] * this.tileSize[1] + paddedTileSize[1] / 2;
 
+        // Calculate the offset which is needed for the return.
+        const offset: [number, number] = [0, 0];
+        offset[0] = tableIndices[0] * this.tileSize[0];
+        offset[1] = tableIndices[1] * this.tileSize[1];
+
+        // Scale down the padded tile center coordinates to padded tile center NDC coordinates.
         const paddedTileCenterNDC = [paddedTileCenter[0] * 2 / viewport[0] - 1
             , paddedTileCenter[1] * 2 / viewport[1] - 1];
 
-        const paddedTileSize = [this.tileSize[0] + this.padding, this.tileSize[1] + this.padding];
-
-        const translationVec = vec3.fromValues(-paddedTileCenterNDC[0] * 2, -paddedTileCenterNDC[1] * 2, 0);
-
+        // Create the scale vector that scales up the padded tile to the NDC-range of -1;1.
         const scaleVec = vec3.fromValues(viewport[0] / paddedTileSize[0], viewport[1] / paddedTileSize[1], 1);
 
-        const translateMatrix = mat4.translate(m4(), mat4.identity(m4()), translationVec);
-        const tileNDCCorrectionMatrix = mat4.scale(m4(), translateMatrix, scaleVec);
+        // Create the translation vector which shifts the padded tile center NDC into the origin.
+        const translationVec = vec3.fromValues(-paddedTileCenterNDC[0], -paddedTileCenterNDC[1], 0);
 
-        this.tileCamera.postViewProjection = tileNDCCorrectionMatrix;
+        // Combine the translation ans scale into the matrix.
+        const tileNDCCorrectionMatrix = mat4.scale(m4(), mat4.identity(m4()), scaleVec);
+        const translateMatrix = mat4.translate(m4(), tileNDCCorrectionMatrix, translationVec);
 
-        return this.tileCamera;
+        // Set the postViewProjection matrix and offset to the new calculated values.
+        this.camera.postViewProjection = translateMatrix;
+        this._currentOffset = offset;
 
+        return offset;
     }
 
+    /**
+     * Returns the number of tiles along the X axis
+     * based on the how many of tileSize fit inside the sourceViewport.
+     * @returns - The number of tiles along the X axis.
+     */
+    public numberOfXTiles(): number {
+        return Math.ceil(this.sourceCamera.height / this.tileSize[1]);
+    }
+
+    /**
+     * Returns the number of tiles along the Y axis
+     * based on the how many of tileSize fit inside the sourceViewport.
+     * @returns - The number of tiles along the Y axis.
+     */
+    public numberOfYTiles(): number {
+        return Math.ceil(this.sourceCamera.width / this.tileSize[0]);
+    }
+
+
+    /**
+     * Returns the total number of tiles
+     * based on the how many of tileSize fit inside the sourceViewport.
+     * @returns - The total number of tiles.
+     */
     public numberOFTiles(): number {
         return this.numberOfXTiles() * this.numberOfYTiles();
     }
 
+    /**
+     * Returns the reference to the camera
+     * that has the viewport of the current tile of the sourceCamera.
+     * It returns a default camera if the camera is undefined.
+     * This is the case when the sourceCamera has not been set.
+     * @returns - The reference to the tile viewing camera.
+     */
+    get camera(): Camera {
+        if (this._camera) {
+            return this._camera;
+        } else {
+            return new Camera();
+        }
+    }
+
+    /**
+     * Returns the sourceCamera which viewport should be divided in tiles.
+     * If the sourceCamera has not been set, it returns a default camera.
+     * @returns - The sourceCamer which viewport should be divided in tiles.
+     */
+    get sourceCamera(): Camera {
+        if (this._sourceCamera) {
+            return this._sourceCamera;
+        } else {
+            return new Camera();
+        }
+    }
+
+    /**
+     * Sets the sourceCamera which viewport should be divided in tiles.
+     * Additionally it creates a deep copy of the sourceCamera
+     * which is used as the tiled camera.
+     * @param camera - The sourceCamera which viewport should be divided in tiles.
+     */
+    set sourceCamera(camera: Camera) {
+        if (this._sourceCamera !== camera) {
+            this._sourceCamera = camera,
+                this._camera = camera.copy();
+            this._valid = false;
+        }
+    }
+
+    /**
+     * Returns the current tile index.
+     * @returns - The current tile index.
+     */
+    get tile(): number {
+        return this._tile;
+    }
+
+    /**
+     * Sets the current tile index.
+     * @param index - The new index.
+     */
+    set tile(index: number) {
+        if (this._tile !== index) {
+            this._tile = index;
+            this._valid = false;
+        }
+    }
+
+    /**
+     * Returns the size of the original viewport
+     * which should be divided in tiles based on the tile size.
+     * If the viewport has not been set, it returns [-1, -1].
+     * @returns - Size of the Viewport.
+     */
+    get sourceViewPort(): [number, number] {
+        if (this._sourceViewPort) {
+            return this._sourceViewPort;
+        } else {
+            return [-1, -1];
+        }
+    }
+
+    set sourceViewPort(viewport: [number, number]) {
+        if (this._sourceViewPort !== viewport) {
+            this._sourceViewPort = viewport;
+            this._valid = false;
+        }
+    }
+
+    get tileSize(): [number, number] {
+        if (this._tileSize) {
+            return this._tileSize;
+        } else {
+            return [-1, -1];
+        }
+    }
+
+    set tileSize(tileSize: [number, number]) {
+        if (this._tileSize !== tileSize) {
+            this._tileSize = tileSize;
+            this._valid = false;
+        }
+    }
+
+    get padding(): vec4 {
+        return this._padding;
+    }
+
+    set padding(padding: vec4) {
+        if (this._padding !== padding) {
+            this._padding = padding;
+            this._valid = false;
+        }
+    }
+
+    get algorithm(): TiledRenderer.IterationAlgorithm {
+        return this._algorithm;
+    }
+
+    set algorithm(algorithm: TiledRenderer.IterationAlgorithm) {
+        if (this._algorithm !== algorithm) {
+            this._algorithm = algorithm;
+            this._valid = false;
+        }
+    }
+}
+
+export namespace TiledRenderer {
+
+    export enum IterationAlgorithm {
+        ScanLine = 'scanline',
+    }
 }
