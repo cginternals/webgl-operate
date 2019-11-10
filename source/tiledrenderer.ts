@@ -60,16 +60,86 @@ export class TiledRenderer {
     protected _currentOffset: [number, number] = [0, 0];
 
     protected getTileIndexOfLinearAlgorithm(): number {
-        if (this._algorithm === TiledRenderer.IterationAlgorithm.ScanLine) {
-            return this._tile;
+        if (this.algorithm === TiledRenderer.IterationAlgorithm.ScanLine) {
+            return this.tile;
+        } else if (this.algorithm === TiledRenderer.IterationAlgorithm.HilbertCurve) {
+            return this.convertTileIndexFromHilbertToScanLine();
         } else {
             return 0;
+        }
+    }
+
+    protected convertTileIndexFromHilbertToScanLine(): number {
+        const recursionDepth = Math.round(Math.log2(this.numberOfXTiles()));
+        return this.hilbertToScanLine(recursionDepth, this.tile);
+    }
+
+    protected hilbertToScanLine(maxDepth: number, tileIndex: number): number {
+        // indices: x = 0, y = 1
+        const rotationVals: [number, number] = [0, 0];
+        const coordinates: [number, number] = [0, 0];
+        for (let recursionDepth = 1; recursionDepth < maxDepth; recursionDepth *= 2) {
+            rotationVals[0] = 1 & (tileIndex / 2);
+            rotationVals[0] = 1 & (tileIndex ^ rotationVals[0]);
+            this.hilbertCurveRotation(recursionDepth, coordinates, rotationVals);
+            coordinates[0] += recursionDepth * rotationVals[0];
+            coordinates[1] += recursionDepth * rotationVals[1];
+            tileIndex /= 4;
+        }
+        return coordinates[0] * coordinates[1] * this.numberOfYTiles();
+    }
+
+    protected hilbertCurveRotation(n: number, coordinates: [number, number], rotationVals: [number, number]): void {
+        if (rotationVals[1] === 0) {
+            if (rotationVals[0] === 1) {
+                // Mirror x, y-coordinates
+                coordinates[0] = (n - 1) - coordinates[0];
+                coordinates[1] = (n - 1) - coordinates[1];
+            }
+            // Swap x, y-coordinates
+            const temp = coordinates[0];
+            coordinates[0] = coordinates[1];
+            coordinates[1] = temp;
         }
     }
 
     protected getPaddedTileSize(): [number, number] {
         return [this.padding[1] + this.padding[3] + this.tileSize[0],
         this.padding[0] + this.padding[2] + this.tileSize[1]];
+    }
+
+    protected checkIterationAlgorithmConstraints(): boolean {
+        if (this.algorithm === TiledRenderer.IterationAlgorithm.ScanLine) {
+            if (this._sourceViewPort && this._tileSize) {
+                if (this.numberOfXTiles() % 2 === 1 || this.numberOfYTiles() % 2 === 1
+                    || this.numberOfXTiles() !== this.numberOfYTiles()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+    }
+
+    protected adjustTileSizeToMatchIterationAlgorithm(): void {
+        // Hilbert Curve only works on a quadratic table which side lengths are power of twos
+        if (this.algorithm === TiledRenderer.IterationAlgorithm.HilbertCurve) {
+            if (!Number.isInteger(Math.log2(this.numberOfXTiles()))) {
+                const numberOfTilesXSmaller = Math.pow(2, Math.floor(Math.log2(this.numberOfXTiles())));
+                const numberOfTilesXLarger = Math.pow(2, Math.ceil(Math.log2(this.numberOfXTiles())));
+
+                const smallerTileSize = Math.ceil(this.sourceViewPort[0] / numberOfTilesXSmaller);
+                const largerTileSize = Math.ceil(this.sourceViewPort[0] / numberOfTilesXLarger);
+
+                const distanceToSmallerTileSize = this.tileSize[0] - smallerTileSize;
+                const distanceToLargerTileSize = this.tileSize[0] - largerTileSize;
+
+                this.tileSize[0] = distanceToLargerTileSize > distanceToSmallerTileSize ?
+                    largerTileSize : smallerTileSize;
+            }
+            const newNumberOfTilesY = this.numberOfXTiles();
+            this.tileSize[1] = Math.ceil(this.sourceViewPort[1] / newNumberOfTilesY);
+        }
     }
 
     public nextTile(): boolean {
@@ -86,7 +156,7 @@ export class TiledRenderer {
 
     /**
      * Updates the camera view frustum to current tile based on
-     * the souceViewPort, tileSize and the padding.
+     * the sourceViewPort, tileSize and the padding.
      * If the tile is less than zero, the camera is set to the first tile.
      * If the tile is too high, the camera is not updated and remains in the last valid state.
      * @returns - the offset of the new camera tile.
@@ -110,8 +180,8 @@ export class TiledRenderer {
 
         // Calculate column (0) and row (1) index of the current tile.
         const tableIndices = [0, 0];
-        tableIndices[0] = index % this.numberOfXTiles();
-        tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfXTiles());
+        tableIndices[0] = index % this.numberOfYTiles();
+        tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfYTiles());
 
         // Calculate the padded tile center coordinates in the viewport-space.
         const paddedTileCenter = [0, 0];
@@ -250,6 +320,9 @@ export class TiledRenderer {
     set sourceViewPort(viewport: [number, number]) {
         if (this._sourceViewPort !== viewport) {
             this._sourceViewPort = viewport;
+            if (!this.checkIterationAlgorithmConstraints()) {
+                this.adjustTileSizeToMatchIterationAlgorithm();
+            }
             this._valid = false;
         }
     }
@@ -265,6 +338,9 @@ export class TiledRenderer {
     set tileSize(tileSize: [number, number]) {
         if (this._tileSize !== tileSize) {
             this._tileSize = tileSize;
+            if (!this.checkIterationAlgorithmConstraints()) {
+                this.adjustTileSizeToMatchIterationAlgorithm();
+            }
             this._valid = false;
         }
     }
@@ -287,6 +363,9 @@ export class TiledRenderer {
     set algorithm(algorithm: TiledRenderer.IterationAlgorithm) {
         if (this._algorithm !== algorithm) {
             this._algorithm = algorithm;
+            if (!this.checkIterationAlgorithmConstraints()) {
+                this.adjustTileSizeToMatchIterationAlgorithm();
+            }
             this._valid = false;
         }
     }
@@ -296,5 +375,6 @@ export namespace TiledRenderer {
 
     export enum IterationAlgorithm {
         ScanLine = 'scanline',
+        HilbertCurve = 'hilbertcurve',
     }
 }
