@@ -338,7 +338,7 @@ void main(void)
         float lightDepth = clamp((length(vLightViewSpace.xyz) - u_lightNearFar[0]) / (u_lightNearFar[1] - u_lightNearFar[0]), 0.0, 1.0);
         vec2 shadowUv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
 
-        const float shadowBias = -0.0004;
+        const float shadowBias = -0.0003;
         float visibility = hardShadowCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
 
         if (any(greaterThan(shadowUv, vec2(1.0))) || any(lessThan(shadowUv, vec2(0.0)))) {

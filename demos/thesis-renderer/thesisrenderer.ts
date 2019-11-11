@@ -400,7 +400,7 @@ export class ThesisRenderer extends Renderer {
         this._postProcessingPass.initialize(this._ndcTriangle);
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [1024, 1024]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [2048, 2048]);
 
         this._blitPass = new BlitPass(this._context);
         this._blitPass.initialize(this._ndcTriangle);
@@ -429,7 +429,7 @@ export class ThesisRenderer extends Renderer {
         const iblRange = window.document.getElementById('ibl-range')! as HTMLInputElement;
         iblRange.onchange = (_) => {
             this._program.bind();
-            gl.uniform1f(this._uIBLStrength, parseFloat(iblRange.value) / 50.0);
+            gl.uniform1f(this._uIBLStrength, parseFloat(iblRange.value) / 20.0);
             this._program.unbind();
             this._invalidate(true);
         };
@@ -881,12 +881,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `http://127.0.0.1:8002/artificial/studio010_LDR/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }
