@@ -110,12 +110,18 @@ export class TiledSceneRenderer extends Renderer {
 
         /* Test Tiled Renderer */
 
-        const tiledRenderer = new TiledRenderer(camera, [camera.viewport[0] / 2, camera.viewport[1] / 2], 0);
+        const tiledRenderer = new TiledRenderer();
+        tiledRenderer.sourceCamera = camera;
+        tiledRenderer.sourceViewPort = [2, 2];
+        tiledRenderer.tileSize = [1, 1];
+        tiledRenderer.tile = 0;
+        tiledRenderer.algorithm = TiledRenderer.IterationAlgorithm.HilbertCurve;
+        tiledRenderer.update();
 
         /* Create and configure navigation */
 
         this._navigation = new Navigation(callback, mouseEventProvider);
-        this._camera = tiledRenderer.linearTileAt(1);
+        this._camera = tiledRenderer.camera;
         this._navigation.camera = this._camera;
 
 

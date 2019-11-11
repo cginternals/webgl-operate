@@ -26,6 +26,7 @@ export class TiledRenderer {
      * variant 1:
      * for (let i = 0; i < tileRenderer.numberOfTiles(); ++i){
      *      tiledRenderer.tile = i; // property
+     *      tiledRenderer.update();
      *      offset = tileRenderer.offset;
      *      "render"
      * }
@@ -70,23 +71,24 @@ export class TiledRenderer {
     }
 
     protected convertTileIndexFromHilbertToScanLine(): number {
-        const recursionDepth = Math.round(Math.log2(this.numberOfXTiles()));
-        return this.hilbertToScanLine(recursionDepth, this.tile);
+        const recursionDepth = this.numberOfXTiles();
+        const coordinates = this.hilbertToScanLine(recursionDepth, this.tile);
+        return coordinates[0] + coordinates[1] * this.numberOfXTiles();
     }
 
-    protected hilbertToScanLine(maxDepth: number, tileIndex: number): number {
+    protected hilbertToScanLine(maxDepth: number, tileIndex: number): [number, number] {
         // indices: x = 0, y = 1
         const rotationVals: [number, number] = [0, 0];
         const coordinates: [number, number] = [0, 0];
         for (let recursionDepth = 1; recursionDepth < maxDepth; recursionDepth *= 2) {
             rotationVals[0] = 1 & (tileIndex / 2);
-            rotationVals[0] = 1 & (tileIndex ^ rotationVals[0]);
+            rotationVals[1] = 1 & (tileIndex ^ rotationVals[0]);
             this.hilbertCurveRotation(recursionDepth, coordinates, rotationVals);
             coordinates[0] += recursionDepth * rotationVals[0];
             coordinates[1] += recursionDepth * rotationVals[1];
-            tileIndex /= 4;
+            tileIndex = Math.floor(tileIndex / 4);
         }
-        return coordinates[0] * coordinates[1] * this.numberOfYTiles();
+        return coordinates;
     }
 
     protected hilbertCurveRotation(n: number, coordinates: [number, number], rotationVals: [number, number]): void {
@@ -162,6 +164,10 @@ export class TiledRenderer {
      * @returns - the offset of the new camera tile.
      */
     public update(): [number, number] {
+        console.log(this.hilbertToScanLine(2, 0));
+        console.log(this.hilbertToScanLine(2, 1));
+        console.log(this.hilbertToScanLine(2, 2));
+        console.log(this.hilbertToScanLine(2, 3));
         // do nothing and return the last offset if no property has changed.
         if (this._valid) {
             return this._currentOffset;
@@ -180,8 +186,8 @@ export class TiledRenderer {
 
         // Calculate column (0) and row (1) index of the current tile.
         const tableIndices = [0, 0];
-        tableIndices[0] = index % this.numberOfYTiles();
-        tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfYTiles());
+        tableIndices[0] = index % this.numberOfXTiles();
+        tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfXTiles());
 
         // Calculate the padded tile center coordinates in the viewport-space.
         const paddedTileCenter = [0, 0];
@@ -220,7 +226,7 @@ export class TiledRenderer {
      * @returns - The number of tiles along the X axis.
      */
     public numberOfXTiles(): number {
-        return Math.ceil(this.sourceCamera.height / this.tileSize[1]);
+        return Math.ceil(this.sourceViewPort[0] / this.tileSize[0]);
     }
 
     /**
@@ -229,7 +235,7 @@ export class TiledRenderer {
      * @returns - The number of tiles along the Y axis.
      */
     public numberOfYTiles(): number {
-        return Math.ceil(this.sourceCamera.width / this.tileSize[0]);
+        return Math.ceil(this.sourceViewPort[1] / this.tileSize[1]);
     }
 
 
