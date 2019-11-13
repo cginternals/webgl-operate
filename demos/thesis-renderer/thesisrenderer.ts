@@ -162,7 +162,7 @@ export class ThesisRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
-        this._cornellScene = new Scene('http://127.0.0.1:8001/cornell_box/scene_fixed_size.glb',
+        this._cornellScene = new Scene('http://35.196.123.235/assets/cornell.glb',
             new Camera(vec3.fromValues(-0.255, 3.09, -8.0), vec3.fromValues(0.135, 1.192, -0.46)),
             0.2, 20);
         this._cornellScene.addDiskLight(new DiskLight(
@@ -173,7 +173,7 @@ export class ThesisRenderer extends Renderer {
             90.0));
 
         this._datsunScene = new Scene(
-            'http://127.0.0.1:8001/1972_datsun_240k_gt/scene_fixed_size.glb',
+            'http://35.196.123.235/assets/datsun.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             0.2, 30);
         this._datsunScene.addDiskLight(new DiskLight(
@@ -202,7 +202,7 @@ export class ThesisRenderer extends Renderer {
             110.0));
 
         this._kitchenScene = new Scene(
-            'http://127.0.0.1:8001/italian_kitchen/scene_fixed_size.glb',
+            'http://35.196.123.235/assets/kitchen.glb',
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             0.1, 10);
         this._kitchenScene.addDiskLight(new DiskLight(
@@ -881,12 +881,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `http://127.0.0.1:8002/artificial/studio010_LDR_linear_HC/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }
