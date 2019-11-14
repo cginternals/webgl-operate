@@ -3,38 +3,38 @@ import { log, LogLevel } from './auxiliaries';
 import { Camera } from './camera';
 import { m4 } from './gl-matrix-extensions';
 
+/**
+ * Support Class that wraps the calculation of camera tiling and iteration with various algorithms
+ * by giving access to a adjusted camera which NDC-Coordinates match the current tile index.
+ * Iteration can be done manually (variant: 1) or automatically (variant: 2).
+ * Caution: This class may adjust the tileSize if it is necessary for the selected IterationAlgorithm.
+ * It is intended to be used like:
+ *
+ * // setup
+ * tiledRender = new TiledRenderer();
+ * tiledRenderer.sourceCamera = camera;
+ * tiledRenderer.sourceViewportSize = canvSize;
+ * tiledRenderer.tileSize = [128, 128];
+ * tiledRenderer.padding = vec4();
+ * tileCamera = tileRender.camera;
+ * tileRenderer.algorithm = TileRenderer.IteratorAlgorithm.ScanLine;
+ * let offset: [number, number];
+ *
+ * iteration variant 1:
+ * for (let i = 0; i < tileRenderer.numberOfTiles(); ++i){
+ *      tiledRenderer.tile = i; // property
+ *      tiledRenderer.update();
+ *      offset = tileRenderer.offset;
+ *      "render camera"
+ * }
+ *
+ * iteration variant 2:
+ * while(tileRender.nextTile()){
+ *      "render"
+ * }
+ */
 
 export class TiledRenderer {
-
-    // make all configurations to properties like in the camera
-    // and add the comments and only overwrite values if they are new
-    // no constructor
-    // iteration per enum (see camera)
-    // add update call for index
-    //
-
-    // look for jsDoc code example integration (see: texture2d)
-    /**
-     * tiledRendere = new TiledRenderer();
-     * tiledRenderer.sourceCamera = camera;
-     * tiledRenderer.sourceViewportSize = canvSiz;
-     * tiledRenderer.tileSize = [128, 128];
-     * tiledRenderer.padding = vec4(); //TODO needs change: in css order: top, right, bottom, left
-     * tileCamera = tileRendere.camera;
-     * tileRenderer.algorithm = TileRenderer.IteratorAlgorithm.ScanLine;
-     * offset;
-     * variant 1:
-     * for (let i = 0; i < tileRenderer.numberOfTiles(); ++i){
-     *      tiledRenderer.tile = i; // property
-     *      tiledRenderer.update();
-     *      offset = tileRenderer.offset;
-     *      "render"
-     * }
-     * variant 2:
-     * while(tileRender.nextTile()){
-     *      "render"
-     * }
-     */
 
     /** @see {@link eye} */
     protected _camera: Camera | undefined;
@@ -60,6 +60,11 @@ export class TiledRenderer {
     protected _valid: boolean;
     protected _currentOffset: [number, number] = [0, 0];
 
+    /**
+     * Converts the tile index from the selected Algorithm to the tile index of the ScanLineAlgorithm
+     * and returns that value.
+     * @returns - The converted tile index.
+     */
     protected getTileIndexOfLinearAlgorithm(): number {
         if (this.algorithm === TiledRenderer.IterationAlgorithm.ScanLine) {
             return this.tile;
@@ -70,17 +75,26 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Converts the tile index from the HilbertCurve-Algorithm to the ScanLine-Algorithm.
+     * @returns - The converted tile index.
+     */
     protected convertTileIndexFromHilbertToScanLine(): number {
         const recursionDepth = this.numberOfXTiles();
-        const coordinates = this.hilbertToScanLine(recursionDepth, this.tile);
+        const coordinates = this.hilbertToTableIndices(recursionDepth, this.tile);
         return coordinates[0] + coordinates[1] * this.numberOfXTiles();
     }
 
-    protected hilbertToScanLine(maxDepth: number, tileIndex: number): [number, number] {
+    /**
+     * Converts the tileIndex to x, y table indices based on the HilbertCurve-Traversal.
+     * @param maxTileIndex - The maximum tile index + 1. In our case it should normally be numberOfTiles().
+     * @param tileIndex  - The tile index that should be converted to the table indices.
+     */
+    protected hilbertToTableIndices(maxTileIndex: number, tileIndex: number): [number, number] {
         // indices: x = 0, y = 1
         const rotationVals: [number, number] = [0, 0];
         const coordinates: [number, number] = [0, 0];
-        for (let recursionDepth = 1; recursionDepth < maxDepth; recursionDepth *= 2) {
+        for (let recursionDepth = 1; recursionDepth < maxTileIndex; recursionDepth *= 2) {
             rotationVals[0] = 1 & (tileIndex / 2);
             rotationVals[1] = 1 & (tileIndex ^ rotationVals[0]);
             this.hilbertCurveRotation(recursionDepth, coordinates, rotationVals);
@@ -91,12 +105,19 @@ export class TiledRenderer {
         return coordinates;
     }
 
-    protected hilbertCurveRotation(n: number, coordinates: [number, number], rotationVals: [number, number]): void {
+    /**
+     * Rotates or mirrors the coordinates for the HilbertCurveConversion.
+     * @param recursionDepth - The current recursion depth.
+     * @param coordinates - The coordinates / tableIndices.
+     * @param rotationVals - Values that determine the quadrant requested tile index in the current recursion depth.
+     */
+    protected hilbertCurveRotation(recursionDepth: number,
+        coordinates: [number, number], rotationVals: [number, number]): void {
         if (rotationVals[1] === 0) {
             if (rotationVals[0] === 1) {
                 // Mirror x, y-coordinates
-                coordinates[0] = (n - 1) - coordinates[0];
-                coordinates[1] = (n - 1) - coordinates[1];
+                coordinates[0] = (recursionDepth - 1) - coordinates[0];
+                coordinates[1] = (recursionDepth - 1) - coordinates[1];
             }
             // Swap x, y-coordinates
             const temp = coordinates[0];
@@ -105,15 +126,22 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Returns the padded tileSize.
+     * @returns - The padded tileSize.
+     */
     protected getPaddedTileSize(): [number, number] {
         return [this.padding[1] + this.padding[3] + this.tileSize[0],
         this.padding[0] + this.padding[2] + this.tileSize[1]];
     }
 
+    /**
+     * Checks if all constrains for the selected algorithm are satisfied
+     */
     protected checkIterationAlgorithmConstraints(): boolean {
-        if (this.algorithm === TiledRenderer.IterationAlgorithm.ScanLine) {
+        if (this.algorithm === TiledRenderer.IterationAlgorithm.HilbertCurve) {
             if (this._sourceViewPort && this._tileSize) {
-                if (this.numberOfXTiles() % 2 === 1 || this.numberOfYTiles() % 2 === 1
+                if (!this.isPowerOfTwo(this.numberOfXTiles()) || !this.isPowerOfTwo(this.numberOfYTiles())
                     || this.numberOfXTiles() !== this.numberOfYTiles()) {
                     return false;
                 }
@@ -123,6 +151,19 @@ export class TiledRenderer {
 
     }
 
+    /**
+     * Tests with binary operations if the number is power of two.
+     * @param x The number to test.
+     */
+    protected isPowerOfTwo(x: number): boolean {
+        return (x & (x - 1)) === 0;
+    }
+
+    /**
+     * Adjusts the TileSize to the constraints of the selected IterationAlgorithm.
+     * HilbertCurve:
+     *      Both numberOfTiles have to be the same and the numberOfTiles needs to be a power of two.
+     */
     protected adjustTileSizeToMatchIterationAlgorithm(): void {
         // Hilbert Curve only works on a quadratic table which side lengths are power of twos
         if (this.algorithm === TiledRenderer.IterationAlgorithm.HilbertCurve) {
@@ -144,6 +185,13 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Used for Iterator behavior. It sets the tile to 0 (first tile) if the value of tile is negative
+     * and therefore initiates the iteration.
+     * Otherwise it increments the tile and calls update to directly change the camera.
+     * If the tile index would get out of range it returns false to indicate, that all tiles were rendered.
+     * @returns - If the camera has been set to a next tile.
+     */
     public nextTile(): boolean {
         if (this.tile >= this.numberOFTiles() - 1) {
             return false;
@@ -164,10 +212,6 @@ export class TiledRenderer {
      * @returns - the offset of the new camera tile.
      */
     public update(): [number, number] {
-        console.log(this.hilbertToScanLine(2, 0));
-        console.log(this.hilbertToScanLine(2, 1));
-        console.log(this.hilbertToScanLine(2, 2));
-        console.log(this.hilbertToScanLine(2, 3));
         // do nothing and return the last offset if no property has changed.
         if (this._valid) {
             return this._currentOffset;
@@ -323,6 +367,11 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Sets the size of the viewport from the sourceCamera.
+     * It checks if the sourceViewPort is compatible with the selected algorithm
+     * and eventually adjusts the tileSize to match the conditions of the algorithm.
+     */
     set sourceViewPort(viewport: [number, number]) {
         if (this._sourceViewPort !== viewport) {
             this._sourceViewPort = viewport;
@@ -333,6 +382,10 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Returns the tileSize.
+     * If the tilesSize has not been set it returns [-1, -1] as invalid.
+     */
     get tileSize(): [number, number] {
         if (this._tileSize) {
             return this._tileSize;
@@ -341,6 +394,10 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Sets the tileSize.
+     * The tileSize eventually changes to match the selected algorithms constraints.
+     */
     set tileSize(tileSize: [number, number]) {
         if (this._tileSize !== tileSize) {
             this._tileSize = tileSize;
@@ -351,10 +408,18 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Returns the padding per tile in CSS order: top, right, bottom, left.
+     * The standard is (0, 0, 0, 0).
+     */
     get padding(): vec4 {
         return this._padding;
     }
 
+    /**
+     * Stets the padding per tile in CSS order: top, right, bottom, left.
+     * The standard is (0, 0, 0, 0).
+     */
     set padding(padding: vec4) {
         if (this._padding !== padding) {
             this._padding = padding;
@@ -362,10 +427,21 @@ export class TiledRenderer {
         }
     }
 
+    /**
+     * Returns the selected IterationAlgorithm which determines the order
+     * in which the tiles are rendered.
+     * The default is TiledRenderer.IterationAlgorithm.ScanLine.
+     */
     get algorithm(): TiledRenderer.IterationAlgorithm {
         return this._algorithm;
     }
 
+    /**
+     * Sets the selected IterationAlgorithm which determines the order
+     * in which the tiles are rendered.
+     * The default is TiledRenderer.IterationAlgorithm.ScanLine.
+     * If needed, it automatically adjusts the tileSize to match the new algorithm.
+     */
     set algorithm(algorithm: TiledRenderer.IterationAlgorithm) {
         if (this._algorithm !== algorithm) {
             this._algorithm = algorithm;
@@ -377,10 +453,19 @@ export class TiledRenderer {
     }
 }
 
+/**
+ * The enum that is used to select one of the different the IterationAlgorithms.
+ */
 export namespace TiledRenderer {
 
     export enum IterationAlgorithm {
         ScanLine = 'scanline',
+        /**
+         * ScanLine conditions: none.
+         */
         HilbertCurve = 'hilbertcurve',
+        /**
+         * HilbertCurve conditions: Both numberOfXTiles, numberOfYTiles need to be equal and need to be a power of two.
+         */
     }
 }
