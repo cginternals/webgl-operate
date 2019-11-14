@@ -3,8 +3,15 @@ extends demo.pug
 
 block canvas
 
-  canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
-  // canvas(id = 'demo-canvas', data-backend = 'auto', width = '1920', height = '1080')
+  div.spinnercontainer
+    canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
+    // canvas(id = 'demo-canvas', data-backend = 'auto', width = '1920', height = '1080')
+    div.spinner
+        div.rect1
+        div.rect2
+        div.rect3
+        div.rect4
+        div.rect5
 
   div.row
     div.col

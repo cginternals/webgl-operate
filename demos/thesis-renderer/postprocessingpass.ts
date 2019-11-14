@@ -133,6 +133,13 @@ export class PostProcessingPass extends Initializable {
         this._frameBuffer.unbind(gl.DRAW_FRAMEBUFFER);
     }
 
+    clear(): void {
+        const gl = this._context.gl;
+        if (this._frameBuffer.initialized) {
+            this._frameBuffer.clear(gl.COLOR_BUFFER_BIT);
+        }
+    }
+
     set texture(texture: Texture2D) {
         this._texture = texture;
     }

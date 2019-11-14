@@ -48,6 +48,7 @@ import { DiskLight } from './arealight';
 export class ThesisRenderer extends Renderer {
 
     protected _loader: GLTFLoader;
+    protected _loading: boolean;
 
     protected _navigation: Navigation;
 
@@ -388,7 +389,7 @@ export class ThesisRenderer extends Renderer {
             this._brdfLUT.bind(gl.TEXTURE6);
         };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uViewProjection, gl.FALSE, matrix);
         };
 
         this._accumulatePass = new AccumulatePass(context);
@@ -408,8 +409,14 @@ export class ThesisRenderer extends Renderer {
         this._blitPass.drawBuffer = gl.BACK;
         this._blitPass.target = this._defaultFramebuffer;
 
+        /**
+         * Start loading environment.
+         */
         this.loadEnvironmentMap();
 
+        /**
+         * Setup debugging widgets.
+         */
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
         assetSelect.onchange = (_) => {
             this.loadAsset();
@@ -560,7 +567,7 @@ export class ThesisRenderer extends Renderer {
         this._forwardPass.bindMaterial = (_: Material) => { };
         this._forwardPass.bindGeometry = (_: Geometry) => { };
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uModelD, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uModelD, gl.FALSE, matrix);
         };
 
         this._forwardPass.drawCalls();
@@ -587,14 +594,14 @@ export class ThesisRenderer extends Renderer {
         this._shadowPass.frame(() => {
             this._shadowProgram.bind();
 
-            gl.uniformMatrix4fv(this._uViewProjectionS, gl.GL_FALSE, lightCamera.viewProjection);
-            gl.uniformMatrix4fv(this._uViewS, gl.GL_FALSE, lightCamera.view);
+            gl.uniformMatrix4fv(this._uViewProjectionS, gl.FALSE, lightCamera.viewProjection);
+            gl.uniformMatrix4fv(this._uViewS, gl.FALSE, lightCamera.view);
             gl.uniform2fv(this._uLightNearFarS, lightNearFar);
 
             this._forwardPass.bindMaterial = (_: Material) => { };
             this._forwardPass.bindGeometry = (_: Geometry) => { };
             this._forwardPass.updateModelTransform = (matrix: mat4) => {
-                gl.uniformMatrix4fv(this._uModelS, gl.GL_FALSE, matrix);
+                gl.uniformMatrix4fv(this._uModelS, gl.FALSE, matrix);
             };
             this._forwardPass.drawCalls();
 
@@ -603,13 +610,19 @@ export class ThesisRenderer extends Renderer {
 
         // Update mesh programs values for shadow map application
         this._program.bind();
-        gl.uniformMatrix4fv(this._uLightView, gl.GL_FALSE, lightCamera.view);
-        gl.uniformMatrix4fv(this._uLightProjection, gl.GL_FALSE, lightCamera.projection);
+        gl.uniformMatrix4fv(this._uLightView, gl.FALSE, lightCamera.view);
+        gl.uniformMatrix4fv(this._uLightProjection, gl.FALSE, lightCamera.projection);
         gl.uniform2fv(this._uLightNearFar, lightNearFar);
         this._program.unbind();
     }
 
     protected onFrame(frameNumber: number): void {
+        if (this._loading) {
+            return;
+        }
+
+        auxiliaries.assert(this._forwardPass.scene !== undefined, `Scene undefined in onFrame.`);
+
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -625,13 +638,13 @@ export class ThesisRenderer extends Renderer {
 
         // Update per frame uniforms
         gl.uniform1i(this._uFrameNumber, frameNumber);
-        gl.uniformMatrix4fv(this._uView, gl.GL_FALSE, this._camera.view);
-        gl.uniformMatrix4fv(this._uProjection, gl.GL_FALSE, this._camera.projection);
+        gl.uniformMatrix4fv(this._uView, gl.FALSE, this._camera.view);
+        gl.uniformMatrix4fv(this._uProjection, gl.FALSE, this._camera.projection);
         gl.uniform2fv(this._uCameraNearFar, vec2.fromValues(this._camera.near, this._camera.far));
 
         const viewNormalMatrix = mat3.create();
         mat3.normalFromMat4(viewNormalMatrix, this._camera.view);
-        gl.uniformMatrix3fv(this._uViewNormalMatrix, gl.GL_FALSE, viewNormalMatrix);
+        gl.uniformMatrix3fv(this._uViewNormalMatrix, gl.FALSE, viewNormalMatrix);
 
         const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
         ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
@@ -733,11 +746,11 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1i(this._uGeometryFlags, primitive.flags);
         };
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uModel, gl.FALSE, matrix);
 
             const normalMatrix = mat3.create();
             mat3.normalFromMat4(normalMatrix, matrix);
-            gl.uniformMatrix3fv(this._uNormalMatrix, gl.GL_FALSE, normalMatrix);
+            gl.uniformMatrix3fv(this._uNormalMatrix, gl.FALSE, normalMatrix);
         };
         this._forwardPass.frame();
 
@@ -774,19 +787,22 @@ export class ThesisRenderer extends Renderer {
             return;
         }
 
+        // Show loading spinner and clear background
+        this.showSpinner();
+        this._postProcessingPass.clear();
+
         this._currentScene = scene;
 
         this._camera = scene!.camera;
         this.updateCamera();
         this.updateLights(scene!);
 
-        this._forwardPass.scene = undefined;
-
         this._loader.uninitialize();
         this._loader.loadAsset(scene!.uri)
             .then(() => {
                 this._forwardPass.scene = this._loader.defaultScene;
                 this._invalidate(true);
+                this.hideSpinner();
             });
     }
 
@@ -889,6 +905,24 @@ export class ThesisRenderer extends Renderer {
                 negativeZ: `http://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
+    }
+
+    /**
+     * Show a spinner that indicates that the demo is still loading.
+     */
+    protected showSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'inline';
+        this._loading = true;
+    }
+
+    /**
+     * Hide the loading spinner.
+     */
+    protected hideSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'none';
+        this._loading = false;
     }
 }
 
