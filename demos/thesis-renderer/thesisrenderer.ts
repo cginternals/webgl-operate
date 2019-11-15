@@ -163,7 +163,7 @@ export class ThesisRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
-        this._cornellScene = new Scene('https://35.196.123.235/assets/cornell.glb',
+        this._cornellScene = new Scene('https://p-otto.waduhek.de/models/cornell.glb',
             new Camera(vec3.fromValues(-0.255, 3.09, -8.0), vec3.fromValues(0.135, 1.192, -0.46)),
             0.2, 20);
         this._cornellScene.addDiskLight(new DiskLight(
@@ -174,7 +174,7 @@ export class ThesisRenderer extends Renderer {
             90.0));
 
         this._datsunScene = new Scene(
-            'https://35.196.123.235/assets/datsun.glb',
+            'https://p-otto.waduhek.de/models/datsun.glb',
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             0.2, 30);
         this._datsunScene.addDiskLight(new DiskLight(
@@ -203,7 +203,7 @@ export class ThesisRenderer extends Renderer {
             110.0));
 
         this._kitchenScene = new Scene(
-            'https://35.196.123.235/assets/kitchen.glb',
+            'https://p-otto.waduhek.de/models/kitchen.glb',
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             0.1, 10);
         this._kitchenScene.addDiskLight(new DiskLight(
@@ -897,12 +897,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `https://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `https://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `https://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `https://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `https://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `https://35.196.123.235/studio010_LDR_linear_HC/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `https://p-otto.waduhek.de/studio/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `https://p-otto.waduhek.de/studio/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `https://p-otto.waduhek.de/studio/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `https://p-otto.waduhek.de/studio/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `https://p-otto.waduhek.de/studio/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `https://p-otto.waduhek.de/studio/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }
