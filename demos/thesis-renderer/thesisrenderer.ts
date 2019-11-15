@@ -897,12 +897,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `https://p-otto.waduhek.de/studio/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `https://p-otto.waduhek.de/studio/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `https://p-otto.waduhek.de/studio/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `https://p-otto.waduhek.de/studio/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `https://p-otto.waduhek.de/studio/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `https://p-otto.waduhek.de/studio/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `https://p-otto.waduhek.de/studio010/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `https://p-otto.waduhek.de/studio010/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `https://p-otto.waduhek.de/studio010/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `https://p-otto.waduhek.de/studio010/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }
