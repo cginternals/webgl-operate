@@ -81,6 +81,7 @@ export class ThesisRenderer extends Renderer {
     protected _shadowProgram: Program;
     protected _emptyTexture: Texture2D;
 
+    protected _diffuseEnvironment: TextureCube;
     protected _specularEnvironment: TextureCube;
     protected _brdfLUT: Texture2D;
 
@@ -122,6 +123,7 @@ export class ThesisRenderer extends Renderer {
     protected _uSphereLightRadius: WebGLUniformLocation;
     protected _uSphereLightLuminance: WebGLUniformLocation;
 
+    protected _uDiffuseEnvironment: WebGLUniformLocation;
     protected _uSpecularEnvironment: WebGLUniformLocation;
     protected _uBRDFLookupTable: WebGLUniformLocation;
     protected _uShadowMap: WebGLUniformLocation;
@@ -176,30 +178,30 @@ export class ThesisRenderer extends Renderer {
 
         this._skylineScene = new Scene(
             'https://p-otto.waduhek.de/models/skyline.glb',
-            new Camera(vec3.fromValues(-2.19, 2.987, 7.391), vec3.fromValues(-0.07, 0.0, 0.272)),
+            new Camera(vec3.fromValues(-2.19, 2.82, 7.391), vec3.fromValues(-0.07, -0.443, 0.0)),
             0.2, 20);
         this._skylineScene.addDiskLight(new DiskLight(
             vec3.fromValues(2.07, 1.84, -1.85),
             0.25,
-            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(601, 601, 601),
             vec3.fromValues(-0.6215066909790039, -0.55245041847229, 0.5554528832435608),
             110.0));
         this._skylineScene.addDiskLight(new DiskLight(
             vec3.fromValues(-2.03, 1.84, -1.85),
             0.25,
-            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(601, 601, 601),
             vec3.fromValues(0.614052951335907, -0.5565800070762634, 0.5596049427986145),
             110.0));
         this._skylineScene.addDiskLight(new DiskLight(
             vec3.fromValues(2.03, 1.84, 2.17),
             0.25,
-            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(601, 601, 601),
             vec3.fromValues(-0.5808207988739014, -0.5264583230018616, -0.6208774447441101),
             110.0));
         this._skylineScene.addDiskLight(new DiskLight(
             vec3.fromValues(-2.04, 1.84, 2.17),
             0.25,
-            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(601, 601, 601),
             vec3.fromValues(0.5827120542526245, -0.5255834460258484, -0.6198456883430481),
             110.0));
 
@@ -330,6 +332,7 @@ export class ThesisRenderer extends Renderer {
         this._uSphereLightRadius = this._program.uniform('u_sphereLight.radius');
         this._uSphereLightLuminance = this._program.uniform('u_sphereLight.luminance');
 
+        this._uDiffuseEnvironment = this._program.uniform('u_diffuseEnvironment');
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
         this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
         this._uLastFrame = this._program.uniform('u_lastFrame');
@@ -409,6 +412,7 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1i(this._uNormal, 2);
             gl.uniform1i(this._uOcclusion, 3);
             gl.uniform1i(this._uEmissive, 4);
+            gl.uniform1i(this._uDiffuseEnvironment, 10);
             gl.uniform1i(this._uSpecularEnvironment, 5);
             gl.uniform1i(this._uBRDFLookupTable, 6);
             gl.uniform1i(this._uShadowMap, 7);
@@ -416,6 +420,7 @@ export class ThesisRenderer extends Renderer {
             gl.uniform1i(this._uLastFrame, 9);
 
             this._specularEnvironment.bind(gl.TEXTURE5);
+            this._diffuseEnvironment.bind(gl.TEXTURE10);
             this._brdfLUT.bind(gl.TEXTURE6);
         };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
@@ -919,7 +924,19 @@ export class ThesisRenderer extends Renderer {
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
 
-        this._specularEnvironment = new TextureCube(this._context, 'Cubemap');
+        this._diffuseEnvironment = new TextureCube(this._context, 'DiffuseEnvironment');
+        this._diffuseEnvironment.initialize(64, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
+
+        this._diffuseEnvironment.fetch({
+            positiveX: `https://p-otto.waduhek.de/studio010/preprocessed-map-px-diffuse.png`,
+            negativeX: `https://p-otto.waduhek.de/studio010/preprocessed-map-nx-diffuse.png`,
+            positiveY: `https://p-otto.waduhek.de/studio010/preprocessed-map-py-diffuse.png`,
+            negativeY: `https://p-otto.waduhek.de/studio010/preprocessed-map-ny-diffuse.png`,
+            positiveZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-pz-diffuse.png`,
+            negativeZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-nz-diffuse.png`,
+        });
+
+        this._specularEnvironment = new TextureCube(this._context, 'SpecularEnvironment');
         this._specularEnvironment.initialize(512, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
 
         const MIPMAP_LEVELS = 9;

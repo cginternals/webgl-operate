@@ -44,6 +44,7 @@ uniform sampler2D u_normal;
 uniform sampler2D u_emissive;
 uniform sampler2D u_occlusion;
 
+uniform samplerCube u_diffuseEnvironment;
 uniform samplerCube u_specularEnvironment;
 uniform sampler2D u_brdfLUT;
 uniform sampler2D u_shadowMap;
@@ -228,8 +229,7 @@ vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
     vec2 brdfSamplePoint = vec2(NdotV, info.perceptualRoughness);
     vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
 
-    // TODO: proper diffuse preconvolution
-    vec4 diffuseSample = textureLod(u_specularEnvironment, info.incidentNormal, MIP_COUNT);
+    vec4 diffuseSample = texture(u_diffuseEnvironment, info.incidentNormal);
     vec4 specularSample = textureLod(u_specularEnvironment, reflection, lod);
 
     vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb * u_iblStrength;
