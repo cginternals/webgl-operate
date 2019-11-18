@@ -63,6 +63,7 @@ export class ThesisRenderer extends Renderer {
     protected _currentScene: Scene;
     protected _datsunScene: Scene;
     protected _kitchenScene: Scene;
+    protected _skylineScene: Scene;
     protected _cornellScene: Scene;
 
     protected _intermediateFBO: Framebuffer;
@@ -172,6 +173,35 @@ export class ThesisRenderer extends Renderer {
             vec3.fromValues(303, 303, 303),
             vec3.fromValues(0, -1, 0),
             90.0));
+
+        this._skylineScene = new Scene(
+            'https://p-otto.waduhek.de/models/skyline.glb',
+            new Camera(vec3.fromValues(-2.19, 2.987, 7.391), vec3.fromValues(-0.07, 0.0, 0.272)),
+            0.2, 20);
+        this._skylineScene.addDiskLight(new DiskLight(
+            vec3.fromValues(2.07, 1.84, -1.85),
+            0.25,
+            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(-0.6215066909790039, -0.55245041847229, 0.5554528832435608),
+            110.0));
+        this._skylineScene.addDiskLight(new DiskLight(
+            vec3.fromValues(-2.03, 1.84, -1.85),
+            0.25,
+            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(0.614052951335907, -0.5565800070762634, 0.5596049427986145),
+            110.0));
+        this._skylineScene.addDiskLight(new DiskLight(
+            vec3.fromValues(2.03, 1.84, 2.17),
+            0.25,
+            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(-0.5808207988739014, -0.5264583230018616, -0.6208774447441101),
+            110.0));
+        this._skylineScene.addDiskLight(new DiskLight(
+            vec3.fromValues(-2.04, 1.84, 2.17),
+            0.25,
+            vec3.fromValues(901, 901, 901),
+            vec3.fromValues(0.5827120542526245, -0.5255834460258484, -0.6198456883430481),
+            110.0));
 
         this._datsunScene = new Scene(
             'https://p-otto.waduhek.de/models/datsun.glb',
@@ -778,6 +808,8 @@ export class ThesisRenderer extends Renderer {
             scene = this._kitchenScene;
         } else if (assetSelect.value === 'Cornell') {
             scene = this._cornellScene;
+        } else if (assetSelect.value === 'Skyline') {
+            scene = this._skylineScene;
         }
 
         auxiliaries.assert(scene !== undefined, `Unknown scene ${assetSelect.value}.`);
