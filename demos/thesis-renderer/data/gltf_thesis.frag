@@ -255,6 +255,19 @@ vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
 
 void main(void)
 {
+    // The albedo may be defined from a base texture or a flat color
+    vec4 baseColor;
+    if (checkFlag(HAS_BASECOLORMAP)) {
+        baseColor = SRGBtoLINEAR(texture(u_baseColor, v_uv[u_baseColorTexCoord])) * u_baseColorFactor;
+    } else {
+        baseColor = u_baseColorFactor;
+    }
+
+    if (u_debugMode == 1) { // flat
+        fragColor = vec4(baseColor.rgb, 1.0);
+        return;
+    }
+
     float perceptualRoughness = u_roughnessFactor;
     float metallic = u_metallicFactor;
     if (checkFlag(HAS_METALROUGHNESSMAP)) {
@@ -269,14 +282,6 @@ void main(void)
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
     float alphaRoughness = perceptualRoughness * perceptualRoughness;
-
-     // The albedo may be defined from a base texture or a flat color
-    vec4 baseColor;
-    if (checkFlag(HAS_BASECOLORMAP)) {
-        baseColor = SRGBtoLINEAR(texture(u_baseColor, v_uv[u_baseColorTexCoord])) * u_baseColorFactor;
-    } else {
-        baseColor = u_baseColorFactor;
-    }
 
     if (u_debugMode == 4) { // Illuminance
         baseColor = vec4(1.0);
@@ -381,10 +386,7 @@ void main(void)
 
     fragColor = vec4(color * alpha, alpha);
 
-    if (u_debugMode == 1) { // flat
-        fragColor = vec4(baseColor.rgb, alpha);
-    }
-    else if (u_debugMode == 2) { // IBL
+    if (u_debugMode == 2) { // IBL
         fragColor = vec4(environmentLight, alpha);
     }
     else if (u_debugMode == 3) { // Light sources
