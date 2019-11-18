@@ -983,7 +983,7 @@ export class ThesisDemo extends Demo {
     initialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
-        this._canvas.controller.multiFrameNumber = 120;
+        this._canvas.controller.multiFrameNumber = 128;
         this._canvas.framePrecision = Wizard.Precision.float;
         this._canvas.frameScale = [1.0, 1.0];
 
