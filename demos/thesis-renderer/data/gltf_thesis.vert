@@ -33,12 +33,14 @@ const int HAS_COLORS            = 1 << 3;
 #endif
 
 uniform mat4 u_model;
-uniform mat4 u_viewProjection;
+uniform mat4 u_projection;
+uniform mat4 u_view;
 uniform mat3 u_normalMatrix;
 
 uniform mediump int u_geometryFlags;
 
 uniform vec2 u_ndcOffset;
+uniform vec2 u_cocPoint;
 
 varying vec2 v_uv[3];
 varying vec4 v_color;
@@ -49,6 +51,13 @@ varying vec3 v_normal;
 
 bool checkFlag(int flag) {
     return (u_geometryFlags & flag) == flag;
+}
+
+vec4 depthOfField(mat4 modelView, vec4 worldPos, vec2 cocPoint, float focalDist)
+{
+    vec4 viewVertex = modelView * worldPos;
+    viewVertex.xy += cocPoint * (viewVertex.z + focalDist);
+    return viewVertex;
 }
 
 void main(void)
@@ -83,6 +92,7 @@ void main(void)
         v_color = vec4(1.0);
     }
 
-    gl_Position = u_viewProjection * u_model * a_position;
+    vec4 viewVertex = depthOfField(u_view * u_model, a_position, u_cocPoint * 0.006, 8.0);
+    gl_Position = u_projection * viewVertex;
     ndcOffset(gl_Position, u_ndcOffset);
 }

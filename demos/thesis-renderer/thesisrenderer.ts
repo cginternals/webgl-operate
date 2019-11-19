@@ -39,6 +39,7 @@ import { Scene } from './scene';
 
 import { Demo } from '../demo';
 import { DiskLight } from './arealight';
+import { DepthOfFieldKernel } from './depthoffieldkernel';
 
 // tslint:disable:max-classes-per-file
 
@@ -95,6 +96,10 @@ export class ThesisRenderer extends Renderer {
 
     protected _ndcOffsetKernel: AntiAliasingKernel;
     protected _uNdcOffset: WebGLUniformLocation;
+
+    protected _depthOfFieldKernel: DepthOfFieldKernel;
+    protected _uCocPoint: WebGLUniformLocation;
+
     protected _uFrameNumber: WebGLUniformLocation;
 
     protected _uBaseColor: WebGLUniformLocation;
@@ -141,11 +146,11 @@ export class ThesisRenderer extends Renderer {
 
     protected _uModelS: WebGLUniformLocation;
     protected _uViewS: WebGLUniformLocation;
-    protected _uViewProjectionS: WebGLUniformLocation;
+    protected _uProjectionS: WebGLUniformLocation;
     protected _uLightNearFarS: WebGLUniformLocation;
 
     protected _uModelD: WebGLUniformLocation;
-    protected _uViewProjectionD: WebGLUniformLocation;
+    protected _uProjectionD: WebGLUniformLocation;
     protected _uViewD: WebGLUniformLocation;
     protected _uCameraNearFarD: WebGLUniformLocation;
 
@@ -316,6 +321,7 @@ export class ThesisRenderer extends Renderer {
 
         this._uNdcOffset = this._program.uniform('u_ndcOffset');
         this._uFrameNumber = this._program.uniform('u_frameNumber');
+        this._uCocPoint = this._program.uniform('u_cocPoint');
 
         this._uEye = this._program.uniform('u_eye');
         this._uGeometryFlags = this._program.uniform('u_geometryFlags');
@@ -357,7 +363,7 @@ export class ThesisRenderer extends Renderer {
 
         this._uModelS = this._shadowProgram.uniform('u_model');
         this._uViewS = this._shadowProgram.uniform('u_view');
-        this._uViewProjectionS = this._shadowProgram.uniform('u_viewProjection');
+        this._uProjectionS = this._shadowProgram.uniform('u_projection');
         this._uLightNearFarS = this._shadowProgram.uniform('u_lightNearFar');
 
         /* Initialize pre depth program */
@@ -369,7 +375,7 @@ export class ThesisRenderer extends Renderer {
         this._depthProgram.initialize([depthVert, depthFrag]);
 
         this._uViewD = this._depthProgram.uniform('u_view');
-        this._uViewProjectionD = this._depthProgram.uniform('u_viewProjection');
+        this._uProjectionD = this._depthProgram.uniform('u_projection');
         this._uCameraNearFarD = this._depthProgram.uniform('u_cameraNearFar');
         this._uModelD = this._depthProgram.uniform('u_model');
 
@@ -564,6 +570,7 @@ export class ThesisRenderer extends Renderer {
 
         if (this._altered.multiFrameNumber) {
             this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+            this._depthOfFieldKernel = new DepthOfFieldKernel(this._multiFrameNumber);
         }
 
         if (this._altered.frameSize) {
@@ -595,7 +602,7 @@ export class ThesisRenderer extends Renderer {
         this._depthProgram.bind();
         gl.uniform2fv(this._uCameraNearFarD, vec2.fromValues(this._camera.near, this._camera.far));
         gl.uniformMatrix4fv(this._uViewD, gl.FALSE, this._camera.view);
-        gl.uniformMatrix4fv(this._uViewProjectionD, gl.FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uProjectionD, gl.FALSE, this._camera.projection);
 
         this._forwardPass.program = this._depthProgram;
         this._forwardPass.target = this._preDepthFBO;
@@ -629,7 +636,7 @@ export class ThesisRenderer extends Renderer {
         this._shadowPass.frame(() => {
             this._shadowProgram.bind();
 
-            gl.uniformMatrix4fv(this._uViewProjectionS, gl.FALSE, lightCamera.viewProjection);
+            gl.uniformMatrix4fv(this._uProjectionS, gl.FALSE, lightCamera.projection);
             gl.uniformMatrix4fv(this._uViewS, gl.FALSE, lightCamera.view);
             gl.uniform2fv(this._uLightNearFarS, lightNearFar);
 
@@ -685,6 +692,9 @@ export class ThesisRenderer extends Renderer {
         ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
         ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
+
+        const cocPoint = this._depthOfFieldKernel.get(frameNumber);
+        gl.uniform2fv(this._uCocPoint, cocPoint);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
         this._normalDepthTexture.bind(gl.TEXTURE8);
