@@ -24,6 +24,16 @@ block canvas
             option(value='Skyline') Skyline
             option(value='Datsun') Datsun
       .form-group.row
+        label(for = 'environment-select').col-md-2.col-form-label Environment:
+        .col-md-10
+          select.custom-select.custom-select-sm.multiple#environment-select
+            option(value='studio006') studio006
+            option(value='studio010' selected) studio010
+            option(value='studio011') studio011
+            option(value='studio015') studio015
+            option(value='cayley_interior') cayley_interior
+            option(value='noon_grass') noon_grass
+      .form-group.row
         label(for = 'debug-select').col-md-2.col-form-label Debug Mode:
         .col-md-10
           select.custom-select.custom-select-sm.multiple#debug-select

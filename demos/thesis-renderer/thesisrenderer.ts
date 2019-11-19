@@ -463,9 +463,16 @@ export class ThesisRenderer extends Renderer {
             this.loadAsset();
         };
 
+        const environmentSelect = window.document.getElementById('environment-select')! as HTMLSelectElement;
+        environmentSelect.onchange = (_) => {
+            this.loadEnvironmentMap();
+            this._invalidate(true);
+        };
+
         const debugSelect = window.document.getElementById('debug-select')! as HTMLSelectElement;
         debugSelect.onchange = (_) => {
             this.setDebugMode();
+            this._invalidate(true);
         };
 
         const exposureRange = window.document.getElementById('exposure-range')! as HTMLInputElement;
@@ -874,8 +881,6 @@ export class ThesisRenderer extends Renderer {
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_debugMode'), debugMode);
         this._program.unbind();
-
-        this._invalidate(true);
     }
 
     protected updateLights(scene: Scene): void {
@@ -923,6 +928,9 @@ export class ThesisRenderer extends Renderer {
      * Setup environment lighting
      */
     protected loadEnvironmentMap(): void {
+        const environmentSelect = window.document.getElementById('environment-select')! as HTMLSelectElement;
+        const environmentName = environmentSelect.value;
+
         const gl = this._context.gl;
 
         this._brdfLUT = new Texture2D(this._context, 'BRDFLookUpTable');
@@ -938,12 +946,12 @@ export class ThesisRenderer extends Renderer {
         this._diffuseEnvironment.initialize(64, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
 
         this._diffuseEnvironment.fetch({
-            positiveX: `https://p-otto.waduhek.de/studio010/preprocessed-map-px-diffuse.png`,
-            negativeX: `https://p-otto.waduhek.de/studio010/preprocessed-map-nx-diffuse.png`,
-            positiveY: `https://p-otto.waduhek.de/studio010/preprocessed-map-py-diffuse.png`,
-            negativeY: `https://p-otto.waduhek.de/studio010/preprocessed-map-ny-diffuse.png`,
-            positiveZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-pz-diffuse.png`,
-            negativeZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-nz-diffuse.png`,
+            positiveX: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-px-diffuse.png`,
+            negativeX: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-nx-diffuse.png`,
+            positiveY: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-py-diffuse.png`,
+            negativeY: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-ny-diffuse.png`,
+            positiveZ: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-pz-diffuse.png`,
+            negativeZ: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-nz-diffuse.png`,
         });
 
         this._specularEnvironment = new TextureCube(this._context, 'SpecularEnvironment');
@@ -956,12 +964,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `https://p-otto.waduhek.de/studio010/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `https://p-otto.waduhek.de/studio010/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `https://p-otto.waduhek.de/studio010/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `https://p-otto.waduhek.de/studio010/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `https://p-otto.waduhek.de/studio010/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `https://p-otto.waduhek.de/${environmentName}/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }
