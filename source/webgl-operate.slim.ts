@@ -33,7 +33,7 @@ export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
 
 export { Camera } from './camera';
-export { TiledRenderer } from './tiledrenderer';
+export { TileCameraGenerator } from './tilecameragenerator';
 export { CameraModifier } from './cameramodifier';
 export { Navigation } from './navigation';
 export { FirstPersonModifier } from './firstpersonmodifier';

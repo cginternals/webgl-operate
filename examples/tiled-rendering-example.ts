@@ -1,8 +1,7 @@
 
-
 /* spellchecker: disable */
 
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import {
     Camera,
@@ -17,6 +16,7 @@ import {
     Renderer,
     Shader,
     Texture2D,
+    TileCameraGenerator,
     Wizard,
 } from 'webgl-operate';
 
@@ -39,6 +39,7 @@ export class TiledCubeRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
+    protected _tileNumber = 4;
 
 
     /**
@@ -60,7 +61,7 @@ export class TiledCubeRenderer extends Renderer {
         const gl = context.gl;
 
 
-        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.0, 2.0, 2.0]);
+        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.5, 2.5, 2.5]);
         this._cuboid.initialize();
 
 
@@ -159,13 +160,13 @@ export class TiledCubeRenderer extends Renderer {
         this._camera.altered = false;
     }
 
-    protected onFrame(): void {
+    protected /*async*/ onFrame(): void {
+        // prepare
         const gl = this._context.gl;
 
         this._defaultFBO.bind();
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
-        gl.viewport(0, 0, this._frameSize[0] / 2, this._frameSize[1] / 2);
 
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
@@ -174,11 +175,59 @@ export class TiledCubeRenderer extends Renderer {
         this._texture.bind(gl.TEXTURE0);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
         this._cuboid.bind();
-        this._cuboid.draw();
+        // render everything new
 
+        // render not tiled quater
+        gl.viewport(0, this._frameSize[1] / 2, this._frameSize[0] / 2, this._frameSize[1] / 2);
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        this._cuboid.draw();
+        let offset: [number, number] = [0, 0];
+
+        const tileCameraScanLineGenerator = new TileCameraGenerator();
+        tileCameraScanLineGenerator.sourceCamera = this._camera;
+        tileCameraScanLineGenerator.sourceViewPort = this._frameSize;
+        tileCameraScanLineGenerator.tileSize = [this._frameSize[0] / this._tileNumber * 2,
+        this._frameSize[1] / this._tileNumber * 2];
+        tileCameraScanLineGenerator.padding = vec4.create();
+        const tileCameraScanLine = tileCameraScanLineGenerator.camera;
+        tileCameraScanLineGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
+
+        const tileCameraHilbertGenerator = new TileCameraGenerator();
+        tileCameraHilbertGenerator.sourceCamera = this._camera;
+        tileCameraHilbertGenerator.sourceViewPort = this._frameSize;
+        tileCameraHilbertGenerator.tileSize = [this._frameSize[0] / this._tileNumber * 2,
+        this._frameSize[1] / this._tileNumber * 2];
+        tileCameraHilbertGenerator.padding = vec4.create();
+        const tileCameraHilbert = tileCameraHilbertGenerator.camera;
+        tileCameraHilbertGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
+
+        // create sleep method to visualize rendering
+        /*const sleep: (milliseconds: number) => Promise<void> = (milliseconds: number) => {
+            return new Promise((resolve) => setTimeout(resolve, milliseconds));
+        };*/
+
+
+        while (tileCameraScanLineGenerator.nextTile()) {
+            // ScanLine
+            offset = tileCameraScanLineGenerator.offset;
+            gl.viewport(offset[0] / 2 + this._frameSize[0] / 2, offset[1] / 2 + this._frameSize[1] / 2,
+                tileCameraScanLineGenerator.tileSize[0] / 2, tileCameraScanLineGenerator.tileSize[1] / 2);
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, tileCameraScanLine.viewProjection);
+            this._cuboid.draw();
+
+            // Hilbert
+            tileCameraHilbertGenerator.nextTile();
+            offset = tileCameraHilbertGenerator.offset;
+            gl.viewport(offset[0] / 2, offset[1] / 2,
+                tileCameraHilbertGenerator.tileSize[0] / 2, tileCameraHilbertGenerator.tileSize[1] / 2);
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, tileCameraHilbert.viewProjection);
+            this._cuboid.draw();
+            // await sleep(10);
+        }
+
+        // restore state
         this._cuboid.unbind();
 
         this._program.unbind();

@@ -68,9 +68,9 @@
         "disabled": true
     },
     {
-        "target": "tiled-scene-renderer-example",
-        "title": "Tiled Scene Renderer",
-        "object": "TiledSceneRendererExample",
-        "caption": "Rendering of a scene with the Tiled Renderer."
+        "target": "tiled-rendering-example",
+        "title": "Tiled Cube Renderer",
+        "object": "TiledRendererExample",
+        "caption": "Rendering of a cube with the Tiled Renderer in 4 different ways."
     }
 ]
