@@ -39,7 +39,15 @@ export class TiledCubeRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
-    protected _tileNumber = 4;
+    protected _tileNumber = 16;
+
+    protected _tileCameraScanLineGenerator: TileCameraGenerator;
+    protected _tileCameraScanLine: Camera;
+    protected _tileCameraHilbertGenerator: TileCameraGenerator;
+    protected _tileCameraHilbert: Camera;
+
+    // todo remove
+    protected test1: TileCameraGenerator;
 
 
     /**
@@ -114,6 +122,7 @@ export class TiledCubeRenderer extends Renderer {
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
 
+        this.createTiledCameraUtils();
         return true;
     }
 
@@ -150,17 +159,81 @@ export class TiledCubeRenderer extends Renderer {
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
             this._camera.viewport = this._canvasSize;
+            this.setTileCameraGeneratorTileSize();
         }
 
         if (this._altered.clearColor) {
             this._defaultFBO.clearColor(this._clearColor);
+        }
+        if (this._camera.altered) {
+            this._tileCameraScanLineGenerator.updateCameraProperties();
+            this._tileCameraHilbertGenerator.updateCameraProperties();
+            const temp = this._tileCameraScanLineGenerator;
+            this.test1 = temp;
+            this.createTiledCameraUtils();
+            console.log('=============');
+            console.log('=============');
+            console.log(temp);
+            console.log(this._tileCameraScanLineGenerator);
         }
 
         this._altered.reset();
         this._camera.altered = false;
     }
 
-    protected /*async*/ onFrame(): void {
+    protected renderOneTilePerQuadrant(): void {
+        const gl = this._context.gl;
+        let offset: [number, number] = [0, 0];
+        // ScanLine
+        offset = this._tileCameraScanLineGenerator.offset;
+        gl.viewport(offset[0] / 2 + this._frameSize[0] / 2, offset[1] / 2 + this._frameSize[1] / 2,
+            this._tileCameraScanLineGenerator.tileSize[0] / 2, this._tileCameraScanLineGenerator.tileSize[1] / 2);
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._tileCameraScanLine.viewProjection);
+        this._cuboid.draw();
+
+        // Hilbert
+        this._tileCameraHilbertGenerator.nextTile();
+        offset = this._tileCameraHilbertGenerator.offset;
+        gl.viewport(offset[0] / 2, offset[1] / 2,
+            this._tileCameraHilbertGenerator.tileSize[0] / 2, this._tileCameraHilbertGenerator.tileSize[1] / 2);
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._tileCameraHilbert.viewProjection);
+        this._cuboid.draw();
+
+    }
+
+    protected setTileCameraGeneratorTileSize(): void {
+        const tileSize: [number, number] = [0, 0];
+
+        const floor0 = Math.floor(this._frameSize[0] / this._tileNumber * 2);
+        const ceil0 = Math.ceil(this._frameSize[0] / this._tileNumber) * 2;
+        tileSize[0] = (floor0 & 1) === 1 ? ceil0 : floor0;
+        const floor1 = Math.floor(this._frameSize[1] / this._tileNumber * 2);
+        const ceil1 = Math.ceil(this._frameSize[1] / this._tileNumber * 2);
+        tileSize[1] = (floor1 & 1) === 1 ? ceil1 : floor1;
+
+        this._tileCameraScanLineGenerator.tileSize = tileSize;
+        this._tileCameraHilbertGenerator.tileSize = tileSize;
+    }
+
+    protected createTiledCameraUtils(): void {
+        this._tileCameraScanLineGenerator = new TileCameraGenerator();
+        this._tileCameraScanLineGenerator.sourceCamera = this._camera;
+        this._tileCameraScanLineGenerator.sourceViewPort = this._frameSize;
+        this._tileCameraScanLineGenerator.padding = vec4.create();
+        this._tileCameraScanLine = this._tileCameraScanLineGenerator.camera;
+        this._tileCameraScanLineGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
+
+        this._tileCameraHilbertGenerator = new TileCameraGenerator();
+        this._tileCameraHilbertGenerator.sourceCamera = this._camera;
+        this._tileCameraHilbertGenerator.sourceViewPort = this._frameSize;
+        this._tileCameraHilbertGenerator.padding = vec4.create();
+        this._tileCameraHilbert = this._tileCameraHilbertGenerator.camera;
+        this._tileCameraHilbertGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
+
+        this.setTileCameraGeneratorTileSize();
+    }
+
+    protected onFrame(): void {
         // prepare
         const gl = this._context.gl;
 
@@ -183,49 +256,49 @@ export class TiledCubeRenderer extends Renderer {
         gl.viewport(0, this._frameSize[1] / 2, this._frameSize[0] / 2, this._frameSize[1] / 2);
         gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
         this._cuboid.draw();
-        let offset: [number, number] = [0, 0];
 
-        const tileCameraScanLineGenerator = new TileCameraGenerator();
-        tileCameraScanLineGenerator.sourceCamera = this._camera;
-        tileCameraScanLineGenerator.sourceViewPort = this._frameSize;
-        tileCameraScanLineGenerator.tileSize = [this._frameSize[0] / this._tileNumber * 2,
-        this._frameSize[1] / this._tileNumber * 2];
-        tileCameraScanLineGenerator.padding = vec4.create();
-        const tileCameraScanLine = tileCameraScanLineGenerator.camera;
-        tileCameraScanLineGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
-
-        const tileCameraHilbertGenerator = new TileCameraGenerator();
-        tileCameraHilbertGenerator.sourceCamera = this._camera;
-        tileCameraHilbertGenerator.sourceViewPort = this._frameSize;
-        tileCameraHilbertGenerator.tileSize = [this._frameSize[0] / this._tileNumber * 2,
-        this._frameSize[1] / this._tileNumber * 2];
-        tileCameraHilbertGenerator.padding = vec4.create();
-        const tileCameraHilbert = tileCameraHilbertGenerator.camera;
-        tileCameraHilbertGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
+        if (this._tileCameraScanLineGenerator === undefined || this._tileCameraScanLineGenerator === null) {
+            this.createTiledCameraUtils();
+        }
 
         // create sleep method to visualize rendering
         /*const sleep: (milliseconds: number) => Promise<void> = (milliseconds: number) => {
             return new Promise((resolve) => setTimeout(resolve, milliseconds));
-        };*/
+        };
+        const sleep2 = new Promise((resolve) => setTimeout(resolve, 10));*/
 
-
-        while (tileCameraScanLineGenerator.nextTile()) {
+        let offset: [number, number] = [0, 0];
+        while (this._tileCameraScanLineGenerator.nextTile()) {
+            this.test1.nextTile();
             // ScanLine
-            offset = tileCameraScanLineGenerator.offset;
+            offset = this._tileCameraScanLineGenerator.offset;
+            console.log('correct');
+            //console.log(this._tileCameraScanLine.viewProjection);
+            this._tileCameraScanLine.viewProjection;
+            console.log('wrong');
+            this.test1.camera.viewProjection;
+            //console.log(this.test1.camera.viewProjection);
+            console.log(mat4.equals(this.test1.camera.viewProjection, this._tileCameraScanLine.viewProjection));
+            console.log(mat4.exactEquals(this.test1.camera.viewProjection, this._tileCameraScanLine.viewProjection));
             gl.viewport(offset[0] / 2 + this._frameSize[0] / 2, offset[1] / 2 + this._frameSize[1] / 2,
-                tileCameraScanLineGenerator.tileSize[0] / 2, tileCameraScanLineGenerator.tileSize[1] / 2);
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, tileCameraScanLine.viewProjection);
+                this._tileCameraScanLineGenerator.tileSize[0] / 2, this._tileCameraScanLineGenerator.tileSize[1] / 2);
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this.test1.camera.viewProjection);
             this._cuboid.draw();
 
             // Hilbert
-            tileCameraHilbertGenerator.nextTile();
-            offset = tileCameraHilbertGenerator.offset;
+            this._tileCameraHilbertGenerator.nextTile();
+            offset = this._tileCameraHilbertGenerator.offset;
             gl.viewport(offset[0] / 2, offset[1] / 2,
-                tileCameraHilbertGenerator.tileSize[0] / 2, tileCameraHilbertGenerator.tileSize[1] / 2);
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, tileCameraHilbert.viewProjection);
+                this._tileCameraHilbertGenerator.tileSize[0] / 2, this._tileCameraHilbertGenerator.tileSize[1] / 2);
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._tileCameraHilbert.viewProjection);
             this._cuboid.draw();
-            // await sleep(10);
+            //sleep(1).then(() => this.renderOneTilePerQuadrant());
+            //sleep2.then(() => this.renderOneTilePerQuadrant());
         }
+
+        this._tileCameraScanLineGenerator.resetTileRendering();
+        this._tileCameraHilbertGenerator.resetTileRendering();
+        this.test1.resetTileRendering();
 
         // restore state
         this._cuboid.unbind();

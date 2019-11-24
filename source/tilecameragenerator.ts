@@ -33,6 +33,10 @@ import { m4 } from './gl-matrix-extensions';
  *      offset = tileCameraGenerator.offset;
  *      "render"
  * }
+ * // reset generator
+ * tileCameraGenerator.resetTileRendering();
+ *
+ * NOTE: Use updateCameraProperties if the source camera is altered.
  */
 
 // TODO update comments to the changed, test the changes
@@ -194,6 +198,24 @@ export class TileCameraGenerator {
     }
 
     /**
+     * Resets the tile index to prepare the generator for the next rendering.
+     * Should be called after iteration with nextTile().
+     */
+    public resetTileRendering(): void {
+        this.tile = -1;
+        this._currentOffset[0] = 0;
+        this._currentOffset[1] = 0;
+    }
+
+    /**
+     * Reassigns all values from the source camera to the tile camera.
+     * Should be called when the source camera is altered.
+     */
+    public updateCameraProperties(): void {
+        this.sourceCamera.copyAllValues(this.camera);
+    }
+
+    /**
      * Updates the camera view frustum to current tile based on
      * the sourceViewPort, tileSize and the padding.
      * If the tile is less than zero, the camera is set to the first tile.
@@ -279,6 +301,7 @@ export class TileCameraGenerator {
 
     /**
      * Returns the offset of the current tile.
+     * The padding is not included in the offset.
      * @returns - Current tile offset.
      */
     get offset(): [number, number] {
