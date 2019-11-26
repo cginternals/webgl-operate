@@ -23,6 +23,7 @@ export class PostProcessingPass extends Initializable {
     protected _context: Context;
 
     protected _texture: Texture2D;
+    protected _normalDepthTexture: Texture2D;
 
     protected _targetTexture: Texture2D;
     protected _frameBuffer: Framebuffer;
@@ -59,6 +60,7 @@ export class PostProcessingPass extends Initializable {
 
         this._program.bind();
         gl.uniform1i(this._program.uniform('u_texture'), 0);
+        gl.uniform1i(this._program.uniform('u_normalDepthTexture'), 1);
         this._program.unbind();
 
         this.exposure = 1.0;
@@ -119,12 +121,16 @@ export class PostProcessingPass extends Initializable {
         auxiliaries.logIf(!this._texture || !this._texture.valid, auxiliaries.LogLevel.Warning,
             `valid texture for postprocessing frame expected, given ${this._texture}`);
 
+        auxiliaries.logIf(!this._normalDepthTexture || !this._normalDepthTexture.valid, auxiliaries.LogLevel.Warning,
+            `valid normal/depth texture for postprocessing frame expected, given ${this._texture}`);
+
         const gl = this._context.gl;
 
         gl.viewport(0, 0, this._targetTexture.width, this._targetTexture.height);
 
         this._program.bind();
         this._texture.bind(gl.TEXTURE0);
+        this._normalDepthTexture.bind(gl.TEXTURE1);
 
         this._frameBuffer.bind(gl.DRAW_FRAMEBUFFER);
         this._ndcTriangle.bind();
@@ -142,6 +148,10 @@ export class PostProcessingPass extends Initializable {
 
     set texture(texture: Texture2D) {
         this._texture = texture;
+    }
+
+    set normalDepthTexture(texture: Texture2D) {
+        this._normalDepthTexture = texture;
     }
 
     set exposure(exposure: number) {

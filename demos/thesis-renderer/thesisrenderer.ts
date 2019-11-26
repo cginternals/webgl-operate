@@ -583,6 +583,7 @@ export class ThesisRenderer extends Renderer {
         this._accumulatePass.update();
 
         this._postProcessingPass.texture = this._accumulatePass.framebuffer!.texture(gl2facade.COLOR_ATTACHMENT0)!;
+        this._postProcessingPass.normalDepthTexture = this._normalDepthTexture;
         this._postProcessingPass.update();
 
         this._altered.reset();

@@ -167,7 +167,7 @@ vec3 sampleOcclusion(LightingInfo info, vec3 viewPosition, vec3 viewSampleOffset
 
     float cosOutgoing = clamp(dot(direction, normalize(u_viewNormalMatrix * -hitNormal)), 0.0, 1.0);
     float cosIncoming = clamp(dot(direction, normalize(u_viewNormalMatrix * info.incidentNormal)), 0.0, 1.0);
-    float bounceDistance = max(length(sampledPoint - viewPosition), 0.05);
+    float bounceDistance = max(length(sampledPoint - viewPosition), 0.5);
 
     hit = true;
     if (check <= 0.0) {
