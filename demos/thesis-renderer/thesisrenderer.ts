@@ -135,8 +135,7 @@ export class ThesisRenderer extends Renderer {
     protected _uLastFrame: WebGLUniformLocation;
     protected _uNormalDepth: WebGLUniformLocation;
 
-    protected _uSSAORange: WebGLUniformLocation;
-    protected _uSSRRange: WebGLUniformLocation;
+    protected _uOcclusionRange: WebGLUniformLocation;
     protected _uExposure: WebGLUniformLocation;
     protected _uIBLStrength: WebGLUniformLocation;
 
@@ -349,8 +348,7 @@ export class ThesisRenderer extends Renderer {
         this._uLightProjection = this._program.uniform('u_lightProjection');
         this._uLightNearFar = this._program.uniform('u_lightNearFar');
 
-        this._uSSAORange = this._program.uniform('u_ssaoRange');
-        this._uSSRRange = this._program.uniform('u_ssrRange');
+        this._uOcclusionRange = this._program.uniform('u_occlusionRange');
         this._uIBLStrength = this._program.uniform('u_iblStrength');
 
         /* Initialize shadow program */
@@ -490,23 +488,14 @@ export class ThesisRenderer extends Renderer {
         };
         iblRange.onchange(new Event(''));
 
-        const ssaoRange = window.document.getElementById('ssao-range')! as HTMLInputElement;
-        ssaoRange.onchange = (_) => {
+        const occlusionRange = window.document.getElementById('occlusion-range')! as HTMLInputElement;
+        occlusionRange.onchange = (_) => {
             this._program.bind();
-            gl.uniform1f(this._uSSAORange, parseFloat(ssaoRange.value) / 100.0);
+            gl.uniform1f(this._uOcclusionRange, parseFloat(occlusionRange.value) / 300.0);
             this._program.unbind();
             this._invalidate(true);
         };
-        ssaoRange.onchange(new Event(''));
-
-        const ssrRange = window.document.getElementById('ssr-range')! as HTMLInputElement;
-        ssrRange.onchange = (_) => {
-            this._program.bind();
-            gl.uniform1f(this._uSSRRange, parseFloat(ssrRange.value) / 100.0);
-            this._program.unbind();
-            this._invalidate(true);
-        };
-        ssrRange.onchange(new Event(''));
+        occlusionRange.onchange(new Event(''));
 
         return true;
     }

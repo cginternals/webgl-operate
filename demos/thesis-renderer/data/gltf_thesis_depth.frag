@@ -86,6 +86,6 @@ void main(void)
     vec4 viewPosition = u_view * vec4(v_position, 1.0);
     viewPosition /= viewPosition.w;
 
-    float depth = (length(viewPosition.xyz) - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
+    float depth = length(viewPosition.xyz);
     fragColor = vec4(getNormal(), depth);
 }

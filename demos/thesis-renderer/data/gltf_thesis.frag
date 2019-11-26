@@ -87,8 +87,7 @@ uniform vec2 u_cameraNearFar;
 uniform int u_frameNumber;
 uniform int u_debugMode;
 uniform float u_iblStrength;
-uniform float u_ssaoRange;
-uniform float u_ssrRange;
+uniform float u_occlusionRange;
 
 varying vec2 v_uv[3];
 varying vec4 v_color;
@@ -147,66 +146,28 @@ vec3 getNormal()
     return n;
 }
 
-float ssaoSample(LightingInfo info) {
-    vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
-
-    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
-    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
-    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
-
-    // generate matrix to transform from tangent to view space
-    vec3 viewNormal = normalize(u_viewNormalMatrix * info.incidentNormal);
-    vec3 random = normalize(vec3(0.0, 1.0, 1.0));
-    vec3 t = normalize(random - viewNormal * dot(random, viewNormal));
-    vec3 b = cross(viewNormal, t);
-    mat3 TBN = mat3(t, b, viewNormal);
-
-    vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
-    viewSampleOffset *= u_ssaoRange * random3;
-
+vec3 sampleOcclusion(LightingInfo info, vec3 viewPosition, vec3 viewSampleOffset, out bool hit) {
     vec3 viewSamplePoint = viewPosition + viewSampleOffset;
     vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
     vec2 sampleUV = (ndcSamplePoint / ndcSamplePoint.w).xy * 0.5 + 0.5;
     float sampleDepth = length(viewSamplePoint);
-    sampleDepth = (sampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
-
-    float compareDepth = texture(u_normalDepth, sampleUV).a;
-    // range check fixes halos when depths are very different
-    float rangeCheck = abs(compareDepth - sampleDepth) < u_ssaoRange ? 1.0 : 0.0;
-    return step(compareDepth, sampleDepth) * rangeCheck;
-}
-
-vec3 ssrSample(LightingInfo info, out bool hit) {
-    vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
-
-    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
-    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
-    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
-
-    // generate matrix to transform from tangent to view space
-    vec3 viewNormal = normalize(u_viewNormalMatrix * info.incidentNormal);
-    vec3 random = normalize(vec3(0.0, 1.0, 1.0));
-    vec3 t = normalize(random - viewNormal * dot(random, viewNormal));
-    vec3 b = cross(viewNormal, t);
-    mat3 TBN = mat3(t, b, viewNormal);
-
-    vec3 viewHalfNormal = TBN * importanceSampleGGX(vec2(random1, random2), info.alphaRoughnessSq);
-    vec3 viewSampleOffset = reflect(-u_viewNormalMatrix * info.view, viewHalfNormal);
-    viewSampleOffset *= u_ssrRange * random3;
-
-    vec3 viewSamplePoint = viewPosition + viewSampleOffset;
-    vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
-    vec2 sampleUV = (ndcSamplePoint / ndcSamplePoint.w).xy * 0.5 + 0.5;
-    float sampleDepth = length(viewSamplePoint);
-    sampleDepth = (sampleDepth - u_cameraNearFar[0]) / (u_cameraNearFar[1] - u_cameraNearFar[0]);
 
     vec4 normalDepth = texture(u_normalDepth, sampleUV);
     vec3 hitNormal = normalDepth.rgb;
     float compareDepth = normalDepth.a;
 
+    // TODO: figure out math to get real sampled point
+    // vec3 sampledPoint = vec3(viewSamplePoint.xy, compareDepth);
+    vec3 sampledPoint = viewSamplePoint;
+    vec3 direction = normalize(sampledPoint - viewPosition);
+
     // range check fixes halos when depths are very different
-    float rangeCheck = abs(compareDepth - sampleDepth) < u_ssrRange ? 1.0 : 0.0;
+    float rangeCheck = abs(compareDepth - sampleDepth) < u_occlusionRange ? 1.0 : 0.0;
     float check = step(compareDepth, sampleDepth) * rangeCheck;
+
+    float cosOutgoing = clamp(dot(direction, normalize(u_viewNormalMatrix * -hitNormal)), 0.0, 1.0);
+    float cosIncoming = clamp(dot(direction, normalize(u_viewNormalMatrix * info.incidentNormal)), 0.0, 1.0);
+    float bounceDistance = max(length(sampledPoint - viewPosition), 0.05);
 
     hit = true;
     if (check <= 0.0) {
@@ -214,7 +175,43 @@ vec3 ssrSample(LightingInfo info, out bool hit) {
         return vec3(0.0);
     }
 
-    return texture(u_lastFrame, sampleUV).rgb * clamp(dot(hitNormal, -info.incidentNormal), 0.0, 1.0);
+    return texture(u_lastFrame, sampleUV).rgb * cosIncoming * cosOutgoing / bounceDistance;
+}
+
+mat3 generateTBN(LightingInfo info) {
+    // generate matrix to transform from tangent to view space
+    vec3 viewNormal = normalize(u_viewNormalMatrix * info.incidentNormal);
+    vec3 random = normalize(vec3(0.0, 1.0, 1.0));
+    vec3 t = normalize(random - viewNormal * dot(random, viewNormal));
+    vec3 b = cross(viewNormal, t);
+    return mat3(t, b, viewNormal);
+}
+
+vec3 ssaoSample(LightingInfo info, mat3 TBN, out bool hit) {
+    vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
+
+    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
+    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
+    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
+
+    vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
+    viewSampleOffset *= u_occlusionRange * random3;
+
+    return sampleOcclusion(info, viewPosition, viewSampleOffset, hit);
+}
+
+vec3 ssrSample(LightingInfo info, mat3 TBN, out bool hit) {
+    vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
+
+    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
+    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
+    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
+
+    vec3 viewHalfNormal = TBN * importanceSampleGGX(vec2(random1, random2), info.alphaRoughnessSq);
+    vec3 viewSampleOffset = reflect(-u_viewNormalMatrix * info.view, viewHalfNormal);
+    viewSampleOffset *= u_occlusionRange * random3;
+
+    return sampleOcclusion(info, viewPosition, viewSampleOffset, hit);
 }
 
 vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
@@ -235,17 +232,23 @@ vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
     vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb * u_iblStrength;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb * u_iblStrength;
 
-    float diffuseOcclusion = 0.0;
+    mat3 TBN = generateTBN(info);
+
+    vec3 diffuseReflection = vec3(0.0);
+    bool diffuseReflectionHit = false;
     vec3 specularReflection = vec3(0.0);
     bool specularReflectionHit = false;
     if (applyOcclusion) {
-        diffuseOcclusion = ssaoSample(info);
-        specularReflection = ssrSample(info, specularReflectionHit);
+        diffuseReflection = ssaoSample(info, TBN, diffuseReflectionHit);
+        specularReflection = ssrSample(info, TBN, specularReflectionHit);
     }
 
-    vec3 diffuse = diffuseLight * info.diffuseColor * (1.0 - diffuseOcclusion);
+    vec3 diffuse = diffuseLight * info.diffuseColor;
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
 
+    if (diffuseReflectionHit) {
+        diffuse = diffuseReflection * info.diffuseColor;
+    }
     if (specularReflectionHit) {
         specular = specularReflection * info.specularColor;
     }

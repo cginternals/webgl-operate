@@ -43,13 +43,9 @@ block canvas
             option(value='Light sources') Light sources
             option(value='Illuminance') Illuminance
       .form-group.row
-        label(for = 'ssao-range').col-md-2.col-form-label SSAO Range:
+        label(for = 'occlusion-range').col-md-2.col-form-label Occlusion Range:
         .col-md-10
-          input(type = 'range', min = '5', max = '100', value = '20').form-control-range#ssao-range
-      .form-group.row
-        label(for = 'ssr-range').col-md-2.col-form-label SSR Range:
-        .col-md-10
-          input(type = 'range', min = '5', max = '100', value = '70').form-control-range#ssr-range
+          input(type = 'range', min = '5', max = '300', value = '200').form-control-range#occlusion-range
       .form-group.row
         label(for = 'exposure-range').col-md-2.col-form-label Exposure:
         .col-md-10
