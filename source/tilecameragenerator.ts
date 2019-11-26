@@ -344,8 +344,8 @@ export class TileCameraGenerator {
      */
     set sourceCamera(camera: Camera) {
         if (this._sourceCamera !== camera) {
-            this._sourceCamera = camera,
-                this._camera = camera.copy();
+            this._sourceCamera = camera;
+            this._camera = camera.copy();
             this._valid = false;
         }
     }
