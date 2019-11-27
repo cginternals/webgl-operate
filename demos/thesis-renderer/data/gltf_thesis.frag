@@ -195,9 +195,9 @@ mat3 generateTBN(LightingInfo info) {
 vec3 ssaoSample(LightingInfo info, mat3 TBN, out bool hit) {
     vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
 
-    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
-    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
-    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
+    float random1 = rand(info.uv * float(u_frameNumber + 1));
+    float random2 = rand(info.uv * float(u_frameNumber + 2));
+    float random3 = rand(info.uv * float(u_frameNumber + 3));
 
     vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
     viewSampleOffset *= u_occlusionRange * random3;
@@ -208,9 +208,9 @@ vec3 ssaoSample(LightingInfo info, mat3 TBN, out bool hit) {
 vec3 ssrSample(LightingInfo info, mat3 TBN, out bool hit) {
     vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
 
-    float random1 = rand(vec2(float(u_frameNumber + 1) * 73.8, float(u_frameNumber + 1) * 54.9) * info.uv);
-    float random2 = rand(vec2(float(u_frameNumber + 1) * 23.1, float(u_frameNumber + 1) * 94.3) * info.uv);
-    float random3 = rand(vec2(float(u_frameNumber + 1) * 94.5, float(u_frameNumber + 1) * 23.8) * info.uv);
+    float random1 = rand(info.uv * float(u_frameNumber + 1));
+    float random2 = rand(info.uv * float(u_frameNumber + 2));
+    float random3 = rand(info.uv * float(u_frameNumber + 3));
 
     vec3 viewHalfNormal = TBN * importanceSampleGGX(vec2(random1, random2), info.alphaRoughnessSq);
     vec3 viewSampleOffset = reflect(-u_viewNormalMatrix * info.view, viewHalfNormal);
