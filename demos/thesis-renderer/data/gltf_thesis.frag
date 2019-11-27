@@ -52,10 +52,15 @@ uniform sampler2D u_lastFrame;
 uniform sampler2D u_normalDepth;
 
 #define MAX_LIGHTS 6
-uniform int u_numSphereLights;
-uniform SphereLight u_sphereLights[MAX_LIGHTS];
 uniform int u_numDiskLights;
 uniform DiskLight u_diskLights[MAX_LIGHTS];
+
+uniform int u_lightSampleIndex;
+uniform float u_lightFactor;
+uniform int u_numDiffuseEnvironmentSamples;
+uniform float u_diffuseEnvironmentFactor;
+uniform int u_numSpecularEnvironmentSamples;
+uniform float u_specularEnvironmentFactor;
 
 uniform int u_baseColorTexCoord;
 uniform int u_normalTexCoord;
@@ -214,7 +219,28 @@ vec3 ssrSample(LightingInfo info, mat3 TBN, out bool hit) {
     return sampleOcclusion(info, viewPosition, viewSampleOffset, hit);
 }
 
-vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
+vec3 sampleDiffuseEnvironment(LightingInfo info, mat3 TBN, bool applyOcclusion)
+{
+    vec4 diffuseSample = texture(u_diffuseEnvironment, info.incidentNormal);
+    vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb * u_iblStrength;
+
+    vec3 diffuseReflection = vec3(0.0);
+    bool diffuseReflectionHit = false;
+
+    if (applyOcclusion) {
+        diffuseReflection = ssaoSample(info, TBN, diffuseReflectionHit);
+    }
+
+    vec3 diffuse = diffuseLight * info.diffuseColor;
+
+    if (diffuseReflectionHit) {
+        diffuse = diffuseReflection * info.diffuseColor;
+    }
+
+    return diffuse;
+}
+
+vec3 sampleSpecularEnvironment(LightingInfo info, mat3 TBN, bool applyOcclusion)
 {
     float NdotV = clamp(dot(info.incidentNormal, info.view), 0.0, 1.0);
 
@@ -226,34 +252,22 @@ vec3 getIBLContribution(LightingInfo info, bool applyOcclusion)
     vec2 brdfSamplePoint = vec2(NdotV, info.perceptualRoughness);
     vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
 
-    vec4 diffuseSample = texture(u_diffuseEnvironment, info.incidentNormal);
     vec4 specularSample = textureLod(u_specularEnvironment, reflection, lod);
-
-    vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb * u_iblStrength;
     vec3 specularLight = SRGBtoLINEAR(specularSample).rgb * u_iblStrength;
 
-    mat3 TBN = generateTBN(info);
-
-    vec3 diffuseReflection = vec3(0.0);
-    bool diffuseReflectionHit = false;
     vec3 specularReflection = vec3(0.0);
     bool specularReflectionHit = false;
     if (applyOcclusion) {
-        diffuseReflection = ssaoSample(info, TBN, diffuseReflectionHit);
         specularReflection = ssrSample(info, TBN, specularReflectionHit);
     }
 
-    vec3 diffuse = diffuseLight * info.diffuseColor;
     vec3 specular = specularLight * (info.specularColor * brdf.x + brdf.y);
 
-    if (diffuseReflectionHit) {
-        diffuse = diffuseReflection * info.diffuseColor;
-    }
     if (specularReflectionHit) {
         specular = specularReflection * info.specularColor;
     }
 
-    return diffuse + specular;
+    return specular;
 }
 
 void main(void)
@@ -332,14 +346,8 @@ void main(void)
     vec3 color = vec3(0.0);
     vec3 lightSources = vec3(0.0);
 
-    // Sphere lights
-    for (int i = 0; i < u_numSphereLights; ++i) {
-        lightSources += diffuseSphereLightApproximated(u_sphereLights[i], info);
-        lightSources += specularSphereLightKaris(u_sphereLights[i], info);
-    }
-
     // Disk lights with shadow mapping
-    if (u_frameNumber > 0) {
+    if (u_lightSampleIndex >= 0) {
         vec4 vLightViewSpace = u_lightView * vec4(v_position, 1.0);
         vec4 vLightViewProjectionSpace = u_lightProjection * vLightViewSpace;
 
@@ -353,16 +361,25 @@ void main(void)
             visibility = 1.0;
         }
 
-        int currentLight = u_frameNumber % u_numDiskLights;
-        lightSources += diffuseDiskLightApproximated(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
-        lightSources += specularDiskLightKaris(u_diskLights[currentLight], info) * float(u_numDiskLights) * visibility;
+        lightSources += diffuseDiskLightApproximated(u_diskLights[u_lightSampleIndex], info) * u_lightFactor * visibility;
+        lightSources += specularDiskLightKaris(u_diskLights[u_lightSampleIndex], info) * u_lightFactor * visibility;
     }
 
     color += lightSources;
 
     // Environment lighting
+    mat3 TBN = generateTBN(info);
     bool applyOcclusion = u_frameNumber > 0;
-    vec3 environmentLight = getIBLContribution(info, applyOcclusion);
+    vec3 environmentLight = vec3(0.0);
+
+    for (int i = 0; i < u_numDiffuseEnvironmentSamples; ++i) {
+        environmentLight += sampleDiffuseEnvironment(info, TBN, applyOcclusion) * u_diffuseEnvironmentFactor;
+    }
+
+    for (int i = 0; i < u_numSpecularEnvironmentSamples; ++i) {
+        environmentLight += sampleSpecularEnvironment(info, TBN, applyOcclusion) * u_specularEnvironmentFactor;
+    }
+
     color += environmentLight;
 
     // Emissive lighting

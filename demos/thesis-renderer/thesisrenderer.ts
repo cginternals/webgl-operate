@@ -86,6 +86,13 @@ export class ThesisRenderer extends Renderer {
     protected _specularEnvironment: TextureCube;
     protected _brdfLUT: Texture2D;
 
+    protected _uLightSampleIndex: WebGLUniformLocation;
+    protected _uLightFactor: WebGLUniformLocation;
+    protected _uNumDiffuseEnvironmentSamples: WebGLUniformLocation;
+    protected _uDiffuseEnvironmentFactor: WebGLUniformLocation;
+    protected _uNumSpecularEnvironmentSamples: WebGLUniformLocation;
+    protected _uSpecularEnvironmentFactor: WebGLUniformLocation;
+
     protected _uViewProjection: WebGLUniformLocation;
     protected _uView: WebGLUniformLocation;
     protected _uProjection: WebGLUniformLocation;
@@ -123,10 +130,6 @@ export class ThesisRenderer extends Renderer {
     protected _uNormalScale: WebGLUniformLocation;
     protected _uBlendMode: WebGLUniformLocation;
     protected _uBlendCutoff: WebGLUniformLocation;
-
-    protected _uSphereLightCenter: WebGLUniformLocation;
-    protected _uSphereLightRadius: WebGLUniformLocation;
-    protected _uSphereLightLuminance: WebGLUniformLocation;
 
     protected _uDiffuseEnvironment: WebGLUniformLocation;
     protected _uSpecularEnvironment: WebGLUniformLocation;
@@ -333,9 +336,12 @@ export class ThesisRenderer extends Renderer {
         this._uBlendMode = this._program.uniform('u_blendMode');
         this._uBlendCutoff = this._program.uniform('u_blendCutoff');
 
-        this._uSphereLightCenter = this._program.uniform('u_sphereLight.center');
-        this._uSphereLightRadius = this._program.uniform('u_sphereLight.radius');
-        this._uSphereLightLuminance = this._program.uniform('u_sphereLight.luminance');
+        this._uLightSampleIndex = this._program.uniform('u_lightSampleIndex');
+        this._uLightFactor = this._program.uniform('u_lightFactor');
+        this._uNumDiffuseEnvironmentSamples = this._program.uniform('u_numDiffuseEnvironmentSamples');
+        this._uDiffuseEnvironmentFactor = this._program.uniform('u_diffuseEnvironmentFactor');
+        this._uNumSpecularEnvironmentSamples = this._program.uniform('u_numSpecularEnvironmentSamples');
+        this._uSpecularEnvironmentFactor = this._program.uniform('u_specularEnvironmentFactor');
 
         this._uDiffuseEnvironment = this._program.uniform('u_diffuseEnvironment');
         this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
@@ -612,11 +618,10 @@ export class ThesisRenderer extends Renderer {
         this._forwardPass.drawCalls();
     }
 
-    protected shadowPass(frameNumber: number): void {
+    protected shadowPass(lightIndex: number): void {
         const gl = this._context.gl;
 
-        const currentLight = frameNumber % this._currentScene.diskLights.length;
-        const light = this._currentScene.diskLights[currentLight];
+        const light = this._currentScene.diskLights[lightIndex];
         const offset = vec3.random(vec3.create(), light.radius);
         const eye = vec3.add(vec3.create(), light.center, offset);
         const center = vec3.add(vec3.create(), eye, light.direction);
@@ -669,8 +674,9 @@ export class ThesisRenderer extends Renderer {
             this.preDepthPass();
         }
 
+        const currentLight = frameNumber % this._currentScene.diskLights.length;
         if (frameNumber > 0) {
-            this.shadowPass(frameNumber);
+            this.shadowPass(currentLight);
         }
 
         this._program.bind();
@@ -692,6 +698,16 @@ export class ThesisRenderer extends Renderer {
 
         const cocPoint = this._depthOfFieldKernel.get(frameNumber);
         gl.uniform2fv(this._uCocPoint, cocPoint);
+
+        /**
+         * Update samples that should be handled in this frame.
+         */
+        gl.uniform1i(this._uLightSampleIndex, frameNumber > 0 ? currentLight : -1);
+        gl.uniform1f(this._uLightFactor, this._currentScene.diskLights.length);
+        gl.uniform1i(this._uNumDiffuseEnvironmentSamples, 1);
+        gl.uniform1f(this._uDiffuseEnvironmentFactor, 1.0);
+        gl.uniform1i(this._uNumSpecularEnvironmentSamples, 1);
+        gl.uniform1f(this._uSpecularEnvironmentFactor, 1.0);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
         this._normalDepthTexture.bind(gl.TEXTURE8);
@@ -877,18 +893,10 @@ export class ThesisRenderer extends Renderer {
         const gl = this._context.gl;
 
         this._program.bind();
-        gl.uniform1i(this._program.uniform('u_numSphereLights'), scene.sphereLights.length);
-
-        let i = 0;
-        for (const sphereLight of scene.sphereLights) {
-            gl.uniform3fv(this._program.uniform(`u_sphereLights[${i}].center`), sphereLight.center);
-            gl.uniform1f(this._program.uniform(`u_sphereLights[${i}].radius`), sphereLight.radius);
-            gl.uniform3fv(this._program.uniform(`u_sphereLights[${i}].luminance`), sphereLight.luminance);
-            i++;
-        }
 
         gl.uniform1i(this._program.uniform('u_numDiskLights'), scene.diskLights.length);
 
+        let i = 0;
         for (const diskLight of scene.diskLights) {
             gl.uniform3fv(this._program.uniform(`u_diskLights[${i}].center`), diskLight.center);
             gl.uniform1f(this._program.uniform(`u_diskLights[${i}].radius`), diskLight.radius);
