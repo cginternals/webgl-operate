@@ -40,7 +40,7 @@ import { Scene } from './scene';
 import { Demo } from '../demo';
 import { DiskLight } from './arealight';
 import { DepthOfFieldKernel } from './depthoffieldkernel';
-import { DiffuseEnvironmentSample, LightSample, SampleManager, SpecularEnvironmentSample } from './SampleManager';
+import { DiffuseEnvironmentSample, LightSample, SampleManager, SpecularEnvironmentSample } from './samplemanager';
 
 // tslint:disable:max-classes-per-file
 
