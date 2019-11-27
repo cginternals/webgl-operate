@@ -49,7 +49,6 @@ export class SampleManager {
         this._lightSampleCount = lightSampleCount;
         this._environmentSampleCount = environmentSampleCount;
 
-        auxiliaries.assert(environmentSampleCount <= multiframeNumber, 'Environment sample count can not be higher than multiframe count.');
         auxiliaries.assert(lightSampleCount * this._scene.diskLights.length <= multiframeNumber, 'Total number of light samples can not be higher than multiframe count.');
 
         this._lightQueue = new Array<Sample>();
@@ -82,6 +81,14 @@ export class SampleManager {
         auxiliaries.assert(this._currentFrame < this._multiframeNumber, 'Samples can only be generated during a multiframe.');
 
         const samples = new Array<Sample>();
+
+        // In first frame always just evaluate environment lighting
+        if (this._currentFrame === 0) {
+            samples.push(this._environmentQueue.shift()!);
+            samples.push(this._environmentQueue.shift()!);
+            this._currentFrame++;
+            return samples;
+        }
 
         const remainingFrames = this._multiframeNumber - this._currentFrame;
         const lightSamplesPerFrame = Math.round(this._lightQueue.length / remainingFrames);
