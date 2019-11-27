@@ -40,6 +40,7 @@ import { Scene } from './scene';
 import { Demo } from '../demo';
 import { DiskLight } from './arealight';
 import { DepthOfFieldKernel } from './depthoffieldkernel';
+import { DiffuseEnvironmentSample, LightSample, SampleManager, SpecularEnvironmentSample } from './SampleManager';
 
 // tslint:disable:max-classes-per-file
 
@@ -61,6 +62,7 @@ export class ThesisRenderer extends Renderer {
 
     protected _camera: Camera;
 
+    protected _sampleManager: SampleManager;
     protected _currentScene: Scene;
     protected _datsunScene: Scene;
     protected _kitchenScene: Scene;
@@ -552,6 +554,14 @@ export class ThesisRenderer extends Renderer {
             this.loadAsset();
         }
 
+        const lightSampleCount = 8;
+        const environmentSampleCount = 64;
+        this._sampleManager = new SampleManager(
+            this._currentScene,
+            this._multiFrameNumber,
+            lightSampleCount,
+            environmentSampleCount);
+
         if (!this._intermediateFBO.initialized) {
             this._colorRenderTexture.initialize(this._frameSize[0], this._frameSize[1],
                 this._context.isWebGL2 ? gl.RGBA32F : gl.RGBA, gl.RGBA, gl.FLOAT);
@@ -618,12 +628,10 @@ export class ThesisRenderer extends Renderer {
         this._forwardPass.drawCalls();
     }
 
-    protected shadowPass(lightIndex: number): void {
+    protected shadowPass(lightIndex: number, eye: vec3): void {
         const gl = this._context.gl;
 
         const light = this._currentScene.diskLights[lightIndex];
-        const offset = vec3.random(vec3.create(), light.radius);
-        const eye = vec3.add(vec3.create(), light.center, offset);
         const center = vec3.add(vec3.create(), eye, light.direction);
         const lightCamera = new Camera();
 
@@ -670,13 +678,37 @@ export class ThesisRenderer extends Renderer {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
+        const samples = this._sampleManager.getNextFrameSamples();
+
+        let numDiffuseEnvironmentSamples = 0;
+        let diffuseEnvironmentFactor = 1.0;
+        let numSpecularEnvironmentSamples = 0;
+        let specularEnvironmentFactor = 1.0;
+        let currentLightIndex = -1;
+        let lightEye = vec3.create();
+        let lightFactor = 1.0;
+        for (const sample of samples) {
+            if (sample instanceof DiffuseEnvironmentSample) {
+                numDiffuseEnvironmentSamples++;
+                diffuseEnvironmentFactor = sample.factor;
+            }
+            if (sample instanceof SpecularEnvironmentSample) {
+                numSpecularEnvironmentSamples++;
+                specularEnvironmentFactor = sample.factor;
+            }
+            if (sample instanceof LightSample) {
+                currentLightIndex = sample.lightIndex;
+                lightEye = sample.eye;
+                lightFactor = sample.factor;
+            }
+        }
+
         if (frameNumber === 1) {
             this.preDepthPass();
         }
 
-        const currentLight = frameNumber % this._currentScene.diskLights.length;
-        if (frameNumber > 0) {
-            this.shadowPass(currentLight);
+        if (currentLightIndex >= 0) {
+            this.shadowPass(currentLightIndex, lightEye);
         }
 
         this._program.bind();
@@ -702,12 +734,12 @@ export class ThesisRenderer extends Renderer {
         /**
          * Update samples that should be handled in this frame.
          */
-        gl.uniform1i(this._uLightSampleIndex, frameNumber > 0 ? currentLight : -1);
-        gl.uniform1f(this._uLightFactor, this._currentScene.diskLights.length);
-        gl.uniform1i(this._uNumDiffuseEnvironmentSamples, 1);
-        gl.uniform1f(this._uDiffuseEnvironmentFactor, 1.0);
-        gl.uniform1i(this._uNumSpecularEnvironmentSamples, 1);
-        gl.uniform1f(this._uSpecularEnvironmentFactor, 1.0);
+        gl.uniform1i(this._uLightSampleIndex, currentLightIndex);
+        gl.uniform1f(this._uLightFactor, lightFactor);
+        gl.uniform1i(this._uNumDiffuseEnvironmentSamples, numDiffuseEnvironmentSamples);
+        gl.uniform1f(this._uDiffuseEnvironmentFactor, diffuseEnvironmentFactor);
+        gl.uniform1i(this._uNumSpecularEnvironmentSamples, numSpecularEnvironmentSamples);
+        gl.uniform1f(this._uSpecularEnvironmentFactor, specularEnvironmentFactor);
 
         this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
         this._normalDepthTexture.bind(gl.TEXTURE8);
