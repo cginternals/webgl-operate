@@ -210,6 +210,14 @@ namespace auxiliaries {
     }
 
     /**
+     * Tests with binary operations if the number is power of two.
+     * @param x The number to test.
+     */
+    export function isPowerOfTwo(x: number): boolean {
+        return Number.isInteger(x) && Number.isInteger(Math.log2(x));
+    }
+
+    /**
      * Byte suffixes based on ISO/IEC 80000 used for pretty printing of bytes.
      */
     const byteSuffixes: Array<string> = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi'];

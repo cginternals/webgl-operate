@@ -7,7 +7,6 @@ import { m4 } from './gl-matrix-extensions';
  * Support Class that wraps the calculation of camera tiling and iteration with various algorithms
  * by giving access to a adjusted camera which NDC-Coordinates match the current tile index.
  * Iteration can be done manually (variant: 1) or automatically (variant: 2).
- * Caution: This class may adjust the tileSize if it is necessary for the selected IterationAlgorithm.
  * It is intended to be used like:
  *
  * // setup
@@ -39,7 +38,6 @@ import { m4 } from './gl-matrix-extensions';
  * NOTE: Use updateCameraProperties if the source camera is altered.
  */
 
-// TODO update comments to the changed, test the changes
 export class TileCameraGenerator {
 
     /** @see {@link eye} */
@@ -95,15 +93,20 @@ export class TileCameraGenerator {
      * @returns - The converted tile index.
      */
     protected convertTileIndexFromHilbertToScanLine(): void {
-        const tableSize = this.numberOfXTiles();
-        const recursionDepth = Math.log2(tableSize - 1);
-        this.genHilbertIndices(0, 0, tableSize, 0, 0, tableSize, recursionDepth);
+        const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
+        const tableSizeNextPowerOfTwo = Math.pow(2, Math.ceil(Math.log2(tableSize)));
+        const recursionDepth = Math.log2(tableSize);
+        this.genHilbertIndices(0, 0, tableSizeNextPowerOfTwo, 0, 0, tableSizeNextPowerOfTwo, recursionDepth);
     }
 
     protected genHilbertIndices(x: number, y: number,
         xi: number, xj: number, yi: number, yj: number, depth: number): void {
         if (depth <= 0) {
-            this._iterationAlgorithmIndices.push([x + (xi + yi - 1) / 2, y + (xj + yj - 1) / 2]);
+            x = x + (xi + yi - 1) / 2;
+            y = y + (xj + yj - 1) / 2;
+            if (x < this.numberOfXTiles() && y < this.numberOfYTiles()) {
+                this._iterationAlgorithmIndices.push([x, y]);
+            }
         } else {
             this.genHilbertIndices(x, y, yi / 2, yj / 2, xi / 2, xj / 2, depth - 1);
             this.genHilbertIndices(x + xi / 2, y + xj / 2, xi / 2, xj / 2, yi / 2, yj / 2, depth - 1);
@@ -112,7 +115,6 @@ export class TileCameraGenerator {
         }
     }
 
-
     /**
      * Returns the padded tileSize.
      * @returns - The padded tileSize.
@@ -120,62 +122,6 @@ export class TileCameraGenerator {
     protected getPaddedTileSize(): [number, number] {
         return [this.padding[1] + this.padding[3] + this.tileSize[0],
         this.padding[0] + this.padding[2] + this.tileSize[1]];
-    }
-
-    /**
-     * Checks if all constrains for the selected algorithm are satisfied
-     */
-    protected checkIterationAlgorithmConstraints(): boolean {
-        if (this.algorithm === TileCameraGenerator.IterationAlgorithm.HilbertCurve) {
-            if (this._sourceViewPort && this._tileSize) {
-                if (!this.isPowerOfTwo(this.numberOfXTiles()) || !this.isPowerOfTwo(this.numberOfYTiles())
-                    || this.numberOfXTiles() !== this.numberOfYTiles()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-
-    }
-
-    // TODO: move to auxilaries or glm-extension, test if int and log it if it is not
-    /**
-     * Tests with binary operations if the number is power of two.
-     * @param x The number to test.
-     */
-    protected isPowerOfTwo(x: number): boolean {
-        return Number.isInteger(x) && Number.isInteger(Math.log2(x));
-    }
-
-    /**
-     * Adjusts the TileSize to the constraints of the selected IterationAlgorithm.
-     * HilbertCurve:
-     *      Both numberOfTiles have to be the same and the numberOfTiles needs to be a power of two.
-     */
-    protected adjustTileSizeToMatchIterationAlgorithm(oldNumberOfTiles: [number, number]): void {
-        // Hilbert Curve only works on a quadratic table which side lengths are power of twos
-        const previousTileSizeX = this.numberOfXTiles();
-        const previousTileSizeY = this.numberOfYTiles();
-        if (this.algorithm === TileCameraGenerator.IterationAlgorithm.HilbertCurve) {
-            if (!Number.isInteger(Math.log2(this.numberOfXTiles()))) {
-                const numberOfTilesXSmaller = Math.pow(2, Math.floor(Math.log2(this.numberOfXTiles())));
-                const numberOfTilesXLarger = Math.pow(2, Math.ceil(Math.log2(this.numberOfXTiles())));
-
-                const smallerTileSize = Math.ceil(this.sourceViewPort[0] / numberOfTilesXSmaller);
-                const largerTileSize = Math.ceil(this.sourceViewPort[0] / numberOfTilesXLarger);
-
-                const distanceToSmallerTileSize = this.tileSize[0] - smallerTileSize;
-                const distanceToLargerTileSize = this.tileSize[0] - largerTileSize;
-
-                this.tileSize[0] = distanceToLargerTileSize > distanceToSmallerTileSize ?
-                    largerTileSize : smallerTileSize;
-            }
-            const newNumberOfTilesY = this.numberOfXTiles();
-            this.tileSize[1] = Math.ceil(this.sourceViewPort[1] / newNumberOfTilesY);
-        }
-        if (previousTileSizeX !== this.numberOfXTiles() || previousTileSizeY !== this.numberOfYTiles()) {
-            this._iterationAlgorithmIndices = [];
-        }
     }
 
     /**
@@ -195,6 +141,17 @@ export class TileCameraGenerator {
         ++this.tile;
         this.update();
         return true;
+    }
+
+    /**
+     * Returns if tiles still need to be rendered.
+     */
+    public hasNextTile(): boolean {
+        if (this.tile < this.numberOfTiles() - 1 && this.tile >= 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -390,11 +347,8 @@ export class TileCameraGenerator {
      */
     set sourceViewPort(viewport: [number, number]) {
         if (this._sourceViewPort !== viewport) {
-            const oldNumberOfTiles: [number, number] = [this.numberOfXTiles(), this.numberOfYTiles()];
             this._sourceViewPort = viewport;
-            if (!this.checkIterationAlgorithmConstraints()) {
-                this.adjustTileSizeToMatchIterationAlgorithm(oldNumberOfTiles);
-            }
+            this._iterationAlgorithmIndices = [];
             this._valid = false;
         }
     }
@@ -417,11 +371,8 @@ export class TileCameraGenerator {
      */
     set tileSize(tileSize: [number, number]) {
         if (this._tileSize !== tileSize) {
-            const oldNumberOfTiles: [number, number] = [this.numberOfXTiles(), this.numberOfYTiles()];
             this._tileSize = tileSize;
-            if (!this.checkIterationAlgorithmConstraints()) {
-                this.adjustTileSizeToMatchIterationAlgorithm(oldNumberOfTiles);
-            }
+            this._iterationAlgorithmIndices = [];
             this._valid = false;
         }
     }
@@ -462,11 +413,7 @@ export class TileCameraGenerator {
      */
     set algorithm(algorithm: TileCameraGenerator.IterationAlgorithm) {
         if (this._algorithm !== algorithm) {
-            const oldNumberOfTiles: [number, number] = [this.numberOfXTiles(), this.numberOfYTiles()];
             this._algorithm = algorithm;
-            if (!this.checkIterationAlgorithmConstraints()) {
-                this.adjustTileSizeToMatchIterationAlgorithm(oldNumberOfTiles);
-            }
             this._iterationAlgorithmIndices = [];
             this._valid = false;
         }
@@ -486,6 +433,9 @@ export namespace TileCameraGenerator {
         HilbertCurve = 'hilbertcurve',
         /**
          * HilbertCurve conditions: Both numberOfXTiles, numberOfYTiles need to be equal and need to be a power of two.
+         * In the case that the condition is not satisfied
+         * the next higher number than numberOfTilesX/Y that is power of two is calculated.
+         * The Iteration will be calculated with this number and tiles that lay outside the viewport are skipped.
          */
     }
 }

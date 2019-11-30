@@ -96,7 +96,6 @@ export class TiledCubeRenderer extends Renderer {
                 , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
         }
 
-
         this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.5, 2.5, 2.5]);
         this._cuboid.initialize();
 
@@ -165,9 +164,10 @@ export class TiledCubeRenderer extends Renderer {
 
         this._defaultFBO.uninitialize();
 
-        this._intermediateFBO.uninitialize();
         this._colorRenderTexture.uninitialize();
         this._depthRenderbuffer.uninitialize();
+        this._intermediateFBO.uninitialize();
+        this._blit.uninitialize();
     }
 
     /**
@@ -180,8 +180,9 @@ export class TiledCubeRenderer extends Renderer {
     protected onUpdate(): boolean {
         this._navigation.update();
 
-        return true;
-        // return this._altered.any || this._camera.altered;
+        return this._altered.any || this._camera.altered ||
+            this._tileCameraScanLineGenerator.hasNextTile() || this._tileCameraHilbertGenerator.hasNextTile();
+
     }
 
     /**
@@ -191,13 +192,12 @@ export class TiledCubeRenderer extends Renderer {
     protected onPrepare(): void {
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
-            this._camera.viewport = this._canvasSize;
-            this.setTileCameraGeneratorTileSize();
+            this._camera.viewport = [this._canvasSize[0] * this._ssaaFactor, this._canvasSize[1] * this._ssaaFactor];
+            this.setTileCameraGeneratorTileSizeAndFrameSize();
             this._tileCameraScanLineGenerator.resetTileRendering();
             this._tileCameraHilbertGenerator.resetTileRendering();
             this._alreadyRenderedNotTiled = false;
         }
-
         if (this._altered.clearColor) {
             this._defaultFBO.clearColor(this._clearColor);
             this._intermediateFBO.clearColor(this._clearColor);
@@ -295,7 +295,6 @@ export class TiledCubeRenderer extends Renderer {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE,
                 this._tileCameraHilbertGenerator.camera.viewProjection);
             this._cuboid.draw();
-            console.log(this._tileCameraHilbertGenerator.tile);
         }
 
 
@@ -312,17 +311,13 @@ export class TiledCubeRenderer extends Renderer {
 
         this._intermediateFBO.unbind();
 
-        this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-
         this._blit.frame();
     }
 
     protected onSwap(): void {
         this.invalidate(true);
     }
-
 }
-
 
 export class TiledRendererExample extends Example {
 
@@ -354,5 +349,4 @@ export class TiledRendererExample extends Example {
     get renderer(): TiledCubeRenderer {
         return this._renderer;
     }
-
 }
