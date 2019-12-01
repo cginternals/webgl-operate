@@ -47,14 +47,13 @@ export class TiledCubeRenderer extends Renderer {
     protected _defaultFBO: DefaultFramebuffer;
     protected _blit: BlitPass;
 
-    protected _tileNumber = 32;
+    protected _tileNumber = 64;
 
-    protected _ssaaFactor = 10;
+    protected _ssaaFactor = 4;
 
     protected _tileCameraScanLineGenerator: TileCameraGenerator;
-    protected _tileCameraScanLine: Camera;
     protected _tileCameraHilbertGenerator: TileCameraGenerator;
-    protected _tileCameraHilbert: Camera;
+    protected _tileCameraZCurveGenerator: TileCameraGenerator;
 
     protected TIMEOUT_BETWEEN_TILES = 10; // in milliseconds
     protected _alreadyRenderedNotTiled = false;
@@ -182,8 +181,8 @@ export class TiledCubeRenderer extends Renderer {
     protected onUpdate(): boolean {
         this._navigation.update();
 
-        return this._altered.any || this._camera.altered ||
-            this._tileCameraScanLineGenerator.hasNextTile() || this._tileCameraHilbertGenerator.hasNextTile();
+        return this._altered.any || this._camera.altered || this._tileCameraScanLineGenerator.hasNextTile() ||
+            this._tileCameraHilbertGenerator.hasNextTile() || this._tileCameraZCurveGenerator.hasNextTile();
 
     }
 
@@ -196,8 +195,11 @@ export class TiledCubeRenderer extends Renderer {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
             this._camera.viewport = [this._canvasSize[0] * this._ssaaFactor, this._canvasSize[1] * this._ssaaFactor];
             this.setTileCameraGeneratorTileSizeAndFrameSize();
+
             this._tileCameraScanLineGenerator.resetTileRendering();
             this._tileCameraHilbertGenerator.resetTileRendering();
+            this._tileCameraZCurveGenerator.resetTileRendering();
+
             this._alreadyRenderedNotTiled = false;
         }
         if (this._altered.clearColor) {
@@ -207,12 +209,21 @@ export class TiledCubeRenderer extends Renderer {
         if (this._camera.altered) {
             this._tileCameraScanLineGenerator.updateCameraProperties();
             this._tileCameraHilbertGenerator.updateCameraProperties();
+            this._tileCameraZCurveGenerator.updateCameraProperties();
+
             this._tileCameraScanLineGenerator.resetTileRendering();
             this._tileCameraHilbertGenerator.resetTileRendering();
+            this._tileCameraZCurveGenerator.resetTileRendering();
+
             this._alreadyRenderedNotTiled = false;
         }
         if (this._altered.frameSize) {
             this.setTileCameraGeneratorTileSizeAndFrameSize();
+
+            this._tileCameraScanLineGenerator.resetTileRendering();
+            this._tileCameraHilbertGenerator.resetTileRendering();
+            this._tileCameraZCurveGenerator.resetTileRendering();
+
             this._intermediateFBO.resize(this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor);
             this._camera.viewport = [this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor];
         }
@@ -228,6 +239,7 @@ export class TiledCubeRenderer extends Renderer {
 
         this._tileCameraScanLineGenerator.sourceViewPort = ssaaFrameSize;
         this._tileCameraHilbertGenerator.sourceViewPort = ssaaFrameSize;
+        this._tileCameraZCurveGenerator.sourceViewPort = ssaaFrameSize;
 
         // tile size must be divisible by 2 since we render quaters
         const size0 = Math.floor(ssaaFrameSize[0] / this._tileNumber);
@@ -241,20 +253,24 @@ export class TiledCubeRenderer extends Renderer {
 
         this._tileCameraScanLineGenerator.tileSize = tileSize;
         this._tileCameraHilbertGenerator.tileSize = tileSize;
+        this._tileCameraZCurveGenerator.tileSize = tileSize;
     }
 
     protected createTiledCameraUtils(): void {
         this._tileCameraScanLineGenerator = new TileCameraGenerator();
         this._tileCameraScanLineGenerator.sourceCamera = this._camera;
         this._tileCameraScanLineGenerator.padding = vec4.create();
-        this._tileCameraScanLine = this._tileCameraScanLineGenerator.camera;
         this._tileCameraScanLineGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
 
         this._tileCameraHilbertGenerator = new TileCameraGenerator();
         this._tileCameraHilbertGenerator.sourceCamera = this._camera;
         this._tileCameraHilbertGenerator.padding = vec4.create();
-        this._tileCameraHilbert = this._tileCameraHilbertGenerator.camera;
         this._tileCameraHilbertGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.HilbertCurve;
+
+        this._tileCameraZCurveGenerator = new TileCameraGenerator();
+        this._tileCameraZCurveGenerator.sourceCamera = this._camera;
+        this._tileCameraZCurveGenerator.padding = vec4.create();
+        this._tileCameraZCurveGenerator.algorithm = TileCameraGenerator.IterationAlgorithm.ZCurve;
 
         this.setTileCameraGeneratorTileSizeAndFrameSize();
     }
@@ -270,11 +286,8 @@ export class TiledCubeRenderer extends Renderer {
         gl.enable(gl.DEPTH_TEST);
 
         this._texture.bind(gl.TEXTURE0);
-
         this._program.bind();
-
         this._cuboid.bind();
-        // render everything new
 
         if (!this._alreadyRenderedNotTiled) {
             this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
@@ -308,11 +321,19 @@ export class TiledCubeRenderer extends Renderer {
             this._cuboid.draw();
         }
 
+        if (this._tileCameraZCurveGenerator.nextTile()) {
+            // Z-Curve
+            offset = this._tileCameraZCurveGenerator.offset;
+            gl.viewport(this._frameSize[0] / 2 * this._ssaaFactor + offset[0] / 2, offset[1] / 2,
+                this._tileCameraZCurveGenerator.tileSize[0] / 2, this._tileCameraZCurveGenerator.tileSize[1] / 2);
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE,
+                this._tileCameraZCurveGenerator.camera.viewProjection);
+            this._cuboid.draw();
+        }
+
         // restore state
         this._cuboid.unbind();
-
         this._program.unbind();
-
         this._texture.unbind(gl.TEXTURE0);
 
         gl.cullFace(gl.BACK);
@@ -320,11 +341,10 @@ export class TiledCubeRenderer extends Renderer {
         gl.disable(gl.DEPTH_TEST);
 
         this._intermediateFBO.unbind();
-
-        this._blit.frame();
     }
 
     protected onSwap(): void {
+        this._blit.frame();
         this.invalidate(true);
     }
 }

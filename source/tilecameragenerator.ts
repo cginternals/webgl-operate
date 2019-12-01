@@ -80,7 +80,12 @@ export class TileCameraGenerator {
             return tableIndices;
         } else if (this.algorithm === TileCameraGenerator.IterationAlgorithm.HilbertCurve) {
             if (this._iterationAlgorithmIndices.length === 0) {
-                this.convertTileIndexFromHilbertToScanLine();
+                this.fillIterationIndicesWithHilbert();
+            }
+            return this._iterationAlgorithmIndices[this.tile];
+        } else if (this.algorithm === TileCameraGenerator.IterationAlgorithm.ZCurve) {
+            if (this._iterationAlgorithmIndices.length === 0) {
+                this.fillIterationIndicesWithZCurve();
             }
             return this._iterationAlgorithmIndices[this.tile];
         } else {
@@ -89,13 +94,48 @@ export class TileCameraGenerator {
     }
 
     /**
-     * Converts the tile index from the HilbertCurve-Algorithm to the ScanLine-Algorithm.
+     * Fills the iterationAlgorithmIndices  with the tile index
+     * from the ZCurve-Algorithm to the ScanLine-Algorithm.
      * @returns - The converted tile index.
      */
-    protected convertTileIndexFromHilbertToScanLine(): void {
+    protected fillIterationIndicesWithZCurve(): void {
+        // initialize the array with the size of numberOfTiles()
+        for (let i = 0; i < this.numberOfTiles(); ++i) {
+            this._iterationAlgorithmIndices.push([0, 0]);
+        }
+
+        // Now replace them with the correct z curve indices
+        // TODO refactor: code duplication
         const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
-        const tableSizeNextPowerOfTwo = Math.pow(2, Math.ceil(Math.log2(tableSize)));
-        const recursionDepth = Math.log2(tableSize);
+        const bitLength = Math.ceil(Math.log2(tableSize));
+
+        // TODO is integer?
+        for (let x = 0; x < this.numberOfXTiles(); ++x) {
+            for (let y = 0; y < this.numberOfYTiles(); ++y) {
+                let index = 0;
+                for (let currentBit = 0; currentBit < bitLength; ++currentBit) {
+                    const xBit = (x >> currentBit) & 1;
+                    const xBitShift = currentBit * 2;
+                    index += xBit << xBitShift;
+
+                    const yBit = (y >> currentBit) & 1;
+                    const yBitShift = currentBit * 2 + 1;
+                    index += yBit << yBitShift;
+                }
+                this._iterationAlgorithmIndices[index] = [x, y];
+            }
+        }
+    }
+
+    /**
+     * Fills the iterationAlgorithmIndices  with the tile index
+     * from the HilbertCurve-Algorithm to the ScanLine-Algorithm.
+     * @returns - The converted tile index.
+     */
+    protected fillIterationIndicesWithHilbert(): void {
+        const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
+        const recursionDepth = Math.ceil(Math.log2(tableSize));
+        const tableSizeNextPowerOfTwo = Math.pow(2, recursionDepth);
         this.genHilbertIndices(0, 0, tableSizeNextPowerOfTwo, 0, 0, tableSizeNextPowerOfTwo, recursionDepth);
     }
 
@@ -437,5 +477,15 @@ export namespace TileCameraGenerator {
          * the next higher number than numberOfTilesX/Y that is power of two is calculated.
          * The Iteration will be calculated with this number and tiles that lay outside the viewport are skipped.
          */
+
+
+        ZCurve = 'zCurve',
+        /**
+         * ZCurve conditions: Both numberOfXTiles, numberOfYTiles need to be equal and need to be a power of two.
+         * In the case that the condition is not satisfied
+         * the next higher number than numberOfTilesX/Y that is power of two is calculated.
+         * The Iteration will be calculated with this number and tiles that lay outside the viewport are skipped.
+         */
+
     }
 }
