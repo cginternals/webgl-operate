@@ -54,6 +54,18 @@ block canvas
         label(for = 'ibl-range').col-md-2.col-form-label IBL strength:
         .col-md-10
           input(type = 'range', min = '0', max = '100', value = '50').form-control-range#ibl-range
+      .form-group.row
+        label(for = 'dof-range').col-md-2.col-form-label DoF strength:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '0').form-control-range#dof-range
+      .form-group.row
+        label(for = 'frame-scale').col-md-2.col-form-label Frame Scale:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '100').form-control-range#frame-scale
+      .form-group.row
+        label(for = 'multiframe-count').col-md-2.col-form-label Multiframe Count:
+        .col-md-10
+          input(type = 'number', min = '2', max = '1024', value = '128').form-control-range#multiframe-count
 
   //block breakdown
   //  p This should describe the demo in much more detail, e.g., referring to relevant code snippets and resources

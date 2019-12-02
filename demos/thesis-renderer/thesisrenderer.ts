@@ -61,6 +61,7 @@ export class ThesisRenderer extends Renderer {
     protected _shadowPass: ShadowPass;
 
     protected _camera: Camera;
+    protected _depthOfFieldRange: number;
 
     protected _sampleManager: SampleManager;
     protected _currentScene: Scene;
@@ -505,6 +506,12 @@ export class ThesisRenderer extends Renderer {
         };
         occlusionRange.onchange(new Event(''));
 
+        const dofRange = window.document.getElementById('dof-range')! as HTMLInputElement;
+        dofRange.onchange = (_) => {
+            this._depthOfFieldRange = parseFloat(dofRange.value) / 1000.0;
+        };
+        dofRange.onchange(new Event(''));
+
         return true;
     }
 
@@ -554,8 +561,8 @@ export class ThesisRenderer extends Renderer {
             this.loadAsset();
         }
 
-        const lightSampleCount = 8;
-        const environmentSampleCount = 64;
+        const lightSampleCount = Math.round(this._multiFrameNumber / this._currentScene.diskLights.length / 4.0);
+        const environmentSampleCount = Math.round(this._multiFrameNumber / 2.0);
         this._sampleManager = new SampleManager(
             this._currentScene,
             this._multiFrameNumber,
@@ -729,6 +736,8 @@ export class ThesisRenderer extends Renderer {
         gl.uniform2fv(this._uNdcOffset, ndcOffset);
 
         const cocPoint = this._depthOfFieldKernel.get(frameNumber);
+        cocPoint[0] *= this._depthOfFieldRange;
+        cocPoint[1] *= this._depthOfFieldRange;
         gl.uniform2fv(this._uCocPoint, cocPoint);
 
         /**
@@ -1037,6 +1046,17 @@ export class ThesisDemo extends Demo {
 
         this._renderer = new ThesisRenderer();
         this._canvas.renderer = this._renderer;
+
+        const frameScale = window.document.getElementById('frame-scale')! as HTMLInputElement;
+        frameScale.onchange = (_) => {
+            const scale = parseFloat(frameScale.value) / 100.0;
+            this._canvas.frameScale = [scale, scale];
+        };
+
+        const multiFrameCount = window.document.getElementById('multiframe-count')! as HTMLInputElement;
+        multiFrameCount.onchange = (_) => {
+            this._canvas.controller.multiFrameNumber = parseInt(multiFrameCount.value);
+        };
 
         return true;
     }

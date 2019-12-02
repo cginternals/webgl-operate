@@ -92,9 +92,7 @@ void main(void)
         v_color = vec4(1.0);
     }
 
-    // vec2 cocPoint = u_cocPoint * 0.006;
-    vec2 cocPoint = vec2(0.0);
-    vec4 viewVertex = depthOfField(u_view * u_model, a_position, cocPoint, 8.0);
+    vec4 viewVertex = depthOfField(u_view * u_model, a_position, u_cocPoint, 8.0);
     gl_Position = u_projection * viewVertex;
     ndcOffset(gl_Position, u_ndcOffset);
 }
