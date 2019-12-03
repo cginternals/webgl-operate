@@ -417,25 +417,6 @@ export class ThesisRenderer extends Renderer {
         this._forwardPass.target = this._intermediateFBO;
 
         this._forwardPass.program = this._program;
-        this._forwardPass.bindUniforms = () => {
-            gl.uniform3fv(this._uEye, this._camera.eye);
-
-            gl.uniform1i(this._uBaseColor, 0);
-            gl.uniform1i(this._uMetallicRoughness, 1);
-            gl.uniform1i(this._uNormal, 2);
-            gl.uniform1i(this._uOcclusion, 3);
-            gl.uniform1i(this._uEmissive, 4);
-            gl.uniform1i(this._uDiffuseEnvironment, 10);
-            gl.uniform1i(this._uSpecularEnvironment, 5);
-            gl.uniform1i(this._uBRDFLookupTable, 6);
-            gl.uniform1i(this._uShadowMap, 7);
-            gl.uniform1i(this._uNormalDepth, 8);
-            gl.uniform1i(this._uLastFrame, 9);
-
-            this._specularEnvironment.bind(gl.TEXTURE5);
-            this._diffuseEnvironment.bind(gl.TEXTURE10);
-            this._brdfLUT.bind(gl.TEXTURE6);
-        };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uViewProjection, gl.FALSE, matrix);
         };
@@ -509,6 +490,7 @@ export class ThesisRenderer extends Renderer {
         const dofRange = window.document.getElementById('dof-range')! as HTMLInputElement;
         dofRange.onchange = (_) => {
             this._depthOfFieldRange = parseFloat(dofRange.value) / 1000.0;
+            this._invalidate(true);
         };
         dofRange.onchange(new Event(''));
 
@@ -609,6 +591,8 @@ export class ThesisRenderer extends Renderer {
         this._postProcessingPass.normalDepthTexture = this._normalDepthTexture;
         this._postProcessingPass.update();
 
+        this.bindMultiframeUniforms();
+
         this._altered.reset();
         this._camera.altered = false;
     }
@@ -620,10 +604,6 @@ export class ThesisRenderer extends Renderer {
         gl.viewport(0, 0, this._preDepthFBO.width, this._preDepthFBO.height);
 
         this._depthProgram.bind();
-        gl.uniform2fv(this._uCameraNearFarD, vec2.fromValues(this._camera.near, this._camera.far));
-        gl.uniformMatrix4fv(this._uViewD, gl.FALSE, this._camera.view);
-        gl.uniformMatrix4fv(this._uProjectionD, gl.FALSE, this._camera.projection);
-
         this._forwardPass.program = this._depthProgram;
         this._forwardPass.target = this._preDepthFBO;
         this._forwardPass.bindMaterial = (_: Material) => { };
@@ -685,76 +665,7 @@ export class ThesisRenderer extends Renderer {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
-        const samples = this._sampleManager.getNextFrameSamples();
-
-        let numDiffuseEnvironmentSamples = 0;
-        let diffuseEnvironmentFactor = 1.0;
-        let numSpecularEnvironmentSamples = 0;
-        let specularEnvironmentFactor = 1.0;
-        let currentLightIndex = -1;
-        let lightEye = vec3.create();
-        let lightFactor = 1.0;
-        for (const sample of samples) {
-            if (sample instanceof DiffuseEnvironmentSample) {
-                numDiffuseEnvironmentSamples++;
-                diffuseEnvironmentFactor = sample.factor;
-            }
-            if (sample instanceof SpecularEnvironmentSample) {
-                numSpecularEnvironmentSamples++;
-                specularEnvironmentFactor = sample.factor;
-            }
-            if (sample instanceof LightSample) {
-                currentLightIndex = sample.lightIndex;
-                lightEye = sample.eye;
-                lightFactor = sample.factor;
-            }
-        }
-
-        if (frameNumber === 1) {
-            this.preDepthPass();
-        }
-
-        if (currentLightIndex >= 0) {
-            this.shadowPass(currentLightIndex, lightEye);
-        }
-
-        this._program.bind();
-
-        // Update per frame uniforms
-        gl.uniform1i(this._uFrameNumber, frameNumber);
-        gl.uniformMatrix4fv(this._uView, gl.FALSE, this._camera.view);
-        gl.uniformMatrix4fv(this._uProjection, gl.FALSE, this._camera.projection);
-        gl.uniform2fv(this._uCameraNearFar, vec2.fromValues(this._camera.near, this._camera.far));
-
-        const viewNormalMatrix = mat3.create();
-        mat3.normalFromMat4(viewNormalMatrix, this._camera.view);
-        gl.uniformMatrix3fv(this._uViewNormalMatrix, gl.FALSE, viewNormalMatrix);
-
-        const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
-        ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
-        ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
-        gl.uniform2fv(this._uNdcOffset, ndcOffset);
-
-        const cocPoint = this._depthOfFieldKernel.get(frameNumber);
-        cocPoint[0] *= this._depthOfFieldRange;
-        cocPoint[1] *= this._depthOfFieldRange;
-        gl.uniform2fv(this._uCocPoint, cocPoint);
-
-        /**
-         * Update samples that should be handled in this frame.
-         */
-        gl.uniform1i(this._uLightSampleIndex, currentLightIndex);
-        gl.uniform1f(this._uLightFactor, lightFactor);
-        gl.uniform1i(this._uNumDiffuseEnvironmentSamples, numDiffuseEnvironmentSamples);
-        gl.uniform1f(this._uDiffuseEnvironmentFactor, diffuseEnvironmentFactor);
-        gl.uniform1i(this._uNumSpecularEnvironmentSamples, numSpecularEnvironmentSamples);
-        gl.uniform1f(this._uSpecularEnvironmentFactor, specularEnvironmentFactor);
-
-        this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
-        this._normalDepthTexture.bind(gl.TEXTURE8);
-
-        const lastFrame = this._accumulatePass.framebuffer!.texture(gl2facade.COLOR_ATTACHMENT0)!;
-        lastFrame.bind(gl.TEXTURE9);
+        this.prepareFrame(frameNumber);
 
         this._forwardPass.program = this._program;
         this._forwardPass.target = this._intermediateFBO;
@@ -862,6 +773,123 @@ export class ThesisRenderer extends Renderer {
     protected onSwap(): void {
         this._blitPass.framebuffer = this._postProcessingPass.framebuffer;
         this._blitPass.frame();
+    }
+
+    /**
+     * Bind all uniforms that do not change within a multi-frame.
+     * This avoids unnecessary calls in each individual frame.
+     */
+    protected bindMultiframeUniforms(): void {
+        const gl = this._context.gl;
+
+        /**
+         * Prepare main program uniforms
+         */
+        this._program.bind();
+
+        gl.uniformMatrix4fv(this._uView, gl.FALSE, this._camera.view);
+        gl.uniformMatrix4fv(this._uProjection, gl.FALSE, this._camera.projection);
+        gl.uniform2fv(this._uCameraNearFar, vec2.fromValues(this._camera.near, this._camera.far));
+
+        const viewNormalMatrix = mat3.create();
+        mat3.normalFromMat4(viewNormalMatrix, this._camera.view);
+        gl.uniformMatrix3fv(this._uViewNormalMatrix, gl.FALSE, viewNormalMatrix);
+
+        gl.uniform3fv(this._uEye, this._camera.eye);
+
+        gl.uniform1i(this._uBaseColor, 0);
+        gl.uniform1i(this._uMetallicRoughness, 1);
+        gl.uniform1i(this._uNormal, 2);
+        gl.uniform1i(this._uOcclusion, 3);
+        gl.uniform1i(this._uEmissive, 4);
+        gl.uniform1i(this._uDiffuseEnvironment, 10);
+        gl.uniform1i(this._uSpecularEnvironment, 5);
+        gl.uniform1i(this._uBRDFLookupTable, 6);
+        gl.uniform1i(this._uShadowMap, 7);
+        gl.uniform1i(this._uNormalDepth, 8);
+        gl.uniform1i(this._uLastFrame, 9);
+
+        this._specularEnvironment.bind(gl.TEXTURE5);
+        this._diffuseEnvironment.bind(gl.TEXTURE10);
+        this._brdfLUT.bind(gl.TEXTURE6);
+        this._shadowPass.shadowMapTexture.bind(gl.TEXTURE7);
+        this._normalDepthTexture.bind(gl.TEXTURE8);
+
+        /**
+         * Prepare depth program uniforms
+         */
+        this._depthProgram.bind();
+        gl.uniform2fv(this._uCameraNearFarD, vec2.fromValues(this._camera.near, this._camera.far));
+        gl.uniformMatrix4fv(this._uViewD, gl.FALSE, this._camera.view);
+        gl.uniformMatrix4fv(this._uProjectionD, gl.FALSE, this._camera.projection);
+        this._depthProgram.unbind();
+    }
+
+    /**
+     * Bind all uniforms that change each frame and perform shadow and depth prepass if necessary.
+     */
+    protected prepareFrame(frameNumber: number): void {
+        const gl = this._context.gl;
+        const gl2facade = this._context.gl2facade;
+
+        const samples = this._sampleManager.getNextFrameSamples();
+
+        let numDiffuseEnvironmentSamples = 0;
+        let diffuseEnvironmentFactor = 1.0;
+        let numSpecularEnvironmentSamples = 0;
+        let specularEnvironmentFactor = 1.0;
+        let currentLightIndex = -1;
+        let lightEye = vec3.create();
+        let lightFactor = 1.0;
+        for (const sample of samples) {
+            if (sample instanceof DiffuseEnvironmentSample) {
+                numDiffuseEnvironmentSamples++;
+                diffuseEnvironmentFactor = sample.factor;
+            }
+            if (sample instanceof SpecularEnvironmentSample) {
+                numSpecularEnvironmentSamples++;
+                specularEnvironmentFactor = sample.factor;
+            }
+            if (sample instanceof LightSample) {
+                currentLightIndex = sample.lightIndex;
+                lightEye = sample.eye;
+                lightFactor = sample.factor;
+            }
+        }
+
+        if (frameNumber === 1) {
+            this.preDepthPass();
+        }
+
+        if (currentLightIndex >= 0) {
+            this.shadowPass(currentLightIndex, lightEye);
+        }
+
+        this._program.bind();
+        gl.uniform1i(this._uFrameNumber, frameNumber);
+
+        const ndcOffset = this._ndcOffsetKernel.get(frameNumber);
+        ndcOffset[0] = 2.0 * ndcOffset[0] / this._frameSize[0];
+        ndcOffset[1] = 2.0 * ndcOffset[1] / this._frameSize[1];
+        gl.uniform2fv(this._uNdcOffset, ndcOffset);
+
+        const cocPoint = this._depthOfFieldKernel.get(frameNumber);
+        cocPoint[0] *= this._depthOfFieldRange;
+        cocPoint[1] *= this._depthOfFieldRange;
+        gl.uniform2fv(this._uCocPoint, cocPoint);
+
+        /**
+         * Update samples that should be handled in this frame.
+         */
+        gl.uniform1i(this._uLightSampleIndex, currentLightIndex);
+        gl.uniform1f(this._uLightFactor, lightFactor);
+        gl.uniform1i(this._uNumDiffuseEnvironmentSamples, numDiffuseEnvironmentSamples);
+        gl.uniform1f(this._uDiffuseEnvironmentFactor, diffuseEnvironmentFactor);
+        gl.uniform1i(this._uNumSpecularEnvironmentSamples, numSpecularEnvironmentSamples);
+        gl.uniform1f(this._uSpecularEnvironmentFactor, specularEnvironmentFactor);
+
+        const lastFrame = this._accumulatePass.framebuffer!.texture(gl2facade.COLOR_ATTACHMENT0)!;
+        lastFrame.bind(gl.TEXTURE9);
     }
 
     /**
