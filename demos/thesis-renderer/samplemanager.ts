@@ -6,6 +6,8 @@ import { vec3 } from 'gl-matrix';
 import { Scene } from './scene';
 import { ShadowKernel } from './shadowkernel';
 
+// tslint:disable:max-classes-per-file
+
 export class Sample {
     public factor: number;
 
@@ -49,7 +51,8 @@ export class SampleManager {
         this._lightSampleCount = lightSampleCount;
         this._environmentSampleCount = environmentSampleCount;
 
-        auxiliaries.assert(lightSampleCount * this._scene.diskLights.length <= multiframeNumber, 'Total number of light samples can not be higher than multiframe count.');
+        auxiliaries.assert(lightSampleCount * this._scene.diskLights.length <= multiframeNumber,
+            'Total number of light samples can not be higher than multiframe count.');
 
         this._lightQueue = new Array<Sample>();
         this._environmentQueue = new Array<Sample>();
@@ -71,14 +74,16 @@ export class SampleManager {
             const shadowKernel = new ShadowKernel(this._lightSampleCount, light);
             for (let i = 0; i < this._lightSampleCount; ++i) {
                 const eye = shadowKernel.get(i);
-                this._lightQueue.push(new LightSample(lightFactor, lightIndex, vec3.fromValues(eye[0], eye[1], eye[2])));
+                this._lightQueue.push(
+                    new LightSample(lightFactor, lightIndex, vec3.fromValues(eye[0], eye[1], eye[2])));
             }
             lightIndex++;
         }
     }
 
     getNextFrameSamples(): Array<Sample> {
-        auxiliaries.assert(this._currentFrame < this._multiframeNumber, 'Samples can only be generated during a multiframe.');
+        auxiliaries.assert(this._currentFrame < this._multiframeNumber,
+            'Samples can only be generated during a multiframe.');
 
         const samples = new Array<Sample>();
 
@@ -94,7 +99,8 @@ export class SampleManager {
         const lightSamplesPerFrame = Math.round(this._lightQueue.length / remainingFrames);
         const environmentSamplesPerFrame = Math.round(this._environmentQueue.length / remainingFrames);
 
-        auxiliaries.assert(lightSamplesPerFrame <= 1, 'There can not be more than one sample per frame left in the queue.');
+        auxiliaries.assert(lightSamplesPerFrame <= 1,
+            'There can not be more than one sample per frame left in the queue.');
 
         // Gather the front samples of the queues
         for (let i = 0; i < lightSamplesPerFrame; ++i) {
@@ -116,8 +122,7 @@ export class SampleManager {
                 if (this._environmentQueue.length > 0) {
                     samples.push(this._environmentQueue.shift()!);
                 }
-            }
-            else {
+            } else {
                 if (this._lightQueue.length > 0) {
                     samples.push(this._lightQueue.shift()!);
                 }
