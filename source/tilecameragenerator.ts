@@ -38,6 +38,10 @@ import { m4 } from './gl-matrix-extensions';
  * NOTE: Use updateCameraProperties if the source camera is altered.
  */
 
+
+// TODO: z curve seems to have a bug in the last tiles and hilbert draws too much
+// Hilbert drawed richtig. das liegt nur daran dass die letzte tile reihe ueber dem rand herausragt!!! => see gl.sissor
+
 export class TileCameraGenerator {
 
     /** @see {@link eye} */
@@ -100,19 +104,20 @@ export class TileCameraGenerator {
      */
     protected fillIterationIndicesWithZCurve(): void {
         // initialize the array with the size of numberOfTiles()
-        for (let i = 0; i < this.numberOfTiles(); ++i) {
+        /*for (let i = 0; i < this.numberOfTiles(); ++i) {
             this._iterationAlgorithmIndices.push([0, 0]);
-        }
+        }*/
 
         // Now replace them with the correct z curve indices
-        // TODO refactor: code duplication
         const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
-        const bitLength = Math.ceil(Math.log2(tableSize));
+        const maxZIndexBitLength = Math.ceil(Math.log2(tableSize)) * 2;
 
-        // TODO is integer?
-        for (let x = 0; x < this.numberOfXTiles(); ++x) {
+        /*for (let x = 0; x < this.numberOfXTiles(); ++x) {
             for (let y = 0; y < this.numberOfYTiles(); ++y) {
                 let index = 0;
+                if (x === 32 && y === 4) {
+                    console.log('hi!');
+                }
                 for (let currentBit = 0; currentBit < bitLength; ++currentBit) {
                     const xBit = (x >> currentBit) & 1;
                     const xBitShift = currentBit * 2;
@@ -122,7 +127,28 @@ export class TileCameraGenerator {
                     const yBitShift = currentBit * 2 + 1;
                     index += yBit << yBitShift;
                 }
+                if (index > this.numberOfTiles()) {
+                    console.log(index);
+                    console.log(x);
+                    console.log(y);
+                }
                 this._iterationAlgorithmIndices[index] = [x, y];
+            }
+        }*/
+        let zIndex = 0;
+        for (let numberOfFoundIndices = 0; numberOfFoundIndices < this.numberOfTiles(); zIndex++) {
+            let x = 0;
+            let y = 0;
+            for (let currentBit = 0; currentBit < maxZIndexBitLength; currentBit++) {
+                const xBit = zIndex >> (currentBit * 2) & 1;
+                x += xBit << currentBit;
+                const yBit = zIndex >> (currentBit * 2 + 1) & 1;
+                y += yBit << currentBit;
+            }
+            if (x < this.numberOfXTiles() && y < this.numberOfYTiles()) {
+                this._iterationAlgorithmIndices.push([x, y]);
+                console.log(this._iterationAlgorithmIndices.length);
+                numberOfFoundIndices++;
             }
         }
     }
