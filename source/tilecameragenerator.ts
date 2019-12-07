@@ -39,9 +39,6 @@ import { m4 } from './gl-matrix-extensions';
  */
 
 
-// TODO: z curve seems to have a bug in the last tiles and hilbert draws too much
-// Hilbert drawed richtig. das liegt nur daran dass die letzte tile reihe ueber dem rand herausragt!!! => see gl.sissor
-
 export class TileCameraGenerator {
 
     /** @see {@link eye} */
@@ -70,11 +67,10 @@ export class TileCameraGenerator {
     protected _iterationAlgorithmIndices: [number, number][] = [];
 
     /**
-     * Converts the tile index from the selected Algorithm to the tile index of the ScanLineAlgorithm
-     * and returns that value.
+     * Converts the tile index from the selected Algorithm to table indices.
      * @returns - The converted tile index.
      */
-    protected getTileIndexOfLinearAlgorithm(): [number, number] {
+    protected tileIndexToTableIndices(): [number, number] {
         if (this.algorithm === TileCameraGenerator.IterationAlgorithm.ScanLine) {
             // Calculate column (0) and row (1) index of the current tile.
             const index = this.tile;
@@ -98,73 +94,51 @@ export class TileCameraGenerator {
     }
 
     /**
-     * Fills the iterationAlgorithmIndices  with the tile index
-     * from the ZCurve-Algorithm to the ScanLine-Algorithm.
-     * @returns - The converted tile index.
+     * Fills the iterationAlgorithmIndices with the table indices
+     * from the ZCurve-Iteration-Algorithm.
      */
     protected fillIterationIndicesWithZCurve(): void {
-        // initialize the array with the size of numberOfTiles()
-        /*for (let i = 0; i < this.numberOfTiles(); ++i) {
-            this._iterationAlgorithmIndices.push([0, 0]);
-        }*/
-
-        // Now replace them with the correct z curve indices
+        this._iterationAlgorithmIndices = [];
         const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
-        const maxZIndexBitLength = Math.ceil(Math.log2(tableSize)) * 2;
+        const maxZIndexBitLength = Math.floor(Math.log2(tableSize)) * 2;
 
-        /*for (let x = 0; x < this.numberOfXTiles(); ++x) {
-            for (let y = 0; y < this.numberOfYTiles(); ++y) {
-                let index = 0;
-                if (x === 32 && y === 4) {
-                    console.log('hi!');
-                }
-                for (let currentBit = 0; currentBit < bitLength; ++currentBit) {
-                    const xBit = (x >> currentBit) & 1;
-                    const xBitShift = currentBit * 2;
-                    index += xBit << xBitShift;
-
-                    const yBit = (y >> currentBit) & 1;
-                    const yBitShift = currentBit * 2 + 1;
-                    index += yBit << yBitShift;
-                }
-                if (index > this.numberOfTiles()) {
-                    console.log(index);
-                    console.log(x);
-                    console.log(y);
-                }
-                this._iterationAlgorithmIndices[index] = [x, y];
-            }
-        }*/
+        // iterate over the z-curve until all indices in the tile-range are collected
         let zIndex = 0;
         for (let numberOfFoundIndices = 0; numberOfFoundIndices < this.numberOfTiles(); zIndex++) {
             let x = 0;
             let y = 0;
+            // Bit-Magic that maps the z-curve index to table indices
+            // (see Definition of Z-Curve for further information)
             for (let currentBit = 0; currentBit < maxZIndexBitLength; currentBit++) {
                 const xBit = zIndex >> (currentBit * 2) & 1;
                 x += xBit << currentBit;
                 const yBit = zIndex >> (currentBit * 2 + 1) & 1;
                 y += yBit << currentBit;
             }
+            // add all table indices that are int the tile-range
             if (x < this.numberOfXTiles() && y < this.numberOfYTiles()) {
                 this._iterationAlgorithmIndices.push([x, y]);
-                console.log(this._iterationAlgorithmIndices.length);
                 numberOfFoundIndices++;
             }
         }
     }
 
     /**
-     * Fills the iterationAlgorithmIndices  with the tile index
-     * from the HilbertCurve-Algorithm to the ScanLine-Algorithm.
-     * @returns - The converted tile index.
+     * Fills the iterationAlgorithmIndices with the table indices
+     * from the HilbertCurve-Iteration-Algorithm.
      */
     protected fillIterationIndicesWithHilbert(): void {
+        this._iterationAlgorithmIndices = [];
         const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
         const recursionDepth = Math.ceil(Math.log2(tableSize));
         const tableSizeNextPowerOfTwo = Math.pow(2, recursionDepth);
         this.genHilbertIndices(0, 0, tableSizeNextPowerOfTwo, 0, 0, tableSizeNextPowerOfTwo, recursionDepth);
     }
 
+    /**
+     * Recursively fills the iterationAlgorithmIndices with the HilbertCurve.
+     * Do not use this method. Use fillIterationIndicesWithHilbert() instead.
+     */
     protected genHilbertIndices(x: number, y: number,
         xi: number, xj: number, yi: number, yj: number, depth: number): void {
         if (depth <= 0) {
@@ -259,7 +233,7 @@ export class TileCameraGenerator {
         }
 
         this._valid = true;
-        const tableIndices = this.getTileIndexOfLinearAlgorithm();
+        const tableIndices = this.tileIndexToTableIndices();
         const viewport = this.sourceViewPort;
         const paddedTileSize = this.getPaddedTileSize();
 
