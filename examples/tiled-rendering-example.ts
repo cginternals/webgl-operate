@@ -88,15 +88,13 @@ export class TiledCubeRenderer extends Renderer {
         this._blit.target = this._defaultFBO;
         this._blit.framebuffer = this._intermediateFBO;
 
-        if (!this._intermediateFBO.initialized) {
-            const frameSize = this._frameSize[0] > 0 && this._frameSize[1] > 0 ?
-                [this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor] : [1, 1];
-            this._colorRenderTexture.initialize(frameSize[0], frameSize[1],
-                this._context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
-            this._depthRenderbuffer.initialize(frameSize[0], frameSize[1], gl.DEPTH_COMPONENT16);
-            this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
-                , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
-        }
+        const frameSize = this._frameSize[0] > 0 && this._frameSize[1] > 0 ?
+            [this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor] : [1, 1];
+        this._colorRenderTexture.initialize(frameSize[0], frameSize[1],
+            this._context.isWebGL2 ? gl.RGBA8 : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
+        this._depthRenderbuffer.initialize(frameSize[0], frameSize[1], gl.DEPTH_COMPONENT16);
+        this._intermediateFBO.initialize([[gl2facade.COLOR_ATTACHMENT0, this._colorRenderTexture]
+            , [gl.DEPTH_ATTACHMENT, this._depthRenderbuffer]]);
 
         this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [5.0, 5.0, 5.0]);
         this._cuboid.initialize();
@@ -238,9 +236,9 @@ export class TiledCubeRenderer extends Renderer {
         const ssaaFrameSize: [number, number] = [this._frameSize[0] * this._ssaaFactor,
         this._frameSize[1] * this._ssaaFactor];
 
-        this._tileCameraScanLineGenerator.sourceViewPort = ssaaFrameSize;
-        this._tileCameraHilbertGenerator.sourceViewPort = ssaaFrameSize;
-        this._tileCameraZCurveGenerator.sourceViewPort = ssaaFrameSize;
+        this._tileCameraScanLineGenerator.sourceViewport = ssaaFrameSize;
+        this._tileCameraHilbertGenerator.sourceViewport = ssaaFrameSize;
+        this._tileCameraZCurveGenerator.sourceViewport = ssaaFrameSize;
 
         // tile size must be divisible by 2 since we render quaters
         const size0 = Math.floor(ssaaFrameSize[0] / this._tileNumber);

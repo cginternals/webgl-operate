@@ -12,7 +12,7 @@ import { m4 } from './gl-matrix-extensions';
  * // setup
  * tileCameraGenerator = new TileCameraGenerator();
  * tileCameraGenerator.sourceCamera = camera;
- * tileCameraGenerator.sourceViewPort = canvSize;
+ * tileCameraGenerator.sourceViewport = canvSize;
  * tileCameraGenerator.tileSize = [128, 128];
  * tileCameraGenerator.padding = new vec4();
  * tileCamera = tileRender.camera;
@@ -50,8 +50,8 @@ export class TileCameraGenerator {
     /** @see {@link tile} */
     protected _tile = -1;
 
-    /** @see {@link sourceViewPort} */
-    protected _sourceViewPort: [number, number] | undefined;
+    /** @see {@link sourceViewport} */
+    protected _sourceViewport: [number, number] | undefined;
 
     /** @see {@link tileSize} */
     protected _tileSize: [number, number] | undefined;
@@ -67,29 +67,46 @@ export class TileCameraGenerator {
     protected _iterationAlgorithmIndices: [number, number][] = [];
 
     /**
+     * Ensures that the _iterationAlgorithmIndices are valid by
+     * filling the array if it is empty
+     */
+    protected ensureValidIterationIndices(): void {
+        if (this._iterationAlgorithmIndices.length <= 0) {
+            switch (this._algorithm) {
+                case TileCameraGenerator.IterationAlgorithm.ScanLine:
+                    this.fillIterationIndicesWithScanLine();
+                    break;
+                case TileCameraGenerator.IterationAlgorithm.HilbertCurve:
+                    this.fillIterationIndicesWithHilbert();
+                    break;
+                case TileCameraGenerator.IterationAlgorithm.ZCurve:
+                    this.fillIterationIndicesWithZCurve();
+                    break;
+                default:
+                    this.fillIterationIndicesWithScanLine();
+            }
+        }
+    }
+
+    /**
      * Converts the tile index from the selected Algorithm to table indices.
      * @returns - The converted tile index.
      */
     protected tileIndexToTableIndices(): [number, number] {
-        if (this.algorithm === TileCameraGenerator.IterationAlgorithm.ScanLine) {
-            // Calculate column (0) and row (1) index of the current tile.
-            const index = this.tile;
-            const tableIndices: [number, number] = [0, 0];
-            tableIndices[0] = index % this.numberOfXTiles();
-            tableIndices[1] = Math.floor((index - tableIndices[0]) / this.numberOfXTiles());
-            return tableIndices;
-        } else if (this.algorithm === TileCameraGenerator.IterationAlgorithm.HilbertCurve) {
-            if (this._iterationAlgorithmIndices.length === 0) {
-                this.fillIterationIndicesWithHilbert();
+        this.ensureValidIterationIndices();
+        return this._iterationAlgorithmIndices[this.tile];
+    }
+
+    /**
+     * Fills the iterationAlgorithmIndices with the table indices
+     * from the ZCurve-Iteration-Algorithm.
+     */
+    protected fillIterationIndicesWithScanLine(): void {
+        this._iterationAlgorithmIndices = new Array(this.numberOfTiles());
+        for (let y = 0; y < this.numberOfYTiles(); y++) {
+            for (let x = 0; x < this.numberOfXTiles(); x++) {
+                this._iterationAlgorithmIndices[x + y * this.numberOfXTiles()] = [x, y];
             }
-            return this._iterationAlgorithmIndices[this.tile];
-        } else if (this.algorithm === TileCameraGenerator.IterationAlgorithm.ZCurve) {
-            if (this._iterationAlgorithmIndices.length === 0) {
-                this.fillIterationIndicesWithZCurve();
-            }
-            return this._iterationAlgorithmIndices[this.tile];
-        } else {
-            return [0, 0];
         }
     }
 
@@ -98,7 +115,7 @@ export class TileCameraGenerator {
      * from the ZCurve-Iteration-Algorithm.
      */
     protected fillIterationIndicesWithZCurve(): void {
-        this._iterationAlgorithmIndices = [];
+        this._iterationAlgorithmIndices = new Array(this.numberOfTiles());
         const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
         const maxZIndexBitLength = Math.floor(Math.log2(tableSize)) * 2;
 
@@ -117,7 +134,7 @@ export class TileCameraGenerator {
             }
             // add all table indices that are int the tile-range
             if (x < this.numberOfXTiles() && y < this.numberOfYTiles()) {
-                this._iterationAlgorithmIndices.push([x, y]);
+                this._iterationAlgorithmIndices[numberOfFoundIndices] = [x, y];
                 numberOfFoundIndices++;
             }
         }
@@ -128,11 +145,11 @@ export class TileCameraGenerator {
      * from the HilbertCurve-Iteration-Algorithm.
      */
     protected fillIterationIndicesWithHilbert(): void {
-        this._iterationAlgorithmIndices = [];
+        this._iterationAlgorithmIndices = new Array(this.numberOfTiles());
         const tableSize = this.numberOfXTiles() > this.numberOfYTiles() ? this.numberOfXTiles() : this.numberOfYTiles();
         const recursionDepth = Math.ceil(Math.log2(tableSize));
         const tableSizeNextPowerOfTwo = Math.pow(2, recursionDepth);
-        this.genHilbertIndices(0, 0, tableSizeNextPowerOfTwo, 0, 0, tableSizeNextPowerOfTwo, recursionDepth);
+        this.genHilbertIndices(0, 0, tableSizeNextPowerOfTwo, 0, 0, tableSizeNextPowerOfTwo, recursionDepth, 0);
     }
 
     /**
@@ -140,19 +157,24 @@ export class TileCameraGenerator {
      * Do not use this method. Use fillIterationIndicesWithHilbert() instead.
      */
     protected genHilbertIndices(x: number, y: number,
-        xi: number, xj: number, yi: number, yj: number, depth: number): void {
+        xi: number, xj: number, yi: number, yj: number, depth: number, hilbertIndex: number): number {
         if (depth <= 0) {
             x = x + (xi + yi - 1) / 2;
             y = y + (xj + yj - 1) / 2;
             if (x < this.numberOfXTiles() && y < this.numberOfYTiles()) {
-                this._iterationAlgorithmIndices.push([x, y]);
+                this._iterationAlgorithmIndices[hilbertIndex] = [x, y];
+                return hilbertIndex + 1;
             }
         } else {
-            this.genHilbertIndices(x, y, yi / 2, yj / 2, xi / 2, xj / 2, depth - 1);
-            this.genHilbertIndices(x + xi / 2, y + xj / 2, xi / 2, xj / 2, yi / 2, yj / 2, depth - 1);
-            this.genHilbertIndices(x + xi / 2 + yi / 2, y + xj / 2 + yj / 2, xi / 2, xj / 2, yi / 2, yj / 2, depth - 1);
-            this.genHilbertIndices(x + xi / 2 + yi, y + xj / 2 + yj, -yi / 2, -yj / 2, -xi / 2, -xj / 2, depth - 1);
+            hilbertIndex = this.genHilbertIndices(x, y, yi / 2, yj / 2, xi / 2, xj / 2, depth - 1, hilbertIndex);
+            hilbertIndex = this.genHilbertIndices(x + xi / 2, y + xj / 2, xi / 2, xj / 2, yi / 2, yj / 2,
+                depth - 1, hilbertIndex);
+            hilbertIndex = this.genHilbertIndices(x + xi / 2 + yi / 2, y + xj / 2 + yj / 2, xi / 2, xj / 2, yi / 2,
+                yj / 2, depth - 1, hilbertIndex);
+            hilbertIndex = this.genHilbertIndices(x + xi / 2 + yi, y + xj / 2 + yj, -yi / 2, -yj / 2, -xi / 2,
+                -xj / 2, depth - 1, hilbertIndex);
         }
+        return hilbertIndex;
     }
 
     /**
@@ -187,11 +209,7 @@ export class TileCameraGenerator {
      * Returns if tiles still need to be rendered.
      */
     public hasNextTile(): boolean {
-        if (this.tile < this.numberOfTiles() - 1 && this.tile >= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.tile < this.numberOfTiles() - 1 && this.tile >= 0;
     }
 
     /**
@@ -214,7 +232,7 @@ export class TileCameraGenerator {
 
     /**
      * Updates the camera view frustum to current tile based on
-     * the sourceViewPort, tileSize and the padding.
+     * the sourceViewport, tileSize and the padding.
      * If the tile is less than zero, the camera is set to the first tile.
      * If the tile is too high, the camera is not updated and remains in the last valid state.
      * @returns - the offset of the new camera tile.
@@ -234,7 +252,7 @@ export class TileCameraGenerator {
 
         this._valid = true;
         const tableIndices = this.tileIndexToTableIndices();
-        const viewport = this.sourceViewPort;
+        const viewport = this.sourceViewport;
         const paddedTileSize = this.getPaddedTileSize();
 
         // Calculate the padded tile center coordinates in the viewport-space.
@@ -274,7 +292,7 @@ export class TileCameraGenerator {
      * @returns - The number of tiles along the X axis.
      */
     public numberOfXTiles(): number {
-        return Math.ceil(this.sourceViewPort[0] / this.tileSize[0]);
+        return Math.ceil(this.sourceViewport[0] / this.tileSize[0]);
     }
 
     /**
@@ -283,7 +301,7 @@ export class TileCameraGenerator {
      * @returns - The number of tiles along the Y axis.
      */
     public numberOfYTiles(): number {
-        return Math.ceil(this.sourceViewPort[1] / this.tileSize[1]);
+        return Math.ceil(this.sourceViewport[1] / this.tileSize[1]);
     }
 
 
@@ -372,9 +390,9 @@ export class TileCameraGenerator {
      * If the viewport has not been set, it returns [-1, -1].
      * @returns - Size of the Viewport.
      */
-    get sourceViewPort(): [number, number] {
-        if (this._sourceViewPort) {
-            return this._sourceViewPort;
+    get sourceViewport(): [number, number] {
+        if (this._sourceViewport) {
+            return this._sourceViewport;
         } else {
             return [-1, -1];
         }
@@ -382,12 +400,12 @@ export class TileCameraGenerator {
 
     /**
      * Sets the size of the viewport from the sourceCamera.
-     * It checks if the sourceViewPort is compatible with the selected algorithm
+     * It checks if the sourceViewport is compatible with the selected algorithm
      * and eventually adjusts the tileSize to match the conditions of the algorithm.
      */
-    set sourceViewPort(viewport: [number, number]) {
-        if (this._sourceViewPort !== viewport) {
-            this._sourceViewPort = viewport;
+    set sourceViewport(viewport: [number, number]) {
+        if (this._sourceViewport !== viewport) {
+            this._sourceViewport = viewport;
             this._iterationAlgorithmIndices = [];
             this._valid = false;
         }
@@ -466,26 +484,25 @@ export class TileCameraGenerator {
 export namespace TileCameraGenerator {
 
     export enum IterationAlgorithm {
-        ScanLine = 'scanline',
         /**
          * ScanLine conditions: none.
          */
-        HilbertCurve = 'hilbertcurve',
+        ScanLine = 'scanline',
+
         /**
          * HilbertCurve conditions: Both numberOfXTiles, numberOfYTiles need to be equal and need to be a power of two.
          * In the case that the condition is not satisfied
          * the next higher number than numberOfTilesX/Y that is power of two is calculated.
          * The Iteration will be calculated with this number and tiles that lay outside the viewport are skipped.
          */
+        HilbertCurve = 'hilbertcurve',
 
-
-        ZCurve = 'zCurve',
         /**
          * ZCurve conditions: Both numberOfXTiles, numberOfYTiles need to be equal and need to be a power of two.
          * In the case that the condition is not satisfied
          * the next higher number than numberOfTilesX/Y that is power of two is calculated.
          * The Iteration will be calculated with this number and tiles that lay outside the viewport are skipped.
          */
-
+        ZCurve = 'zCurve',
     }
 }

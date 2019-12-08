@@ -397,13 +397,7 @@ export class Camera {
      */
     public copy(): Camera {
         const copiedCamera = new Camera(this.eye, this.center, this.up);
-        copiedCamera.altered = this.altered;
-        copiedCamera.fovy = this.fovy;
-        copiedCamera.near = this.near;
-        copiedCamera.far = this.far;
-        copiedCamera.viewport = [this.viewport[0], this.viewport[1]];
-        copiedCamera.aspect = this.aspect;
-        copiedCamera.postViewProjection = this.postViewProjection;
+        this.copyAllValues(copiedCamera);
         return copiedCamera;
     }
 
