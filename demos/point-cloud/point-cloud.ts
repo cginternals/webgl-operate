@@ -1,23 +1,20 @@
 
 /* spellchecker: disable */
 
-// import { mat4, vec3 } from 'gl-matrix';
-import { vec3 } from 'gl-matrix';
+import { /*mat4,*/ vec3 } from 'gl-matrix';
 
 import {
     Buffer,
     Camera,
     Canvas,
     Context,
-    // CuboidGeometry,
     DefaultFramebuffer,
     Invalidate,
     MouseEventProvider,
     Navigation,
-    // Program,
+    Program,
     Renderer,
-    // Shader,
-    // Texture2D,
+    Shader,
     Wizard,
 } from 'webgl-operate';
 
@@ -34,9 +31,14 @@ export class PointCloudRenderer extends Renderer {
     protected _navigation: Navigation;
 
     protected _vertexVBO: Buffer;
+    protected _pointCount: number;
 
-    // protected _program: Program;
-    // protected _uViewProjection: WebGLUniformLocation;
+    protected _program: Program;
+
+    protected _uView: WebGLUniformLocation;
+    protected _uViewInverse: WebGLUniformLocation;
+    protected _uProjection: WebGLUniformLocation;
+    protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
 
@@ -60,25 +62,72 @@ export class PointCloudRenderer extends Renderer {
         const gl = context.gl;
 
 
+        const particle = new Float32Array([
+            -0.5, -0.5, 0.0, 0.0, 0.0, +0.5, -0.5, 0.0, 1.0, 0.0, +0.5, +0.5, 0.0, 1.0, 1.0,
+            -0.5, -0.5, 0.0, 0.0, 0.0, +0.5, +0.5, 0.0, 1.0, 1.0, -0.5, +0.5, 0.0, 0.0, 1.0]);
+
+        this._pointCount = 1e5;
+
+        const positions = new Float32Array(5 * this._pointCount);
+        positions.forEach((value, index, array) => array[index] = Math.random() * 8.0 - 4.0);
+
+        const vertices = new Float32Array(positions.length / 3 * particle.length);
+
+        for (let i = 0; i < positions.length; i += 3) {
+            const i0 = i * particle.length;
+            for (let j = 0; j < particle.length; j += 5) {
+                vertices[i0 + j + 0] = positions[i + 0];
+                vertices[i0 + j + 1] = positions[i + 1];
+                vertices[i0 + j + 2] = positions[i + 2];
+                vertices[i0 + j + 3] = particle[j + 3];
+                vertices[i0 + j + 4] = particle[j + 4];
+            }
+        }
 
 
-        const vertices = new Float32Array([
-            -0.5, -0.5, 0.0, +0.5, -0.5, 0.0, +0.5, +0.5, 0.0, -0.5, +0.5, 0.0]);
+        const vertexLocation: GLuint = 0;
+        const uvLocation: GLuint = 1;
 
         this._vertexVBO = new Buffer(context, 'vertexVBO');
         this._vertexVBO.initialize(gl.ARRAY_BUFFER);
-        this._vertexVBO.attribEnable(0, 3, gl.FLOAT); //, false, 0, 0, true, false);
+        this._vertexVBO.attribEnable(vertexLocation, 3, gl.FLOAT, false, 5 * 4, 0, true, false);
+        this._vertexVBO.attribEnable(uvLocation, 2, gl.FLOAT, false, 5 * 4, 3 * 4, false, false);
         this._vertexVBO.data(vertices, gl.STATIC_DRAW);
 
 
+
+        const vert = new Shader(context, gl.VERTEX_SHADER, 'particle.vert');
+        vert.initialize(require('./particle.vert'));
+        const frag = new Shader(context, gl.FRAGMENT_SHADER, 'particle.frag');
+        frag.initialize(require('./particle.frag'));
+
+
+        this._program = new Program(context, 'ParticleProgram');
+        this._program.initialize([vert, frag], false);
+
+        this._program.attribute('a_vertex', vertexLocation);
+        this._program.attribute('a_uv', uvLocation);
+        this._program.link();
+        this._program.bind();
+
+
+
+        this._uView = this._program.uniform('u_view');
+        this._uViewInverse = this._program.uniform('u_viewInverse');
+        this._uProjection = this._program.uniform('u_projection');
+        this._uViewProjection = this._program.uniform('u_viewProjection');
 
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
-        this._camera.near = 1.0;
+        this._camera.near = 2.0;
         this._camera.far = 8.0;
+
+        gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
+
+
 
 
         this._navigation = new Navigation(callback, mouseEventProvider);
@@ -136,6 +185,7 @@ export class PointCloudRenderer extends Renderer {
     protected onFrame(): void {
         const gl = this._context.gl;
 
+
         this._defaultFBO.bind();
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
@@ -145,18 +195,23 @@ export class PointCloudRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
-        // this._texture.bind(gl.TEXTURE0);
+        // // this._texture.bind(gl.TEXTURE0);
 
-        // this._program.bind();
-        // gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
+        this._program.bind();
+        gl.uniformMatrix4fv(this._uView, false, this._camera.view);
+        gl.uniformMatrix4fv(this._uViewInverse, false, this._camera.viewInverse);
+        gl.uniformMatrix4fv(this._uProjection, false, this._camera.projection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
 
-        // this._cuboid.bind();
-        // this._cuboid.draw();
-        // this._cuboid.unbind();
+        this._vertexVBO.bind();
 
-        // this._program.unbind();
+        gl.drawArrays(gl.TRIANGLES, 0, this._pointCount * 6);
 
-        // this._texture.unbind(gl.TEXTURE0);
+        this._vertexVBO.unbind();
+
+        this._program.unbind();
+
+        // // this._texture.unbind(gl.TEXTURE0);
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
