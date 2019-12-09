@@ -12,6 +12,7 @@ import {
     ForwardSceneRenderPass,
     Framebuffer,
     Geometry,
+    GLTFAlphaMode,
     GLTFLoader,
     GLTFPbrMaterial,
     GLTFPrimitive,
@@ -70,6 +71,8 @@ export class GltfRenderer extends Renderer {
     protected _uRoughnessFactor: WebGLUniformLocation;
     protected _uEmissiveFactor: WebGLUniformLocation;
     protected _uNormalScale: WebGLUniformLocation;
+    protected _uBlendMode: WebGLUniformLocation;
+    protected _uBlendCutoff: WebGLUniformLocation;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -122,6 +125,8 @@ export class GltfRenderer extends Renderer {
         this._uRoughnessFactor = this._program.uniform('u_roughnessFactor');
         this._uEmissiveFactor = this._program.uniform('u_emissiveFactor');
         this._uNormalScale = this._program.uniform('u_normalScale');
+        this._uBlendMode = this._program.uniform('u_blendMode');
+        this._uBlendCutoff = this._program.uniform('u_blendCutoff');
 
         /* Create and configure camera. */
 
@@ -232,6 +237,27 @@ export class GltfRenderer extends Renderer {
             gl.uniform1f(this._uRoughnessFactor, pbrMaterial.roughnessFactor);
             gl.uniform1f(this._uNormalScale, pbrMaterial.normalScale);
             gl.uniform1i(this._uPbrFlags, pbrMaterial.flags);
+
+            /**
+             * Handle alpha modes
+             */
+            if (pbrMaterial.alphaMode === GLTFAlphaMode.OPAQUE) {
+                gl.disable(gl.BLEND);
+                gl.uniform1i(this._uBlendMode, 0);
+            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.MASK) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.uniform1i(this._uBlendMode, 1);
+                gl.uniform1f(this._uBlendCutoff, pbrMaterial.alphaCutoff);
+            } else if (pbrMaterial.alphaMode === GLTFAlphaMode.BLEND) {
+                gl.enable(gl.BLEND);
+                // We premultiply in the shader
+                gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+                gl.uniform1i(this._uBlendMode, 2);
+            } else {
+                auxiliaries.log(auxiliaries.LogLevel.Warning, 'Unknown blend mode encountered.');
+            }
         };
 
         this.loadAsset();
@@ -293,12 +319,6 @@ export class GltfRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
-        const gl = this._context.gl;
-
-        // TODO: proper handling of transparent materials in the loader
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
         this._forwardPass.frame();
     }
 

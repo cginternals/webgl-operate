@@ -54,6 +54,8 @@ uniform float u_metallicFactor;
 uniform float u_roughnessFactor;
 uniform vec3 u_emissiveFactor;
 uniform float u_normalScale;
+uniform int u_blendMode;
+uniform float u_blendCutoff;
 
 uniform mediump int u_geometryFlags;
 uniform mediump int u_pbrFlags;
@@ -278,9 +280,14 @@ void main(void)
 
     // NOTE: the spec mandates to ignore any alpha value in 'OPAQUE' mode
     float alpha = 1.0;
-    // float alpha = mix(1.0, baseColor.a, u_AlphaBlend);
-    // if (u_AlphaCutoff > 0.0) {
-    //     alpha = step(u_AlphaCutoff, baseColor.a);
-    // }
+    if (u_blendMode == 1) {
+        if (baseColor.a < u_blendCutoff) {
+            discard;
+        }
+    }
+    else if (u_blendMode == 2) {
+        alpha = baseColor.a;
+    }
+
     fragColor = vec4(pow(color, vec3(1.0/2.2)), alpha);
 }
