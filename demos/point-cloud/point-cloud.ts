@@ -122,12 +122,11 @@ export class PointCloudRenderer extends Renderer {
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
-        this._camera.near = 2.0;
-        this._camera.far = 8.0;
+
+        this._camera.near = 0.1;
+        this._camera.far = 5.0 + Math.sqrt(32.0); // 4² + 4² -> range in that particles are generated ...
 
         gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
-
-
 
 
         this._navigation = new Navigation(callback, mouseEventProvider);
@@ -195,6 +194,12 @@ export class PointCloudRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
+        gl.enable(gl.BLEND);
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+        gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+        gl.sampleCoverage(1.0, false);
+
         // // this._texture.bind(gl.TEXTURE0);
 
         this._program.bind();
@@ -229,7 +234,7 @@ export class PointCloudDemo extends Demo {
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
-        this._canvas = new Canvas(element, { antialias: false });
+        this._canvas = new Canvas(element, { antialias: true });
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];

@@ -13,32 +13,36 @@ precision lowp int;
 
 uniform mat4 u_view;
 uniform mat4 u_viewInverse;
+uniform mat4 u_viewProjection;
 uniform vec2 u_nearFar;
 
 in vec2 v_uv;
 
 in vec3 v_vertex;
+in vec3 v_light;
+
 
 void main()
 {
-    vec2 uv = v_uv * 2.0 - 1.0;
-    float zz = 1.0 - dot(uv, uv);
-
-    if(zz < 0.0) {
+    float zz = dot(v_uv, v_uv);
+    if(zz > 1.0)
         discard;
-    }
 
-    vec3 v = v_vertex * 0.1 + 0.5;
+    float z = sqrt(zz);
 
-    vec3 n = (u_viewInverse * normalize(vec4(uv, sqrt(zz), 0.0))).xyz;
-    vec3 l = normalize(vec3(0.0, 1.0, 4.0));
-
-    vec3 e =  mat3(u_viewInverse) * vec3(0.0, 0.0, 1.0);
-    vec3 h = normalize(n + e);
-
-    float ldotn = clamp(dot(h, n), 0.0, 1.0);
-    float spec = pow(max(0.0, dot(reflect(-l, n), e)), 32.0);
+    float afwidth = fwidth(z);
+    float t = smoothstep(0.0, afwidth, 1.0 - z);
 
 
-	fragColor = vec4(spec + ldotn * v, 1.0);
+    vec3 n = normalize(vec3(v_uv, sqrt(1.0 - zz)));
+    vec3 e = vec3(0.0, 0.0, 1.0);
+    // vec3 h = normalize(n + e);
+
+    float ldotn  = clamp(dot(v_light, n), 0.0, 1.0);
+    float spec   = pow(max(0.0, dot(reflect(-v_light, n), e)), 64.0);
+    vec3 ambient = vec3(0.203, 0.227, 0.250); // default clear color of webgl-operate
+
+    vec3 v = v_vertex * 0.125 + 0.5;
+
+	fragColor = vec4(spec + (ambient * (zz + 0.2) + ldotn) * v, t);
 }
