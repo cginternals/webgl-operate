@@ -5,6 +5,7 @@
 import { vec3 } from 'gl-matrix';
 
 import {
+    Buffer,
     Camera,
     Canvas,
     Context,
@@ -32,6 +33,8 @@ export class PointCloudsRenderer extends Renderer {
     protected _camera: Camera;
     protected _navigation: Navigation;
 
+    protected _vertexVBO: Buffer;
+
     // protected _program: Program;
     // protected _uViewProjection: WebGLUniformLocation;
 
@@ -54,7 +57,20 @@ export class PointCloudsRenderer extends Renderer {
         this._defaultFBO.initialize();
         this._defaultFBO.bind();
 
-        // const gl = context.gl;
+        const gl = context.gl;
+
+
+
+
+        const vertices = new Float32Array([
+            -0.5, -0.5, 0.0, +0.5, -0.5, 0.0, +0.5, +0.5, 0.0, -0.5, +0.5, 0.0]);
+
+        this._vertexVBO = new Buffer(context, 'vertexVBO');
+        this._vertexVBO.initialize(gl.ARRAY_BUFFER);
+        this._vertexVBO.attribEnable(0, 3, gl.FLOAT); //, false, 0, 0, true, false);
+        this._vertexVBO.data(vertices, gl.STATIC_DRAW);
+
+
 
 
         this._camera = new Camera();
@@ -76,6 +92,9 @@ export class PointCloudsRenderer extends Renderer {
      */
     protected onUninitialize(): void {
         super.uninitialize();
+
+        this._vertexVBO.attribDisable(0);
+        this._vertexVBO.uninitialize();
 
         // this._cuboid.uninitialize();
         // this._program.uninitialize();
