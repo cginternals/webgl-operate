@@ -193,6 +193,7 @@ export class GLTFLoader {
                 }
             } else if (materialInfo.alphaMode === 'BLEND') {
                 material.alphaMode = GLTFAlphaMode.BLEND;
+                material.isTransparent = true;
             }
 
             material.isDoubleSided = materialInfo.doubleSided || false;

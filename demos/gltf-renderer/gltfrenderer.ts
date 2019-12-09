@@ -161,15 +161,6 @@ export class GltfRenderer extends Renderer {
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
         };
-        this._forwardPass.bindUniforms = () => {
-            gl.uniform3fv(this._uEye, this._camera.eye);
-
-            gl.uniform1i(this._uBaseColor, 0);
-            gl.uniform1i(this._uMetallicRoughness, 1);
-            gl.uniform1i(this._uNormal, 2);
-            gl.uniform1i(this._uOcclusion, 3);
-            gl.uniform1i(this._uEmissive, 4);
-        };
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
             const primitive = geometry as GLTFPrimitive;
             gl.uniform1i(this._uGeometryFlags, primitive.flags);
@@ -319,10 +310,25 @@ export class GltfRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
+        this.bindUniforms();
         this._forwardPass.frame();
     }
 
     protected onSwap(): void {
+    }
+
+    protected bindUniforms(): void {
+        const gl = this._context.gl;
+
+        this._program.bind();
+        gl.uniform3fv(this._uEye, this._camera.eye);
+
+        gl.uniform1i(this._uBaseColor, 0);
+        gl.uniform1i(this._uMetallicRoughness, 1);
+        gl.uniform1i(this._uNormal, 2);
+        gl.uniform1i(this._uOcclusion, 3);
+        gl.uniform1i(this._uEmissive, 4);
+        this._program.unbind();
     }
 
     /**
