@@ -50,12 +50,12 @@
         "disabled": false
     },
     {
-        "target": "point-clouds",
-        "title": "Point Clouds",
+        "target": "point-cloud",
+        "title": "Point Cloud",
         "authors": [
             "cgcostume"
         ],
-        "caption": "Particle rendering for interactive visual display of massive point clouds.",
+        "caption": "Particle rendering for interactive visual display of an animated point cloud.",
         "disabled": false
     },
     {

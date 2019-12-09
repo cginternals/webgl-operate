@@ -28,7 +28,7 @@ import { Demo } from '../demo';
 
 // tslint:disable:max-classes-per-file
 
-export class PointCloudsRenderer extends Renderer {
+export class PointCloudRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _navigation: Navigation;
@@ -167,10 +167,10 @@ export class PointCloudsRenderer extends Renderer {
 }
 
 
-export class PointCloudsDemo extends Demo {
+export class PointCloudDemo extends Demo {
 
     private _canvas: Canvas;
-    private _renderer: PointCloudsRenderer;
+    private _renderer: PointCloudRenderer;
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
@@ -179,7 +179,7 @@ export class PointCloudsDemo extends Demo {
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
 
-        this._renderer = new PointCloudsRenderer();
+        this._renderer = new PointCloudRenderer();
         this._canvas.renderer = this._renderer;
 
         return true;
@@ -194,7 +194,7 @@ export class PointCloudsDemo extends Demo {
         return this._canvas;
     }
 
-    get renderer(): PointCloudsRenderer {
+    get renderer(): PointCloudRenderer {
         return this._renderer;
     }
 
