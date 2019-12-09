@@ -43,6 +43,9 @@ uniform sampler2D u_normal;
 uniform sampler2D u_emissive;
 uniform sampler2D u_occlusion;
 
+uniform samplerCube u_specularEnvironment;
+uniform sampler2D u_brdfLUT;
+
 uniform int u_baseColorTexCoord;
 uniform int u_normalTexCoord;
 uniform int u_metallicRoughnessTexCoord;
@@ -192,6 +195,31 @@ float microfacetDistribution(PBRInfo pbrInputs)
     return roughnessSq / (M_PI * f * f);
 }
 
+vec3 getIBLContribution(vec3 n, vec3 v, PBRInfo pbrInfo)
+{
+    float NdotV = clamp(dot(n, v), 0.0, 1.0);
+
+    // TODO: pass uniform for mip count
+    const float MIP_COUNT = 8.0;
+    float lod = clamp(pbrInfo.perceptualRoughness * MIP_COUNT, 0.0, MIP_COUNT);
+    vec3 reflection = normalize(reflect(-v, n));
+
+    vec2 brdfSamplePoint = vec2(NdotV, pbrInfo.perceptualRoughness);
+    vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
+
+    // vec4 diffuseSample = textureCube(u_DiffuseEnvSampler, n);
+    vec4 specularSample = textureLod(u_specularEnvironment, reflection, lod);
+
+    // vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb;
+    vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
+
+    // vec3 diffuse = diffuseLight * pbrInfo.diffuseColor;
+    vec3 specular = specularLight * (pbrInfo.specularColor * brdf.x + brdf.y);
+
+    return specular;
+    // return diffuse + specular;
+}
+
 void main(void)
 {
     float perceptualRoughness = u_roughnessFactor;
@@ -272,6 +300,9 @@ void main(void)
     vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
     // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
     vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
+
+    vec3 environmentLight = getIBLContribution(n, v, pbrInputs);
+    color += environmentLight;
 
     if (checkFlag(HAS_EMISSIVEMAP)) {
         vec3 emissive = SRGBtoLINEAR(texture(u_emissive, v_uv[u_emissiveTexCoord])).rgb * u_emissiveFactor;

@@ -19,12 +19,13 @@ uniform mat4 u_model;
 
 varying vec4 v_vertex;
 varying vec2 v_uv;
-
+varying vec3 v_normal;
 
 void main()
 {
     v_vertex = u_model * vec4(a_vertex, 1.0);
     v_uv = a_texCoord;
+    v_normal = normalize(a_vertex);
 
     gl_Position = u_viewProjection *  v_vertex;
 }
