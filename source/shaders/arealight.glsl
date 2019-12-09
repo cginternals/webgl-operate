@@ -19,7 +19,7 @@ struct DiskLight {
 // This function uses Monte Carlo integration to calculate the lighting of spherical light source.
 // The rays are generated uniformly over the area of the light source.
 // This can be used to generate a ground truth image or as part of a Multiple Importance Sampling (MIS) approach.
-vec3 sphereLightBruteForce(SphereLight light, LightingInfo info)
+vec3 sphereLightBruteForce(const in SphereLight light, const in LightingInfo info)
 {
     const int SAMPLE_COUNT = 16;
 
@@ -58,7 +58,7 @@ vec3 sphereLightBruteForce(SphereLight light, LightingInfo info)
 // Fast approximation using (radius^2 / distance^2) * NdotL
 // This formula does not have proper horizon handling but is cheap to evaluate
 // See "Moving Frostbite to PBR" p.44
-vec3 diffuseSphereLightApproximated(SphereLight light, LightingInfo info)
+vec3 diffuseSphereLightApproximated(const in SphereLight light, const in LightingInfo info)
 {
     vec3 Lunormalized = light.center - info.incidentPosition;
     vec3 L = normalize(Lunormalized);
@@ -72,7 +72,7 @@ vec3 diffuseSphereLightApproximated(SphereLight light, LightingInfo info)
     return diffuseBrdf(info) * light.luminance * illuminance * NdotL;
 }
 
-vec3 diffuseDiskLightApproximated(DiskLight light, LightingInfo info)
+vec3 diffuseDiskLightApproximated(const in DiskLight light, const in LightingInfo info)
 {
     vec3 Lunormalized = light.center - info.incidentPosition;
     vec3 L = normalize(Lunormalized);
@@ -136,7 +136,7 @@ vec3 diffuseDiskLightApproximated(DiskLight light, LightingInfo info)
 // This function approximates a spherical area light by using a "Most Representative Point", which is treated as a point light.
 // This approach does not have proper energy conservation, however Karis gives an approximate normalization factor for the NDF.
 // See "Real Shading in Unreal Engine 4"
-vec3 specularSphereLightKaris(SphereLight light, LightingInfo info)
+vec3 specularSphereLightKaris(const in SphereLight light, const in LightingInfo info)
 {
     float sphereArea = 4.0 * M_PI * light.radius * light.radius;
 
@@ -164,7 +164,7 @@ vec3 specularSphereLightKaris(SphereLight light, LightingInfo info)
     return specularBrdfGGX(L, info, normalization) * irradiance * NdotL;
 }
 
-vec3 specularDiskLightKaris(DiskLight light, LightingInfo info) {
+vec3 specularDiskLightKaris(const in DiskLight light, const in LightingInfo info) {
     vec3 Lunormalized = light.center - info.incidentPosition;
     vec3 L = normalize(Lunormalized);
 

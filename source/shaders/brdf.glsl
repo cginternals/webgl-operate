@@ -33,7 +33,7 @@ struct LightingInfo {
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-vec3 specularReflection(vec3 reflectance0, vec3 reflectance90, float VdotH)
+vec3 specularReflection(const in vec3 reflectance0, const in vec3 reflectance90, const in float VdotH)
 {
     return reflectance0 + (reflectance90 - reflectance0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
 }
@@ -43,7 +43,7 @@ vec3 specularReflection(vec3 reflectance0, vec3 reflectance90, float VdotH)
 // see Eric Heitz. 2014. Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs. Journal of Computer Graphics Techniques, 3
 // see Real-Time Rendering. Page 331 to 336.
 // see https://google.github.io/filament/Filament.md.html#materialsystem/specularbrdf/geometricshadowing(specularg)
-float visibilityOcclusion(float alphaRoughnessSq, float NdotL, float NdotV)
+float visibilityOcclusion(const in float alphaRoughnessSq, const in float NdotL, const in float NdotV)
 {
     float GGXV = NdotL * sqrt(NdotV * NdotV * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
     float GGXL = NdotV * sqrt(NdotL * NdotL * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
@@ -59,18 +59,18 @@ float visibilityOcclusion(float alphaRoughnessSq, float NdotL, float NdotV)
 // The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
 // Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
 // Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-float microfacetDistribution(float alphaRoughnessSq, float NdotH)
+float microfacetDistribution(const in float alphaRoughnessSq, const in float NdotH)
 {
     float f = (NdotH * alphaRoughnessSq - NdotH) * NdotH + 1.0;
     return alphaRoughnessSq / (M_PI * f * f);
 }
 
-vec3 diffuseBrdf(LightingInfo info)
+vec3 diffuseBrdf(const in LightingInfo info)
 {
     return info.diffuseColor / M_PI;
 }
 
-vec3 specularBrdfGGX(vec3 L, LightingInfo info, float D_normalization)
+vec3 specularBrdfGGX(const in vec3 L, const in LightingInfo info, const in float D_normalization)
 {
     vec3 H = normalize(info.view + L);
 
@@ -96,7 +96,7 @@ vec3 specularBrdfGGX(vec3 L, LightingInfo info, float D_normalization)
 
 // Importance sampling with GGX introduces the pdf: D * NdotH / (4.0 * VdotH), therefore D cancels out
 // The division by NdotH / (4.0 * VdotH) still has to be applied where this function is used
-vec3 specularBrdfGGXImportanceSampled(vec3 L, LightingInfo info)
+vec3 specularBrdfGGXImportanceSampled(const in vec3 L, const in LightingInfo info)
 {
     vec3 H = normalize(info.view + L);
 

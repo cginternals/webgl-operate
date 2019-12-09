@@ -151,7 +151,7 @@ vec3 getNormal()
     return n;
 }
 
-vec3 sampleOcclusion(LightingInfo info, vec3 viewPosition, vec3 viewSampleOffset, out bool hit) {
+vec3 sampleOcclusion(const in LightingInfo info, const in vec3 viewPosition, const in vec3 viewSampleOffset, out bool hit) {
     vec3 viewSamplePoint = viewPosition + viewSampleOffset;
     vec4 ndcSamplePoint = u_projection * vec4(viewSamplePoint, 1.0);
     vec2 sampleUV = (ndcSamplePoint / ndcSamplePoint.w).xy * 0.5 + 0.5;
@@ -180,10 +180,11 @@ vec3 sampleOcclusion(LightingInfo info, vec3 viewPosition, vec3 viewSampleOffset
         return vec3(0.0);
     }
 
-    return texture(u_lastFrame, sampleUV).rgb * cosIncoming * cosOutgoing / bounceDistance;
+    vec3 hitColor = texture(u_lastFrame, sampleUV).rgb;
+    return hitColor * cosIncoming * cosOutgoing / bounceDistance;
 }
 
-mat3 generateTBN(LightingInfo info) {
+mat3 generateTBN(const in LightingInfo info) {
     // generate matrix to transform from tangent to view space
     vec3 viewNormal = normalize(u_viewNormalMatrix * info.incidentNormal);
     vec3 random = normalize(vec3(0.0, 1.0, 1.0));
@@ -192,7 +193,7 @@ mat3 generateTBN(LightingInfo info) {
     return mat3(t, b, viewNormal);
 }
 
-vec3 ssaoSample(LightingInfo info, mat3 TBN, out bool hit) {
+vec3 ssaoSample(const in LightingInfo info, const in mat3 TBN, out bool hit) {
     vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
 
     float random1 = rand(info.uv * float(u_frameNumber + 1));
@@ -205,7 +206,7 @@ vec3 ssaoSample(LightingInfo info, mat3 TBN, out bool hit) {
     return sampleOcclusion(info, viewPosition, viewSampleOffset, hit);
 }
 
-vec3 ssrSample(LightingInfo info, mat3 TBN, out bool hit) {
+vec3 ssrSample(const in LightingInfo info, const in mat3 TBN, out bool hit) {
     vec3 viewPosition = (u_view * vec4(info.incidentPosition, 1.0)).xyz;
 
     float random1 = rand(info.uv * float(u_frameNumber + 1));
@@ -219,7 +220,7 @@ vec3 ssrSample(LightingInfo info, mat3 TBN, out bool hit) {
     return sampleOcclusion(info, viewPosition, viewSampleOffset, hit);
 }
 
-vec3 sampleDiffuseEnvironment(LightingInfo info, mat3 TBN, bool applyOcclusion)
+vec3 sampleDiffuseEnvironment(const in LightingInfo info, const in mat3 TBN, const in bool applyOcclusion)
 {
     vec4 diffuseSample = texture(u_diffuseEnvironment, info.incidentNormal);
     vec3 diffuseLight = SRGBtoLINEAR(diffuseSample).rgb * u_iblStrength;
@@ -240,7 +241,7 @@ vec3 sampleDiffuseEnvironment(LightingInfo info, mat3 TBN, bool applyOcclusion)
     return diffuse;
 }
 
-vec3 sampleSpecularEnvironment(LightingInfo info, mat3 TBN, bool applyOcclusion)
+vec3 sampleSpecularEnvironment(const in LightingInfo info, const in mat3 TBN, const in bool applyOcclusion)
 {
     float NdotV = clamp(dot(info.incidentNormal, info.view), 0.0, 1.0);
 
