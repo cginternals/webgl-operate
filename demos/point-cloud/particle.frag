@@ -32,9 +32,9 @@ void main()
 
     vec3 n = (u_viewInverse * normalize(vec4(uv, sqrt(zz), 0.0))).xyz;
     vec3 l = normalize(vec3(0.0, 1.0, 4.0));
-    vec3 h = normalize(n + v);
 
     vec3 e =  mat3(u_viewInverse) * vec3(0.0, 0.0, 1.0);
+    vec3 h = normalize(n + e);
 
     float ldotn = clamp(dot(h, n), 0.0, 1.0);
     float spec = pow(max(0.0, dot(reflect(-l, n), e)), 32.0);
