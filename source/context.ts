@@ -2,6 +2,7 @@
 /* spellchecker: disable */
 
 import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { byteSizeOfFormat } from './formatbytesizes';
 
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
@@ -1100,6 +1101,18 @@ export class Context {
      */
     logAboutIf(statement: boolean, verbosity: LogLevel = LogLevel.Info): void {
         logIf(statement, verbosity, `context.about\n\n` + this.aboutString());
+    }
+
+
+    // CONTEXT-RELATED AUXILIARIES
+
+    /**
+     * Provides the size in bytes of certain WebGL format enumerator. Please note that some byte sizes might vary based
+     * on context attributes or the bound render, thus, DEPTH_COMPONENT and DEPTH_STENCIL are not covered by this
+     * function. @see {@link byteSizeOfFormat}
+     */
+    byteSizeOfFormat(format: GLenum): number {
+        return byteSizeOfFormat(this, format);
     }
 
 }

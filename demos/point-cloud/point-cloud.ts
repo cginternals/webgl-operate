@@ -1,7 +1,11 @@
 
 /* spellchecker: disable */
 
-import { /*mat4,*/ vec3 } from 'gl-matrix';
+import { /*mat4,*/ vec3, vec4 } from 'gl-matrix';
+
+import {
+    auxiliaries,
+} from 'webgl-operate';
 
 import {
     Buffer,
@@ -27,18 +31,45 @@ import { Demo } from '../demo';
 
 export class PointCloudRenderer extends Renderer {
 
+    protected static readonly DEFAULT_POINT_SIZE = 1.0 / 128.0;
+
+    // protected static readonly BENCHMARK_CONFIG = {
+    //     rotations: 1,
+    //     frames: 100,
+    //     warmup: 100,
+    //     values: [0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 2e6, 4e6, 6e6, 8e6, 10e6, 12e6, 14e6, 16e6],
+    // };
+
+    // protected _benchmark = false;
+    // protected _results: Array<[number, number]> = new Array<[number, number]>();
+    // protected _frames: number;
+
+
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _vertexVBO: Buffer;
-    protected _pointCount: number;
+
+    protected _particleVBO: Buffer;
+    protected _instancesVBO: Buffer;
+
+    protected readonly _uvLocation: GLuint = 0;
+    protected readonly _positionLocation: GLuint = 1;
+
+
+    // protected _triangles = 6;
+
+    protected _numPointsAllocated: number;
+    protected _numPointsToRender: number;
+
 
     protected _program: Program;
 
+    protected _size: GLfloat = PointCloudRenderer.DEFAULT_POINT_SIZE;
+    protected _sizeAltered = true;
+
     protected _uView: WebGLUniformLocation;
-    protected _uViewInverse: WebGLUniformLocation;
-    protected _uProjection: WebGLUniformLocation;
     protected _uViewProjection: WebGLUniformLocation;
+    protected _uLight: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
 
@@ -54,46 +85,53 @@ export class PointCloudRenderer extends Renderer {
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
+        const gl = context.gl;
+        const gl2facade = context.gl2facade;
+
+        context.enable(['ANGLE_instanced_arrays']);
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
         this._defaultFBO.bind();
 
-        const gl = context.gl;
+
+        const floatSize: number = context.byteSizeOfFormat(gl.R32F);
 
 
-        const particle = new Float32Array([
-            -0.5, -0.5, 0.0, 0.0, 0.0, +0.5, -0.5, 0.0, 1.0, 0.0, +0.5, +0.5, 0.0, 1.0, 1.0,
-            -0.5, -0.5, 0.0, 0.0, 0.0, +0.5, +0.5, 0.0, 1.0, 1.0, -0.5, +0.5, 0.0, 0.0, 1.0]);
+        const particle = new Float32Array([-1.0, -1.0, +1.0, -1.0, +1.0, +1.0, -1.0, +1.0]);
 
-        this._pointCount = 1e5;
+        // const hypotenuse = Math.sqrt(1 + Math.pow(Math.tan(Math.PI / this._triangles), 2.0));
 
-        const positions = new Float32Array(5 * this._pointCount);
-        positions.forEach((value, index, array) => array[index] = Math.random() * 8.0 - 4.0);
+        // const particle = new Float32Array(2 * (2 + this._triangles));
+        // particle[0] = 0.0;
+        // particle[1] = 0.0;
+        // for (let i = 0; i <= this._triangles; ++i) {
+        //     const alpha = i * (2.0 * Math.PI / this._triangles);
+        //     particle[i * 2 + 2] = Math.cos(alpha) * hypotenuse;
+        //     particle[i * 2 + 3] = Math.sin(alpha) * hypotenuse;
+        // }
 
-        const vertices = new Float32Array(positions.length / 3 * particle.length);
-
-        for (let i = 0; i < positions.length; i += 3) {
-            const i0 = i * particle.length;
-            for (let j = 0; j < particle.length; j += 5) {
-                vertices[i0 + j + 0] = positions[i + 0];
-                vertices[i0 + j + 1] = positions[i + 1];
-                vertices[i0 + j + 2] = positions[i + 2];
-                vertices[i0 + j + 3] = particle[j + 3];
-                vertices[i0 + j + 4] = particle[j + 4];
-            }
-        }
+        this._particleVBO = new Buffer(context, 'particleVBO');
+        this._particleVBO.initialize(gl.ARRAY_BUFFER);
+        this._particleVBO.attribEnable(this._uvLocation, 2, gl.FLOAT, false
+            , 2 * floatSize, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._uvLocation, 0);
+        this._particleVBO.data(particle, gl.STATIC_DRAW);
 
 
-        const vertexLocation: GLuint = 0;
-        const uvLocation: GLuint = 1;
+        this._numPointsAllocated = 25e4;
+        this._numPointsToRender = 25e4;
 
-        this._vertexVBO = new Buffer(context, 'vertexVBO');
-        this._vertexVBO.initialize(gl.ARRAY_BUFFER);
-        this._vertexVBO.attribEnable(vertexLocation, 3, gl.FLOAT, false, 5 * 4, 0, true, false);
-        this._vertexVBO.attribEnable(uvLocation, 2, gl.FLOAT, false, 5 * 4, 3 * 4, false, false);
-        this._vertexVBO.data(vertices, gl.STATIC_DRAW);
 
+        const positions = new Float32Array(3 * this._numPointsAllocated);
+        positions.forEach((value, index, array) => array[index] = Math.random());
+
+        this._instancesVBO = new Buffer(context, 'instancesVBO');
+        this._instancesVBO.initialize(gl.ARRAY_BUFFER);
+        this._instancesVBO.attribEnable(this._positionLocation, 3, gl.FLOAT, false
+            , 3 * floatSize, 0, true, false);
+        gl2facade.vertexAttribDivisor(this._positionLocation, 1);
+        this._instancesVBO.data(positions, gl.DYNAMIC_DRAW);
 
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'particle.vert');
@@ -105,32 +143,58 @@ export class PointCloudRenderer extends Renderer {
         this._program = new Program(context, 'ParticleProgram');
         this._program.initialize([vert, frag], false);
 
-        this._program.attribute('a_vertex', vertexLocation);
-        this._program.attribute('a_uv', uvLocation);
+        this._program.attribute('a_uv', this._uvLocation);
+        this._program.attribute('a_position', this._positionLocation);
         this._program.link();
         this._program.bind();
 
 
-
         this._uView = this._program.uniform('u_view');
-        this._uViewInverse = this._program.uniform('u_viewInverse');
-        this._uProjection = this._program.uniform('u_projection');
         this._uViewProjection = this._program.uniform('u_viewProjection');
+        this._uLight = this._program.uniform('u_light');
 
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
 
-        this._camera.near = 0.1;
-        this._camera.far = 5.0 + Math.sqrt(32.0); // 4² + 4² -> range in that particles are generated ...
+        this._camera.near = 0.125;
+        this._camera.far = 2.0 + Math.sqrt(2.0); // 1² + 1² -> range in that particles are generated ...
 
         gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
 
 
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
+
+
+        // prepare draw binding
+
+        this._defaultFBO.bind();
+        this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+
+        gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.enable(gl.DEPTH_TEST);
+
+        // enable alpha to coverage and appropriate blending (if context was initialized with antialiasing enabled)
+        if (context.antialias) {
+
+            gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+            gl.sampleCoverage(1.0, false);
+        }
+
+        gl.enable(gl.BLEND);
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+
+        this._particleVBO.bind();
+        this._instancesVBO.bind();
+
+        this._program.bind();
 
         return true;
     }
@@ -141,11 +205,13 @@ export class PointCloudRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        this._vertexVBO.attribDisable(0);
-        this._vertexVBO.uninitialize();
+        this._particleVBO.attribDisable(this._uvLocation);
+        this._particleVBO.uninitialize();
 
-        // this._cuboid.uninitialize();
-        // this._program.uninitialize();
+        this._instancesVBO.attribDisable(this._positionLocation);
+        this._instancesVBO.uninitialize();
+
+        this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
     }
@@ -179,50 +245,121 @@ export class PointCloudRenderer extends Renderer {
 
         this._altered.reset();
         this._camera.altered = false;
+
+
+        const gl = this._context.gl;
+
+        if (this._sizeAltered) {
+            gl.uniform1f(this._program.uniform('u_size'), this._size);
+            this._sizeAltered = false;
+        }
     }
 
     protected onFrame(): void {
+
         const gl = this._context.gl;
+        const gl2facade = this.context.gl2facade;
 
-
-        this._defaultFBO.bind();
-        this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+        this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        gl.enable(gl.DEPTH_TEST);
-
-        gl.enable(gl.BLEND);
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-        gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
-        gl.sampleCoverage(1.0, false);
-
-        // // this._texture.bind(gl.TEXTURE0);
-
-        this._program.bind();
         gl.uniformMatrix4fv(this._uView, false, this._camera.view);
-        gl.uniformMatrix4fv(this._uViewInverse, false, this._camera.viewInverse);
-        gl.uniformMatrix4fv(this._uProjection, false, this._camera.projection);
         gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
 
-        this._vertexVBO.bind();
+        const light = vec4.fromValues(-2.0, 2.0, 4.0, 0.0);
+        vec4.normalize(light, vec4.transformMat4(light, light, this._camera.view));
 
-        gl.drawArrays(gl.TRIANGLES, 0, this._pointCount * 6);
+        gl.uniform3f(this._uLight, light[0], light[1], light[2]);
 
-        this._vertexVBO.unbind();
+        gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, this._numPointsToRender);
+        // gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, this._triangles + 2, this._numPointsToRender);
 
-        this._program.unbind();
-
-        // // this._texture.unbind(gl.TEXTURE0);
-
-        gl.cullFace(gl.BACK);
-        gl.disable(gl.CULL_FACE);
     }
 
-    protected onSwap(): void { }
+    protected onSwap(): void {
+
+        // if (this._benchmark === false) {
+        //     return;
+        // }
+        // ++this._frames;
+
+        // const config = PointCloudRenderer.BENCHMARK_CONFIG;
+
+        // const frames: number = this._frames - config.warmup;
+        // const run: number = frames >= 0 ? Math.floor(frames / config.frames) : -1;
+
+
+        // const phi = Math.PI * 2.0 * config.rotations / config.frames * (frames % config.frames);
+        // this._camera.eye = vec3.fromValues(4.0 * Math.sin(phi), 0.0, 4.0 * Math.cos(phi));
+
+
+
+        // if (frames === 1 - config.warmup) {
+        //     console.log('---- benchmark warmup ------');
+        // }
+        // if (frames === 0) {
+        //     console.log('---- benchmark started -----');
+        // }
+
+        // if (frames % config.frames === 0 && run > 0) {
+        //     this._results[run - 1][1] = (performance.now() - this._results[run - 1][1]) / config.frames;
+        //     console.log(' --  run = ' + run + ', [value, fps] = ' + this._results[run - 1]);
+        // }
+
+        // if (frames % config.frames === 0 && run >= 0 && run < config.values.length) {
+        //     this._results[run][1] = performance.now();
+        //     this._numPointsToRender = config.values[run];
+        // }
+
+        // if (run >= config.values.length) {
+
+        //     this._benchmark = false;
+        //     console.log('---- benchmark stopped -----');
+        //     console.log(JSON.stringify(this._results));
+
+        // } else {
+        //     this.invalidate(true);
+        // }
+
+    }
+
+    protected benchmark(): void {
+
+        // this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        // this._camera.eye = vec3.fromValues(4.0 * Math.sin(0), 0.0, 4.0 * Math.cos(0));
+
+        // this._benchmark = true;
+        // this._frames = 0;
+
+        // if (this._results.length === 0) {
+
+        //     const config = PointCloudRenderer.BENCHMARK_CONFIG;
+
+        //     this._results.length = config.values.length;
+        //     // tslint:disable-next-line:prefer-for-of
+        //     for (let i = 0; i < config.values.length; ++i) {
+        //         this._results[i] = [config.values[i], 0.0];
+        //     }
+        // }
+
+        // this._numPointsToRender = this._numPointsAllocated;
+        // this.invalidate(true);
+    }
+
+    set size(size: GLfloat) {
+        if (this._size === size) {
+            return;
+        }
+        this._size = Math.max(0.0, Math.min(1.0, size));
+        this._sizeAltered = true;
+
+        this.invalidate(true);
+    }
+
+    get size(): GLfloat {
+        return this._size;
+    }
 
 }
 
@@ -234,7 +371,11 @@ export class PointCloudDemo extends Demo {
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
-        this._canvas = new Canvas(element, { antialias: true });
+        const alpha2coverage = auxiliaries.GETparameter('alpha2coverage');
+
+        this._canvas = new Canvas(element, {
+            antialias: alpha2coverage === undefined ? false : JSON.parse(alpha2coverage!),
+        });
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
