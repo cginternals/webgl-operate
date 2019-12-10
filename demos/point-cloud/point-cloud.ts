@@ -33,16 +33,16 @@ export class PointCloudRenderer extends Renderer {
 
     protected static readonly DEFAULT_POINT_SIZE = 1.0 / 128.0;
 
-    // protected static readonly BENCHMARK_CONFIG = {
-    //     rotations: 1,
-    //     frames: 100,
-    //     warmup: 100,
-    //     values: [0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 2e6, 4e6, 6e6, 8e6, 10e6, 12e6, 14e6, 16e6],
-    // };
+    protected static readonly BENCHMARK_CONFIG = {
+        rotations: 1,
+        frames: 100,
+        warmup: 100,
+        values: [0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 2e6, 4e6, 6e6, 8e6, 10e6, 12e6, 14e6, 16e6],
+    };
 
-    // protected _benchmark = false;
-    // protected _results: Array<[number, number]> = new Array<[number, number]>();
-    // protected _frames: number;
+    protected _benchmark = false;
+    protected _results: Array<[number, number]> = new Array<[number, number]>();
+    protected _frames: number;
 
 
     protected _camera: Camera;
@@ -119,8 +119,8 @@ export class PointCloudRenderer extends Renderer {
         this._particleVBO.data(particle, gl.STATIC_DRAW);
 
 
-        this._numPointsAllocated = 25e4;
-        this._numPointsToRender = 25e4;
+        this._numPointsAllocated = 16e6;
+        this._numPointsToRender = 1e5;
 
 
         const positions = new Float32Array(3 * this._numPointsAllocated);
@@ -157,10 +157,10 @@ export class PointCloudRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
 
-        this._camera.near = 0.125;
-        this._camera.far = 2.0 + Math.sqrt(2.0); // 1² + 1² -> range in that particles are generated ...
+        this._camera.near = 0.1;
+        this._camera.far = 5.0 + Math.sqrt(32.0); // 1² + 1² -> range in that particles are generated ...
 
         gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
 
@@ -273,78 +273,79 @@ export class PointCloudRenderer extends Renderer {
         gl.uniform3f(this._uLight, light[0], light[1], light[2]);
 
         gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, this._numPointsToRender);
+        // gl2facade.drawArraysInstanced(gl.POINTS, 0, 1, this._numPointsToRender);
         // gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, this._triangles + 2, this._numPointsToRender);
 
     }
 
     protected onSwap(): void {
 
-        // if (this._benchmark === false) {
-        //     return;
-        // }
-        // ++this._frames;
+        if (this._benchmark === false) {
+            return;
+        }
+        ++this._frames;
 
-        // const config = PointCloudRenderer.BENCHMARK_CONFIG;
+        const config = PointCloudRenderer.BENCHMARK_CONFIG;
 
-        // const frames: number = this._frames - config.warmup;
-        // const run: number = frames >= 0 ? Math.floor(frames / config.frames) : -1;
-
-
-        // const phi = Math.PI * 2.0 * config.rotations / config.frames * (frames % config.frames);
-        // this._camera.eye = vec3.fromValues(4.0 * Math.sin(phi), 0.0, 4.0 * Math.cos(phi));
+        const frames: number = this._frames - config.warmup;
+        const run: number = frames >= 0 ? Math.floor(frames / config.frames) : -1;
 
 
+        const phi = Math.PI * 2.0 * config.rotations / config.frames * (frames % config.frames);
+        this._camera.eye = vec3.fromValues(4.0 * Math.sin(phi), 0.0, 4.0 * Math.cos(phi));
 
-        // if (frames === 1 - config.warmup) {
-        //     console.log('---- benchmark warmup ------');
-        // }
-        // if (frames === 0) {
-        //     console.log('---- benchmark started -----');
-        // }
 
-        // if (frames % config.frames === 0 && run > 0) {
-        //     this._results[run - 1][1] = (performance.now() - this._results[run - 1][1]) / config.frames;
-        //     console.log(' --  run = ' + run + ', [value, fps] = ' + this._results[run - 1]);
-        // }
 
-        // if (frames % config.frames === 0 && run >= 0 && run < config.values.length) {
-        //     this._results[run][1] = performance.now();
-        //     this._numPointsToRender = config.values[run];
-        // }
+        if (frames === 1 - config.warmup) {
+            console.log('---- benchmark warmup ------');
+        }
+        if (frames === 0) {
+            console.log('---- benchmark started -----');
+        }
 
-        // if (run >= config.values.length) {
+        if (frames % config.frames === 0 && run > 0) {
+            this._results[run - 1][1] = (performance.now() - this._results[run - 1][1]) / config.frames;
+            console.log(' --  run = ' + run + ', [value, fps] = ' + this._results[run - 1]);
+        }
 
-        //     this._benchmark = false;
-        //     console.log('---- benchmark stopped -----');
-        //     console.log(JSON.stringify(this._results));
+        if (frames % config.frames === 0 && run >= 0 && run < config.values.length) {
+            this._results[run][1] = performance.now();
+            this._numPointsToRender = config.values[run];
+        }
 
-        // } else {
-        //     this.invalidate(true);
-        // }
+        if (run >= config.values.length) {
+
+            this._benchmark = false;
+            console.log('---- benchmark stopped -----');
+            console.log(JSON.stringify(this._results));
+
+        } else {
+            this.invalidate(true);
+        }
 
     }
 
     protected benchmark(): void {
 
-        // this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        // this._camera.eye = vec3.fromValues(4.0 * Math.sin(0), 0.0, 4.0 * Math.cos(0));
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.eye = vec3.fromValues(4.0 * Math.sin(0), 0.0, 4.0 * Math.cos(0));
 
-        // this._benchmark = true;
-        // this._frames = 0;
+        this._benchmark = true;
+        this._frames = 0;
 
-        // if (this._results.length === 0) {
+        if (this._results.length === 0) {
 
-        //     const config = PointCloudRenderer.BENCHMARK_CONFIG;
+            const config = PointCloudRenderer.BENCHMARK_CONFIG;
 
-        //     this._results.length = config.values.length;
-        //     // tslint:disable-next-line:prefer-for-of
-        //     for (let i = 0; i < config.values.length; ++i) {
-        //         this._results[i] = [config.values[i], 0.0];
-        //     }
-        // }
+            this._results.length = config.values.length;
+            // tslint:disable-next-line:prefer-for-of
+            for (let i = 0; i < config.values.length; ++i) {
+                this._results[i] = [config.values[i], 0.0];
+            }
+        }
 
-        // this._numPointsToRender = this._numPointsAllocated;
-        // this.invalidate(true);
+        this._numPointsToRender = this._numPointsAllocated;
+        this.invalidate(true);
     }
 
     set size(size: GLfloat) {

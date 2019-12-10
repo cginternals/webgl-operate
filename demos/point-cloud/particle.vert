@@ -30,8 +30,11 @@ void main()
 	vec3 u  = vec3(u_view[0][0], u_view[1][0], u_view[2][0]) * uv.x;
 	vec3 v  = vec3(u_view[0][1], u_view[1][1], u_view[2][1]) * uv.y;
 
-	vec3 p  = a_position * 2.0 - 1.0;
+	vec3 p  = a_position * 4.0 - 2.0;
 	v_vertex = p;
 
 	gl_Position = u_viewProjection * vec4(p + u + v, 1.0);
+
+	// gl_Position = u_viewProjection * vec4(p, 1.0);
+	// gl_PointSize = u_size * 1024.0; // hack ... for GL_POINTS moder
 }
