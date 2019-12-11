@@ -186,11 +186,11 @@ export class GLTFLoader {
                 material.alphaMode = GLTFAlphaMode.MASK;
 
                 if (materialInfo.alphaCutoff === undefined) {
-                    log(LogLevel.Warning,
-                        `Material ${materialInfo.name} has alphaMode MASK but does not specify an alphaCutoff`);
+                    // Standard assumes default of 0.5
+                    material.alphaCutoff = 0.5;
+                } else {
+                    material.alphaCutoff = materialInfo.alphaCutoff!;
                 }
-                material.alphaCutoff = materialInfo.alphaCutoff!;
-
             } else if (materialInfo.alphaMode === 'BLEND') {
                 material.alphaMode = GLTFAlphaMode.BLEND;
                 material.isTransparent = true;

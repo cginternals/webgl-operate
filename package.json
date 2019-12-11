@@ -31,6 +31,7 @@
         "@types/gl-matrix": "~2.4.4",
         "@types/mocha": "~5.2.5",
         "@types/sinon": "~7.0.9",
+        "@types/webgl2": "~0.0.5",
         "chai": "~4.2.0",
         "chai-spies": "~1.0.0",
         "coveralls": "~3.0.2",

@@ -312,7 +312,9 @@ void main(void)
     // NOTE: the spec mandates to ignore any alpha value in 'OPAQUE' mode
     float alpha = 1.0;
     if (u_blendMode == 1) {
-        alpha = step(u_blendCutoff, baseColor.a);
+        if (baseColor.a < u_blendCutoff) {
+            discard;
+        }
     }
     else if (u_blendMode == 2) {
         alpha = baseColor.a;

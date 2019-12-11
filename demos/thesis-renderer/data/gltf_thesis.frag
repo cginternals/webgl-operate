@@ -200,7 +200,7 @@ vec3 ssaoSample(const in LightingInfo info, const in mat3 TBN, out bool hit) {
     float random2 = rand(info.uv * float(u_frameNumber + 2));
     float random3 = rand(info.uv * float(u_frameNumber + 3));
 
-    vec3 viewSampleOffset = TBN * uniformSampleHemisphere(random1, random2);
+    vec3 viewSampleOffset = TBN * cosineSampleHemisphere(random1, random2);
     viewSampleOffset *= u_occlusionRange * random3;
 
     return sampleOcclusion(info, viewPosition, viewSampleOffset, hit);

@@ -22,6 +22,16 @@ vec3 uniformSampleHemisphere(const in float u1, const in float u2)
     return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 }
 
+// Adapted from "Moving Frostbite to PBR"
+vec3 cosineSampleHemisphere(const in float u1, const in float u2)
+{
+    float phi = 2.0 * M_PI * u2;
+    float cosTheta = sqrt(1.0 - u1);
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+
+    return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+}
+
 // Adapted from "Real Shading in Unreal Engine 4"
 vec3 importanceSampleGGX(const in vec2 Xi, const in float alphaRoughnessSq)
 {
