@@ -13,6 +13,7 @@ precision highp float;
 
 
 uniform vec2 u_lightNearFar;
+uniform vec3 u_lightPosition;
 uniform mat4 u_view;
 
 
@@ -31,5 +32,5 @@ varying vec3 v_position;
 void main(void)
 {
     vec4 viewPosition = u_view * vec4(v_position, 1.0);
-    fragColor = vec4(calculateDepths(viewPosition.xyz, u_lightNearFar[0], u_lightNearFar[1]), 0.0, 1.0);
+    fragColor = vec4(VSMDepth(v_position, u_lightPosition, u_lightNearFar), 0.0, 1.0);
 }

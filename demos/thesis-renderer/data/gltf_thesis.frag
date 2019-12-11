@@ -356,7 +356,7 @@ void main(void)
         vec2 shadowUv = (vLightViewProjectionSpace.xy / vLightViewProjectionSpace.w) * 0.5 + 0.5;
 
         const float shadowBias = -0.0003;
-        float visibility = hardShadowCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
+        float visibility = SMCompare(u_shadowMap, shadowUv, lightDepth, shadowBias);
 
         if (any(greaterThan(shadowUv, vec2(1.0))) || any(lessThan(shadowUv, vec2(0.0)))) {
             visibility = 1.0;

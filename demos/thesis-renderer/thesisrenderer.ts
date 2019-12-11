@@ -153,6 +153,7 @@ export class ThesisRenderer extends Renderer {
     protected _uViewS: WebGLUniformLocation;
     protected _uProjectionS: WebGLUniformLocation;
     protected _uLightNearFarS: WebGLUniformLocation;
+    protected _uLightPositionS: WebGLUniformLocation;
 
     protected _uModelD: WebGLUniformLocation;
     protected _uProjectionD: WebGLUniformLocation;
@@ -173,6 +174,9 @@ export class ThesisRenderer extends Renderer {
 
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
+
+        context.enable(['OES_standard_derivatives', 'WEBGL_color_buffer_float',
+            'OES_texture_float', 'OES_texture_float_linear']);
 
         this._loader = new GLTFLoader(this._context);
 
@@ -372,6 +376,7 @@ export class ThesisRenderer extends Renderer {
         this._uViewS = this._shadowProgram.uniform('u_view');
         this._uProjectionS = this._shadowProgram.uniform('u_projection');
         this._uLightNearFarS = this._shadowProgram.uniform('u_lightNearFar');
+        this._uLightPositionS = this._shadowProgram.uniform('u_lightPosition');
 
         /* Initialize pre depth program */
         const depthVert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
@@ -636,6 +641,7 @@ export class ThesisRenderer extends Renderer {
             gl.uniformMatrix4fv(this._uProjectionS, gl.FALSE, lightCamera.projection);
             gl.uniformMatrix4fv(this._uViewS, gl.FALSE, lightCamera.view);
             gl.uniform2fv(this._uLightNearFarS, lightNearFar);
+            gl.uniform3fv(this._uLightPositionS, eye);
 
             this._forwardPass.bindMaterial = (_: Material) => { };
             this._forwardPass.bindGeometry = (_: Geometry) => { };
