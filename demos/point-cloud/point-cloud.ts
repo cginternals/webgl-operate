@@ -119,7 +119,7 @@ export class PointCloudRenderer extends Renderer {
         this._particleVBO.data(particle, gl.STATIC_DRAW);
 
 
-        this._numPointsAllocated = 16e6;
+        this._numPointsAllocated = 1e6;
         this._numPointsToRender = 1e5;
 
 
@@ -383,6 +383,34 @@ export class PointCloudDemo extends Demo {
 
         this._renderer = new PointCloudRenderer();
         this._canvas.renderer = this._renderer;
+
+
+        const input = document.getElementById('input-file')! as HTMLInputElement;
+        // const label = document.getElementById('label-file')! as HTMLLabelElement;
+        input.addEventListener('change', () => {
+            const list = input.files!;
+            const files = new Array<[string, File]>(list.length);
+
+            for (let i = 0; i < list.length; ++i) {
+                files[i] = [list.item(i)!.name, list.item(i)!];
+            }
+            for (let i = 0; i < list.length; ++i) {
+                const reader = new FileReader();
+                reader.readAsText(files[i][1]);
+
+                reader.onload = (event) => {
+                    let lines = (event.target!.result as string).split(/\r\n|\n/);
+                    lines = lines.filter((value: string) => value.trim() !== '');
+                    // const numCoordinates = Number.parseInt(lines[0]);
+
+                    // const coords = new Float32Array(numCoordinates * 3);
+                    console.log(lines);
+                };
+
+                reader.onerror = (event) => console.log(event.target!.error);
+            }
+            console.log(files.sort());
+        });
 
         return true;
     }

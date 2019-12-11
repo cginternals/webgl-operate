@@ -11,5 +11,12 @@ block canvas
   //  include ../partials/code.pug
   //  +code('demo-code', 'const demo.code.for.breakdown = here;', 'Some demo code for source break down:')
 
+
+  div-input-group
+    div.custom-file
+      input(id = 'input-file' name = 'input-file' type = 'file' accept = 'text/csv' multiple).custom-file-input
+      label(id = 'label-file' for = 'input-file').custom-file-label Choose CSV with x, y, and z Coordinates.
+
+
 block onload
   script window.onload = function () { clipboard(); demo(new PointCloudDemo(), 'demo-canvas'); }
