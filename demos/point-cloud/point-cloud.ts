@@ -24,6 +24,7 @@ import {
 
 import { Demo } from '../demo';
 
+import { Benchmark } from './benchmark';
 import { importPointsFromCSV } from './csv-import';
 
 
@@ -36,17 +37,7 @@ export class PointCloudRenderer extends Renderer {
 
     protected static readonly DEFAULT_POINT_SIZE = 1.0 / 128.0;
 
-    protected static readonly BENCHMARK_CONFIG = {
-        rotations: 1,
-        frames: 100,
-        warmup: 100,
-        values: [0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 2e6, 4e6, 6e6, 8e6, 10e6, 12e6, 14e6, 16e6],
-    };
-
-    protected _benchmark = false;
-    protected _results: Array<[number, number]> = new Array<[number, number]>();
-    protected _frames: number;
-
+    protected _benchmark: Benchmark;
 
     protected _camera: Camera;
     protected _navigation: Navigation;
@@ -67,8 +58,13 @@ export class PointCloudRenderer extends Renderer {
 
     protected _program: Program;
 
-    protected _size: GLfloat = PointCloudRenderer.DEFAULT_POINT_SIZE;
-    protected _sizeAltered = true;
+    protected _pointSize: GLfloat = PointCloudRenderer.DEFAULT_POINT_SIZE;
+    protected _billboards: boolean = true;
+    protected _alpha2Coverage: boolean = false;
+    protected _alphaBlending: boolean = false;
+    protected _phongShading: boolean = false;
+
+    protected _renderingConfigAltered = true;
 
     protected _uView: WebGLUniformLocation;
     protected _uViewProjection: WebGLUniformLocation;
@@ -103,9 +99,11 @@ export class PointCloudRenderer extends Renderer {
 
         const particle = new Float32Array([-1.0, -1.0, +1.0, -1.0, +1.0, +1.0, -1.0, +1.0]);
 
+        // Generate triangle fan geometry of n triangles:
+        
         // const hypotenuse = Math.sqrt(1 + Math.pow(Math.tan(Math.PI / this._triangles), 2.0));
-
         // const particle = new Float32Array(2 * (2 + this._triangles));
+
         // particle[0] = 0.0;
         // particle[1] = 0.0;
         // for (let i = 0; i <= this._triangles; ++i) {
@@ -122,7 +120,7 @@ export class PointCloudRenderer extends Renderer {
         this._particleVBO.data(particle, gl.STATIC_DRAW);
 
 
-        this._numPointsAllocated = 1e6;
+        this._numPointsAllocated = 16e6;
         this._numPointsToRender = 1e5;
 
 
@@ -183,21 +181,14 @@ export class PointCloudRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
-        // enable alpha to coverage and appropriate blending (if context was initialized with antialiasing enabled)
-        if (context.antialias) {
-
-            gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
-            gl.sampleCoverage(1.0, false);
-        }
-
-        gl.enable(gl.BLEND);
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-
         this._particleVBO.bind();
         this._instancesVBO.bind();
 
         this._program.bind();
+
+
+        this._alphaBlending = true;
+        this._alpha2Coverage = context.antialias;
 
         return true;
     }
@@ -229,7 +220,7 @@ export class PointCloudRenderer extends Renderer {
     protected onUpdate(): boolean {
         this._navigation.update();
 
-        return this._altered.any || this._camera.altered;
+        return this._altered.any || this._camera.altered || this._renderingConfigAltered;
 
     }
     /**
@@ -237,9 +228,13 @@ export class PointCloudRenderer extends Renderer {
      * camera-updates.
      */
     protected onPrepare(): void {
+        const gl = this._context.gl;
+
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
             this._camera.viewport = this._canvasSize;
+
+            gl.uniform2f(this._program.uniform('u_size'), this._pointSize, this._frameSize[0]);
         }
 
         if (this._altered.clearColor) {
@@ -250,12 +245,30 @@ export class PointCloudRenderer extends Renderer {
         this._camera.altered = false;
 
 
-        const gl = this._context.gl;
-
-        if (this._sizeAltered) {
-            gl.uniform1f(this._program.uniform('u_size'), this._size);
-            this._sizeAltered = false;
+        if (!this._renderingConfigAltered) {
+            return;
         }
+         
+        gl.uniform2f(this._program.uniform('u_size'), this._pointSize, this._frameSize[0]);
+        gl.uniform2i(this._program.uniform('u_mode'), !this._billboards, this._phongShading);
+
+        // enable alpha to coverage and appropriate blending (if context was initialized with antialiasing enabled)
+
+        if(this._alpha2Coverage) {
+            gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+            gl.sampleCoverage(1.0, false);
+        } else {
+            gl.disable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+        }
+
+        if(this._alphaBlending) {
+            gl.enable(gl.BLEND);
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        } else {
+            gl.disable(gl.BLEND);
+        }
+
+        this._renderingConfigAltered = false;
     }
 
     protected onFrame(): void {
@@ -275,94 +288,137 @@ export class PointCloudRenderer extends Renderer {
 
         gl.uniform3f(this._uLight, light[0], light[1], light[2]);
 
-        gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, this._numPointsToRender);
-        // gl2facade.drawArraysInstanced(gl.POINTS, 0, 1, this._numPointsToRender);
+        if(this._billboards) {
+            gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, this._numPointsToRender);
+        } else {
+             gl2facade.drawArraysInstanced(gl.POINTS, 0, 1, this._numPointsToRender);
+        }
         // gl2facade.drawArraysInstanced(gl.TRIANGLE_FAN, 0, this._triangles + 2, this._numPointsToRender);
-
     }
 
     protected onSwap(): void {
 
-        if (this._benchmark === false) {
-            return;
-        }
-        ++this._frames;
-
-        const config = PointCloudRenderer.BENCHMARK_CONFIG;
-
-        const frames: number = this._frames - config.warmup;
-        const run: number = frames >= 0 ? Math.floor(frames / config.frames) : -1;
-
-
-        const phi = Math.PI * 2.0 * config.rotations / config.frames * (frames % config.frames);
-        this._camera.eye = vec3.fromValues(4.0 * Math.sin(phi), 0.0, 4.0 * Math.cos(phi));
-
-
-
-        if (frames === 1 - config.warmup) {
-            console.log('---- benchmark warmup ------');
-        }
-        if (frames === 0) {
-            console.log('---- benchmark started -----');
-        }
-
-        if (frames % config.frames === 0 && run > 0) {
-            this._results[run - 1][1] = (performance.now() - this._results[run - 1][1]) / config.frames;
-            console.log(' --  run = ' + run + ', [value, fps] = ' + this._results[run - 1]);
-        }
-
-        if (frames % config.frames === 0 && run >= 0 && run < config.values.length) {
-            this._results[run][1] = performance.now();
-            this._numPointsToRender = config.values[run];
-        }
-
-        if (run >= config.values.length) {
-
-            this._benchmark = false;
-            console.log('---- benchmark stopped -----');
-            console.log(JSON.stringify(this._results));
-
-        } else {
+        if(this._benchmark && this._benchmark.running) {
+            this._benchmark.frame();
             this.invalidate(true);
         }
-
     }
 
     protected benchmark(): void {
 
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.eye = vec3.fromValues(4.0 * Math.sin(0), 0.0, 4.0 * Math.cos(0));
-
-        this._benchmark = true;
-        this._frames = 0;
-
-        if (this._results.length === 0) {
-
-            const config = PointCloudRenderer.BENCHMARK_CONFIG;
-
-            this._results.length = config.values.length;
-            // tslint:disable-next-line:prefer-for-of
-            for (let i = 0; i < config.values.length; ++i) {
-                this._results[i] = [config.values[i], 0.0];
-            }
+        if(!this._benchmark) {
+            this._benchmark = new Benchmark();
         }
 
-        this._numPointsToRender = this._numPointsAllocated;
-        this.invalidate(true);
-    }
+        const values = [0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 2e6, 4e6, 6e6, 8e6, 10e6, 12e6, 14e6, 16e6];
+        
+        const numPointsRendered = this._numPointsToRender;
 
-    set size(size: GLfloat) {
-        if (this._size === size) {
+        this._benchmark.initialize(values.length, 1000, 100, 
+        
+            (frame: number, framesForWarmup: number, framesPerCycle: number, cycle: number): void => { 
+                // called per frame benchmarked ...
+
+                const phi =  Math.PI * 2.0 * 1.0 / (cycle < 0 ? framesForWarmup : framesPerCycle) * frame;
+
+                this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+                this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+                this._camera.eye = vec3.fromValues(4.0 * Math.sin(phi), 0.0, 4.0 * Math.cos(phi));
+
+                if(cycle < 0) { // warmup
+                    this._numPointsToRender = 1e6;
+                } else {
+                    this._numPointsToRender = values[cycle];
+                }
+            },
+
+            (cycles: number, framesForWarmup: number, framesPerCycle: number, results: Array<number>): void => {
+
+                console.log(`BENCHMARK CONFIG`);
+                console.log(`frameSize: ${this._frameSize}, pointSize: ${this._pointSize}`);
+                console.log(`alpha2Coverage: ${this._alpha2Coverage}, alphaBlending ${this._alphaBlending}, billboards: ${this._billboards}, phongShading: ${this._phongShading}`);
+                console.log(`#cycles:  ${cycles}, #framesForWarmup: ${framesForWarmup}, #framesPerCycle: ${framesPerCycle}`);
+                console.log(`values: ${JSON.stringify(values)}`);
+                console.log(`BENCHMARK RESULTS`);
+                console.log(JSON.stringify(results));
+
+                this._numPointsToRender = numPointsRendered;
+            });
+        this.invalidate(true);
+    } 
+
+    set pointSize(size: GLfloat) {
+        if (this._pointSize === size) {
             return;
         }
-        this._size = Math.max(0.0, Math.min(1.0, size));
-        this._sizeAltered = true;
+        this._pointSize = Math.max(0.0, Math.min(128.0, size));
+        this._renderingConfigAltered = true;
 
-        this.invalidate(true);
+        this.invalidate();
     }
 
-    get size(): GLfloat {
-        return this._size;
+    get pointSize(): GLfloat {
+        return this._pointSize;
+    }
+
+    
+    set alpha2Coverage(value: boolean) {
+        if(this._alpha2Coverage === value) {
+            return;
+        }
+        this._alpha2Coverage = value;
+        this._renderingConfigAltered = true;
+
+        this.invalidate();
+    }
+
+    get alpha2Coverage(): boolean {
+        return this._alpha2Coverage;
+    }
+
+
+    set alphaBlending(value: boolean) {
+        if(this._alphaBlending === value) {
+            return;
+        }
+        this._alphaBlending = value;
+        this._renderingConfigAltered = true;
+
+        this.invalidate();
+    }
+
+    get alphaBlending(): boolean {
+        return this._alphaBlending;
+    }
+
+
+    set billboards(value: boolean) {
+        if(this._billboards === value) {
+            return;
+        }
+        this._billboards = value;
+        this._renderingConfigAltered = true;
+
+        this.invalidate();
+    }
+
+    get billboards(): boolean {
+        return this._billboards;
+    }
+
+
+    set phongShading(value: boolean) {
+        if(this._phongShading === value) {
+            return;
+        }
+        this._phongShading = value;
+        this._renderingConfigAltered = true;
+
+        this.invalidate();
+    }
+
+    get phongShading(): boolean {
+        return this._phongShading;
     }
 
 }
@@ -375,10 +431,10 @@ export class PointCloudDemo extends Demo {
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
-        const alpha2coverage = auxiliaries.GETparameter('alpha2coverage');
+        const aa = auxiliaries.GETparameter('antialias');
 
         this._canvas = new Canvas(element, {
-            antialias: alpha2coverage === undefined ? false : JSON.parse(alpha2coverage!),
+            antialias: aa === undefined ? false : JSON.parse(aa!),
         });
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
@@ -401,6 +457,7 @@ export class PointCloudDemo extends Demo {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }
+
 
     get canvas(): Canvas {
         return this._canvas;
