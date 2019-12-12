@@ -24,6 +24,9 @@ import {
 
 import { Demo } from '../demo';
 
+import { importPointsFromCSV } from './csv-import';
+
+
 /* spellchecker: enable */
 
 
@@ -388,28 +391,7 @@ export class PointCloudDemo extends Demo {
         const input = document.getElementById('input-file')! as HTMLInputElement;
         // const label = document.getElementById('label-file')! as HTMLLabelElement;
         input.addEventListener('change', () => {
-            const list = input.files!;
-            const files = new Array<[string, File]>(list.length);
-
-            for (let i = 0; i < list.length; ++i) {
-                files[i] = [list.item(i)!.name, list.item(i)!];
-            }
-            for (let i = 0; i < list.length; ++i) {
-                const reader = new FileReader();
-                reader.readAsText(files[i][1]);
-
-                reader.onload = (event) => {
-                    let lines = (event.target!.result as string).split(/\r\n|\n/);
-                    lines = lines.filter((value: string) => value.trim() !== '');
-                    // const numCoordinates = Number.parseInt(lines[0]);
-
-                    // const coords = new Float32Array(numCoordinates * 3);
-                    console.log(lines);
-                };
-
-                reader.onerror = (event) => console.log(event.target!.error);
-            }
-            console.log(files.sort());
+            importPointsFromCSV(input.files!).then(result => console.log(result));
         });
 
         return true;
@@ -426,6 +408,6 @@ export class PointCloudDemo extends Demo {
 
     get renderer(): PointCloudRenderer {
         return this._renderer;
-    }
+    } 
 
 }
