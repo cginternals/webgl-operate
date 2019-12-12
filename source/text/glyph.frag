@@ -44,8 +44,7 @@ float aastep(float t, float value)
 #endif
 }
 
-
-float tex(float t, vec2 uv)
+float texStep(float t, vec2 uv)
 {
     /*
      * This is a workaround for a known bug in Chrome software rendering (SwiftShader), for updates follow
@@ -53,7 +52,18 @@ float tex(float t, vec2 uv)
      * Workaround: Storing the result of the texture access into another variable that then is passed as parameter.
      */
     float distanceValue = texture(u_glyphs, uv)[channel];
- 	return aastep(t, distanceValue);
+    return step(t, distanceValue);
+}
+
+float texSmooth(float t, vec2 uv)
+{
+    /*
+     * This is a workaround for a known bug in Chrome software rendering (SwiftShader), for updates follow
+     * https://issuetracker.google.com/u/1/issues/146041290
+     * Workaround: Storing the result of the texture access into another variable that then is passed as parameter.
+     */
+    float distanceValue = texture(u_glyphs, uv)[channel];
+    return aastep(t, distanceValue);
 }
 
 #ifdef AASTEP
@@ -133,11 +143,11 @@ void main(void)
     if(u_aaSampling == 0) {         // LabelRenderPass.Sampling.None
 #endif
 
-        a = step(0.5, texture(u_glyphs, v_uv)[channel]);
+        a = texStep(0.5, v_uv);
 
 #ifdef AASTEP
     } else if(u_aaSampling == 1) {  // LabelRenderPass.Sampling.Smooth
-        a = tex(0.5, v_uv);
+        a = texSmooth(0.5, v_uv);
     } else if(u_aaSampling == 2) {  // LabelRenderPass.Sampling.Horizontal3
         a = aastep3h(0.5, v_uv);
     } else if(u_aaSampling == 3) {  // LabelRenderPass.Sampling.Vertical3
