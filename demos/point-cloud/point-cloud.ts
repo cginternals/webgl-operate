@@ -63,7 +63,7 @@ export class PointCloudRenderer extends Renderer {
     protected _billboards: boolean = true;
     protected _alpha2Coverage: boolean = false;
     protected _alphaBlending: boolean = false;
-    protected _phongShading: boolean = false;
+    protected _phongShading: boolean = true;
 
     protected _renderingConfigAltered = true;
 
@@ -165,10 +165,10 @@ export class PointCloudRenderer extends Renderer {
         this._navigation.camera = this._camera;
 
         this._model = mat4.fromRotationTranslationScale(mat4.create(), quat.create()
-            , [-2.0, -2.0, -2.0], [4.0, 4.0, 4.0]);
+            , [0.0, 0.0, 0.0], [2.0, 2.0, 2.0]);
 
-        const positions = new Float32Array(3 * 1e5);
-        positions.forEach((value, index, array) => array[index] = Math.random());
+        const positions = new Float32Array(3 * 4e6);
+        positions.forEach((value, index, array) => array[index] = Math.random() * 5.0 - 2.5);
 
         this.data = new Array(positions);
 
@@ -328,10 +328,11 @@ export class PointCloudRenderer extends Renderer {
         //     this._benchmark.frame();
         //     this.invalidate(true);
         // }
-        this.invalidate(true);
+
 
         if (this._data.length > 1) {
             this.draw = (this._drawIndex + 1) % this._data.length;
+            this.invalidate(true);
         }
     }
 
@@ -345,6 +346,7 @@ export class PointCloudRenderer extends Renderer {
             this._drawRanges[i] = [index, data[i].length];
             index += data[i].length;
         }
+        this.draw = 0;
         this._push = true;
     }
 
@@ -490,7 +492,7 @@ export class PointCloudDemo extends Demo {
         const aa = auxiliaries.GETparameter('antialias');
 
         this._canvas = new Canvas(element, {
-            antialias: aa === undefined ? false : JSON.parse(aa!),
+            antialias: aa === undefined ? true : JSON.parse(aa!),
         });
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;

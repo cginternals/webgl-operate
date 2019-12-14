@@ -23,7 +23,7 @@ void main()
 {
     if(u_mode[0] == 1) { // for GL_POINTS mode
 
-        vec3 v = v_vertex * 0.25 + 0.75;
+        vec3 v = v_vertex * 0.25 + 0.5;
         fragColor = vec4(v, 1.0);
 
         return;
@@ -39,7 +39,7 @@ void main()
     float afwidth = fwidth(z);
     float t = smoothstep(0.0, afwidth, 1.0 - z);
 
-    vec3 v = v_vertex * 0.25 + 0.75;
+    vec3 v = v_vertex * 0.25 + 0.5;
 
     if(u_mode[1] == 0) {
         fragColor = vec4(v, t);
@@ -52,9 +52,9 @@ void main()
     vec3 e = vec3(0.0, 0.0, 1.0);
     // vec3 h = normalize(n + e);
 
-    float ldotn  = clamp(dot(u_light, n), 0.0, 1.0);
+    float ldotn  = clamp(dot(u_light, n /* h */), 0.0, 1.0);
     float spec   = pow(max(0.0, dot(reflect(-u_light, n), e)), 64.0);
     vec3 ambient = vec3(0.203, 0.227, 0.250); // default clear color of webgl-operate
 
-	fragColor = vec4(spec + (ambient * (zz + 0.4) + ldotn) * v, t);
+	fragColor = vec4(spec + (ambient * (zz * 0.6 + 0.4) + ldotn) * v, t);
 }
