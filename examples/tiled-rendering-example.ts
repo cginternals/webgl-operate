@@ -55,8 +55,7 @@ export class TiledCubeRenderer extends Renderer {
     protected _tileCameraHilbertGenerator: TileCameraGenerator;
     protected _tileCameraZCurveGenerator: TileCameraGenerator;
 
-    protected TIMEOUT_BETWEEN_TILES = 10; // in milliseconds
-    protected _alreadyRenderedNotTiled = false;
+    protected _alreadyRenderedNonTiledQuadrant = false;
 
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
@@ -187,21 +186,28 @@ export class TiledCubeRenderer extends Renderer {
 
     }
 
+    protected getViewportDividableByTwo(viewport: [number, number]): [number, number] {
+        const x = (viewport[0] & 1) === 0 ? viewport[0] : viewport[0] - 1;
+        const y = (viewport[1] & 1) === 0 ? viewport[1] : viewport[1] + 1;
+        return [x, y];
+    }
+
     /**
      * This is invoked in order to prepare rendering of one or more frames, regarding multi-frame rendering and
      * camera-updates.
      */
     protected onPrepare(): void {
         if (this._altered.canvasSize) {
-            this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
-            this._camera.viewport = [this._canvasSize[0] * this._ssaaFactor, this._canvasSize[1] * this._ssaaFactor];
+            const canvSize = this.getViewportDividableByTwo(this._canvasSize);
+            this._camera.aspect = canvSize[0] / canvSize[1];
+            this._camera.viewport = [canvSize[0] * this._ssaaFactor, canvSize[1] * this._ssaaFactor];
             this.setTileCameraGeneratorTileSizeAndFrameSize();
 
             this._tileCameraScanLineGenerator.resetTileRendering();
             this._tileCameraHilbertGenerator.resetTileRendering();
             this._tileCameraZCurveGenerator.resetTileRendering();
 
-            this._alreadyRenderedNotTiled = false;
+            this._alreadyRenderedNonTiledQuadrant = false;
         }
         if (this._altered.clearColor) {
         }
@@ -214,7 +220,7 @@ export class TiledCubeRenderer extends Renderer {
             this._tileCameraHilbertGenerator.resetTileRendering();
             this._tileCameraZCurveGenerator.resetTileRendering();
 
-            this._alreadyRenderedNotTiled = false;
+            this._alreadyRenderedNonTiledQuadrant = false;
         }
         if (this._altered.frameSize) {
             this.setTileCameraGeneratorTileSizeAndFrameSize();
@@ -223,8 +229,12 @@ export class TiledCubeRenderer extends Renderer {
             this._tileCameraHilbertGenerator.resetTileRendering();
             this._tileCameraZCurveGenerator.resetTileRendering();
 
+            const frameSize = this.getViewportDividableByTwo(this._frameSize);
+            console.log(this._frameSize);
+            console.log(frameSize);
+
             this._intermediateFBO.resize(this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor);
-            this._camera.viewport = [this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor];
+            this._camera.viewport = [frameSize[0] * this._ssaaFactor, frameSize[1] * this._ssaaFactor];
         }
         this._altered.reset();
         this._camera.altered = false;
@@ -233,8 +243,10 @@ export class TiledCubeRenderer extends Renderer {
     protected setTileCameraGeneratorTileSizeAndFrameSize(): void {
         const tileSize: [number, number] = [0, 0];
 
-        const ssaaFrameSize: [number, number] = [this._frameSize[0] * this._ssaaFactor,
-        this._frameSize[1] * this._ssaaFactor];
+        const frameSize = this.getViewportDividableByTwo(this._frameSize);
+
+        const ssaaFrameSize: [number, number] = [frameSize[0] * this._ssaaFactor,
+        frameSize[1] * this._ssaaFactor];
 
         this._tileCameraScanLineGenerator.sourceViewport = ssaaFrameSize;
         this._tileCameraHilbertGenerator.sourceViewport = ssaaFrameSize;
@@ -288,18 +300,20 @@ export class TiledCubeRenderer extends Renderer {
         this._program.bind();
         this._cuboid.bind();
 
-        if (!this._alreadyRenderedNotTiled) {
+        const frameSize = this.getViewportDividableByTwo(this._frameSize);
+
+        if (!this._alreadyRenderedNonTiledQuadrant) {
             this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
 
             gl.enable(gl.SCISSOR_TEST);
             // render not tiled quater
-            gl.scissor(0, this._frameSize[1] / 2 * this._ssaaFactor,
-                this._frameSize[0] / 2 * this._ssaaFactor, this._frameSize[1] / 2 * this._ssaaFactor);
-            gl.viewport(0, this._frameSize[1] / 2 * this._ssaaFactor,
-                this._frameSize[0] / 2 * this._ssaaFactor, this._frameSize[1] / 2 * this._ssaaFactor);
+            gl.scissor(0, frameSize[1] / 2 * this._ssaaFactor,
+                frameSize[0] / 2 * this._ssaaFactor, frameSize[1] / 2 * this._ssaaFactor);
+            gl.viewport(0, frameSize[1] / 2 * this._ssaaFactor,
+                frameSize[0] / 2 * this._ssaaFactor, frameSize[1] / 2 * this._ssaaFactor);
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
             this._cuboid.draw();
-            this._alreadyRenderedNotTiled = true;
+            this._alreadyRenderedNonTiledQuadrant = true;
         }
 
         gl.enable(gl.SCISSOR_TEST);
@@ -307,10 +321,10 @@ export class TiledCubeRenderer extends Renderer {
         if (this._tileCameraScanLineGenerator.nextTile()) {
             // ScanLine
             offset = this._tileCameraScanLineGenerator.offset;
-            gl.scissor(this._frameSize[0] / 2 * this._ssaaFactor, this._frameSize[1] / 2 * this._ssaaFactor,
-                this._frameSize[0] / 2 * this._ssaaFactor, this._frameSize[1] / 2 * this._ssaaFactor);
-            gl.viewport(offset[0] / 2 + this._frameSize[0] / 2 * this._ssaaFactor,
-                offset[1] / 2 + this._frameSize[1] / 2 * this._ssaaFactor,
+            gl.scissor(frameSize[0] / 2 * this._ssaaFactor, frameSize[1] / 2 * this._ssaaFactor,
+                frameSize[0] / 2 * this._ssaaFactor, frameSize[1] / 2 * this._ssaaFactor);
+            gl.viewport(offset[0] / 2 + frameSize[0] / 2 * this._ssaaFactor,
+                offset[1] / 2 + frameSize[1] / 2 * this._ssaaFactor,
                 this._tileCameraScanLineGenerator.tileSize[0] / 2, this._tileCameraScanLineGenerator.tileSize[1] / 2);
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE,
                 this._tileCameraScanLineGenerator.camera.viewProjection);
@@ -319,21 +333,24 @@ export class TiledCubeRenderer extends Renderer {
 
         if (this._tileCameraHilbertGenerator.nextTile()) {
             // Hilbert
-            gl.scissor(0, 0, this._frameSize[0] / 2 * this._ssaaFactor, this._frameSize[1] / 2 * this._ssaaFactor);
+            gl.scissor(0, 0, frameSize[0] / 2 * this._ssaaFactor, frameSize[1] / 2 * this._ssaaFactor);
             offset = this._tileCameraHilbertGenerator.offset;
             gl.viewport(offset[0] / 2, offset[1] / 2,
                 this._tileCameraHilbertGenerator.tileSize[0] / 2, this._tileCameraHilbertGenerator.tileSize[1] / 2);
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE,
                 this._tileCameraHilbertGenerator.camera.viewProjection);
             this._cuboid.draw();
+            if (offset[0] / 2 !== Math.ceil(offset[0] / 2) || offset[1] / 2 !== Math.ceil(offset[1] / 2)) {
+                console.log(offset);
+            }
         }
 
         if (this._tileCameraZCurveGenerator.nextTile()) {
             // Z-Curve
-            gl.scissor(this._frameSize[0] / 2 * this._ssaaFactor, 0,
-                this._frameSize[0] / 2 * this._ssaaFactor, this._frameSize[1] / 2 * this._ssaaFactor);
+            gl.scissor(frameSize[0] / 2 * this._ssaaFactor, 0,
+                frameSize[0] / 2 * this._ssaaFactor, frameSize[1] / 2 * this._ssaaFactor);
             offset = this._tileCameraZCurveGenerator.offset;
-            gl.viewport(this._frameSize[0] / 2 * this._ssaaFactor + offset[0] / 2, offset[1] / 2,
+            gl.viewport(frameSize[0] / 2 * this._ssaaFactor + offset[0] / 2, offset[1] / 2,
                 this._tileCameraZCurveGenerator.tileSize[0] / 2, this._tileCameraZCurveGenerator.tileSize[1] / 2);
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE,
                 this._tileCameraZCurveGenerator.camera.viewProjection);
