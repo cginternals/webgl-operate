@@ -70,65 +70,65 @@ float texSmooth(float t, vec2 uv)
 
 float aastep3h(float t, vec2 uv)
 {
-	float x = dFdy(uv.x) * 1.0 / 3.0;
+    float x = dFdy(uv.x) * 1.0 / 3.0;
 
-	float v = tex(t, uv + vec2( -x, 0.0))
-          	+ tex(t, uv + vec2(0.0, 0.0))
-          	+ tex(t, uv + vec2( +x, 0.0));
+    float v = texSmooth(t, uv + vec2( -x, 0.0))
+            + texSmooth(t, uv + vec2(0.0, 0.0))
+            + texSmooth(t, uv + vec2( +x, 0.0));
 
-	return v / 3.0;
+    return v / 3.0;
 }
 
 float aastep3v(float t, vec2 uv)
 {
-	float y = dFdy(uv.y) * 1.0 / 3.0;
+    float y = dFdy(uv.y) * 1.0 / 3.0;
 
-	float v = tex(t, uv + vec2( 0.0,  -y))
-          	+ tex(t, uv + vec2( 0.0, 0.0))
-          	+ tex(t, uv + vec2( 0.0,  +y));
+    float v = texSmooth(t, uv + vec2( 0.0,  -y))
+            + texSmooth(t, uv + vec2( 0.0, 0.0))
+            + texSmooth(t, uv + vec2( 0.0,  +y));
 
-	return v / 3.0;
+    return v / 3.0;
 }
 
 float aastep3x3(float t, vec2 uv)
 {
-	float x = dFdx(uv.x) * 1.0 / 3.0;
-	float y = dFdy(uv.y) * 1.0 / 3.0;
+    float x = dFdx(uv.x) * 1.0 / 3.0;
+    float y = dFdy(uv.y) * 1.0 / 3.0;
 
-	float v = tex(t, uv + vec2(  -x, -y)) + tex(t, uv + vec2(  -x, 0.0)) + tex(t, uv + vec2(  -x, +y))
-	      	+ tex(t, uv + vec2( 0.0, -y)) + tex(t, uv + vec2( 0.0, 0.0)) + tex(t, uv + vec2( 0.0, +y))
-            + tex(t, uv + vec2(  +x, -y)) + tex(t, uv + vec2(  +x, 0.0)) + tex(t, uv + vec2(  +x, +y));
+    float v = texSmooth(t, uv + vec2(  -x, -y)) + texSmooth(t, uv + vec2(  -x, 0.0)) + texSmooth(t, uv + vec2(  -x, +y))
+            + texSmooth(t, uv + vec2( 0.0, -y)) + texSmooth(t, uv + vec2( 0.0, 0.0)) + texSmooth(t, uv + vec2( 0.0, +y))
+            + texSmooth(t, uv + vec2(  +x, -y)) + texSmooth(t, uv + vec2(  +x, 0.0)) + texSmooth(t, uv + vec2(  +x, +y));
 
-	return v / 9.0;
+    return v / 9.0;
 }
 
 float aastep4x4(float t, vec2 uv)
 {
     float x0 = dFdx(uv.x);
     float y0 = dFdx(uv.y);
-	float x1 = x0 * 1.0 / 8.0;
-	float y1 = y0 * 1.0 / 8.0;
-	float x2 = x0 * 3.0 / 8.0;
-	float y2 = y0 * 3.0 / 8.0;
+    float x1 = x0 * 1.0 / 8.0;
+    float y1 = y0 * 1.0 / 8.0;
+    float x2 = x0 * 3.0 / 8.0;
+    float y2 = y0 * 3.0 / 8.0;
 
-	float v = tex(t, uv + vec2(-x2,-y2)) + tex(t, uv + vec2(-x2,-y1))
-            + tex(t, uv + vec2(-x2,+y1)) + tex(t, uv + vec2(-x2,+y2))
+    float v = texSmooth(t, uv + vec2(-x2,-y2)) + texSmooth(t, uv + vec2(-x2,-y1))
+            + texSmooth(t, uv + vec2(-x2,+y1)) + texSmooth(t, uv + vec2(-x2,+y2))
 
-	        + tex(t, uv + vec2(-x1,-y2)) + tex(t, uv + vec2(-x1,-y1))
-	        + tex(t, uv + vec2(-x1,+y1)) + tex(t, uv + vec2(-x1,+y2))
+            + texSmooth(t, uv + vec2(-x1,-y2)) + texSmooth(t, uv + vec2(-x1,-y1))
+            + texSmooth(t, uv + vec2(-x1,+y1)) + texSmooth(t, uv + vec2(-x1,+y2))
 
-	      	+ tex(t, uv + vec2(+x1,-y2)) + tex(t, uv + vec2(+x1,-y1))
-	        + tex(t, uv + vec2(+x1,+y1)) + tex(t, uv + vec2(+x1,+y2))
+            + texSmooth(t, uv + vec2(+x1,-y2)) + texSmooth(t, uv + vec2(+x1,-y1))
+            + texSmooth(t, uv + vec2(+x1,+y1)) + texSmooth(t, uv + vec2(+x1,+y2))
 
-	        + tex(t, uv + vec2(+x2,-y2)) + tex(t, uv + vec2(+x2,-y1))
-	        + tex(t, uv + vec2(+x2,+y1)) + tex(t, uv + vec2(+x2,+y2));
+            + texSmooth(t, uv + vec2(+x2,-y2)) + texSmooth(t, uv + vec2(+x2,-y1))
+            + texSmooth(t, uv + vec2(+x2,+y1)) + texSmooth(t, uv + vec2(+x2,+y2));
 
-	return v / 16.0;
+    return v / 16.0;
 }
 
 // vec4 subpix(float r, float g, float b, vec4 fore, vec4 back)
 // {
-// 	return vec4(mix(back.rgb, fore.rgb, vec3(r, g, b)), mix(back.a, fore.a, (r + b + g) / 3.0));
+//     return vec4(mix(back.rgb, fore.rgb, vec3(r, g, b)), mix(back.a, fore.a, (r + b + g) / 3.0));
 // }
 
 #endif
