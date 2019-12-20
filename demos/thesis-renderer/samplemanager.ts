@@ -59,26 +59,69 @@ export class SampleManager {
         this.generateSampleQueue();
     }
 
-    protected generateSampleQueue(): void {
-        // since there are two types of samples wo multiply by two
-        const environmentFactor = 2.0 * this._multiframeNumber / this._environmentSampleCount;
-        const lightFactor = this._multiframeNumber / this._lightSampleCount;
+    protected allEmpty(arrays: any[]): boolean {
+        let result = true;
 
-        for (let i = 0; i < this._environmentSampleCount; ++i) {
-            this._environmentQueue.push(new DiffuseEnvironmentSample(environmentFactor));
-            this._environmentQueue.push(new SpecularEnvironmentSample(environmentFactor));
+        for (const array of arrays) {
+            if (array.length > 0) {
+                result = false;
+                break;
+            }
         }
 
+        return result;
+    }
+
+    protected mergeArrays(arrays: any[]): Array<Sample> {
+        const result = new Array();
+
+        while (!this.allEmpty(arrays)) {
+            for (const array of arrays) {
+                if (array.length > 0) {
+                    result.push(array.shift());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    protected generateSampleQueue(): void {
+
+        const diffuseSampleCount = Math.round(this._environmentSampleCount / 2);
+        const diffuseFactor = this._multiframeNumber / diffuseSampleCount;
+        const specularSampleCount = this._environmentSampleCount - diffuseSampleCount;
+        const specularFactor = this._multiframeNumber / specularSampleCount;
+        const lightFactor = this._multiframeNumber / this._lightSampleCount;
+
+        const diffuseSamples = [];
+        const specularSamples = [];
+
+        for (let i = 0; i < diffuseSampleCount; ++i) {
+            diffuseSamples.push(new DiffuseEnvironmentSample(diffuseFactor));
+        }
+
+        for (let i = 0; i < specularSampleCount; ++i) {
+            specularSamples.push(new SpecularEnvironmentSample(specularFactor));
+        }
+
+        this._environmentQueue = this.mergeArrays([diffuseSamples, specularSamples]);
+
+        const lightArrays = [];
         let lightIndex = 0;
         for (const light of this._scene.diskLights) {
             const shadowKernel = new ShadowKernel(this._lightSampleCount, light);
+            const lightSamples = [];
             for (let i = 0; i < this._lightSampleCount; ++i) {
                 const eye = shadowKernel.get(i);
-                this._lightQueue.push(
+                lightSamples.push(
                     new LightSample(lightFactor, lightIndex, vec3.fromValues(eye[0], eye[1], eye[2])));
             }
+            lightArrays.push(lightSamples);
             lightIndex++;
         }
+
+        this._lightQueue = this.mergeArrays(lightArrays);
     }
 
     getNextFrameSamples(): Array<Sample> {

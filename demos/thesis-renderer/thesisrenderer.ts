@@ -549,7 +549,7 @@ export class ThesisRenderer extends Renderer {
         }
 
         const lightSampleCount = Math.round(this._multiFrameNumber / this._currentScene.diskLights.length / 4.0);
-        const environmentSampleCount = Math.round(this._multiFrameNumber / 2.0);
+        const environmentSampleCount = Math.round(this._multiFrameNumber);
         this._sampleManager = new SampleManager(
             this._currentScene,
             this._multiFrameNumber,
