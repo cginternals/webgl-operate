@@ -43,6 +43,7 @@ export class SampleManager {
 
     protected _lightQueue: Array<Sample>;
     protected _environmentQueue: Array<Sample>;
+    protected _perFrameSamples: Array<Array<Sample>>;
 
     constructor(scene: Scene, multiframeNumber: number, lightSampleCount: number, environmentSampleCount: number) {
         this._currentFrame = 0;
@@ -86,6 +87,22 @@ export class SampleManager {
         return result;
     }
 
+    protected distributeSamples(
+        samples: Array<Sample>, destination: Array<Array<Sample>>, startIndex: number, endIndex: number): void {
+
+        const numIndices = endIndex - startIndex;
+        const framesPerSample = numIndices / samples.length;
+
+        let currentIndex = startIndex;
+        for (const sample of samples) {
+            const sampleIndex = Math.floor(currentIndex);
+            auxiliaries.assert(sampleIndex < destination.length,
+                `Index ${sampleIndex} is out of bounds while distributing light samples.`);
+            destination[sampleIndex].push(sample);
+            currentIndex += framesPerSample;
+        }
+    }
+
     protected generateSampleQueue(): void {
 
         const diffuseSampleCount = Math.round(this._environmentSampleCount / 2);
@@ -122,55 +139,33 @@ export class SampleManager {
         }
 
         this._lightQueue = this.mergeArrays(lightArrays);
+
+        /**
+         * Distribute light samples over the frames of the multi-frame.
+         */
+        this._perFrameSamples = [];
+        for (let i = 0; i < this._multiframeNumber; ++i) {
+            this._perFrameSamples.push([]);
+        }
+
+        this.distributeSamples(
+            this._lightQueue,
+            this._perFrameSamples,
+            Math.round(0.3 * this._multiframeNumber),
+            this._multiframeNumber - 1);
+
+        this.distributeSamples(
+            this._environmentQueue,
+            this._perFrameSamples,
+            0,
+            this._multiframeNumber - 1);
     }
 
     getNextFrameSamples(): Array<Sample> {
         auxiliaries.assert(this._currentFrame < this._multiframeNumber,
             'Samples can only be generated during a multiframe.');
 
-        const samples = new Array<Sample>();
-
-        // In first frame always just evaluate environment lighting
-        if (this._currentFrame === 0) {
-            samples.push(this._environmentQueue.shift()!);
-            samples.push(this._environmentQueue.shift()!);
-            this._currentFrame++;
-            return samples;
-        }
-
-        const remainingFrames = this._multiframeNumber - this._currentFrame;
-        const lightSamplesPerFrame = Math.round(this._lightQueue.length / remainingFrames);
-        const environmentSamplesPerFrame = Math.round(this._environmentQueue.length / remainingFrames);
-
-        auxiliaries.assert(lightSamplesPerFrame <= 1,
-            'There can not be more than one sample per frame left in the queue.');
-
-        // Gather the front samples of the queues
-        for (let i = 0; i < lightSamplesPerFrame; ++i) {
-            if (this._lightQueue.length === 0) {
-                continue;
-            }
-            samples.push(this._lightQueue.shift()!);
-        }
-
-        for (let i = 0; i < environmentSamplesPerFrame; ++i) {
-            if (this._environmentQueue.length === 0) {
-                continue;
-            }
-            samples.push(this._environmentQueue.shift()!);
-        }
-
-        if (samples.length === 0) {
-            if (Math.random() > 0.5) {
-                if (this._environmentQueue.length > 0) {
-                    samples.push(this._environmentQueue.shift()!);
-                }
-            } else {
-                if (this._lightQueue.length > 0) {
-                    samples.push(this._lightQueue.shift()!);
-                }
-            }
-        }
+        const samples = this._perFrameSamples[this._currentFrame];
 
         this._currentFrame++;
         return samples;

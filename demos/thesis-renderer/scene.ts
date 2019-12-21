@@ -8,7 +8,6 @@ import { DiskLight, SphereLight } from './arealight';
 export class Scene {
     protected _uri: string;
     protected _camera: Camera;
-    protected _farPlane: number;
 
     protected _sphereLights: Array<SphereLight>;
     protected _diskLights: Array<DiskLight>;

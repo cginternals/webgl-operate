@@ -231,7 +231,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
      * e.g. for shadow mapping.
      */
     @Initializable.assert_initialized()
-    drawCalls(): void {
+    drawCalls(renderTransparentMaterials: boolean = true): void {
         if (this._scene === undefined) {
             return;
         }
@@ -241,7 +241,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
          * First render opaque materials, then transparent ones.
          */
         this.renderGeometryMap(this._opaqueGeometryMap);
-        this.renderGeometryMap(this._transparentGeometryMap);
+
+        if (renderTransparentMaterials) {
+            this.renderGeometryMap(this._transparentGeometryMap);
+        }
     }
 
     /**

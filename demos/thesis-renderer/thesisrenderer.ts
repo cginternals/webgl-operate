@@ -617,7 +617,7 @@ export class ThesisRenderer extends Renderer {
             gl.uniformMatrix4fv(this._uModelD, gl.FALSE, matrix);
         };
 
-        this._forwardPass.drawCalls();
+        this._forwardPass.drawCalls(false);
     }
 
     protected shadowPass(lightIndex: number, eye: vec3): void {
@@ -648,7 +648,7 @@ export class ThesisRenderer extends Renderer {
             this._forwardPass.updateModelTransform = (matrix: mat4) => {
                 gl.uniformMatrix4fv(this._uModelS, gl.FALSE, matrix);
             };
-            this._forwardPass.drawCalls();
+            this._forwardPass.drawCalls(false);
 
             this._shadowProgram.unbind();
         });
