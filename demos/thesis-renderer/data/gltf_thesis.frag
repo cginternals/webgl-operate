@@ -405,7 +405,7 @@ void main(void)
         color = vec3(0.0);
     }
 
-    fragColor = vec4(color * alpha, alpha);
+    fragColor = vec4(color, alpha);
 
     if (u_debugMode == 2) { // IBL
         fragColor = vec4(environmentLight, alpha);

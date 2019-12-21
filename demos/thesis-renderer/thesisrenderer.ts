@@ -749,8 +749,7 @@ export class ThesisRenderer extends Renderer {
                 gl.uniform1f(this._uBlendCutoff, pbrMaterial.alphaCutoff);
             } else if (pbrMaterial.alphaMode === GLTFAlphaMode.BLEND) {
                 gl.enable(gl.BLEND);
-                // We premultiply in the shader
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 gl.uniform1i(this._uBlendMode, 2);
             } else {
