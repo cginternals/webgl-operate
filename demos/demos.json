@@ -77,5 +77,15 @@
         ],
         "caption": "Simple demo showcasing how WebXR can be utilized with webgl-operate.",
         "disabled": true
+    },
+    {
+        "target": "eye-tracking",
+        "title": "Eye Tracker Demo",
+        "authors": [
+            "MartinBuessemeyer",
+            "cgcostume"
+        ],
+        "caption": "Simple demo showing eye tracking.",
+        "disabled": false
     }
 ]
