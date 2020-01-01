@@ -428,7 +428,7 @@ export class ThesisRenderer extends Renderer {
 
         this._accumulatePass = new AccumulatePass(context);
         this._accumulatePass.initialize(this._ndcTriangle);
-        this._accumulatePass.precision = this._framePrecision;
+        this._accumulatePass.precision = Wizard.Precision.float;
         this._accumulatePass.texture = this._colorRenderTexture;
 
         this._postProcessingPass = new PostProcessingPass(context);
