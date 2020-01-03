@@ -439,9 +439,10 @@ export class ThesisRenderer extends Renderer {
 
         this._blitPass = new BlitPass(this._context);
         this._blitPass.initialize(this._ndcTriangle);
+        this._blitPass.framebuffer = this._postProcessingPass.framebuffer;
         this._blitPass.readBuffer = gl2facade.COLOR_ATTACHMENT0;
-        this._blitPass.drawBuffer = gl.BACK;
         this._blitPass.target = this._defaultFramebuffer;
+        this._blitPass.drawBuffer = gl.BACK;
 
         /**
          * Start loading environment.
@@ -776,7 +777,6 @@ export class ThesisRenderer extends Renderer {
     }
 
     protected onSwap(): void {
-        this._blitPass.framebuffer = this._postProcessingPass.framebuffer;
         this._blitPass.frame();
     }
 
