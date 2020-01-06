@@ -192,31 +192,32 @@ export class ThesisRenderer extends Renderer {
 
         this._skylineScene = new Scene(
             'https://p-otto.waduhek.de/models/skyline.glb',
-            new Camera(vec3.fromValues(-2.19, 2.82, 7.391), vec3.fromValues(-0.07, -0.443, 0.0)),
+            new Camera(vec3.fromValues(-4.0645, 2.816, 6.2326), vec3.fromValues(0.342, -0.42328, 0.1032)),
+            // new Camera(vec3.fromValues(1.7162, 0.6412, 4.2596), vec3.fromValues(-0.7943, -0.17933, -0.7432)),
             0.2, 20);
         this._skylineScene.addDiskLight(new DiskLight(
-            vec3.fromValues(2.07, 1.84, -1.85),
+            vec3.fromValues(1.827, 2.5, -1.11),
             0.25,
-            vec3.fromValues(601, 601, 601),
-            vec3.fromValues(-0.6215066909790039, -0.55245041847229, 0.5554528832435608),
+            vec3.fromValues(501, 501, 501),
+            vec3.fromValues(-0.5554236173629761, -0.7600213289260864, 0.33744949102401733),
             110.0));
         this._skylineScene.addDiskLight(new DiskLight(
-            vec3.fromValues(-2.03, 1.84, -1.85),
+            vec3.fromValues(-2.03, 2.5, -1.205),
             0.25,
-            vec3.fromValues(601, 601, 601),
-            vec3.fromValues(0.614052951335907, -0.5565800070762634, 0.5596049427986145),
+            vec3.fromValues(501, 501, 501),
+            vec3.fromValues(0.5903826355934143, -0.7270721793174744, 0.3504488170146942),
             110.0));
         this._skylineScene.addDiskLight(new DiskLight(
-            vec3.fromValues(2.03, 1.84, 2.17),
+            vec3.fromValues(1.418, 2.5, 2.17),
             0.25,
-            vec3.fromValues(601, 601, 601),
-            vec3.fromValues(-0.5808207988739014, -0.5264583230018616, -0.6208774447441101),
+            vec3.fromValues(501, 501, 501),
+            vec3.fromValues(-0.39374271035194397, -0.6941867470741272, -0.6025540828704834),
             110.0));
         this._skylineScene.addDiskLight(new DiskLight(
-            vec3.fromValues(-2.04, 1.84, 2.17),
+            vec3.fromValues(-1.642, 2.5, 1.9708),
             0.25,
-            vec3.fromValues(601, 601, 601),
-            vec3.fromValues(0.5827120542526245, -0.5255834460258484, -0.6198456883430481),
+            vec3.fromValues(501, 501, 501),
+            vec3.fromValues(0.45841217041015625, -0.6979479193687439, -0.5502063035964966),
             110.0));
 
         this._datsunScene = new Scene(
@@ -251,6 +252,7 @@ export class ThesisRenderer extends Renderer {
         this._kitchenScene = new Scene(
             'https://p-otto.waduhek.de/models/kitchen.glb',
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
+            // new Camera(vec3.fromValues(-3.479, 1.604, -0.5713), vec3.fromValues(0.0, 1.0673, -0.8168)),
             0.1, 10);
         this._kitchenScene.addDiskLight(new DiskLight(
             vec3.fromValues(-0.54, 1.6, -1.17),
