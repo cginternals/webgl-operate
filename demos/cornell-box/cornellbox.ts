@@ -88,8 +88,6 @@ export class CornellBoxRenderer extends Renderer {
 
     protected onUpdate(): boolean {
 
-        this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
-
         // Update camera navigation (process events)
         this._navigation.update();
         return this._altered.any || this._camera.altered;
@@ -122,6 +120,10 @@ export class CornellBoxRenderer extends Renderer {
             this._intermediateFBO.clearColor(this._clearColor);
         }
 
+        if (this._altered.multiFrameNumber) {
+            this._ndcOffsetKernel = new AntiAliasingKernel(this._multiFrameNumber);
+        }
+
         this._accumulate.update();
 
 
@@ -145,7 +147,6 @@ export class CornellBoxRenderer extends Renderer {
         const gl = this._context.gl;
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
-        this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
 
         this._intermediateFBO.bind();
         this._intermediateFBO.clear(gl.COLOR_BUFFER_BIT, false, false);
@@ -220,7 +221,12 @@ export class CornellBoxRenderer extends Renderer {
             (this._context.supportsTextureFloat ? './cornell1.frag' : './cornell0.frag') :
             './cornell2.frag'));
         this._program = new Program(this._context);
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, frag], false);
+
+        // attributes
+        this._ndcTriangle = new NdcFillingTriangle(this._context);
+        const aVertex = this._program.attribute('a_vertex', 0);
+        this._program.link();
 
         // uniforms
         this._uTransform = this._program.uniform('u_transform');
@@ -234,9 +240,7 @@ export class CornellBoxRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_lights'), 1);
         this._program.unbind();
 
-        // triangle
-        this._ndcTriangle = new NdcFillingTriangle(this._context);
-        const aVertex = this._program.attribute('a_vertex', 0);
+
         this._ndcTriangle.initialize(aVertex);
 
 

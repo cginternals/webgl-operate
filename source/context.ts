@@ -356,7 +356,12 @@ export class Context {
             return;
         }
 
+        // Only handle masquerade here and not within each supports-query?
         for (const extension of extensions) {
+            if (this._mask && this._mask.extensionsConceal.indexOf(extension) > -1) {
+                continue;
+            }
+
             this._extensions.push(extension);
         }
 
