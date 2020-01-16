@@ -7,7 +7,7 @@
     },
     {
         "target": "triangle-example",
-        "title": "Triangle",
+        "title": "Textured Triangle",
         "object": "TriangleExample",
         "caption": "Very basic scene, rendering a textured triangle."
     },
