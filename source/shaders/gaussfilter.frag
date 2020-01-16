@@ -11,21 +11,21 @@ precision lowp int;
 #endif
 
 
-uniform int u_kernelSize;
 uniform float u_weights[32];
+uniform vec2 u_delta;
 
 uniform sampler2D u_texture;
 
 varying vec2 v_texCoords;
-varying vec2 v_delta;
 
 
 void main()
 {
-    vec4 result = vec4(0.0);
-    for (int i = -u_kernelSize / 2; i <= u_kernelSize / 2; i++)
+    vec4 result = u_weights[0] * texture(u_texture, v_texCoords);
+    for (int i = 1; i <= $KERNEL_HALF_SIZE; i++)
     {
-        result += u_weights[abs(i)] * texture(u_texture, float(i) * v_delta + v_texCoords);
+        result += u_weights[i] * texture(u_texture, v_texCoords + float(i) * u_delta);
+        result += u_weights[i] * texture(u_texture, v_texCoords - float(i) * u_delta);
     }
 
     fragColor = result;

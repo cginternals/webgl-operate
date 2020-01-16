@@ -19,5 +19,4 @@ export abstract class Example extends Initializable {
     abstract get renderer(): Renderer;
 
     abstract get canvas(): Canvas;
-
 }
