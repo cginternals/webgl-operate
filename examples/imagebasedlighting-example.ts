@@ -92,7 +92,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._uEye = this._program.uniform('u_eye');
 
         const identity = mat4.identity(mat4.create());
-        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, identity);
+        gl.uniformMatrix4fv(this._program.uniform('u_model'), false, identity);
         gl.uniform1i(this._program.uniform('u_albedoTexture'), 0);
         gl.uniform1i(this._program.uniform('u_roughnessTexture'), 1);
         gl.uniform1i(this._program.uniform('u_metallicTexture'), 2);
@@ -260,7 +260,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._brdfLUT.bind(gl.TEXTURE5);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         gl.uniform3fv(this._uEye, this._camera.eye);
 
         this._sphere.bind();

@@ -8,3 +8,4 @@ build/
 package-lock.json
 webgl-operate-*.tgz
 *.code-workspace
+test-results.xml

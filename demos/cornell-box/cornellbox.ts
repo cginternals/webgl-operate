@@ -130,7 +130,7 @@ export class CornellBoxRenderer extends Renderer {
         if (this._camera.altered) {
             this._program.bind();
 
-            gl.uniformMatrix4fv(this._uTransform, gl.GL_FALSE, this._camera.viewProjectionInverse);
+            gl.uniformMatrix4fv(this._uTransform, false, this._camera.viewProjectionInverse);
             gl.uniform3fv(this._uEye, this._camera.eye);
             gl.uniform4f(this._uViewport,
                 this._camera.viewport[0],
