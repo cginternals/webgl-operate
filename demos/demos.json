@@ -10,13 +10,13 @@
         "disabled": false
     },
     {
-        "target": "gltf-support",
+        "target": "gltf-renderer",
         "title": "glTF Support",
         "authors": [
             "bwasty"
         ],
         "caption": "glTF support with physical-based rendering and multi-frame sampling.",
-        "disabled": true
+        "disabled": false
     },
     {
         "target": "volume-vis",

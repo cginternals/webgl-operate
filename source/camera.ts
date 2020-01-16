@@ -5,7 +5,7 @@ import { mat4, vec3 } from 'gl-matrix';
 import { m4 } from './gl-matrix-extensions';
 
 import { DEG2RAD, log, LogLevel } from './auxiliaries';
-import { GLsizei2 } from './tuples';
+import { duplicate2, GLsizei2 } from './tuples';
 
 /* spellchecker: enable */
 
@@ -238,7 +238,7 @@ export class Camera {
         if (this._viewport[0] === size[0] && this._viewport[1] === size[1]) {
             return;
         }
-        this._viewport = size;
+        this._viewport = duplicate2<GLsizei>(size);
         this.invalidate(false, true);
     }
 

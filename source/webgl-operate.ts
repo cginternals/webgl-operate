@@ -3,6 +3,7 @@
 
 export * from './webgl-operate.slim';
 
+export * from './gltf/index';
 
 /* ADVANCED facilities */
 
