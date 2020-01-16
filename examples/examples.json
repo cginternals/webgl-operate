@@ -9,7 +9,7 @@
         "target": "triangle-example",
         "title": "Triangle",
         "object": "TriangleExample",
-        "caption": "Minimalistic scene featuring a rendered Triangle."
+        "caption": "Very basic scene, rendering a textured triangle."
     },
     {
         "target": "shadowmap-example",
