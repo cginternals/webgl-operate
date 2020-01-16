@@ -4,7 +4,8 @@
         "target": "es5",
         "lib": [
             "dom",
-            "es2015"
+            "es2015",
+            "es2019.string"
         ],
         "outDir": "lib",
         "sourceMap": true,
