@@ -28,7 +28,7 @@ const assets = [
     ['./node_modules/rxjs/bundles/', `${buildDir}/js`, ['rxjs.umd.min.js'], [], false],
     // ['./source/data/', `${buildDir}/data`, ['*'], [], false],
     [`./${demosDir}/data/`, `${buildDir}/${demosDir}/data`, ['*'], [], false],
-    [`./${examplesDir}/data/`, `${buildDir}/${examplesDir}/data`, ['*'], [], false],
+    [`./${examplesDir}/data/`, `${buildDir}/${examplesDir}/data`, ['**'], [], false],
     ['./dist/', `${buildDir}/js`, ['webgl-operate.js*'], [], false],
 ];
 

@@ -53,6 +53,12 @@
         "object": "EnvironmentProjectionExample",
         "caption": "Different techniques for environment mapping"
     },
+        {
+        "target": "imagebasedlighting-example",
+        "title": "Image Based Lighting",
+        "object": "ImageBasedLightingExample",
+        "caption": "Image based lighting using prefiltered cube maps"
+    },
     {
         "target": "label2d-example",
         "title": "Label 2D",

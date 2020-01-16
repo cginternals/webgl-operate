@@ -115,7 +115,7 @@ if (Array.prototype.forEach === undefined) {
         /* tslint:disable-prefer-for-of */
         for (let i = 0; i < n; i++) {
             if (i in this) {
-                action.call(that, this[i], i, this);
+                action.call(that, (this as any)[i], i, this);
             }
         }
     };

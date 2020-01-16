@@ -146,8 +146,8 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._program.bind();
 
         gl.uniform2iv(this._uViewport, this._canvasSize);
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
-        gl.uniformMatrix4fv(this._uViewProjectionInverse, gl.GL_FALSE, this._camera.viewProjectionInverse);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjectionInverse, false, this._camera.viewProjectionInverse);
 
         const t = ((new Date()).getTime() % 10000000) * 0.001;
         gl.uniform1f(this._uTime, t);
@@ -208,7 +208,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._cubeMap = new TextureCube(this._context);
         this._cubeMap.initialize(592, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._cubeMap.load({
+        this._cubeMap.fetch({
             positiveX: 'data/cube-map-px.jpg', negativeX: 'data/cube-map-nx.jpg',
             positiveY: 'data/cube-map-py.jpg', negativeY: 'data/cube-map-ny.jpg',
             positiveZ: 'data/cube-map-pz.jpg', negativeZ: 'data/cube-map-nz.jpg',
