@@ -162,14 +162,14 @@ export class GltfRenderer extends Renderer {
 
         this._forwardPass.program = this._program;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uModel, false, matrix);
 
             const normalMatrix = mat3.create();
             mat3.normalFromMat4(normalMatrix, matrix);
-            gl.uniformMatrix3fv(this._uNormalMatrix, gl.GL_FALSE, normalMatrix);
+            gl.uniformMatrix3fv(this._uNormalMatrix, false, normalMatrix);
         };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uViewProjection, false, matrix);
         };
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
             const primitive = geometry as GLTFPrimitive;
