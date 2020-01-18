@@ -96,10 +96,19 @@ export class EyeTrackingRenderer extends Renderer {
 
         this._eyeTrackerDataStream = new EyeTrackerDataStream();
 
-        this._eyeTrackerDataStream.onUpdate(() => {
-            console.log(this._eyeTrackerDataStream.message);
+        this._eyeTrackerDataStream.onDataUpdate(() => {
+            console.log(this._eyeTrackerDataStream.eyeTrackingData.toString());
         });
 
+        this._eyeTrackerDataStream.onStatusUpdate(() => {
+            console.log(this._eyeTrackerDataStream.statusMessage.toString());
+        });
+
+        this._eyeTrackerDataStream.dataStreams.gazePosition = true;
+        this._eyeTrackerDataStream.dataStreams.gazeOrigin = true;
+        this._eyeTrackerDataStream.dataStreams.eyePositionNormalized = true;
+        this._eyeTrackerDataStream.dataStreams.headPositionAndRotation = true;
+        this._eyeTrackerDataStream.dataStreams.userPresence = true;
         this._eyeTrackerDataStream.connect();
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
