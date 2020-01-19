@@ -63,7 +63,7 @@ export class Context {
      * Created context. The actual type depends on the created context.
      * @see {@link gl}
      */
-    protected _context: any; // WebGLRenderingContext | WebGL2RenderingContext;
+    protected _context: WebGLRenderingContext | WebGL2RenderingContext | undefined;
 
     /** @see {@link mask} */
     protected _mask: ContextMasquerade | undefined;
@@ -166,7 +166,7 @@ export class Context {
         if (context) {
             return context;
         }
-        context = element.getContext(Context.BackendRequestType.experimental, attributes);
+        context = element.getContext(Context.BackendRequestType.experimental, attributes) as WebGLRenderingContext;
         return context === null ? undefined : context;
     }
 
@@ -178,13 +178,13 @@ export class Context {
      */
     protected static requestWebGL2(element: HTMLCanvasElement,
         attributes: WebGLContextAttributes = Context.DEFAULT_ATTRIBUTES)
-        : WebGLRenderingContext | CanvasRenderingContext2D | undefined {
+        : WebGL2RenderingContext | undefined {
 
         let context = element.getContext(Context.BackendRequestType.webgl2, attributes);
         if (context) {
             return context;
         }
-        context = element.getContext(Context.BackendRequestType.experimental2, attributes);
+        context = element.getContext(Context.BackendRequestType.experimental2, attributes) as WebGL2RenderingContext;
         return context === null ? undefined : context;
     }
 
@@ -197,7 +197,7 @@ export class Context {
     protected _attributes: WebGLContextAttributes | undefined = undefined;
 
     protected queryAttributes(): void {
-        const attributes = this._context.getContextAttributes();
+        const attributes = this._context!.getContextAttributes();
 
         // Some browsers, e.g., Brave, might disable querying the attributes.
         if (attributes === null) {
@@ -348,7 +348,7 @@ export class Context {
      * This function should get called only once per Context instance.
      */
     protected queryExtensionSupport(): void {
-        const extensions = this._context.getSupportedExtensions();
+        const extensions = this._context!.getSupportedExtensions();
 
         // Some browsers, e.g., Brave, might disable querying the supported extensions.
         if (extensions === null) {
@@ -356,7 +356,12 @@ export class Context {
             return;
         }
 
+        // Only handle masquerade here and not within each supports-query?
         for (const extension of extensions) {
+            if (this._mask && this._mask.extensionsConceal.indexOf(extension) > -1) {
+                continue;
+            }
+
             this._extensions.push(extension);
         }
 
@@ -415,7 +420,7 @@ export class Context {
     protected extension(out: any, extension: string): any {
         if (out === undefined) {
             assert(this.supports(extension), `extension ${extension} expected to be supported`);
-            out = this._context.getExtension(extension);
+            out = this._context!.getExtension(extension);
         }
         return out;
     }
@@ -850,21 +855,21 @@ export class Context {
      * True if WebGL2 blitFramebuffer is supported, false otherwise. This is experimental technology.
      */
     get supportsBlitFramebuffer(): boolean {
-        return this._context.blitFramebuffer !== undefined;
+        return (this._context as any).blitFramebuffer !== undefined;
     }
 
     /**
      * True if WebGL2 readBuffer is supported, false otherwise. This is experimental technology.
      */
     get supportsReadBuffer(): boolean {
-        return this._context.readBuffer !== undefined;
+        return (this._context as any).readBuffer !== undefined;
     }
 
     /**
      * True if WebGL2 texImage3D draft is supported, false otherwise. This is experimental technology.
      */
     get supportsTexImage3D(): boolean {
-        return this._context.texImage3D !== undefined;
+        return (this._context as any).texImage3D !== undefined;
     }
 
 
@@ -891,25 +896,28 @@ export class Context {
             return new Array<[string, number | string]>();
         }
 
+        assert(!!this._context, `expected context to be valid`);
+        const context = this._context!;
+
         const pNamesAndValues = new Array<[string, number | string]>();
 
         pNamesAndValues.push(['BACKEND (GLOPERATE)', this.backend as Context.BackendType]);
         pNamesAndValues.push(['CONTEXT_HASH (GLOPERATE)', this.hash()]);
 
         pNamesAndValues.push(['RENDERER',
-            this._context.getParameter(this._context.RENDERER)]);
+            context.getParameter(context.RENDERER)]);
         pNamesAndValues.push(['VENDOR',
-            this._context.getParameter(this._context.VENDOR)]);
+            context.getParameter(context.VENDOR)]);
         pNamesAndValues.push(['VERSION',
-            this._context.getParameter(this._context.VERSION)]);
+            context.getParameter(context.VERSION)]);
         pNamesAndValues.push(['SHADING_LANGUAGE_VERSION',
-            this._context.getParameter(this._context.SHADING_LANGUAGE_VERSION)]);
+            context.getParameter(context.SHADING_LANGUAGE_VERSION)]);
 
         /* Debug Render Info Extension - Unmasked Vendor and Renderer. */
         pNamesAndValues.push(['UNMASKED_VENDOR_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
-            this._context.getParameter(this.debugRendererInfo.UNMASKED_VENDOR_WEBGL)]);
+            context.getParameter(this.debugRendererInfo.UNMASKED_VENDOR_WEBGL)]);
         pNamesAndValues.push(['UNMASKED_RENDERER_WEBGL', !this.supportsDebugRendererInfo ? unavailable :
-            this._context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
+            context.getParameter(this.debugRendererInfo.UNMASKED_RENDERER_WEBGL)]);
 
         /* Actual Context Attributes. */
         pNamesAndValues.push(['ALPHA (ATTRIBUTE)', String(this.alpha)]);
@@ -935,89 +943,90 @@ export class Context {
 
         /* Max and min queries - context limitations. */
         pNamesAndValues.push(['MAX_COMBINED_TEXTURE_IMAGE_UNITS',
-            this._context.getParameter(this._context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
+            context.getParameter(context.MAX_COMBINED_TEXTURE_IMAGE_UNITS)]);
         pNamesAndValues.push(['MAX_CUBE_MAP_TEXTURE_SIZE',
-            this._context.getParameter(this._context.MAX_CUBE_MAP_TEXTURE_SIZE)]);
+            context.getParameter(context.MAX_CUBE_MAP_TEXTURE_SIZE)]);
         pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_VECTORS',
-            this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_VECTORS)]);
+            context.getParameter(context.MAX_FRAGMENT_UNIFORM_VECTORS)]);
         pNamesAndValues.push(['MAX_RENDERBUFFER_SIZE',
-            this._context.getParameter(this._context.MAX_RENDERBUFFER_SIZE)]);
+            context.getParameter(context.MAX_RENDERBUFFER_SIZE)]);
         pNamesAndValues.push(['MAX_TEXTURE_IMAGE_UNITS',
-            this._context.getParameter(this._context.MAX_TEXTURE_IMAGE_UNITS)]);
+            context.getParameter(context.MAX_TEXTURE_IMAGE_UNITS)]);
         pNamesAndValues.push(['MAX_TEXTURE_SIZE',
-            this._context.getParameter(this._context.MAX_TEXTURE_SIZE)]);
+            context.getParameter(context.MAX_TEXTURE_SIZE)]);
         pNamesAndValues.push(['MAX_VARYING_VECTORS',
-            this._context.getParameter(this._context.MAX_VARYING_VECTORS)]);
+            context.getParameter(context.MAX_VARYING_VECTORS)]);
         pNamesAndValues.push(['MAX_VERTEX_ATTRIBS',
-            this._context.getParameter(this._context.MAX_VERTEX_ATTRIBS)]);
+            context.getParameter(context.MAX_VERTEX_ATTRIBS)]);
         pNamesAndValues.push(['MAX_VERTEX_TEXTURE_IMAGE_UNITS',
-            this._context.getParameter(this._context.MAX_VERTEX_TEXTURE_IMAGE_UNITS)]);
+            context.getParameter(context.MAX_VERTEX_TEXTURE_IMAGE_UNITS)]);
         pNamesAndValues.push(['MAX_VERTEX_UNIFORM_VECTORS',
-            this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_VECTORS)]);
+            context.getParameter(context.MAX_VERTEX_UNIFORM_VECTORS)]);
 
-        const MAX_VIEWPORT_DIMS = this._context.getParameter(this._context.MAX_VIEWPORT_DIMS);
+        const MAX_VIEWPORT_DIMS = context.getParameter(context.MAX_VIEWPORT_DIMS);
         // tslint:disable:no-null-keyword
         pNamesAndValues.push(['MAX_VIEWPORT_DIMS (WIDTH)', MAX_VIEWPORT_DIMS ? MAX_VIEWPORT_DIMS[0] : null]);
         pNamesAndValues.push(['MAX_VIEWPORT_DIMS (HEIGHT)', MAX_VIEWPORT_DIMS ? MAX_VIEWPORT_DIMS[1] : null]);
         // tslint:enable:no-null-keyword
 
         if (this.isWebGL2) {
+            const context = this._context as WebGL2RenderingContext;
             pNamesAndValues.push(['MAX_3D_TEXTURE_SIZE',
-                this._context.getParameter(this._context.MAX_3D_TEXTURE_SIZE)]);
+                context.getParameter(context.MAX_3D_TEXTURE_SIZE)]);
             pNamesAndValues.push(['MAX_ARRAY_TEXTURE_LAYERS',
-                this._context.getParameter(this._context.MAX_ARRAY_TEXTURE_LAYERS)]);
+                context.getParameter(context.MAX_ARRAY_TEXTURE_LAYERS)]);
             pNamesAndValues.push(['MAX_CLIENT_WAIT_TIMEOUT_WEBGL',
-                this._context.getParameter(this._context.MAX_CLIENT_WAIT_TIMEOUT_WEBGL)]);
+                context.getParameter(context.MAX_CLIENT_WAIT_TIMEOUT_WEBGL)]);
             pNamesAndValues.push(['MAX_COLOR_ATTACHMENTS',
-                this._context.getParameter(this._context.MAX_COLOR_ATTACHMENTS)]);
+                context.getParameter(context.MAX_COLOR_ATTACHMENTS)]);
             pNamesAndValues.push(['MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
-                this._context.getParameter(this._context.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)]);
+                context.getParameter(context.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)]);
             pNamesAndValues.push(['MAX_COMBINED_UNIFORM_BLOCKS',
-                this._context.getParameter(this._context.MAX_COMBINED_UNIFORM_BLOCKS)]);
+                context.getParameter(context.MAX_COMBINED_UNIFORM_BLOCKS)]);
             pNamesAndValues.push(['MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
-                this._context.getParameter(this._context.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)]);
+                context.getParameter(context.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)]);
             pNamesAndValues.push(['MAX_DRAW_BUFFERS',
-                this._context.getParameter(this._context.MAX_DRAW_BUFFERS)]);
+                context.getParameter(context.MAX_DRAW_BUFFERS)]);
             pNamesAndValues.push(['MAX_ELEMENT_INDEX',
-                this._context.getParameter(this._context.MAX_ELEMENT_INDEX)]);
+                context.getParameter(context.MAX_ELEMENT_INDEX)]);
             pNamesAndValues.push(['MAX_ELEMENTS_INDICES',
-                this._context.getParameter(this._context.MAX_ELEMENTS_INDICES)]);
+                context.getParameter(context.MAX_ELEMENTS_INDICES)]);
             pNamesAndValues.push(['MAX_ELEMENTS_VERTICES',
-                this._context.getParameter(this._context.MAX_ELEMENTS_VERTICES)]);
+                context.getParameter(context.MAX_ELEMENTS_VERTICES)]);
             pNamesAndValues.push(['MAX_FRAGMENT_INPUT_COMPONENTS',
-                this._context.getParameter(this._context.MAX_FRAGMENT_INPUT_COMPONENTS)]);
+                context.getParameter(context.MAX_FRAGMENT_INPUT_COMPONENTS)]);
             pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_BLOCKS',
-                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_BLOCKS)]);
+                context.getParameter(context.MAX_FRAGMENT_UNIFORM_BLOCKS)]);
             pNamesAndValues.push(['MAX_FRAGMENT_UNIFORM_COMPONENTS',
-                this._context.getParameter(this._context.MAX_FRAGMENT_UNIFORM_COMPONENTS)]);
+                context.getParameter(context.MAX_FRAGMENT_UNIFORM_COMPONENTS)]);
             pNamesAndValues.push(['MAX_PROGRAM_TEXEL_OFFSET',
-                this._context.getParameter(this._context.MAX_PROGRAM_TEXEL_OFFSET)]);
+                context.getParameter(context.MAX_PROGRAM_TEXEL_OFFSET)]);
             pNamesAndValues.push(['MAX_SAMPLES',
-                this._context.getParameter(this._context.MAX_SAMPLES)]);
+                context.getParameter(context.MAX_SAMPLES)]);
             pNamesAndValues.push(['MAX_SERVER_WAIT_TIMEOUT',
-                this._context.getParameter(this._context.MAX_SERVER_WAIT_TIMEOUT)]);
+                context.getParameter(context.MAX_SERVER_WAIT_TIMEOUT)]);
             pNamesAndValues.push(['MAX_TEXTURE_LOD_BIAS',
-                this._context.getParameter(this._context.MAX_TEXTURE_LOD_BIAS)]);
+                context.getParameter(context.MAX_TEXTURE_LOD_BIAS)]);
             pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
-                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)]);
+                context.getParameter(context.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)]);
             pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
-                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)]);
+                context.getParameter(context.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)]);
             pNamesAndValues.push(['MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
-                this._context.getParameter(this._context.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)]);
+                context.getParameter(context.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)]);
             pNamesAndValues.push(['MAX_UNIFORM_BLOCK_SIZE',
-                this._context.getParameter(this._context.MAX_UNIFORM_BLOCK_SIZE)]);
+                context.getParameter(context.MAX_UNIFORM_BLOCK_SIZE)]);
             pNamesAndValues.push(['MAX_UNIFORM_BUFFER_BINDINGS',
-                this._context.getParameter(this._context.MAX_UNIFORM_BUFFER_BINDINGS)]);
+                context.getParameter(context.MAX_UNIFORM_BUFFER_BINDINGS)]);
             pNamesAndValues.push(['MAX_VARYING_COMPONENTS',
-                this._context.getParameter(this._context.MAX_VARYING_COMPONENTS)]);
+                context.getParameter(context.MAX_VARYING_COMPONENTS)]);
             pNamesAndValues.push(['MAX_VERTEX_OUTPUT_COMPONENTS',
-                this._context.getParameter(this._context.MAX_VERTEX_OUTPUT_COMPONENTS)]);
+                context.getParameter(context.MAX_VERTEX_OUTPUT_COMPONENTS)]);
             pNamesAndValues.push(['MAX_VERTEX_UNIFORM_BLOCKS',
-                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_BLOCKS)]);
+                context.getParameter(context.MAX_VERTEX_UNIFORM_BLOCKS)]);
             pNamesAndValues.push(['MAX_VERTEX_UNIFORM_COMPONENTS',
-                this._context.getParameter(this._context.MAX_VERTEX_UNIFORM_COMPONENTS)]);
+                context.getParameter(context.MAX_VERTEX_UNIFORM_COMPONENTS)]);
             pNamesAndValues.push(['MIN_PROGRAM_TEXEL_OFFSET',
-                this._context.getParameter(this._context.MIN_PROGRAM_TEXEL_OFFSET)]);
+                context.getParameter(context.MIN_PROGRAM_TEXEL_OFFSET)]);
         }
 
         if (this.isWebGL1) {

@@ -2,6 +2,7 @@ import { vec2 } from 'gl-matrix';
 
 import { assert } from './auxiliaries';
 import { Context } from './context';
+import { v2 } from './gl-matrix-extensions';
 import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
@@ -24,12 +25,11 @@ export class GaussFilter extends Initializable {
 
     protected _weights: [number, ...number[]] & { length: 32 } | undefined;
 
-    protected _uKernelSize: WebGLUniformLocation;
-    protected _uTextureSize: WebGLUniformLocation;
-    protected _uDirection: WebGLUniformLocation;
+    protected _uDelta: WebGLUniformLocation;
     protected _uWeights: WebGLUniformLocation;
 
     protected _context: Context;
+    protected _fragmentShader: Shader;
     protected _program: Program;
     protected _ndcTriangle: NdcFillingTriangle;
     protected _ndcTriangleShared = false;
@@ -141,14 +141,13 @@ export class GaussFilter extends Initializable {
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gauss.vert');
         vert.initialize(require('./shaders/gaussfilter.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gauss.frag');
-        frag.initialize(require('./shaders/gaussfilter.frag'));
+        this._fragmentShader = new Shader(this._context, gl.FRAGMENT_SHADER, 'gauss.frag');
+        this._fragmentShader.replace('$KERNEL_HALF_SIZE', `${Math.floor(this.kernelSize / 2)}`);
+        this._fragmentShader.initialize(require('./shaders/gaussfilter.frag'));
         this._program = new Program(this._context);
-        this._program.initialize([vert, frag]);
+        this._program.initialize([vert, this._fragmentShader]);
 
-        this._uKernelSize = this._program.uniform('u_kernelSize');
-        this._uTextureSize = this._program.uniform('u_textureSize');
-        this._uDirection = this._program.uniform('u_direction');
+        this._uDelta = this._program.uniform('u_delta');
         this._uWeights = this._program.uniform('u_weights');
 
         const aVertex = this._program.attribute('a_vertex', 0);
@@ -188,17 +187,23 @@ export class GaussFilter extends Initializable {
         const directionVectors: [vec2, vec2] = [vec2.fromValues(1.0, 0.0), vec2.fromValues(0.0, 1.0)];
 
         const recalculatedWeights = this.recalculateWeights();
+        if (recalculatedWeights) {
+            this._fragmentShader.replace('$KERNEL_HALF_SIZE', `${Math.floor(this.kernelSize / 2)}`);
+            this._fragmentShader.compile();
+            this._program.link();
+
+            this._uDelta = this._program.uniform('u_delta');
+            this._uWeights = this._program.uniform('u_weights');
+
+            this._program.bind();
+            gl.uniform1fv(this._uWeights, this._weights);
+        }
 
         this._program.bind();
         texture.bind(gl.TEXTURE0);
 
-        gl.uniform2iv(this._uTextureSize, texture.size);
-        gl.uniform2fv(this._uDirection, directionVectors[direction]);
-
-        if (recalculatedWeights) {
-            gl.uniform1i(this._uKernelSize, this._kernelSize);
-            gl.uniform1fv(this._uWeights, this._weights);
-        }
+        // delta = 1.0 / textureSize * direction = direction / textureSize
+        gl.uniform2fv(this._uDelta, vec2.divide(v2(), directionVectors[direction], texture.size));
 
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();

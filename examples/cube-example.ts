@@ -80,7 +80,7 @@ export class CubeRenderer extends Renderer {
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         const identity = mat4.identity(mat4.create());
-        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, identity);
+        gl.uniformMatrix4fv(this._program.uniform('u_model'), false, identity);
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         gl.uniform1i(this._program.uniform('u_textured'), false);
 
@@ -173,7 +173,7 @@ export class CubeRenderer extends Renderer {
         this._texture.bind(gl.TEXTURE0);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
 
         this._cuboid.bind();
         this._cuboid.draw();

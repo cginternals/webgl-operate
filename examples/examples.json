@@ -7,9 +7,9 @@
     },
     {
         "target": "triangle-example",
-        "title": "Triangle",
+        "title": "Textured Triangle",
         "object": "TriangleExample",
-        "caption": "Minimalistic scene featuring a rendered Triangle."
+        "caption": "Very basic scene, rendering a textured triangle."
     },
     {
         "target": "shadowmap-example",
@@ -52,6 +52,12 @@
         "title": "Environment Mapping",
         "object": "EnvironmentProjectionExample",
         "caption": "Different techniques for environment mapping"
+    },
+        {
+        "target": "imagebasedlighting-example",
+        "title": "Image Based Lighting",
+        "object": "ImageBasedLightingExample",
+        "caption": "Image based lighting using prefiltered cube maps"
     },
     {
         "target": "label2d-example",

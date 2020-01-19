@@ -26,16 +26,17 @@ import { Example } from './example';
 
 // tslint:disable:max-classes-per-file
 
+const p = Math.sin(Math.PI / 3.0) * 0.5;
+
 export class TriangleRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _triangle = new Float32Array([
-        // X, Y, Z          tex_x, tex_y
-        0.0, 2.0, 0.0, 0.5, 0.0,
-        2.0, -2.0, 0.0, 0.0, 1.0,
-        -2.0, -2.0, 0.0, 1.0, 1.0,
+    protected _triangle = new Float32Array([ // x, y, z, u, v
+        -0.5, -p, 0.0, 0.0, 0.0,
+        +0.5, -p, 0.0, 1.0, 0.0,
+        +0.0, +p, 0.0, 0.5, p * 2.0,
     ]);
     protected _vertexLocation: GLuint;
     protected _uvCoordLocation: GLuint;
@@ -97,7 +98,7 @@ export class TriangleRenderer extends Renderer {
         );
 
         gl.vertexAttribPointer(
-            this._uvCoordLocation,   // Attribute Location
+            this._uvCoordLocation,  // Attribute Location
             2,                      // Number of elements per attribute
             gl.FLOAT,               // Type of elements
             gl.FALSE,
@@ -134,9 +135,9 @@ export class TriangleRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
         this._camera.near = 1.0;
-        this._camera.far = 8.0;
+        this._camera.far = 4.0;
 
 
         this._navigation = new Navigation(callback, mouseEventProvider);

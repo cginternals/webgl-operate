@@ -49,7 +49,7 @@ void main(void)
 
     } else if (u_mode == 1) {
 
-        float v = acos(ray.y) * OneOverPI;
+        float v = acos(-ray.y) * OneOverPI;
         float m = atan(ray.x, ray.z);
         uv = vec2(m * OneOver2PI + 0.5, v);
 
@@ -58,7 +58,7 @@ void main(void)
     } else if (u_mode == 2) {
 
         ray = -ray.xzy;
-        ray.x *= -1.0;
+        ray.xy *= -1.0;
         // ray.z *= -1.0;
         ray.z += +1.0;
         uv = 0.5 + 0.5 * ray.xy / length(ray);
@@ -67,13 +67,11 @@ void main(void)
 
     } else if (u_mode == 3) {
 
-        ray.y *= -1.0;
+        ray.xz /= abs(ray.y) + 1.0;
+        ray.xz = ray.xz * 0.5 + 0.5;
 
-        float m = 1.0 + abs(asin(ray.y) * 2.0 / PI);
-        uv = 0.5 + 0.5 * ray.xz / m;
-
-        fragColor = mix(texture(u_polarmap[0], uv),
-                        texture(u_polarmap[1], vec2(1.0, -1.0) * uv),
+        fragColor = mix(texture(u_polarmap[1], ray.xz),
+                        texture(u_polarmap[0], vec2(1.0, -1.0) * ray.xz),
                         step(0.0, ray.y));
 
     }

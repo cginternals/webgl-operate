@@ -127,10 +127,10 @@ export class SceneRenderer extends Renderer {
         this._forwardPass.scene = this._scene;
         this._forwardPass.program = this._program;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uModel, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uModel, false, matrix);
         };
         this._forwardPass.updateViewProjectionTransform = (matrix: mat4) => {
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, matrix);
+            gl.uniformMatrix4fv(this._uViewProjection, false, matrix);
         };
         this._forwardPass.bindMaterial = (material: Material) => {
             const sceneMaterial = material as SceneExampleMaterial;
