@@ -27,7 +27,7 @@ export class EyeTrackerDataStream {
     }
 
     private generateStreamConfigByte(): Uint8Array {
-        const configByte = new Uint8Array(0);
+        const configByte = Uint8Array.from([0]);
         if (this.dataStreams.gazePosition) {
             configByte[0] = configByte[0] | 0b00000001;
         }
@@ -107,7 +107,16 @@ export class EyeTrackerDataStream {
     }
 
     protected onMessage(event: MessageEvent): void {
-        if (typeof event.type !== 'string') {
+        // tslint:disable:strict-type-predicates
+        if (typeof event.data !== 'string') {
+
+            const reader = new FileReader();
+            reader.addEventListener('loadend', () => {
+            // reader.result contains the contents of blob as a typed array
+            if(typeof reader.result === ArrayBuffer)
+            const floatData = new Float32Array(reader.result);
+            });
+            reader.readAsArrayBuffer(blob);
             const floatData = new Float32Array(event.data);
             if (floatData.length < this.dataStreams.expectedNumberOfFloats) {
                 this.statusMessage = EyeTrackingStatusMessage.BinaryMessageTooSmall;
@@ -117,7 +126,8 @@ export class EyeTrackerDataStream {
                 this._onDataUpdateLambda();
             }
         } else {
-            this.statusMessage = event.data;
+            this._message = event.data;
+            console.log(this._message);
             this._onStatusUpdateLambda();
         }
     }

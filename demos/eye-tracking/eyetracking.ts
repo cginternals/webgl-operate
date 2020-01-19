@@ -101,7 +101,7 @@ export class EyeTrackingRenderer extends Renderer {
         });
 
         this._eyeTrackerDataStream.onStatusUpdate(() => {
-            console.log(this._eyeTrackerDataStream.statusMessage.toString());
+            console.log(this._eyeTrackerDataStream.statusMessage);
         });
 
         this._eyeTrackerDataStream.dataStreams.gazePosition = true;
