@@ -10,6 +10,7 @@ import {
     CuboidGeometry,
     DefaultFramebuffer,
     EyeTrackerDataStream,
+    EyeTrackingStatusMessage,
     Invalidate,
     MouseEventProvider,
     Navigation,
@@ -101,7 +102,17 @@ export class EyeTrackingRenderer extends Renderer {
         });
 
         this._eyeTrackerDataStream.onStatusUpdate(() => {
-            console.log(this._eyeTrackerDataStream.statusMessage);
+            switch (this._eyeTrackerDataStream.statusMessage) {
+                case EyeTrackingStatusMessage.NewServerMessage:
+                    console.log(this._eyeTrackerDataStream.serverMessage);
+                    break;
+                case EyeTrackingStatusMessage.BinaryMessageTooSmall:
+                    console.log('Received stream from server with not enough bytes.');
+                    break;
+                default:
+                    console.log('Eye-Tracking data stream in invalid state.');
+                    break;
+            }
         });
 
         this._eyeTrackerDataStream.dataStreams.gazePosition = true;

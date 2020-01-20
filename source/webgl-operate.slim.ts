@@ -60,6 +60,9 @@ export { ShadowPass } from './shadowpass';
 
 
 export { EyeTrackerDataStream } from './eyetrackerdatastream';
+export { EyeTrackingStatusMessage } from './eyetrackerdatastream';
+export { EyeTrackingDataStreams } from './eyetrackerdatastream';
+
 
 export * from './core/index';
 export * from './scene/index';

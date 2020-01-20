@@ -7,7 +7,6 @@ export class EyeTrackerDataStream {
 
     protected readonly websocketAddress = 'ws://localhost:1234';
 
-    protected _message: string;
     protected _webSocket: WebSocket;
     protected _onDataUpdateLambda: () => void;
     protected _onStatusUpdateLambda: () => void;
@@ -15,11 +14,12 @@ export class EyeTrackerDataStream {
     public dataStreams: EyeTrackingDataStreams;
     public eyeTrackingData: EyeTrackingData;
     public statusMessage: EyeTrackingStatusMessage;
+    public _serverMessage: string;
 
     public logStatus: boolean;
 
     constructor() {
-        this._message = '';
+        this._serverMessage = '';
         this._onDataUpdateLambda = () => { };
         this._onStatusUpdateLambda = () => { };
         this.dataStreams = new EyeTrackingDataStreams();
@@ -88,6 +88,7 @@ export class EyeTrackerDataStream {
         if (this.dataStreams.userPresence) {
             this.eyeTrackingData.userPresence = data[currentIndexPosition] === 0.0 ? false : true;
         }
+        this.eyeTrackingData.dataChanged = true;
     }
 
     protected onOpen(event: Event): void {
@@ -107,7 +108,6 @@ export class EyeTrackerDataStream {
     }
 
     protected async onMessage(event: MessageEvent): Promise<void> {
-        // tslint:disable:strict-type-predicates
         if (typeof event.data !== 'string') {
             const arrayBuffer = await event.data.arrayBuffer();
             const floatData = new Float32Array(arrayBuffer);
@@ -119,8 +119,8 @@ export class EyeTrackerDataStream {
                 this._onDataUpdateLambda();
             }
         } else {
-            this._message = event.data;
-            console.log(this._message);
+            this._serverMessage = event.data;
+            this.statusMessage = EyeTrackingStatusMessage.NewServerMessage;
             this._onStatusUpdateLambda();
         }
     }
@@ -152,8 +152,8 @@ export class EyeTrackerDataStream {
         this._onStatusUpdateLambda = lambda;
     }
 
-    get message(): string {
-        return this._message;
+    get serverMessage(): string {
+        return this._serverMessage;
     }
 
     get connectionState(): number {
@@ -198,6 +198,7 @@ export class EyeTrackingDataStreams {
 export enum EyeTrackingStatusMessage {
 
     BinaryMessageTooSmall = 'The last received binary message was smaller than expected',
+    NewServerMessage = 'Server sent new message.',
 }
 
 export class EyeTrackingData {
@@ -218,6 +219,10 @@ export class EyeTrackingData {
 
     // user presence, a bool represented as a public number so that everything fits in a char array
     public userPresence = false;
+
+    // Is set to true if new data have been written to the attributes.
+    // Always set it to false after you processed the data in order to be able to determine when new data arrived.
+    public dataChanged = false;
 
     public toString(): string {
         let message = '';
