@@ -106,18 +106,11 @@ export class EyeTrackerDataStream {
         logIf(this.logStatus, LogLevel.Info, event.toString());
     }
 
-    protected onMessage(event: MessageEvent): void {
+    protected async onMessage(event: MessageEvent): Promise<void> {
         // tslint:disable:strict-type-predicates
         if (typeof event.data !== 'string') {
-
-            const reader = new FileReader();
-            reader.addEventListener('loadend', () => {
-            // reader.result contains the contents of blob as a typed array
-            if(typeof reader.result === ArrayBuffer)
-            const floatData = new Float32Array(reader.result);
-            });
-            reader.readAsArrayBuffer(blob);
-            const floatData = new Float32Array(event.data);
+            const arrayBuffer = await event.data.arrayBuffer();
+            const floatData = new Float32Array(arrayBuffer);
             if (floatData.length < this.dataStreams.expectedNumberOfFloats) {
                 this.statusMessage = EyeTrackingStatusMessage.BinaryMessageTooSmall;
                 this._onStatusUpdateLambda();
