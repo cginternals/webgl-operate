@@ -51,6 +51,12 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     protected _invalidate: Invalidate;
 
+    /**
+     * Function to get the elapsed time since the origin. Since the canvas's controller is able to pause
+     * the execution this has to be provided from outside.
+     */
+    protected _elapsedTime: () => number;
+
     /** @see {@link context} */
     protected _context: Context;
 
@@ -118,6 +124,11 @@ export abstract class Renderer extends Initializable implements Controllable {
     @Initializable.assert_initialized()
     protected invalidate(force: boolean = false): void {
         this._invalidate(force);
+    }
+
+    @Initializable.assert_initialized()
+    protected elapsedTime(): number {
+        return this._elapsedTime();
     }
 
 
@@ -211,7 +222,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * @param mouseEventProvider - Provider for mouse events referring to the canvas element.
      */
     @Initializable.initialize()
-    initialize(context: Context, callback: Invalidate,
+    initialize(context: Context, callback: Invalidate, elapsedTime: () => number,
         mouseEventProvider: MouseEventProvider | undefined,
         /* keyEventProvider: KeyEventProvider | undefined, */
         touchEventProvider: TouchEventProvider | undefined): boolean {
@@ -220,6 +231,7 @@ export abstract class Renderer extends Initializable implements Controllable {
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
+        this._elapsedTime = elapsedTime;
 
         return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider);
     }

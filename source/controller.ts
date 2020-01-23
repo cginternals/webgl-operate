@@ -173,6 +173,7 @@ export class Controller {
      * Point in time when the pause started. This is used to shift the gross rendering time measurement in _multiTime.
      */
     protected _pauseTime: number | undefined;
+    protected _totalPauseTime = 0;
 
 
     /**
@@ -435,6 +436,8 @@ export class Controller {
 
             /* Note: this is just in case the fps is gathered while a request is pending. */
             this._multiTime[1] += pauseDelay;
+
+            this._totalPauseTime += pauseDelay;
         }
         this.request();
     }
@@ -727,6 +730,14 @@ export class Controller {
         return this._frameNumber === 0 ? 0.0 : 1000.0 / (this.multiFrameTime / this._frameNumber);
     }
 
+    /**
+     * Wraps window.performance.now() and subtracts the total time the controller was paused.
+     * @returns - Time elapsed since origin minus the time the controller was paused
+     */
+    get elapsedTime(): number {
+        const now = window.performance.now();
+        return now - (this._pause ? now - this._pauseTime! : 0) - this._totalPauseTime;
+    }
 }
 
 

@@ -353,7 +353,8 @@ export class Canvas extends Resizable {
          * method is assigned to the pipelines invalidation event.
          */
         this._renderer.initialize(this.context, (force) => this._controller.update(force),
-            this._mouseEventProvider /*, this._keyEventProvider */, this._touchEventProvider);
+            () => this._controller.elapsedTime, this._mouseEventProvider /*, this._keyEventProvider */,
+            this._touchEventProvider);
 
         this._renderer.frameSize = this._frameSize;
         this._renderer.clearColor = this._clearColor.rgba;
