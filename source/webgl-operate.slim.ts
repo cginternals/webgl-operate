@@ -59,9 +59,9 @@ export { GaussFilter } from './gaussfilter';
 export { ShadowPass } from './shadowpass';
 
 
-export { EyeTrackerDataStream } from './eyetrackerdatastream';
-export { EyeTrackingStatusMessage } from './eyetrackerdatastream';
-export { EyeTrackingDataStreams } from './eyetrackerdatastream';
+export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
+export { EyeGazeEventProvider } from './eyegazeeventprovider';
+export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
 
 
 export * from './core/index';
@@ -83,5 +83,6 @@ export import gl_matrix_extensions = root_gl_matrix_extensions;
 
 import * as root_tuples from './tuples';
 export import tuples = root_tuples;
+import { EyeGazeEvent } from './eyegazeevent';
 
 /* spellchecker: enable */
