@@ -145,7 +145,7 @@ vec3 specularSphereLightKaris(const in SphereLight light, const in LightingInfo 
     vec3 centerToRay = dot(L_center, R) * R - L_center;
     vec3 closestPoint = L_center + centerToRay * clamp(light.radius / length(centerToRay), 0.0, 1.0);
     vec3 L = normalize(closestPoint);
-    float sqDist = dot(closestPoint, closestPoint);
+    float sqDist = max(dot(closestPoint, closestPoint), 0.1);
 
     // To approximate the area light source as a point light source, we need to convert from luminance (cd/m^2) to luminous power (lm)
     // We multiply by PI to get lm / m^2 (since we assume a lambertian light source and the integral of cos over hemisphere sums to PI)

@@ -400,11 +400,6 @@ void main(void)
         alpha = baseColor.a;
     }
 
-    // Workaround: lighting produces inf or nan, find out where
-    if (any(isinf(color)) || any(isnan(color))) {
-        color = vec3(0.0);
-    }
-
     fragColor = vec4(color, alpha);
 
     if (u_debugMode == 2) { // IBL
