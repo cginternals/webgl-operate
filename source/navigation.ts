@@ -93,12 +93,14 @@ export class Navigation {
             this.onClick(latests, previous));
 
         /* Listen to touch events. */
-        this._eventHandler.pushTouchStartHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
-            this.onTouchStart(latests, previous));
-        this._eventHandler.pushTouchEndHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
-            this.onTouchEnd(latests, previous));
-        this._eventHandler.pushTouchMoveHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
-            this.onTouchMove(latests, previous));
+        if (touchEventProvider !== undefined) {
+            this._eventHandler.pushTouchStartHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
+                this.onTouchStart(latests, previous));
+            this._eventHandler.pushTouchEndHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
+                this.onTouchEnd(latests, previous));
+            this._eventHandler.pushTouchMoveHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
+                this.onTouchMove(latests, previous));
+        }
 
         // this._eventHandler.pushMouseWheelHandler((latests: Array<WheelEvent>, previous: Array<WheelEvent>) =>
         //     this.onWheel(latests, previous));
