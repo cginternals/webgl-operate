@@ -188,6 +188,7 @@ ul.features li:last-child:after {
 canvas {
     border: 1px solid #d6d8db;
     background: #e2e3e5;
+    touch-action: none;
 }
 
 canvas:fullscreen  {
