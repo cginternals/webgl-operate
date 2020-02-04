@@ -74,7 +74,7 @@ export class Navigation {
     constructor(
         invalidate: Invalidate,
         mouseEventProvider: MouseEventProvider,
-        touchEventProvider: TouchEventProvider) {
+        touchEventProvider?: TouchEventProvider) {
 
         this._invalidate = invalidate;
 
