@@ -212,9 +212,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     @Initializable.initialize()
     initialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider | undefined,
-        /* keyEventProvider: KeyEventProvider | undefined, */
-        touchEventProvider: TouchEventProvider | undefined): boolean {
+        mouseEventProvider: MouseEventProvider,
+        /* keyEventProvider: KeyEventProvider, */
+        touchEventProvider: TouchEventProvider): boolean {
 
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;

@@ -10,9 +10,9 @@ import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
 import { FirstPersonModifier } from './firstpersonmodifier';
+import { TouchEventProvider } from './toucheventprovider';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
-import { TouchEventProvider } from './toucheventprovider';
 
 /* spellchecker: enable */
 
@@ -74,7 +74,7 @@ export class Navigation {
     constructor(
         invalidate: Invalidate,
         mouseEventProvider: MouseEventProvider,
-        touchEventProvider?: TouchEventProvider) {
+        touchEventProvider: TouchEventProvider) {
 
         this._invalidate = invalidate;
 
