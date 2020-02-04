@@ -155,9 +155,9 @@ export abstract class Renderer extends Initializable implements Controllable {
      * @returns - whether initialization was successful
      */
     protected abstract onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider | undefined,
+        mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider | undefined, */
-        touchEventProvider: TouchEventProvider | undefined): boolean;
+        touchEventProvider: TouchEventProvider): boolean;
 
     /**
      * Actual uninitialize call specified by inheritor.
