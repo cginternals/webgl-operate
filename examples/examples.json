@@ -18,6 +18,12 @@
         "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
     },
     {
+        "target": "xtoon-example",
+        "title": "XToon Shading",
+        "object": "XToonExample",
+        "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
         "target": "gouraudphong-example",
         "title": "Gouraud/Phong Shading",
         "object": "GouraudPhongExample",

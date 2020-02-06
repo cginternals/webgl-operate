@@ -39,10 +39,6 @@ block breakdown
     'gl.enable(gl.BLEND);\n' +
     'gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);\n', 'How alpha-to-coverage and blending are used in the source code:')
 
-  +code('fullscreen', '' +
-    'canvas.element.addEventListener(\'click\', function(evt) {\n' +
-    '    if(evt.ctrlKey) { gloperate.viewer.Fullscreen.toggle(canvas.element); } });\n', 'Snippet to enable fullscreen on CTRL+Click:')
-
   p Point cloud from khronos.csv with Phong shading enabled:
     img(src = "/img/point-cloud-khronos.jpg").img-fluid
 

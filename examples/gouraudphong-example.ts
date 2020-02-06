@@ -2,6 +2,8 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
+import { auxiliaries } from 'webgl-operate';
+
 
 import {
     Camera,
@@ -12,6 +14,7 @@ import {
     Framebuffer,
     Geometry,
     GLTFLoader,
+    GLTFPbrMaterial,
     Invalidate,
     Material,
     MouseEventProvider,
@@ -20,7 +23,6 @@ import {
     Renderer,
     Shader,
     Texture2D,
-    viewer,
     Wizard,
 } from 'webgl-operate';
 
@@ -44,7 +46,6 @@ export class GouraudPhongRenderer extends Renderer {
     protected _texture: Texture2D;
     protected _framebuffer: Framebuffer;
     protected _program: Program;
-    protected _emptyTexture: Texture2D;
 
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
@@ -67,12 +68,8 @@ export class GouraudPhongRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
-        this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
-        this._emptyTexture.initialize(1, 1, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE);
-
         this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._framebuffer.initialize();
-
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'phong.vert');
         vert.initialize(require('./data/phong.vert'));
@@ -83,7 +80,6 @@ export class GouraudPhongRenderer extends Renderer {
         this._program.initialize([vert, frag], true);
         this._program.link();
         this._program.bind();
-
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         this._uModel = this._program.uniform('u_model');
@@ -96,9 +92,9 @@ export class GouraudPhongRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 2.0, 3.0);
-        this._camera.near = 0.1;
-        this._camera.far = 8.0;
+        this._camera.eye = vec3.fromValues(0.0, 1.0, 2.0);
+        this._camera.near = 0.5;
+        this._camera.far = 4.0;
 
         /* Create and configure navigation */
 
@@ -123,12 +119,17 @@ export class GouraudPhongRenderer extends Renderer {
 
         this._forwardPass.bindUniforms = () => {
             gl.uniform3fv(this._uEye, this._camera.eye);
+            gl.uniform1i(this._uNormal, 2);
         };
 
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
         };
 
         this._forwardPass.bindMaterial = (material: Material) => {
+            const pbrMaterial = material as GLTFPbrMaterial;
+            auxiliaries.assert(pbrMaterial !== undefined, `Material ${material.name} is not a PBR material.`);
+
+            pbrMaterial.normalTexture!.bind(gl.TEXTURE2);
         };
 
         this.loadAsset();
@@ -230,11 +231,6 @@ export class GouraudPhongExample extends Example {
 
         this._renderer = new GouraudPhongRenderer();
         this._canvas.renderer = this._renderer;
-
-        const E = this._canvas.element;
-        E.addEventListener('click', function (evt) {
-            if (evt.ctrlKey) { viewer.Fullscreen.toggle(E); }
-        });
 
         return true;
     }
