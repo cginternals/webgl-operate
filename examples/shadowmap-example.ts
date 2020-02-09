@@ -7,8 +7,8 @@ import {
     Context,
     CuboidGeometry,
     DefaultFramebuffer,
+    EventProvider,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     PlaneGeometry,
     Program,
@@ -45,9 +45,7 @@ class ShadowMapRenderer extends Renderer {
     protected _shadowPass: ShadowPass;
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives',
             'WEBGL_color_buffer_float', 'OES_texture_float', 'OES_texture_float_linear']);
@@ -127,7 +125,7 @@ class ShadowMapRenderer extends Renderer {
         this._uModelS = this._shadowProgram.uniform('u_model');
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
 

@@ -11,9 +11,9 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     Framebuffer,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
     Program,
@@ -187,7 +187,7 @@ export class CornellBoxRenderer extends Renderer {
         this._blit.frame();
     }
 
-    protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider): boolean {
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -209,7 +209,7 @@ export class CornellBoxRenderer extends Renderer {
         this._camera.far = 4.0;
 
         // Initialize navigation
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
 

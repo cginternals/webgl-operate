@@ -12,9 +12,9 @@ import {
     Context,
     CuboidGeometry,
     DefaultFramebuffer,
+    EventProvider,
     Framebuffer,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
     PlaneGeometry,
@@ -72,9 +72,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
 
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives',
             'WEBGL_color_buffer_float', 'OES_texture_float', 'OES_texture_float_linear']);
@@ -162,7 +160,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._uLightPositionS = this._shadowProgram.uniform('u_lightPosition');
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
 

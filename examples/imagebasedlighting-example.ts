@@ -8,9 +8,9 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     GeosphereGeometry,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -57,9 +57,7 @@ export class ImageBasedLightingRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         this._promises = new Array();
 
@@ -180,7 +178,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._camera.near = 1.0;
         this._camera.far = 8.0;
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         return true;

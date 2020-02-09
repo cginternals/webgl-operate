@@ -9,10 +9,11 @@ import {
     Context,
     CuboidGeometry,
     DefaultFramebuffer,
-    EyeTrackerDataStream,
-    EyeTrackingStatusMessage,
+    EventHandler,
+    EventProvider,
+    EyeGazeDataStreams,
+    EyeGazeEvent,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -39,12 +40,19 @@ export class EyeTrackingRenderer extends Renderer {
 
     protected _defaultFBO: DefaultFramebuffer;
 
-    protected _eyeTrackerDataStream: EyeTrackerDataStream;
+    protected _eyeGazeDataStreams: EyeGazeDataStreams;
+    protected _eventHandler: EventHandler;
+
+    constructor(eyeGazeDataStreams: EyeGazeDataStreams) {
+        super();
+        this._eyeGazeDataStreams = eyeGazeDataStreams;
+    }
 
     protected onUpdate(): boolean {
 
         // Update camera navigation (process events)
         this._navigation.update();
+        this._eventHandler.update();
         return this._altered.any || this._camera.altered;
     }
 
@@ -90,37 +98,23 @@ export class EyeTrackingRenderer extends Renderer {
     protected onSwap(): void { }
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
+        /* Create event handler that listens to eye gaze events. */
+        this._eventHandler = new EventHandler(callback, {mouseEventProvider: eventProvider.mouseEventProvider,
+                                                         touchEventProvider: undefined,
+                                                         eyeGazeEventProvider:
+                                                         eventProvider.eyeGazeEventProvider});
 
-        this._eyeTrackerDataStream = new EyeTrackerDataStream();
-
-        this._eyeTrackerDataStream.onDataUpdate(() => {
-            console.log(this._eyeTrackerDataStream.eyeTrackingData.toString());
-        });
-
-        this._eyeTrackerDataStream.onStatusUpdate(() => {
-            switch (this._eyeTrackerDataStream.statusMessage) {
-                case EyeTrackingStatusMessage.NewServerMessage:
-                    console.log(this._eyeTrackerDataStream.serverMessage);
-                    break;
-                case EyeTrackingStatusMessage.BinaryMessageTooSmall:
-                    console.log('Received stream from server with not enough bytes.');
-                    break;
-                default:
-                    console.log('Eye-Tracking data stream in invalid state.');
-                    break;
-            }
-        });
-
-        this._eyeTrackerDataStream.dataStreams.gazePosition = true;
-        this._eyeTrackerDataStream.dataStreams.gazeOrigin = true;
-        this._eyeTrackerDataStream.dataStreams.eyePositionNormalized = true;
-        this._eyeTrackerDataStream.dataStreams.headPositionAndRotation = true;
-        this._eyeTrackerDataStream.dataStreams.userPresence = true;
-        this._eyeTrackerDataStream.connect();
+        /* Listen to eye gaze events. */
+        this._eventHandler.pushEyeGazeDataHandler((latests: Array<EyeGazeEvent>, previous: Array<EyeGazeEvent>) =>
+            console.log(latests, previous));
+        this._eventHandler.pushEyeGazeServerMessageHandler((latests: Array<EyeGazeEvent>,
+            previous: Array<EyeGazeEvent>) => console.log(latests, previous));
+        this._eventHandler.pushEyeGazeConnectionStatusHandler((latests: Array<EyeGazeEvent>,
+            previous: Array<EyeGazeEvent>) => console.log(latests, previous));
+        this._eventHandler.pushEyeGazeBinaryMessageParsingErrorHandler((latests: Array<EyeGazeEvent>,
+            previous: Array<EyeGazeEvent>) => console.log(latests, previous));
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -162,7 +156,7 @@ export class EyeTrackingRenderer extends Renderer {
         this._camera.far = 8.0;
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         return true;
@@ -194,7 +188,16 @@ export class EyeTrackingDemo extends Demo {
 
         this._canvas.element.addEventListener('click', () => { this._canvas.controller.update(); });
 
-        this._renderer = new EyeTrackingRenderer();
+        const eyeGazeDataStreams = new EyeGazeDataStreams();
+
+        eyeGazeDataStreams.gazePosition = true;
+        eyeGazeDataStreams.gazeOrigin = true;
+        eyeGazeDataStreams.eyePositionNormalized = true;
+        eyeGazeDataStreams.headPositionAndRotation = true;
+        eyeGazeDataStreams.userPresence = true;
+
+        this._canvas.activateEyeGazeEventProvider(eyeGazeDataStreams);
+        this._renderer = new EyeTrackingRenderer(eyeGazeDataStreams);
         this._canvas.renderer = this._renderer;
 
         return true;

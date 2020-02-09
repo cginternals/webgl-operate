@@ -15,7 +15,11 @@ import { Invalidate } from './renderer';
 import { TouchEventProvider } from './toucheventprovider';
 
 /* spellchecker: enable */
-
+export interface EventProvider {
+    mouseEventProvider: MouseEventProvider;
+    touchEventProvider?: TouchEventProvider;
+    eyeGazeEventProvider?: EyeGazeEventProvider;
+}
 
 /**
  * Callback for handling mouse events, given the latest mouse events (since last update) as well as the previous.
@@ -93,13 +97,11 @@ export class EventHandler {
         new Map<EyeGazeEventProvider.Type, Array<EyeGazeEventHandler>>();
 
 
-    constructor(invalidate: Invalidate | undefined, mouseEventProvider: MouseEventProvider | undefined,
-        /* keyEventProvider: KeyEventProvider | undefined,*/ touchEventProvider: TouchEventProvider | undefined,
-        eyeGazeEventProvider: EyeGazeEventProvider | undefined) {
+    constructor(invalidate: Invalidate | undefined, eventProvider: EventProvider) {
         this._invalidate = invalidate;
-        this._mouseEventProvider = mouseEventProvider;
-        this._touchEventProvider = touchEventProvider;
-        this._eyeGazeEventProvider = eyeGazeEventProvider;
+        this._mouseEventProvider = eventProvider.mouseEventProvider;
+        this._touchEventProvider = eventProvider.touchEventProvider;
+        this._eyeGazeEventProvider = eventProvider.eyeGazeEventProvider;
     }
 
 

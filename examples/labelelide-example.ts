@@ -53,9 +53,7 @@ class LabelElideRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        /* mouseEventProvider: MouseEventProvider, */
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        /* eventProvider: EventProvider */): boolean {
 
         /* Create framebuffers, textures, and render buffers. */
 

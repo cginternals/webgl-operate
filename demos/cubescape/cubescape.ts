@@ -8,8 +8,8 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -108,7 +108,7 @@ class CubescapeRenderer extends Renderer {
     }
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider): boolean {
+        eventProvider: EventProvider): boolean {
         const gl = this._context.gl;
 
         context.enable(['ANGLE_instanced_arrays']);
@@ -152,7 +152,7 @@ class CubescapeRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 4.0;
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');

@@ -11,9 +11,8 @@ import { clamp, v2 } from './gl-matrix-extensions';
 import { ChangeLookup } from './changelookup';
 import { Context } from './context';
 import { Controllable } from './controller';
+import { EventProvider } from './eventhandler'
 import { Initializable } from './initializable';
-import { MouseEventProvider } from './mouseeventprovider';
-import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
 
@@ -155,9 +154,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * @returns - whether initialization was successful
      */
     protected abstract onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider | undefined,
-        /* keyEventProvider: KeyEventProvider | undefined, */
-        touchEventProvider: TouchEventProvider | undefined): boolean;
+        eventProvider: EventProvider): boolean;
 
     /**
      * Actual uninitialize call specified by inheritor.
@@ -208,20 +205,18 @@ export abstract class Renderer extends Initializable implements Controllable {
      *
      * @param context - Wrapped gl context for function resolution (passed to all stages).
      * @param callback - Functions that is invoked when the renderer (or any stage) is invalidated.
-     * @param mouseEventProvider - Provider for mouse events referring to the canvas element.
+     * @param eventProvider - Provider for mouse events referring to the canvas element.
      */
     @Initializable.initialize()
     initialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider | undefined,
-        /* keyEventProvider: KeyEventProvider | undefined, */
-        touchEventProvider: TouchEventProvider | undefined): boolean {
+        eventProvider: EventProvider): boolean {
 
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
 
-        return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider);
+        return this.onInitialize(context, callback, eventProvider);
     }
 
     /**

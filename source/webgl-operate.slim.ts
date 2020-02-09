@@ -14,7 +14,7 @@ export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
 export { TouchEventProvider } from './toucheventprovider';
-export { EventHandler } from './eventhandler';
+export { EventHandler, EventProvider } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
@@ -83,6 +83,5 @@ export import gl_matrix_extensions = root_gl_matrix_extensions;
 
 import * as root_tuples from './tuples';
 export import tuples = root_tuples;
-import { EyeGazeEvent } from './eyegazeevent';
 
 /* spellchecker: enable */

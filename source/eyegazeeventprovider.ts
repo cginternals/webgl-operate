@@ -1,4 +1,3 @@
-
 import { Observable, ReplaySubject } from 'rxjs';
 import { assert, bitInBitfield } from './auxiliaries';
 import { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
@@ -7,8 +6,6 @@ import { EyeGazeEvent } from './eyegazeevent';
 
 // tslint:disable:max-classes-per-file
 
-// mache zu: Gaze event provider, siehe: mouseenevtprovider, eventhandler, rxjs
-// semantic: Look up what the data mean and document it
 export class EyeGazeEventProvider {
 
     /**
@@ -38,7 +35,9 @@ export class EyeGazeEventProvider {
 
     constructor(eyeGazeDataStreams: EyeGazeDataStreams, timeframe?: number) {
         assert(eyeGazeDataStreams !== undefined, `expected a valid eye gaze data streams object on initialization, given ${eyeGazeDataStreams}.`);
-        this._eyeGazeDataStream = new EyeGazeDataStream(eyeGazeDataStreams);
+        this._eyeGazeDataStream = new EyeGazeDataStream();
+        this._eyeGazeDataStream.eyeGazeDataStreams = eyeGazeDataStreams;
+        this._eyeGazeDataStream.connect();
     }
 
     /**
@@ -77,8 +76,7 @@ export class EyeGazeEventProvider {
         }
     }
 
-    observable(type: EyeGazeEventProvider.Type): Observable<EyeGazeEvent>
-        | Observable<WheelEvent> | Observable<DragEvent> | undefined {
+    observable(type: EyeGazeEventProvider.Type): Observable<EyeGazeEvent> | undefined {
         switch (type) {
             case EyeGazeEventProvider.Type.EyeGazeData:
                 return this.EyeGazeData$;
@@ -153,6 +151,5 @@ export namespace EyeGazeEventProvider {
         ConnectionStatus = 1 << 2,
         BinaryMessageParsingError = 1 << 3,
     }
-
 }
 
