@@ -440,7 +440,7 @@ export class ThesisRenderer extends Renderer {
         this._postProcessingPass.initialize(this._ndcTriangle);
 
         this._shadowPass = new ShadowPass(context);
-        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardShadowMapping, [2048, 2048]);
+        this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardLinear, [2048, 2048]);
 
         this._blitPass = new BlitPass(this._context);
         this._blitPass.initialize(this._ndcTriangle);
