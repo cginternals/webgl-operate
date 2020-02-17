@@ -60,6 +60,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     updateViewProjectionTransform: (matrix: mat4) => void;
     bindMaterial: (material: Material) => void;
     bindGeometry: (geometry: Geometry) => void;
+    bindUniforms: () => void;
 
     /**
      * Creates a pass that renders a SceneNode and all of its children.
@@ -215,6 +216,11 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
         this._program.bind();
+
+        if (this.bindUniforms !== undefined) {
+            this.bindUniforms();
+        }
+
         this.updateViewProjectionTransform(this._camera.viewProjection);
 
         this.drawCalls();
