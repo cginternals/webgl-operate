@@ -303,11 +303,11 @@ export class ProgressiveLightingRenderer extends Renderer {
         this._ndcTriangle.initialize();
 
         /* Initialize program, we do not use the default gltf shader here */
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
-        vert.initialize(require('./data/gltf_thesis.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis.frag');
-        frag.initialize(require('./data/gltf_thesis.frag'));
-        this._program = new Program(this._context, 'ThesisPbrProgram');
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+        vert.initialize(require('./data/mesh.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'progressive_lighting.frag');
+        frag.initialize(require('./data/progressive_lighting.frag'));
+        this._program = new Program(this._context, 'ProgressiveLightingProgram');
         this._program.initialize([vert, frag]);
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
@@ -370,11 +370,11 @@ export class ProgressiveLightingRenderer extends Renderer {
         this._uIBLStrength = this._program.uniform('u_iblStrength');
 
         /* Initialize shadow program */
-        const shadowVert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
-        shadowVert.initialize(require('./data/gltf_thesis.vert'));
-        const shadowFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis_shadow.frag');
-        shadowFrag.initialize(require('./data/gltf_thesis_shadow.frag'));
-        this._shadowProgram = new Program(this._context, 'ThesisShadowProgram');
+        const shadowVert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+        shadowVert.initialize(require('./data/mesh.vert'));
+        const shadowFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'shadow.frag');
+        shadowFrag.initialize(require('./data/shadow.frag'));
+        this._shadowProgram = new Program(this._context, 'ShadowProgram');
         this._shadowProgram.initialize([shadowVert, shadowFrag]);
 
         this._uModelS = this._shadowProgram.uniform('u_model');
@@ -384,11 +384,11 @@ export class ProgressiveLightingRenderer extends Renderer {
         this._uLightPositionS = this._shadowProgram.uniform('u_lightPosition');
 
         /* Initialize pre depth program */
-        const depthVert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_thesis.vert');
-        depthVert.initialize(require('./data/gltf_thesis.vert'));
-        const depthFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_thesis_depth.frag');
-        depthFrag.initialize(require('./data/gltf_thesis_depth.frag'));
-        this._depthProgram = new Program(this._context, 'ThesisDepthProgram');
+        const depthVert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
+        depthVert.initialize(require('./data/mesh.vert'));
+        const depthFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'normal_depth.frag');
+        depthFrag.initialize(require('./data/normal_depth.frag'));
+        this._depthProgram = new Program(this._context, 'NormalDepthProgram');
         this._depthProgram.initialize([depthVert, depthFrag]);
 
         this._uViewD = this._depthProgram.uniform('u_view');
