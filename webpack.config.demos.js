@@ -9,7 +9,8 @@ module.exports = {
         'cornell-box': ['cornell-box/cornellbox.ts'],
         'cubescape': ['cubescape/cubescape.ts'],
         'gltf-renderer': ['gltf-renderer/gltfrenderer.ts'],
-        'thesis-renderer': ['thesis-renderer/thesisrenderer.ts']
+        'thesis-renderer': ['thesis-renderer/thesisrenderer.ts'],
+        'point-cloud': ['point-cloud/point-cloud.ts']
     },
     devtool: 'source-map',
     output: {

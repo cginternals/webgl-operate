@@ -80,7 +80,7 @@ export class CubeRenderer extends Renderer {
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         const identity = mat4.identity(mat4.create());
-        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, identity);
+        gl.uniformMatrix4fv(this._program.uniform('u_model'), false, identity);
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         gl.uniform1i(this._program.uniform('u_textured'), false);
 
@@ -91,7 +91,7 @@ export class CubeRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/blue_painted_planks_diff_1k_modified.webp', false).then(() => {
+        this._texture.fetch('./data/blue-painted-planks-diff-1k-modified.webp', false).then(() => {
             const gl = context.gl;
 
             this._program.bind();
@@ -173,7 +173,7 @@ export class CubeRenderer extends Renderer {
         this._texture.bind(gl.TEXTURE0);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
 
         this._cuboid.bind();
         this._cuboid.draw();
