@@ -48,7 +48,7 @@ import { DiffuseEnvironmentSample, LightSample, SampleManager, SpecularEnvironme
 /**
  * @todo comment
  */
-export class ThesisRenderer extends Renderer {
+export class ProgressiveLightingRenderer extends Renderer {
 
     static URL = 'https://p-otto.waduhek.de';
 
@@ -183,7 +183,7 @@ export class ThesisRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
-        this._cornellScene = new Scene(`${ThesisRenderer.URL}/models/cornell.glb`,
+        this._cornellScene = new Scene(`${ProgressiveLightingRenderer.URL}/models/cornell.glb`,
             new Camera(vec3.fromValues(-0.255, 3.09, -8.0), vec3.fromValues(0.135, 1.192, -0.46)),
             0.2, 20);
         this._cornellScene.addDiskLight(new DiskLight(
@@ -194,7 +194,7 @@ export class ThesisRenderer extends Renderer {
             90.0));
 
         this._skylineScene = new Scene(
-            `${ThesisRenderer.URL}/models/skyline.glb`,
+            `${ProgressiveLightingRenderer.URL}/models/skyline.glb`,
             new Camera(vec3.fromValues(-4.0645, 2.816, 6.2326), vec3.fromValues(0.342, -0.42328, 0.1032)),
             // new Camera(vec3.fromValues(1.7162, 0.6412, 4.2596), vec3.fromValues(-0.7943, -0.17933, -0.7432)),
             0.2, 20);
@@ -224,7 +224,7 @@ export class ThesisRenderer extends Renderer {
             110.0));
 
         this._datsunScene = new Scene(
-            `${ThesisRenderer.URL}/models/datsun.glb`,
+            `${ProgressiveLightingRenderer.URL}/models/datsun.glb`,
             new Camera(vec3.fromValues(-1.9631, 1.89, 6.548), vec3.fromValues(0.292, -0.327, -0.13)),
             0.2, 30);
         this._datsunScene.addDiskLight(new DiskLight(
@@ -253,7 +253,7 @@ export class ThesisRenderer extends Renderer {
             110.0));
 
         this._kitchenScene = new Scene(
-            `${ThesisRenderer.URL}/models/kitchen.glb`,
+            `${ProgressiveLightingRenderer.URL}/models/kitchen.glb`,
             new Camera(vec3.fromValues(-0.65597, 2.2284, 6.2853), vec3.fromValues(0.24971, 1.1144, -0.7265)),
             // new Camera(vec3.fromValues(-3.479, 1.604, -0.5713), vec3.fromValues(0.0, 1.0673, -0.8168)),
             0.1, 10);
@@ -1023,12 +1023,12 @@ export class ThesisRenderer extends Renderer {
         this._diffuseEnvironment.initialize(64, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
 
         this._diffuseEnvironment.fetch({
-            positiveX: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-px-diffuse.png`,
-            negativeX: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-nx-diffuse.png`,
-            positiveY: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-py-diffuse.png`,
-            negativeY: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-ny-diffuse.png`,
-            positiveZ: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-pz-diffuse.png`,
-            negativeZ: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-nz-diffuse.png`,
+            positiveX: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-px-diffuse.png`,
+            negativeX: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nx-diffuse.png`,
+            positiveY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-py-diffuse.png`,
+            negativeY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-ny-diffuse.png`,
+            positiveZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-pz-diffuse.png`,
+            negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-diffuse.png`,
         });
 
         this._specularEnvironment = new TextureCube(this._context, 'SpecularEnvironment');
@@ -1041,12 +1041,12 @@ export class ThesisRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `${ThesisRenderer.URL}/${environmentName}/preprocessed-map-nz-${mipLevel}.png`,
+                positiveX: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
     }
@@ -1070,10 +1070,10 @@ export class ThesisRenderer extends Renderer {
     }
 }
 
-export class ThesisDemo extends Demo {
+export class ProgressiveLightingDemo extends Demo {
 
     private _canvas: Canvas;
-    private _renderer: ThesisRenderer;
+    private _renderer: ProgressiveLightingRenderer;
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
@@ -1082,7 +1082,7 @@ export class ThesisDemo extends Demo {
         this._canvas.framePrecision = Wizard.Precision.float;
         this._canvas.frameScale = [1.0, 1.0];
 
-        this._renderer = new ThesisRenderer();
+        this._renderer = new ProgressiveLightingRenderer();
         this._canvas.renderer = this._renderer;
 
         const frameScale = window.document.getElementById('frame-scale')! as HTMLInputElement;
@@ -1108,7 +1108,7 @@ export class ThesisDemo extends Demo {
         return this._canvas;
     }
 
-    get renderer(): ThesisRenderer {
+    get renderer(): ProgressiveLightingRenderer {
         return this._renderer;
     }
 
