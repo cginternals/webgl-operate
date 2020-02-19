@@ -15,6 +15,7 @@ import { TouchEventProvider } from './toucheventprovider';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 import { auxiliaries } from './webgl-operate.slim';
+import { PanModifier } from './panmodifier';
 
 /* spellchecker: enable */
 
@@ -66,6 +67,11 @@ export class Navigation {
      * Turntable camera modifier.
      */
     protected _turntable: TurntableModifier | undefined;
+
+    /**
+     * Pan camera modifier.
+     */
+    protected _pan: PanModifier | undefined;
 
     /**
      * Even handler used to forward/map events to specific camera modifiers.
@@ -148,6 +154,7 @@ export class Navigation {
             (event as PointerEvent).pointerType === 'pen';
 
         const isPrimaryButtonDown = (event as PointerEvent).buttons & 1;
+        const isSecondaryButtonDown = (event as PointerEvent).buttons & 2;
         // const isMouseDown = event.type === 'mousedown';
         // const isMouseMove = event.type === 'mousemove';
 
@@ -163,18 +170,15 @@ export class Navigation {
         const isMouseRotate = isMouseEvent && isPrimaryButtonDown && numPointers === 1;
         const isTouchRotate = isTouchEvent && numPointers === 1;
 
+        const isMousePan = isMouseEvent && isSecondaryButtonDown && numPointers === 1;
+        const isTouchPan = isTouchEvent && numPointers === 2;
+
         console.log(numPointers);
 
         if (isPointerLockedRotate || isMouseRotate || isTouchRotate) {
             return Navigation.Modes.Rotate;
-
-            // } else if ((event.type === 'mousedown' || event.type === 'mousemove')
-            //     && ((event as MouseEvent).buttons & 2)) {
-            //     return Navigation.Modes.Zoom;
-
-            // } else if (event.type === 'wheel') {
-            //     return Navigation.Modes.ZoomStep;
-            // }
+        } else if (isMousePan || isTouchPan) {
+            return Navigation.Modes.Pan;
         }
         return undefined;
     }
@@ -213,6 +217,17 @@ export class Navigation {
 
             default:
                 break;
+        }
+    }
+
+    protected pan(event: PointerEvent, start: boolean): void {
+        const point = this._eventHandler.offsets(event)[0];
+
+        const pan = this._pan as PanModifier;
+        start ? pan.initiate(point) : pan.process(point);
+
+        if (event.cancelable) {
+            event.preventDefault();
         }
     }
 
@@ -359,6 +374,10 @@ export class Navigation {
                 this.rotate(primaryEvent, true);
                 break;
 
+            case Navigation.Modes.Pan:
+                this.pan(primaryEvent, true);
+                break;
+
             default:
                 break;
         }
@@ -412,6 +431,10 @@ export class Navigation {
                 this.rotate(primaryEvent, modeWasUndefined);
                 break;
 
+            case Navigation.Modes.Pan:
+                this.pan(primaryEvent, modeWasUndefined);
+                break;
+
             default:
                 break;
         }
@@ -440,6 +463,9 @@ export class Navigation {
         if (this._turntable) {
             this._turntable.camera = camera;
         }
+        if (this._pan) {
+            this._pan.camera = camera;
+        }
     }
 
     /**
@@ -456,6 +482,8 @@ export class Navigation {
 
         this._eventHandler.exitPointerLock(); /* Might be requested (and active) from FirstPerson or Flight. */
         this._alwaysRotateOnMove = false;
+
+        this._pan = new PanModifier();
 
         this._metaphor = metaphor;
         switch (this._metaphor) {
