@@ -13,6 +13,7 @@ import { Context } from './context';
 import { Controllable } from './controller';
 import { Initializable } from './initializable';
 import { MouseEventProvider } from './mouseeventprovider';
+import { PointerEventProvider } from './pointereventprovider';
 import { TouchEventProvider } from './toucheventprovider';
 import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
 import { Wizard } from './wizard';
@@ -157,7 +158,8 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected abstract onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider | undefined, */
-        touchEventProvider: TouchEventProvider): boolean;
+        touchEventProvider: TouchEventProvider,
+        pointerEventProvider: PointerEventProvider): boolean;
 
     /**
      * Actual uninitialize call specified by inheritor.
@@ -214,14 +216,15 @@ export abstract class Renderer extends Initializable implements Controllable {
     initialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
-        touchEventProvider: TouchEventProvider): boolean {
+        touchEventProvider: TouchEventProvider,
+        pointerEventProvider: PointerEventProvider): boolean {
 
         assert(context !== undefined, `valid webgl context required`);
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
 
-        return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider);
+        return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider, pointerEventProvider);
     }
 
     /**

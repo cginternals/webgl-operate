@@ -24,6 +24,7 @@ import {
     MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
+    PointerEventProvider,
     Program,
     Renderbuffer,
     Renderer,
@@ -173,7 +174,8 @@ export class ProgressiveLightingRenderer extends Renderer {
     protected onInitialize(context: Context, callback: Invalidate,
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
-        touchEventProvider: TouchEventProvider): boolean {
+        touchEventProvider: TouchEventProvider,
+        pointerEventProvider: PointerEventProvider): boolean {
 
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
@@ -401,7 +403,7 @@ export class ProgressiveLightingRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, mouseEventProvider, touchEventProvider);
+        this._navigation = new Navigation(callback, mouseEventProvider, touchEventProvider, pointerEventProvider);
         this._navigation.camera = this._camera;
 
         /**

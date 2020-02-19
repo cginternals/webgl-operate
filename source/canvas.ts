@@ -14,6 +14,7 @@ import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
 import { MouseEventProvider } from './mouseeventprovider';
+import { PointerEventProvider } from './pointereventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
 import { TouchEventProvider } from './toucheventprovider';
@@ -114,6 +115,9 @@ export class Canvas extends Resizable {
     /** @see {@link touchEventProvider} */
     protected _touchEventProvider: TouchEventProvider;
 
+    /** @see {@link pointerEventProvider} */
+    protected _pointerEventProvider: PointerEventProvider;
+
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -147,6 +151,7 @@ export class Canvas extends Resizable {
 
         this._mouseEventProvider = new MouseEventProvider(this._element, 200);
         this._touchEventProvider = new TouchEventProvider(this._element, 200);
+        this._pointerEventProvider = new PointerEventProvider(this._element, 200);
 
         const dataset = this._element.dataset;
 
@@ -353,7 +358,8 @@ export class Canvas extends Resizable {
          * method is assigned to the pipelines invalidation event.
          */
         this._renderer.initialize(this.context, (force) => this._controller.update(force),
-            this._mouseEventProvider /*, this._keyEventProvider */, this._touchEventProvider);
+            this._mouseEventProvider /*, this._keyEventProvider */,
+            this._touchEventProvider, this._pointerEventProvider);
 
         this._renderer.frameSize = this._frameSize;
         this._renderer.clearColor = this._clearColor.rgba;

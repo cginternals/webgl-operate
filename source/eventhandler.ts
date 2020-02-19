@@ -9,6 +9,7 @@ import { Observable, Subscription } from 'rxjs';
 import { assert } from './auxiliaries';
 
 import { MouseEventProvider } from './mouseeventprovider';
+import { PointerEventProvider } from './pointereventprovider';
 import { Invalidate } from './renderer';
 import { TouchEventProvider } from './toucheventprovider';
 
@@ -24,6 +25,11 @@ export interface MouseEventHandler { (latests: Array<MouseEvent>, previous: Arra
  * Callback for handling touch events, given the latest touch events (since last update) as well as the previous.
  */
 export interface TouchEventHandler { (latests: Array<TouchEvent>, previous: Array<TouchEvent>): void; }
+
+/**
+ * Callback for handling pointer events, given the latest touch events (since last update) as well as the previous.
+ */
+export interface PointerEventHandler { (latests: Array<PointerEvent>, previous: Array<PointerEvent>): void; }
 
 
 /**
@@ -57,6 +63,11 @@ export class EventHandler {
      */
     protected _touchEventProvider: TouchEventProvider | undefined;
 
+    /**
+     * Assigned pointer event provider. This is usually created and owned by the canvas.
+     */
+    protected _pointerEventProvider: PointerEventProvider | undefined;
+
     protected _latestMouseEventsByType =
         new Map<MouseEventProvider.Type, Array<MouseEvent>>();
     protected _previousMouseEventsByType =
@@ -71,12 +82,23 @@ export class EventHandler {
     protected _touchEventHandlerByType =
         new Map<TouchEventProvider.Type, Array<TouchEventHandler>>();
 
+    protected _latestPointerEventsByType =
+        new Map<PointerEventProvider.Type, Array<PointerEvent>>();
+    protected _previousPointerEventsByType =
+        new Map<PointerEventProvider.Type, Array<PointerEvent>>();
+    protected _pointerEventHandlerByType =
+        new Map<PointerEventProvider.Type, Array<PointerEventHandler>>();
 
-    constructor(invalidate: Invalidate | undefined, mouseEventProvider: MouseEventProvider | undefined,
-        /* keyEventProvider: KeyEventProvider | undefined,*/ touchEventProvider: TouchEventProvider | undefined) {
+
+    constructor(invalidate: Invalidate | undefined,
+        mouseEventProvider: MouseEventProvider | undefined,
+        /* keyEventProvider: KeyEventProvider | undefined,*/
+        touchEventProvider: TouchEventProvider | undefined,
+        pointerEventProvider: PointerEventProvider | undefined) {
         this._invalidate = invalidate;
         this._mouseEventProvider = mouseEventProvider;
         this._touchEventProvider = touchEventProvider;
+        this._pointerEventProvider = pointerEventProvider;
     }
 
 
@@ -187,6 +209,50 @@ export class EventHandler {
     }
 
     /**
+     * Utility for registering an additional pointer event handler for updates on pointer events of the given type. The
+     * handler is to be called on update iff at least a single touch event of the given type has occurred since last
+     * update.
+     * @param type - Pointer event type the handler is to be associated with.
+     * @param handler - Handler to be called on update.
+     */
+    protected pushPointerEventHandler(type: PointerEventProvider.Type, handler: PointerEventHandler): void {
+        if (this._pointerEventHandlerByType.has(type)) {
+            (this._pointerEventHandlerByType.get(type) as Array<PointerEventHandler>).push(handler);
+            return;
+        }
+
+        this._pointerEventHandlerByType.set(type, new Array<PointerEventHandler>());
+
+        this._previousPointerEventsByType.set(type, new Array<PointerEvent>());
+        const latest = new Array<PointerEvent>();
+        this._latestPointerEventsByType.set(type, latest);
+
+        assert(this._pointerEventProvider !== undefined, `expected valid touch event provider`);
+        const observable = (this._pointerEventProvider as PointerEventProvider).observable(type);
+
+        this._subscriptions.push((observable as Observable<PointerEvent>).subscribe(
+            (event) => { latest.push(event); this.invalidate(); }));
+
+        (this._pointerEventHandlerByType.get(type) as Array<PointerEventHandler>).push(handler);
+    }
+
+    protected invokePointerEventHandler(type: PointerEventProvider.Type): void {
+        const handlers = this._pointerEventHandlerByType.get(type);
+        if (handlers === undefined || handlers.length === 0) {
+            return;
+        }
+        const latest = this._latestPointerEventsByType.get(type) as Array<PointerEvent>;
+        if (latest.length === 0) {
+            return;
+        }
+        const previous = this._previousPointerEventsByType.get(type) as Array<PointerEvent>;
+        handlers.forEach((handler) => handler(latest, previous));
+
+        Object.assign(previous, latest);
+        latest.length = 0;
+    }
+
+    /**
      * Disposes all registered handlers of all event types.
      */
     dispose(): void {
@@ -216,6 +282,13 @@ export class EventHandler {
         this.invokeTouchEventHandler(TouchEventProvider.Type.End);
         this.invokeTouchEventHandler(TouchEventProvider.Type.Move);
         this.invokeTouchEventHandler(TouchEventProvider.Type.Cancel);
+
+        this.invokePointerEventHandler(PointerEventProvider.Type.Move);
+        this.invokePointerEventHandler(PointerEventProvider.Type.Down);
+        this.invokePointerEventHandler(PointerEventProvider.Type.Enter);
+        this.invokePointerEventHandler(PointerEventProvider.Type.Up);
+        this.invokePointerEventHandler(PointerEventProvider.Type.Leave);
+        this.invokePointerEventHandler(PointerEventProvider.Type.Cancel);
     }
 
 
@@ -382,6 +455,59 @@ export class EventHandler {
         this.pushTouchEventHandler(TouchEventProvider.Type.Cancel, handler);
     }
 
+    /**
+     * Register a pointer up event handler that is to be called on update iff at least a single touch cancel event has
+     * occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushPointerUpHandler(handler: PointerEventHandler): void {
+        this.pushPointerEventHandler(PointerEventProvider.Type.Up, handler);
+    }
+
+    /**
+     * Register a pointer down event handler that is to be called on update iff at least a single touch cancel event has
+     * occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushPointerDownHandler(handler: PointerEventHandler): void {
+        this.pushPointerEventHandler(PointerEventProvider.Type.Down, handler);
+    }
+
+    /**
+     * Register a pointer enter event handler that is to be called on update iff at least a single touch cancel event
+     * has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushPointerEnterHandler(handler: PointerEventHandler): void {
+        this.pushPointerEventHandler(PointerEventProvider.Type.Enter, handler);
+    }
+
+    /**
+     * Register a pointer leave event handler that is to be called on update iff at least a single touch cancel event
+     * has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushPointerLeaveHandler(handler: PointerEventHandler): void {
+        this.pushPointerEventHandler(PointerEventProvider.Type.Leave, handler);
+    }
+
+    /**
+     * Register a pointer move event handler that is to be called on update iff at least a single touch cancel event has
+     * occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushPointerMoveHandler(handler: PointerEventHandler): void {
+        this.pushPointerEventHandler(PointerEventProvider.Type.Move, handler);
+    }
+
+    /**
+     * Register a pointer cancel event handler that is to be called on update iff at least a single touch cancel event
+     * has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushPointerCancelHandler(handler: PointerEventHandler): void {
+        this.pushPointerEventHandler(PointerEventProvider.Type.Cancel, handler);
+    }
 
     /**
      * Forward pointer lock request to the mouse event provider (if one exists).
