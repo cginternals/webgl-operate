@@ -118,27 +118,24 @@ export class Color {
         return hsl;
     }
 
-
     /**
      * Converts a color from LAB space to XYZ space.
      * @param lab - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static lab2xyz(lab: GLclampf3): GLclampf3 {
-        const labF = clampf3(lab, 'LAB input');
+        const labF = [lab[0] * 100.0, lab[1] * 256.0 - 128.0, lab[2] * 256.0 - 128.0];
+        const yr = (labF[0] + 16.0) / 116.0;
+        const xr = labF[1] / 500.0 + yr;
+        const zr = yr - labF[2] / 200.0;
 
-        const yr = (labF[0] * 100.0 + 16.0) / 116.0;
-        const xr = labF[1] * 100 / 500.0 + yr;
-        const zr = yr - labF[2] * 100 / 200.0;
-
-        const yr3 = yr * yr * yr;
-        const xr3 = xr * xr * xr;
-        const zr3 = zr * zr * zr;
+        const e = 0.20689655; // Math.pow(216 / 24389, 1.0 / 3.0);
+        const k = 0.00110706; // 27 / 24389
 
         /* D65/2° illuminant for XYZ conversion */
-        const y = 1.00000 * (yr3 > 0.008856 ? yr3 : (yr - 16.0 / 116.0) / 7.787);
-        const x = 0.95047 * (xr3 > 0.008856 ? xr3 : (xr - 16.0 / 116.0) / 7.787);
-        const z = 1.08883 * (zr3 > 0.008856 ? zr3 : (zr - 16.0 / 116.0) / 7.787);
+        const x = 0.95047 * (xr > e ? xr ** 3 : (xr - 16.0 / 116.0) * k);
+        const y = 1.00000 * (labF[0] > 8.0 ? yr ** 3 : labF[0] * k);
+        const z = 1.08883 * (zr > e ? zr ** 3 : (zr - 16.0 / 116.0) * k);
 
         return [x, y, z];
     }
@@ -152,15 +149,18 @@ export class Color {
         // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
         const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
 
-        /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
-        const x = xyzF[0] > 0.008856 ? Math.pow(xyzF[0], 1.0 / 3.0) : (7.787 * xyzF[0]) + (16.0 / 116.0);
-        const y = xyzF[1] > 0.008856 ? Math.pow(xyzF[1], 1.0 / 3.0) : (7.787 * xyzF[1]) + (16.0 / 116.0);
-        const z = xyzF[2] > 0.008856 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
+        // const e = 0.00885645; // 216 / 24389
+        // const k = 7.787; // (24389 / 27) / 116.0
 
-        return clampf3([
+        /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
+        const x = xyzF[0] > 0.00885645 ? Math.pow(xyzF[0], 1.0 / 3.0) : (7.787 * xyzF[0]) + (16.0 / 116.0);
+        const y = xyzF[1] > 0.00885645 ? Math.pow(xyzF[1], 1.0 / 3.0) : (7.787 * xyzF[1]) + (16.0 / 116.0);
+        const z = xyzF[2] > 0.00885645 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
+
+        return [
             0.01 * (116.0 * y - 16.0),
-            0.01 * (500.0 * (x - y)),
-            0.01 * (200.0 * (y - z))]);
+            0.5 + 0.00392157 * (500.0 * (x - y)),
+            0.5 + 0.00392157 * (200.0 * (y - z))];
     }
 
 
@@ -318,15 +318,15 @@ export class Color {
 
     /**
      * Performs a linear interpolation between x and y using a to weight between them within the specified color space.
-     * @param x - First color stop for mix/linear interpolation.
-     * @param y - Second color stop for mix/linear interpolation.
+     * @param x - First color stop for lerp/linear interpolation.
+     * @param y - Second color stop for lerp/linear interpolation.
      * @param a - Specify the value to use to interpolate between x and y.
      * @param space - The color space that is to be used for linear interpolation of two colors.
      */
-    static mix(x: Color, y: Color, a: number, space: Color.Space = Color.Space.LAB): Color {
-        if (a === 0.0) {
+    static lerp(x: Color, y: Color, a: number, space: Color.Space = Color.Space.LAB): Color {
+        if (a <= 0.0) {
             return new Color(x.rgba);
-        } else if (a === 1.0) {
+        } else if (a >= 1.0) {
             return new Color(y.rgba);
         }
 

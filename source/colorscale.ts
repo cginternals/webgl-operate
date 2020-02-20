@@ -33,7 +33,7 @@ export class ColorScale {
     private static readonly SCHEMA: any = require('./data/colorscalepresets.schema.json');
 
     /** @see{@link hint} */
-    protected _hint: ColorScale.InterpolationHint;
+    protected _hint: ColorScale.InterpolationHint = ColorScale.InterpolationHint.Linear;
 
     /** @ee{@link colors} */
     protected _colors = new Array<Color>();
@@ -225,7 +225,7 @@ export class ColorScale {
                 break;
             }
             const a = (position - positions[lower]) / (positions[upper] - positions[lower]);
-            scale._colors.push(Color.mix(colors[lower], colors[upper], a, Color.Space.LAB));
+            scale._colors.push(Color.lerp(colors[lower], colors[upper], a, Color.Space.LAB));
         }
         return scale;
     }
@@ -266,7 +266,7 @@ export class ColorScale {
         if (this._hint === ColorScale.InterpolationHint.Nearest) {
             return this._colors[posIndex - lower > upper - posIndex ? lower : upper];
         }
-        return Color.mix(this._colors[lower], this._colors[upper], posIndex - lower, space);
+        return Color.lerp(this._colors[lower], this._colors[upper], posIndex - lower, space);
     }
 
     /**

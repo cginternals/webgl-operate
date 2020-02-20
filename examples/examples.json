@@ -42,6 +42,12 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
+        "target": "colorscale-example",
+        "title": "Color Scale",
+        "object": "ColorScaleExample",
+        "caption": "Variations and presets of color scales."
+    },
+    {
         "target": "labelelide-example",
         "title": "Label Elide",
         "object": "LabelElideExample",
