@@ -3,6 +3,10 @@
 
 import { auxiliaries } from 'webgl-operate';
 
+const log = auxiliaries.log;
+const LogLvl = auxiliaries.LogLevel;
+
+
 import {
     Camera,
     Canvas,
@@ -27,7 +31,7 @@ import { Example } from './example';
 // tslint:disable:max-classes-per-file
 
 
-class ColorScaleRenderer extends Renderer {
+class ColorLerpRenderer extends Renderer {
 
     protected _extensions = false;
 
@@ -103,7 +107,7 @@ class ColorScaleRenderer extends Renderer {
                 this.updateLabels();
                 this.invalidate();
             })
-            .catch((reason) => auxiliaries.log(auxiliaries.LogLevel.Error, reason));
+            .catch((reason) => log(LogLvl.Error, reason));
 
         this.setupScene();
 
@@ -247,7 +251,7 @@ class ColorScaleRenderer extends Renderer {
         const colorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGBA, stepCount, [0, 1.0]);
 
         for (const color of colorScale.colors) {
-            console.log('>>>>GENERATED COLOR', color.rgba);
+            log(LogLvl.Info, `generated color: ${color.rgba}`);
         }
 
         this._labelLAB.color = colorScale.lerp(0.5, Color.Space.LAB)!;
@@ -264,7 +268,7 @@ class ColorScaleRenderer extends Renderer {
         colorScale.hint = ColorScale.InterpolationHint.Nearest;
         for (const label of nearestLabels) {
             const r = colorScale.lerp(i / l, Color.Space.LAB)!;
-            console.log('>>>lerpNearest Result', i, i / l, r.rgba);
+            log(LogLvl.Info, `lerp (nearest): ${i} ${i / l} ${r.rgba}`);
             label.color = r;
             i++;
         }
@@ -274,7 +278,7 @@ class ColorScaleRenderer extends Renderer {
         colorScale.hint = ColorScale.InterpolationHint.Linear;
         for (const label of linearLabels) {
             const r = colorScale.lerp(i / l, Color.Space.LAB)!;
-            console.log('>>>lerpLinear Result', i, i / l, r.rgba);
+            log(LogLvl.Info, `lerp (linear): ${i} ${i / l} ${r.rgba}`);
             label.color = r;
             i++;
         }
@@ -342,10 +346,10 @@ class ColorScaleRenderer extends Renderer {
 }
 
 
-export class ColorScaleExample extends Example {
+export class ColorLerpExample extends Example {
 
     private _canvas: Canvas;
-    private _renderer: ColorScaleRenderer;
+    private _renderer: ColorLerpRenderer;
 
     initialize(element: HTMLCanvasElement | string): boolean {
 
@@ -355,7 +359,7 @@ export class ColorScaleExample extends Example {
         this._canvas.frameScale = [1.0, 1.0];
         this._canvas.clearColor = new Color();
 
-        this._renderer = new ColorScaleRenderer();
+        this._renderer = new ColorLerpRenderer();
         this._canvas.renderer = this._renderer;
 
         return true;
@@ -370,7 +374,7 @@ export class ColorScaleExample extends Example {
         return this._canvas;
     }
 
-    get renderer(): ColorScaleRenderer {
+    get renderer(): ColorLerpRenderer {
         return this._renderer;
     }
 

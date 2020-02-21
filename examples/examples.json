@@ -42,10 +42,10 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
-        "target": "colorscale-example",
-        "title": "Color Scale",
-        "object": "ColorScaleExample",
-        "caption": "Minimalistic scene featuring color scales."
+        "target": "colorlerp-example",
+        "title": "Color Lerp",
+        "object": "ColorLerpExample",
+        "caption": "Minimalistic scene showing labels with interpolated colors."
     },
     {
         "target": "labelelide-example",
