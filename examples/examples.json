@@ -48,6 +48,12 @@
         "caption": "Variations and presets of color scales."
     },
     {
+        "target": "colorlerp-example",
+        "title": "Color Lerp",
+        "object": "ColorLerpExample",
+        "caption": "Nearest and linear interpolation of label colors."
+    },
+    {
         "target": "labelelide-example",
         "title": "Label Elide",
         "object": "LabelElideExample",

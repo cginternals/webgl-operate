@@ -262,10 +262,16 @@ export class ColorScale {
         const posIndex = position * this._colors.length; // Position in index space.
         const lower = Math.floor(posIndex);
         const upper = lower + 1;
-        assert(upper < this._colors.length, `expected upper not exceed maximum color index`);
+
+        if (upper >= this._colors.length) {
+            return this._colors[this._colors.length - 1];
+        }
+
+        // tslint:disable-next-line: max-line-length
+        assert(upper < this._colors.length, `expected upper not exceed maximum color index: ${upper} < ${this._colors.length}`);
 
         if (this._hint === ColorScale.InterpolationHint.Nearest) {
-            return this._colors[posIndex - lower > upper - posIndex ? lower : upper];
+            return this._colors[posIndex - lower <= upper - posIndex ? lower : upper];
         }
         return Color.lerp(this._colors[lower], this._colors[upper], posIndex - lower, space);
     }

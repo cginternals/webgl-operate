@@ -119,15 +119,19 @@ export class Color {
     }
 
     /**
-     * Converts a color from LAB space to XYZ space.
+     * Converts a color from LAB space to XYZ space (D65/2° illuminant)
      * @param lab - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static lab2xyz(lab: GLclampf3): GLclampf3 {
-        const labF = [lab[0] * 100.0, lab[1] * 255.0 - 128.0, lab[2] * 255.0 - 128.0];
-        const yr = (labF[0] + 16.0) / 116.0;
-        const xr = labF[1] / 500.0 + yr;
-        const zr = yr - labF[2] / 200.0;
+        const labF = clampf3(lab, 'LAB input');
+
+        /** The following computation assumes the value ranges:
+         *  L: [0, 100], a: [-128, 127], b: [-128, 127]
+         */
+        const yr = (100.0 * labF[0] + 16.0) / 116.0;
+        const xr = (255.0 * labF[1] - 128.0) / 500.0 + yr;
+        const zr = yr - (255.0 * labF[2] - 128.0) / 200.0;
 
         const xr3 = Math.pow(xr, 3.0);
         const yr3 = Math.pow(yr, 3.0);
@@ -156,10 +160,10 @@ export class Color {
         const z = xyzF[2] > 0.008856 ? Math.cbrt(xyzF[2]) : (7.787 * xyzF[2] + (16.0 / 116.0));
 
         /* scale to range [0.0, 1.0] - typically L is in [0,-100], a and b in [-128,+127] */
-        return [
+        return clampf3([
             (116.0 * y - 16.0) / 100.0,
             (500.0 * (x - y) + 128.0) / 255.0,
-            (200.0 * (y - z) + 128.0) / 255.0];
+            (200.0 * (y - z) + 128.0) / 255.0]);
     }
 
 
