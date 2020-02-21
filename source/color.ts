@@ -129,37 +129,31 @@ export class Color {
         const xr = labF[1] / 500.0 + yr;
         const zr = yr - labF[2] / 200.0;
 
-        const e = 0.008856;
-        const k = 1.0 / 7.787;
-
-        const xr3 = xr ** 3.0;
-        const yr3 = yr ** 3.0;
-        const zr3 = zr ** 3.0;
+        const xr3 = Math.pow(xr, 3.0);
+        const yr3 = Math.pow(yr, 3.0);
+        const zr3 = Math.pow(zr, 3.0);
 
         /* D65/2° illuminant for XYZ conversion */
-        const x = 0.95047 * (xr3 > e ? xr3 : (xr - 16.0 / 116.0) * k);
-        const y = 1.00000 * (yr3 > e ? yr3 : (yr - 16.0 / 116.0) * k);
-        const z = 1.08883 * (zr3 > e ? zr3 : (zr - 16.0 / 116.0) * k);
+        const x = 0.95047 * (xr3 > 0.008856 ? xr3 : (xr - 16.0 / 116.0) / 7.787);
+        const y = 1.00000 * (yr3 > 0.008856 ? yr3 : (yr - 16.0 / 116.0) / 7.787);
+        const z = 1.08883 * (zr3 > 0.008856 ? zr3 : (zr - 16.0 / 116.0) / 7.787);
 
         return [x, y, z];
     }
 
     /**
-     * Converts a color from XYZ space to LAB space.
-     * @param xyz - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
+     * Converts a color from XYZ space to CIE-Lab space.
+     * @param xyz - XYZ color tuple: x, y, and z, and refer to the D65/2° illuminant.
      * @returns - LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].
      */
     static xyz2lab(xyz: GLclampf3): GLclampf3 {
         // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
         const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
 
-        const e = 0.008856;
-        const k = 7.787;
-
         /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
-        const x = xyzF[0] > e ? (xyzF[0] ** (1.0 / 3.0)) : (k * xyzF[0] + (16.0 / 116.0));
-        const y = xyzF[1] > e ? (xyzF[1] ** (1.0 / 3.0)) : (k * xyzF[1] + (16.0 / 116.0));
-        const z = xyzF[2] > e ? (xyzF[2] ** (1.0 / 3.0)) : (k * xyzF[2] + (16.0 / 116.0));
+        const x = xyzF[0] > 0.008856 ? Math.cbrt(xyzF[0]) : (7.787 * xyzF[0] + (16.0 / 116.0));
+        const y = xyzF[1] > 0.008856 ? Math.cbrt(xyzF[1]) : (7.787 * xyzF[1] + (16.0 / 116.0));
+        const z = xyzF[2] > 0.008856 ? Math.cbrt(xyzF[2]) : (7.787 * xyzF[2] + (16.0 / 116.0));
 
         /* scale to range [0.0, 1.0] - typically L is in [0,-100], a and b in [-128,+127] */
         return [
@@ -182,9 +176,9 @@ export class Color {
         const b = xyz[0] * +0.01345 + xyz[1] * -0.11839 + xyz[2] * +1.01541;
 
         return clampf3([
-            r ** (1.0 / 2.19921875),
-            g ** (1.0 / 2.19921875),
-            b ** (1.0 / 2.19921875)]);
+            r > 0.0 ? Math.pow(r, 1.0 / 2.19921875) : 0,
+            g > 0.0 ? Math.pow(g, 1.0 / 2.19921875) : 0,
+            b > 0.0 ? Math.pow(b, 1.0 / 2.19921875) : 0]);
 
         // Standard-RGB
         // let r = xyz[0] * +3.2406 + xyz[1] * -1.5372 + xyz[2] * -0.4986;
@@ -205,9 +199,9 @@ export class Color {
     static rgb2xyz(rgb: GLclampf3): GLclampf3 {
         const rgbF = clampf3(rgb, 'RGB input');
 
-        const r = rgbF[0] ** 2.19921875;
-        const g = rgbF[1] ** 2.19921875;
-        const b = rgbF[2] ** 2.19921875;
+        const r = Math.pow(rgbF[0], 2.19921875);
+        const g = Math.pow(rgbF[1], 2.19921875);
+        const b = Math.pow(rgbF[2], 2.19921875);
 
         const x = r * 0.57667 + g * 0.18555 + b * 0.18819;
         const y = r * 0.29738 + g * 0.62735 + b * 0.07527;

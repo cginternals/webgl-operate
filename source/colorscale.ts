@@ -195,7 +195,8 @@ export class ColorScale {
                 positions[i] = i / (size - 1);
             }
         }
-        assert(positions.length === colors.length, `expected number of positions to match number of colors`);
+        assert(positions.length === colors.length,
+            `expected number of positions (${positions.length}) to match number of colors (${colors.length})`);
 
         let lower = 0;
         let upper = lower + 1;
