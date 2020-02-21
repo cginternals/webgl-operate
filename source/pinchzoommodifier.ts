@@ -63,10 +63,8 @@ export class PinchZoomModifier extends CameraModifier {
         const T = mat4.fromTranslation(m4(), this._translation);
 
         const eye = vec3.transformMat4(v3(), this._reference.eye, T);
-        const center = vec3.transformMat4(v3(), this._reference.center, T);
 
         this._camera.eye = eye;
-        this._camera.center = center;
     }
 
 }
