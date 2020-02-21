@@ -478,12 +478,25 @@ export class Navigation {
         }
 
         if (this._mode === undefined) {
-            auxiliaries.log(auxiliaries.LogLevel.Warning, `No mode was set in Interaction::onPointerMove.`);
             return;
         }
 
-        let modeUpdated = false;
+        const events = Array.from(this._activeEvents.values());
+        const primaryEvent = this.getPrimaryEvent(events);
 
+        /**
+         * Update the mode for every movement when using a mouse. This is necessary since mouse events do not trigger
+         * 'pointerup' events, so we need to figure out when the primary button is released manually
+         */
+        if (primaryEvent?.pointerType === 'mouse') {
+            this._mode = this.mode();
+        }
+
+        /**
+         * Handle the case where this is the first movement of a multi-touch gesture. We need to find out which
+         * kind of gesture is executed.
+         */
+        let modeUpdated = false;
         if (this._mode === Navigation.Modes.MultiTouch) {
             this._mode = this.resolveMultiTouch();
             modeUpdated = true;
