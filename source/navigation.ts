@@ -174,15 +174,7 @@ export class Navigation {
         const isTouchEvent = primaryEvent.pointerType === 'touch' || primaryEvent.pointerType === 'pen';
 
         const isPrimaryButtonDown = primaryEvent.buttons & 1;
-        const isSecondaryButtonDown = primaryEvent.buttons & 2;
-        // const isMouseDown = event.type === 'mousedown';
-        // const isMouseMove = event.type === 'mousemove';
-
-        // const touchEvent = event as TouchEvent;
-        // let isTouchEvent = false;
-        // if (touchEvent !== undefined) {
-        //     isTouchEvent = touchEvent.touches !== undefined && touchEvent.touches.length > 0;
-        // }
+        const isShiftKeyDown = primaryEvent.shiftKey;
 
         const isPointerLockedRotate = PointerLock.active() && this._alwaysRotateOnMove;
         const numPointers = this._activeEvents.size;
@@ -190,15 +182,19 @@ export class Navigation {
         const isMouseRotate = isMouseEvent && isPrimaryButtonDown && numPointers === 1;
         const isTouchRotate = isTouchEvent && numPointers === 1;
 
-        const isMousePan = isMouseEvent && isSecondaryButtonDown && numPointers === 1;
+        const isMousePan = isMouseEvent && isPrimaryButtonDown && isShiftKeyDown && numPointers === 1;
         const isMultiTouch = isTouchEvent && numPointers === 2;
 
-        if (isPointerLockedRotate || isMouseRotate || isTouchRotate) {
+        if (isPointerLockedRotate) {
             return Navigation.Modes.Rotate;
-        } else if (isMousePan) {
+        }
+
+        if (isMousePan) {
             return Navigation.Modes.Pan;
         } else if (isMultiTouch) {
             return Navigation.Modes.MultiTouch;
+        } else if (isMouseRotate || isTouchRotate) {
+            return Navigation.Modes.Rotate;
         }
         return undefined;
     }
@@ -265,11 +261,6 @@ export class Navigation {
     }
 
     protected pan(start: boolean): void {
-        if (this._activeEvents.size !== 2) {
-            auxiliaries.log(LogLevel.Info,
-                'Pinch event was canceled because less or more than two pointers were detected.');
-            return;
-        }
         const events = Array.from(this._activeEvents.values());
         const event = this.getPrimaryEvent(events);
 
@@ -453,8 +444,6 @@ export class Navigation {
         for (const pointer of latests) {
             this._activeEvents.delete(pointer.pointerId);
         }
-
-        // this._mode = this.mode();
     }
 
     protected onPointerEnter(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void { }
