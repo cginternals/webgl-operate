@@ -13,7 +13,8 @@
         "target": "gltf-renderer",
         "title": "glTF Support",
         "authors": [
-            "bwasty"
+            "bwasty",
+            "p-otto"
         ],
         "caption": "glTF support with physical-based rendering and multi-frame sampling.",
         "disabled": false
@@ -28,6 +29,34 @@
         ],
         "caption": "Basic volume rendering using ray-marching with simple shading, coloring and more.",
         "disabled": true
+    },
+    {
+        "target": "openll-showcase",
+        "title": "OpenLL Text Rendering",
+        "authors": [
+            "anne-gropler",
+            "cgcostume"
+        ],
+        "caption": "High-performance, text placement, typesetting, and rendering of in 2D and 3D.",
+        "disabled": true
+    },
+    {
+        "target": "progressive-lighting",
+        "title": "Progressive Lighting",
+        "authors": [
+            "p-otto"
+        ],
+        "caption": "PBR renderer showcasing different methods of physically plausible lighting.",
+        "disabled": false
+    },
+    {
+        "target": "point-cloud",
+        "title": "Point Cloud",
+        "authors": [
+            "cgcostume"
+        ],
+        "caption": "Particle rendering for interactive visual display of an animated point cloud.",
+        "disabled": false
     },
     {
         "target": "treemap",
@@ -58,16 +87,6 @@
         ],
         "caption": "WebGL port of the initial glbinding cubescape demo using instanced rendering.",
         "disabled": false
-    },
-    {
-        "target": "openll-showcase",
-        "title": "OpenLL Text Rendering",
-        "authors": [
-            "anne-gropler",
-            "cgcostume"
-        ],
-        "caption": "High-performance, text placement, typesetting, and rendering of in 2D and 3D.",
-        "disabled": true
     },
     {
         "target": "webxr-support",

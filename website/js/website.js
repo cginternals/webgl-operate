@@ -9,6 +9,7 @@ function clipboard() {
 
 function demo(demo, element) {
     demo.initialize(element)
+    demo.enableFullscreenOnCtrlClick();
 
     canvas = demo.canvas;
     context = demo.canvas.context;
@@ -17,6 +18,7 @@ function demo(demo, element) {
 
 function example(example, element) {
     example.initialize(element)
+    example.enableFullscreenOnCtrlClick();
 
     canvas = example.canvas;
     context = example.canvas.context;
