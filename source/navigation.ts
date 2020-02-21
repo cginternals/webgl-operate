@@ -9,13 +9,15 @@ import { MouseEventProvider } from './mouseeventprovider';
 import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
+import { LogLevel } from './auxiliaries';
 import { FirstPersonModifier } from './firstpersonmodifier';
+import { PanModifier } from './panmodifier';
+import { PinchZoomModifier } from './pinchzoommodifier';
 import { PointerEventProvider } from './pointereventprovider';
 import { TouchEventProvider } from './toucheventprovider';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 import { auxiliaries } from './webgl-operate.slim';
-import { PanModifier } from './panmodifier';
 
 /* spellchecker: enable */
 
@@ -74,15 +76,26 @@ export class Navigation {
     protected _pan: PanModifier | undefined;
 
     /**
+     * Pinch camera modifier.
+     */
+    protected _pinch: PinchZoomModifier | undefined;
+
+    /**
      * Even handler used to forward/map events to specific camera modifiers.
      */
     protected _eventHandler: EventHandler;
 
     /**
-     * This keeps track of all pointers that are currently interacting with the canvas.
+     * This keeps track of all events that are currently interacting with the canvas.
      * It maps from pointer id to the currecnt position.
      */
-    protected _activePointers: Map<number, vec2>;
+    protected _activeEvents: Map<number, PointerEvent>;
+
+    /**
+     * Keep track of the latest interaction in order to allow a cooldown before the next
+     * interaction is allowed.
+     */
+    protected _lastInteractionTime: number;
 
 
     constructor(
@@ -139,7 +152,7 @@ export class Navigation {
         /* Explicitly use the setter here to create the appropriate modifier. */
         this.metaphor = Navigation.Metaphor.Turntable;
 
-        this._activePointers = new Map();
+        this._activeEvents = new Map();
     }
 
 
@@ -147,14 +160,21 @@ export class Navigation {
      * Resolves the event to camera modifier mapping by returning the responsible camera modifier.
      * @param event - Event to retrieve navigation mode for.
      */
-    protected mode(event: /* MouseEvent | TouchEvent | */ PointerEvent | KeyboardEvent): Navigation.Modes | undefined {
+    protected mode(): Navigation.Modes | undefined {
 
-        const isMouseEvent = (event as PointerEvent).pointerType === 'mouse';
-        const isTouchEvent = (event as PointerEvent).pointerType === 'touch' ||
-            (event as PointerEvent).pointerType === 'pen';
+        const events = Array.from(this._activeEvents.values());
+        const primaryEvent = this.getPrimaryEvent(events);
 
-        const isPrimaryButtonDown = (event as PointerEvent).buttons & 1;
-        const isSecondaryButtonDown = (event as PointerEvent).buttons & 2;
+        if (primaryEvent === undefined) {
+            auxiliaries.log(LogLevel.Warning, 'No primary pointer event detected in Navigation::mode.');
+            return;
+        }
+
+        const isMouseEvent = primaryEvent.pointerType === 'mouse';
+        const isTouchEvent = primaryEvent.pointerType === 'touch' || primaryEvent.pointerType === 'pen';
+
+        const isPrimaryButtonDown = primaryEvent.buttons & 1;
+        const isSecondaryButtonDown = primaryEvent.buttons & 2;
         // const isMouseDown = event.type === 'mousedown';
         // const isMouseMove = event.type === 'mousemove';
 
@@ -165,26 +185,59 @@ export class Navigation {
         // }
 
         const isPointerLockedRotate = PointerLock.active() && this._alwaysRotateOnMove;
-        const numPointers = this._activePointers.size;
+        const numPointers = this._activeEvents.size;
 
         const isMouseRotate = isMouseEvent && isPrimaryButtonDown && numPointers === 1;
         const isTouchRotate = isTouchEvent && numPointers === 1;
 
         const isMousePan = isMouseEvent && isSecondaryButtonDown && numPointers === 1;
-        const isTouchPan = isTouchEvent && numPointers === 2;
-
-        console.log(numPointers);
+        const isMultiTouch = isTouchEvent && numPointers === 2;
 
         if (isPointerLockedRotate || isMouseRotate || isTouchRotate) {
             return Navigation.Modes.Rotate;
-        } else if (isMousePan || isTouchPan) {
+        } else if (isMousePan) {
             return Navigation.Modes.Pan;
+        } else if (isMultiTouch) {
+            return Navigation.Modes.MultiTouch;
         }
         return undefined;
     }
 
-    protected rotate(event: PointerEvent, start: boolean): void {
-        const point = this._eventHandler.offsets(event)[0];
+    protected resolveMultiTouch(): Navigation.Modes | undefined {
+        if (this._activeEvents.size < 2) {
+            auxiliaries.log(LogLevel.Warning,
+                'MultiTouch resolution was canceled because less than two touches were detected.');
+            return undefined;
+        }
+
+        const events = Array.from(this._activeEvents.values());
+        const direction1 = vec2.fromValues(events[0].movementX, events[0].movementY);
+        const direction2 = vec2.fromValues(events[1].movementX, events[1].movementY);
+
+        if (vec2.length(direction1) === 0 || vec2.length(direction2) === 0) {
+            return Navigation.Modes.Zoom;
+        }
+
+        vec2.normalize(direction1, direction1);
+        vec2.normalize(direction2, direction2);
+        const cosAngle = vec2.dot(direction1, direction2);
+
+        const panThreshold = 0.2;
+        if (cosAngle > panThreshold) {
+            return Navigation.Modes.Pan;
+        } else {
+            return Navigation.Modes.Zoom;
+        }
+    }
+
+    protected rotate(start: boolean): void {
+        if (this._activeEvents.size !== 1) {
+            auxiliaries.log(LogLevel.Info,
+                'Rotate event was canceled because less or more than two pointers were detected.');
+            return;
+        }
+        const events = Array.from(this._activeEvents.values());
+        const point = this._eventHandler.offsets(events[0])[0];
 
         switch (this._metaphor) {
             case Navigation.Metaphor.FirstPerson:
@@ -194,25 +247,16 @@ export class Navigation {
                     movement = vec2.fromValues((event as MouseEvent).movementX, (event as MouseEvent).movementY);
                 }
                 start ? firstPerson.initiate(point) : firstPerson.process(point, movement);
-                if (event.cancelable) {
-                    event.preventDefault();
-                }
                 break;
 
             case Navigation.Metaphor.Trackball:
                 const trackball = this._trackball as TrackballModifier;
                 start ? trackball.initiate(point) : trackball.process(point);
-                if (event.cancelable) {
-                    event.preventDefault();
-                }
                 break;
 
             case Navigation.Metaphor.Turntable:
                 const turntable = this._turntable as TurntableModifier;
                 start ? turntable.initiate(point) : turntable.process(point);
-                if (event.cancelable) {
-                    event.preventDefault();
-                }
                 break;
 
             default:
@@ -220,15 +264,49 @@ export class Navigation {
         }
     }
 
-    protected pan(event: PointerEvent, start: boolean): void {
+    protected pan(start: boolean): void {
+        if (this._activeEvents.size !== 2) {
+            auxiliaries.log(LogLevel.Info,
+                'Pinch event was canceled because less or more than two pointers were detected.');
+            return;
+        }
+        const events = Array.from(this._activeEvents.values());
+        const event = this.getPrimaryEvent(events);
+
+        if (event === undefined) {
+            auxiliaries.log(LogLevel.Warning,
+                'Pan event was canceled because no primary event was detected.');
+            return;
+        }
+
         const point = this._eventHandler.offsets(event)[0];
 
         const pan = this._pan as PanModifier;
         start ? pan.initiate(point) : pan.process(point);
+    }
 
-        if (event.cancelable) {
-            event.preventDefault();
+    protected pinch(start: boolean): void {
+        if (this._activeEvents.size !== 2) {
+            auxiliaries.log(LogLevel.Info,
+                'Pinch event was canceled because less or more than two pointers were detected.');
+            return;
         }
+        const events = Array.from(this._activeEvents.values());
+        const point1 = this._eventHandler.offsets(events[0])[0];
+        const point2 = this._eventHandler.offsets(events[1])[0];
+
+        const pinch = this._pinch as PinchZoomModifier;
+        start ? pinch.initiate(point1, point2) : pinch.process(point1, point2);
+    }
+
+    protected getPrimaryEvent(events: Array<PointerEvent>): PointerEvent | undefined {
+        for (const event of events) {
+            if (event.isPrimary) {
+                return event;
+            }
+        }
+
+        return undefined;
     }
 
     // protected onMouseDown(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
@@ -348,34 +426,22 @@ export class Navigation {
     // }
 
     protected onPointerDown(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
-        let primaryEvent: PointerEvent | undefined;
-
-        for (const pointer of latests) {
-            if (pointer.isPrimary) {
-                primaryEvent = pointer;
-            }
-            this._activePointers.set(pointer.pointerId, vec2.fromValues(pointer.clientX, pointer.clientY));
-
-            console.log('down: ' + pointer.pointerId);
+        for (const event of latests) {
+            this._activeEvents.set(event.pointerId, event);
         }
 
-        if (primaryEvent === undefined) {
-            auxiliaries.log(auxiliaries.LogLevel.Error, `No primary event was detected.`);
-            return;
-        }
-
-        this._mode = this.mode(primaryEvent);
+        this._mode = this.mode();
         switch (this._mode) {
-            case Navigation.Modes.Zoom:
-                // this.startZoom(event);
-                break;
-
             case Navigation.Modes.Rotate:
-                this.rotate(primaryEvent, true);
+                this.rotate(true);
                 break;
 
             case Navigation.Modes.Pan:
-                this.pan(primaryEvent, true);
+                this.pan(true);
+                break;
+
+            case Navigation.Modes.Zoom:
+                this.pinch(true);
                 break;
 
             default:
@@ -385,59 +451,62 @@ export class Navigation {
 
     protected onPointerUp(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const pointer of latests) {
-            this._activePointers.delete(pointer.pointerId);
-
-            console.log('up: ' + pointer.pointerId);
+            this._activeEvents.delete(pointer.pointerId);
         }
+
+        // this._mode = this.mode();
     }
 
     protected onPointerEnter(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void { }
 
     protected onPointerLeave(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const pointer of latests) {
-            this._activePointers.delete(pointer.pointerId);
-
-            console.log('leave: ' + pointer.pointerId);
+            this._activeEvents.delete(pointer.pointerId);
         }
     }
 
     protected onPointerCancel(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const pointer of latests) {
-            this._activePointers.delete(pointer.pointerId);
-
-            console.log('cancel: ' + pointer.pointerId);
+            this._activeEvents.delete(pointer.pointerId);
         }
     }
 
     protected onPointerMove(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
-        let primaryEvent: PointerEvent | undefined;
 
-        for (const pointer of latests) {
-            if (pointer.isPrimary) {
-                primaryEvent = pointer;
-            }
-            this._activePointers.set(pointer.pointerId, vec2.fromValues(pointer.clientX, pointer.clientY));
+        for (const event of latests) {
+            this._activeEvents.set(event.pointerId, event);
         }
 
-        if (primaryEvent === undefined) {
-            auxiliaries.log(auxiliaries.LogLevel.Error, `No primary event was detected.`);
+        if (this._mode === undefined) {
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `No mode was set in Interaction::onPointerMove.`);
             return;
         }
 
-        const modeWasUndefined = (this._mode === undefined);
-        this._mode = this.mode(primaryEvent);
+        let modeUpdated = false;
+
+        if (this._mode === Navigation.Modes.MultiTouch) {
+            this._mode = this.resolveMultiTouch();
+            modeUpdated = true;
+        }
+
         switch (this._mode) {
             case Navigation.Modes.Rotate:
-                this.rotate(primaryEvent, modeWasUndefined);
+                this.rotate(modeUpdated);
                 break;
 
             case Navigation.Modes.Pan:
-                this.pan(primaryEvent, modeWasUndefined);
+                this.pan(modeUpdated);
+                break;
+
+            case Navigation.Modes.Zoom:
+                this.pinch(modeUpdated);
                 break;
 
             default:
                 break;
         }
+
+        this._lastInteractionTime = performance.now();
     }
 
 
@@ -466,6 +535,9 @@ export class Navigation {
         if (this._pan) {
             this._pan.camera = camera;
         }
+        if (this._pinch) {
+            this._pinch.camera = camera;
+        }
     }
 
     /**
@@ -484,6 +556,8 @@ export class Navigation {
         this._alwaysRotateOnMove = false;
 
         this._pan = new PanModifier();
+
+        this._pinch = new PinchZoomModifier();
 
         this._metaphor = metaphor;
         switch (this._metaphor) {
@@ -528,6 +602,11 @@ export namespace Navigation {
     export enum Modes {
         Move,
         Pan,
+        /**
+         * MultiTouch is used when interaction with two fingers was initiated but it is not clear yet what
+         * interaction the user intends
+         */
+        MultiTouch,
         Rotate,
         Zoom,
         ZoomStep,
