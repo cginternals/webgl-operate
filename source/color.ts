@@ -124,18 +124,22 @@ export class Color {
      * @returns - XYZ color tuple: x, y, and z, each in [0.0, 1.0].
      */
     static lab2xyz(lab: GLclampf3): GLclampf3 {
-        const labF = [lab[0] * 100.0, lab[1] * 256.0 - 128.0, lab[2] * 256.0 - 128.0];
+        const labF = [lab[0] * 100.0, lab[1] * 255.0 - 128.0, lab[2] * 255.0 - 128.0];
         const yr = (labF[0] + 16.0) / 116.0;
         const xr = labF[1] / 500.0 + yr;
         const zr = yr - labF[2] / 200.0;
 
-        const e = 0.20689655; // Math.pow(216 / 24389, 1.0 / 3.0);
-        const k = 0.00110706; // 27 / 24389
+        const e = 0.008856;
+        const k = 1.0 / 7.787;
+
+        const xr3 = xr ** 3.0;
+        const yr3 = yr ** 3.0;
+        const zr3 = zr ** 3.0;
 
         /* D65/2° illuminant for XYZ conversion */
-        const x = 0.95047 * (xr > e ? xr ** 3 : (xr - 16.0 / 116.0) * k);
-        const y = 1.00000 * (labF[0] > 8.0 ? yr ** 3 : labF[0] * k);
-        const z = 1.08883 * (zr > e ? zr ** 3 : (zr - 16.0 / 116.0) * k);
+        const x = 0.95047 * (xr3 > e ? xr3 : (xr - 16.0 / 116.0) * k);
+        const y = 1.00000 * (yr3 > e ? yr3 : (yr - 16.0 / 116.0) * k);
+        const z = 1.08883 * (zr3 > e ? zr3 : (zr - 16.0 / 116.0) * k);
 
         return [x, y, z];
     }
@@ -149,18 +153,19 @@ export class Color {
         // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
         const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
 
-        // const e = 0.00885645; // 216 / 24389
-        // const k = 7.787; // (24389 / 27) / 116.0
+        const e = 0.008856;
+        const k = 7.787;
 
         /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
-        const x = xyzF[0] > 0.00885645 ? Math.pow(xyzF[0], 1.0 / 3.0) : (7.787 * xyzF[0]) + (16.0 / 116.0);
-        const y = xyzF[1] > 0.00885645 ? Math.pow(xyzF[1], 1.0 / 3.0) : (7.787 * xyzF[1]) + (16.0 / 116.0);
-        const z = xyzF[2] > 0.00885645 ? Math.pow(xyzF[2], 1.0 / 3.0) : (7.787 * xyzF[2]) + (16.0 / 116.0);
+        const x = xyzF[0] > e ? (xyzF[0] ** (1.0 / 3.0)) : (k * xyzF[0] + (16.0 / 116.0));
+        const y = xyzF[1] > e ? (xyzF[1] ** (1.0 / 3.0)) : (k * xyzF[1] + (16.0 / 116.0));
+        const z = xyzF[2] > e ? (xyzF[2] ** (1.0 / 3.0)) : (k * xyzF[2] + (16.0 / 116.0));
 
+        /* scale to range [0.0, 1.0] - typically L is in [0,-100], a and b in [-128,+127] */
         return [
-            0.01 * (116.0 * y - 16.0),
-            0.5 + 0.00392157 * (500.0 * (x - y)),
-            0.5 + 0.00392157 * (200.0 * (y - z))];
+            (116.0 * y - 16.0) / 100.0,
+            (500.0 * (x - y) + 128.0) / 255.0,
+            (200.0 * (y - z) + 128.0) / 255.0];
     }
 
 
@@ -172,14 +177,14 @@ export class Color {
     static xyz2rgb(xyz: GLclampf3): GLclampf3 {
         // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
 
-        const r = xyz[0] * +2.04159 + xyz[1] * -0.56501 + xyz[2] * -0.34473;
-        const g = xyz[0] * -0.96924 + xyz[1] * +1.87597 + xyz[2] * +0.04156;
-        const b = xyz[0] * +0.01344 + xyz[1] * -0.11836 + xyz[2] * +1.01517;
+        const r = xyz[0] * +2.04137 + xyz[1] * -0.56495 + xyz[2] * -0.34469;
+        const g = xyz[0] * -0.96927 + xyz[1] * +1.87601 + xyz[2] * +0.04156;
+        const b = xyz[0] * +0.01345 + xyz[1] * -0.11839 + xyz[2] * +1.01541;
 
         return clampf3([
-            Math.pow(r, 1.0 / 2.19921875),
-            Math.pow(g, 1.0 / 2.19921875),
-            Math.pow(b, 1.0 / 2.19921875)]);
+            r ** (1.0 / 2.19921875),
+            g ** (1.0 / 2.19921875),
+            b ** (1.0 / 2.19921875)]);
 
         // Standard-RGB
         // let r = xyz[0] * +3.2406 + xyz[1] * -1.5372 + xyz[2] * -0.4986;
@@ -200,13 +205,13 @@ export class Color {
     static rgb2xyz(rgb: GLclampf3): GLclampf3 {
         const rgbF = clampf3(rgb, 'RGB input');
 
-        const r = Math.pow(rgbF[0], 2.19921875);
-        const g = Math.pow(rgbF[1], 2.19921875);
-        const b = Math.pow(rgbF[2], 2.19921875);
+        const r = rgbF[0] ** 2.19921875;
+        const g = rgbF[1] ** 2.19921875;
+        const b = rgbF[2] ** 2.19921875;
 
-        const x = r * 0.57667 + g * 0.18556 + b * 0.18823;
-        const y = r * 0.29734 + g * 0.62736 + b * 0.07529;
-        const z = r * 0.02703 + g * 0.07069 + b * 0.99134;
+        const x = r * 0.57667 + g * 0.18555 + b * 0.18819;
+        const y = r * 0.29738 + g * 0.62735 + b * 0.07527;
+        const z = r * 0.02703 + g * 0.07069 + b * 0.99110;
         return [x, y, z];
     }
 
