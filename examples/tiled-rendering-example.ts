@@ -57,6 +57,8 @@ export class TiledCubeRenderer extends Renderer {
 
     protected _alreadyRenderedNonTiledQuadrant = false;
 
+    protected _isLoaded = false;
+
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
      * @param context - valid context to create the object for.
@@ -68,6 +70,8 @@ export class TiledCubeRenderer extends Renderer {
         mouseEventProvider: MouseEventProvider,
         /* keyEventProvider: KeyEventProvider, */
         /* touchEventProvider: TouchEventProvider */): boolean {
+
+        this.showSpinner();
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -132,6 +136,9 @@ export class TiledCubeRenderer extends Renderer {
 
             this._program.bind();
             gl.uniform1i(this._program.uniform('u_textured'), true);
+
+            this._isLoaded = true;
+            this.hideSpinner();
 
             this.invalidate(true);
         });
@@ -230,8 +237,6 @@ export class TiledCubeRenderer extends Renderer {
             this._tileCameraZCurveGenerator.resetTileRendering();
 
             const frameSize = this.getViewportDividableByTwo(this._frameSize);
-            console.log(this._frameSize);
-            console.log(frameSize);
 
             this._intermediateFBO.resize(this._frameSize[0] * this._ssaaFactor, this._frameSize[1] * this._ssaaFactor);
             this._camera.viewport = [frameSize[0] * this._ssaaFactor, frameSize[1] * this._ssaaFactor];
@@ -287,6 +292,10 @@ export class TiledCubeRenderer extends Renderer {
     }
 
     protected onFrame(): void {
+        if (!this._isLoaded) {
+            return;
+        }
+
         // prepare
         const gl = this._context.gl;
 
@@ -340,9 +349,6 @@ export class TiledCubeRenderer extends Renderer {
             gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE,
                 this._tileCameraHilbertGenerator.camera.viewProjection);
             this._cuboid.draw();
-            if (offset[0] / 2 !== Math.ceil(offset[0] / 2) || offset[1] / 2 !== Math.ceil(offset[1] / 2)) {
-                console.log(offset);
-            }
         }
 
         if (this._tileCameraZCurveGenerator.nextTile()) {
@@ -371,8 +377,28 @@ export class TiledCubeRenderer extends Renderer {
     }
 
     protected onSwap(): void {
+        if (!this._isLoaded) {
+            return;
+        }
+
         this._blit.frame();
         this.invalidate(true);
+    }
+
+    /**
+     * Show a spinner that indicates that the example is still loading.
+     */
+    protected showSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'inline';
+    }
+
+    /**
+     * Hide the loading spinner.
+     */
+    protected hideSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'none';
     }
 }
 
