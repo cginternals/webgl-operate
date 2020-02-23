@@ -130,8 +130,8 @@ export class Color {
          *  L: [0, 100], a: [-128, 127], b: [-128, 127]
          */
         const yr = (100.0 * labF[0] + 16.0) / 116.0;
-        const xr = (255.0 * labF[1] - 128.0) / 500.0 + yr;
-        const zr = yr - (255.0 * labF[2] - 128.0) / 200.0;
+        const xr = (256.0 * labF[1] - 128.0) / 500.0 + yr;
+        const zr = yr - (256.0 * labF[2] - 128.0) / 200.0;
 
         const xr3 = Math.pow(xr, 3.0);
         const yr3 = Math.pow(yr, 3.0);
@@ -152,7 +152,7 @@ export class Color {
      */
     static xyz2lab(xyz: GLclampf3): GLclampf3 {
         // DO NOT CLAMP! const xyzF = clampf3(xyz, 'XYZ input');
-        const xyzF = [xyz[0] / 0.95047, xyz[1] * 1.00000, xyz[2] / 1.08883];
+        const xyzF = [xyz[0] / 0.95047, xyz[1] / 1.00000, xyz[2] / 1.08883];
 
         /* implicit illuminant of [1.0, 1.0, 1.0] assumed */
         const x = xyzF[0] > 0.008856 ? Math.cbrt(xyzF[0]) : (7.787 * xyzF[0] + (16.0 / 116.0));
@@ -162,8 +162,8 @@ export class Color {
         /* scale to range [0.0, 1.0] - typically L is in [0,-100], a and b in [-128,+127] */
         return clampf3([
             (116.0 * y - 16.0) / 100.0,
-            (500.0 * (x - y) + 128.0) / 255.0,
-            (200.0 * (y - z) + 128.0) / 255.0]);
+            (500.0 * (x - y) + 128.0) / 256.0,
+            (200.0 * (y - z) + 128.0) / 256.0]);
     }
 
 

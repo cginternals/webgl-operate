@@ -35,43 +35,43 @@ class ColorScaleRenderer extends Renderer {
 
     protected _extensions = false;
 
-    protected _presets: Array<[string, string, number, vec2]> = [
-        ['colorbrewer', 'Spectral', 7, vec2.fromValues(-0.95, -0.90)],
-        ['colorbrewer', 'BrBG', 7, vec2.fromValues(-0.95, -0.70)],
-        ['colorbrewer', 'RdBu', 64, vec2.fromValues(-0.95, -0.50)],
-        ['colorbrewer', 'RdYlBu', 7, vec2.fromValues(-0.95, -0.30)],
-        ['colorbrewer', 'PuOr', 7, vec2.fromValues(-0.95, -0.10)],
-        ['colorbrewer', 'Accent', 7, vec2.fromValues(-0.95, +0.20)],
-        ['colorbrewer', 'Paired', 7, vec2.fromValues(-0.95, +0.40)],
-        ['colorbrewer', 'Pastel2', 7, vec2.fromValues(-0.95, +0.60)],
-        ['colorbrewer', 'Dark2', 7, vec2.fromValues(-0.95, +0.80)],
+    protected _positions = new Array<vec2>();
+    protected _presets: Array<[string, string, number, boolean]> = [
 
-        ['colorbrewer', 'OrRd', 4, vec2.fromValues(-0.45, -0.90)],
-        ['colorbrewer', 'OrRd', 7, vec2.fromValues(-0.45, -0.70)],
-        ['colorbrewer', 'RdPu', 4, vec2.fromValues(-0.45, -0.45)],
-        ['colorbrewer', 'RdPu', 7, vec2.fromValues(-0.45, -0.25)],
-        ['colorbrewer', 'Greys', 4, vec2.fromValues(-0.45, -0.00)],
-        ['colorbrewer', 'Greys', 7, vec2.fromValues(-0.45, +0.20)],
-        ['marcosci', 'cividis', 7, vec2.fromValues(-0.45, +0.55)],
-        ['marcosci', 'cividis', 64, vec2.fromValues(-0.45, +0.75)],
+        ['smithwalt', 'viridis', 7, false],
+        ['smithwalt', 'viridis', 64, false],
+        ['smithwalt', 'inferno', 7, false],
+        ['smithwalt', 'inferno', 64, false],
 
-        ['colorbrewer', 'YlOrBr', 4, vec2.fromValues(+0.05, -0.90)],
-        ['colorbrewer', 'YlOrBr', 128, vec2.fromValues(+0.05, -0.70)],
-        ['colorbrewer', 'YlGnBu', 4, vec2.fromValues(+0.05, -0.45)],
-        ['colorbrewer', 'YlGnBu', 128, vec2.fromValues(+0.05, -0.25)],
-        ['colorbrewer', 'PuRd', 4, vec2.fromValues(+0.05, -0.00)],
-        ['colorbrewer', 'PuRd', 128, vec2.fromValues(+0.05, +0.20)],
-        ['mikhailov', 'turbo', 16, vec2.fromValues(+0.05, +0.55)],
-        ['mikhailov', 'turbo', 128, vec2.fromValues(+0.05, +0.75)],
+        ['marcosci', 'cividis', 7, false],
+        ['marcosci', 'cividis', 64, false],
+        ['smithwalt', 'magma', 7, false],
+        ['smithwalt', 'magma', 64, false],
 
-        ['smithwalt', 'viridis', 7, vec2.fromValues(+0.55, -0.90)],
-        ['smithwalt', 'viridis', 64, vec2.fromValues(+0.55, -0.70)],
-        ['smithwalt', 'plasma', 7, vec2.fromValues(+0.55, -0.45)],
-        ['smithwalt', 'plasma', 64, vec2.fromValues(+0.55, -0.25)],
-        ['smithwalt', 'inferno', 7, vec2.fromValues(+0.55, -0.00)],
-        ['smithwalt', 'inferno', 64, vec2.fromValues(+0.55, +0.20)],
-        ['smithwalt', 'magma', 7, vec2.fromValues(+0.55, +0.45)],
-        ['smithwalt', 'magma', 64, vec2.fromValues(+0.55, +0.65)],
+        ['colorbrewer', 'Greys', 4, true],
+        ['colorbrewer', 'Greys', 7, true],
+        ['smithwalt', 'plasma', 7, false],
+        ['smithwalt', 'plasma', 64, false],
+
+        ['colorbrewer', 'Spectral', 7, true],
+        ['colorbrewer', 'Spectral', 64, true],
+        ['mikhailov', 'turbo', 16, false],
+        ['mikhailov', 'turbo', 128, false],
+
+        ['colorbrewer', 'BrBG', 7, true],
+        ['colorbrewer', 'RdBu', 64, true],
+        ['colorbrewer', 'RdYlBu', 7, true],
+        ['colorbrewer', 'PuOr', 7, true],
+
+        ['colorbrewer', 'OrRd', 4, false],
+        ['colorbrewer', 'OrRd', 7, false],
+        ['colorbrewer', 'RdPu', 4, false],
+        ['colorbrewer', 'RdPu', 7, false],
+
+        ['colorbrewer', 'Accent', 7, false],
+        ['colorbrewer', 'Paired', 7, false],
+        ['colorbrewer', 'Pastel2', 7, false],
+        ['colorbrewer', 'Dark2', 7, false],
     ];
 
     protected _labelPass: LabelRenderPass;
@@ -157,7 +157,10 @@ class ColorScaleRenderer extends Renderer {
             .catch((reason) => auxiliaries.log(auxiliaries.LogLevel.Error, reason));
 
 
-        const createLabeledColorScaleRect = (i: number, source: string, preset: string, steps: number): void => {
+        const createLabeledColorScaleRect = (i: number
+            , source: string, preset: string, steps: number, invert: boolean): void => {
+
+            this._positions[i] = vec2.create();
 
             this._labels[i] = new Position2DLabel(new Text(`${source}: ${preset} #${steps}`), Label.Type.Dynamic);
             this._labels[i].lineAnchor = Label.LineAnchor.Top;
@@ -166,21 +169,23 @@ class ColorScaleRenderer extends Renderer {
             this._textures[i].initialize(steps, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
 
             ColorScale.fromPreset(`data/${source}.json`, preset, steps).then((scale: ColorScale) => {
+                scale.invert = invert;
                 const data = scale.bitsUI8(Color.Space.RGB, false);
                 this._textures[i].data(data, true, false);
             });
         };
 
-        this._labels.length = this._textures.length = this._presets.length;
+        this._positions.length = this._labels.length = this._textures.length = this._presets.length;
 
         for (let i = 0; i < this._presets.length; ++i) {
-            createLabeledColorScaleRect(i, this._presets[i][0], this._presets[i][1], this._presets[i][2]);
+            createLabeledColorScaleRect(i,
+                this._presets[i][0], this._presets[i][1], this._presets[i][2], this._presets[i][3]);
         }
 
         this._labelPass.labels = this._labels;
 
         for (const label of this._labelPass.labels) {
-            label.fontSize = 20;
+            label.fontSize = 15.0 / Label.devicePixelRatio();
             label.color.fromHex('#fff');
             label.fontSizeUnit = Label.Unit.Pixel;
         }
@@ -225,6 +230,12 @@ class ColorScaleRenderer extends Renderer {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
             this._camera.viewport = this._canvasSize;
 
+            for (let i = 0; i < this._presets.length; ++i) {
+                const [x, y] = [i % 4, Math.floor(i / 4)];
+                this._positions[i][0] = (x + 1) * 0.05 + x * 0.45 - 1.0;
+                this._positions[i][1] = (y + 1) * 0.15 + y * 0.10 - 1.0 + 0.05;
+            }
+
             this.updateLabels();
         }
 
@@ -251,12 +262,13 @@ class ColorScaleRenderer extends Renderer {
         this._labelPass.frame();
 
         this._program.bind();
-        gl.uniform2f(this._uExtent, 0.40, 0.1);
+
+        gl.uniform2f(this._uExtent, 0.40, 0.40 / 7.0 * this._camera.aspect);
 
         for (let i = 0; i < this._presets.length; ++i) {
             this._textures[i].bind(gl.TEXTURE0);
 
-            gl.uniform2fv(this._uOffset, this._presets[i][3]);
+            gl.uniform2fv(this._uOffset, this._positions[i]);
             this._ndcrect.draw();
         }
 
@@ -270,7 +282,7 @@ class ColorScaleRenderer extends Renderer {
         const s05 = vec2.fromValues(this._canvasSize[0] * 0.5, this._canvasSize[1] * 0.5);
 
         for (let i = 0; i < this._presets.length; ++i) {
-            this._labels[i].position = vec2.mul(vec2.create(), this._presets[i][3], s05);
+            this._labels[i].position = vec2.mul(vec2.create(), this._positions[i], s05);
         }
     }
 

@@ -38,6 +38,9 @@ export class ColorScale {
     /** @ee{@link colors} */
     protected _colors = new Array<Color>();
 
+    /** @see{@link invert} */
+    protected _invert = false;
+
 
     /**
      * Returns the stride for interleaved arrays of color components based on the array type.
@@ -250,6 +253,7 @@ export class ColorScale {
             return this._colors[0];
         }
 
+
         /* Return first or last color if position is 0.0 or 1.0 respectively. */
         const clamped = clamp(position, 0.0, 1.0);
         if (clamped <= 0.0) {
@@ -311,6 +315,28 @@ export class ColorScale {
 
 
     /**
+     * Provides read access to the number of colors of this scale. This is a shortcut for this.colors.length.
+     */
+    get length(): number {
+        return this._colors.length;
+    }
+
+    /**
+     * Whether or not the scale should be inverted.
+     */
+    get invert(): boolean {
+        return this._invert;
+    }
+    set invert(invert: boolean) {
+        if (this._invert === invert) {
+            return;
+        }
+        this._colors.reverse();
+        this._invert = invert;
+    }
+
+
+    /**
      * Converts the color scale into an array of interleaved unsigned int values of the requested color space.
      * @param space - Color space that is to be used for the array.
      * @param alpha - Whether or not alpha is to be included.
@@ -352,14 +378,6 @@ export class ColorScale {
             }
         }
         return bits;
-    }
-
-
-    /**
-     * Provides read access to the number of colors of this scale. This is a shortcut for this.colors.length.
-     */
-    get length(): number {
-        return this._colors.length;
     }
 
 }
