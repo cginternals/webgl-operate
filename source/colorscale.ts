@@ -33,10 +33,13 @@ export class ColorScale {
     private static readonly SCHEMA: any = require('./data/colorscalepresets.schema.json');
 
     /** @see{@link hint} */
-    protected _hint: ColorScale.InterpolationHint;
+    protected _hint: ColorScale.InterpolationHint = ColorScale.InterpolationHint.Linear;
 
     /** @ee{@link colors} */
     protected _colors = new Array<Color>();
+
+    /** @see{@link invert} */
+    protected _invert = false;
 
 
     /**
@@ -195,7 +198,8 @@ export class ColorScale {
                 positions[i] = i / (size - 1);
             }
         }
-        assert(positions.length === colors.length, `expected number of positions to match number of colors`);
+        assert(positions.length === colors.length,
+            `expected number of positions (${positions.length}) to match number of colors (${colors.length})`);
 
         let lower = 0;
         let upper = lower + 1;
@@ -225,7 +229,7 @@ export class ColorScale {
                 break;
             }
             const a = (position - positions[lower]) / (positions[upper] - positions[lower]);
-            scale._colors.push(Color.mix(colors[lower], colors[upper], a, Color.Space.LAB));
+            scale._colors.push(Color.lerp(colors[lower], colors[upper], a, Color.Space.LAB));
         }
         return scale;
     }
@@ -249,6 +253,7 @@ export class ColorScale {
             return this._colors[0];
         }
 
+
         /* Return first or last color if position is 0.0 or 1.0 respectively. */
         const clamped = clamp(position, 0.0, 1.0);
         if (clamped <= 0.0) {
@@ -261,12 +266,18 @@ export class ColorScale {
         const posIndex = position * this._colors.length; // Position in index space.
         const lower = Math.floor(posIndex);
         const upper = lower + 1;
-        assert(upper < this._colors.length, `expected upper not exceed maximum color index`);
+
+        if (upper >= this._colors.length) {
+            return this._colors[this._colors.length - 1];
+        }
+
+        // tslint:disable-next-line: max-line-length
+        assert(upper < this._colors.length, `expected upper not exceed maximum color index: ${upper} < ${this._colors.length}`);
 
         if (this._hint === ColorScale.InterpolationHint.Nearest) {
-            return this._colors[posIndex - lower > upper - posIndex ? lower : upper];
+            return this._colors[posIndex - lower <= upper - posIndex ? lower : upper];
         }
-        return Color.mix(this._colors[lower], this._colors[upper], posIndex - lower, space);
+        return Color.lerp(this._colors[lower], this._colors[upper], posIndex - lower, space);
     }
 
     /**
@@ -300,6 +311,28 @@ export class ColorScale {
     }
     get hint(): ColorScale.InterpolationHint {
         return this._hint;
+    }
+
+
+    /**
+     * Provides read access to the number of colors of this scale. This is a shortcut for this.colors.length.
+     */
+    get length(): number {
+        return this._colors.length;
+    }
+
+    /**
+     * Whether or not the scale should be inverted.
+     */
+    get invert(): boolean {
+        return this._invert;
+    }
+    set invert(invert: boolean) {
+        if (this._invert === invert) {
+            return;
+        }
+        this._colors.reverse();
+        this._invert = invert;
     }
 
 
@@ -345,14 +378,6 @@ export class ColorScale {
             }
         }
         return bits;
-    }
-
-
-    /**
-     * Provides read access to the number of colors of this scale. This is a shortcut for this.colors.length.
-     */
-    get length(): number {
-        return this._colors.length;
     }
 
 }
