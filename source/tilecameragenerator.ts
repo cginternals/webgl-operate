@@ -1,7 +1,12 @@
+
 import { mat4, vec3, vec4 } from 'gl-matrix';
-import { log, LogLevel } from './auxiliaries';
-import { Camera } from './camera';
+
 import { m4 } from './gl-matrix-extensions';
+import { log, LogLevel } from './auxiliaries';
+
+import { Camera } from './camera';
+import { GLsizei2 } from './tuples';
+
 
 /**
  * Support Class that wraps the calculation of camera tiling and iteration with various algorithms
@@ -51,10 +56,10 @@ export class TileCameraGenerator {
     protected _tile = -1;
 
     /** @see {@link sourceViewport} */
-    protected _sourceViewport: [number, number] | undefined;
+    protected _sourceViewport: GLsizei2 | undefined;
 
     /** @see {@link tileSize} */
-    protected _tileSize: [number, number] | undefined;
+    protected _tileSize: GLsizei2 | undefined;
 
     /** @see {@link padding} */
     protected _padding: vec4 = vec4.fromValues(0, 0, 0, 0);
@@ -390,7 +395,7 @@ export class TileCameraGenerator {
      * If the viewport has not been set, it returns [-1, -1].
      * @returns - Size of the Viewport.
      */
-    get sourceViewport(): [number, number] {
+    get sourceViewport(): GLsizei2 {
         if (this._sourceViewport) {
             return this._sourceViewport;
         } else {
@@ -403,7 +408,7 @@ export class TileCameraGenerator {
      * It checks if the sourceViewport is compatible with the selected algorithm
      * and eventually adjusts the tileSize to match the conditions of the algorithm.
      */
-    set sourceViewport(viewport: [number, number]) {
+    set sourceViewport(viewport: GLsizei2) {
         if (this._sourceViewport !== viewport) {
             this._sourceViewport = viewport;
             this._iterationAlgorithmIndices = [];
@@ -415,7 +420,7 @@ export class TileCameraGenerator {
      * Returns the tileSize.
      * If the tilesSize has not been set it returns [-1, -1] as invalid.
      */
-    get tileSize(): [number, number] {
+    get tileSize(): GLsizei2 {
         if (this._tileSize) {
             return this._tileSize;
         } else {
@@ -427,7 +432,7 @@ export class TileCameraGenerator {
      * Sets the tileSize.
      * The tileSize eventually changes to match the selected algorithms constraints.
      */
-    set tileSize(tileSize: [number, number]) {
+    set tileSize(tileSize: GLsizei2) {
         if (this._tileSize !== tileSize) {
             this._tileSize = tileSize;
             this._iterationAlgorithmIndices = [];
