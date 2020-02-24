@@ -39,7 +39,7 @@ export class ColorScale {
     protected _colors = new Array<Color>();
 
     /** @see{@link invert} */
-    protected _invert = false;
+    protected _inverted = false;
 
 
     /**
@@ -322,17 +322,19 @@ export class ColorScale {
     }
 
     /**
-     * Whether or not the scale should be inverted.
+     * Whether or not the scale was inverted based on its initial state.
      */
-    get invert(): boolean {
-        return this._invert;
+    get inverted(): boolean {
+        return this._inverted;
     }
-    set invert(invert: boolean) {
-        if (this._invert === invert) {
-            return;
-        }
+
+    /**
+     * Inverts the color scale. Whether or not the scale is inverted can be checked using the
+     * inverted read-only property (@link inverted).
+     */
+    invert(): void {
         this._colors.reverse();
-        this._invert = invert;
+        this._inverted = !this._inverted;
     }
 
 

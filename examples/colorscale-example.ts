@@ -169,7 +169,9 @@ class ColorScaleRenderer extends Renderer {
             this._textures[i].initialize(steps, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
 
             ColorScale.fromPreset(`data/${source}.json`, preset, steps).then((scale: ColorScale) => {
-                scale.invert = invert;
+                if (invert) {
+                    scale.invert();
+                }
                 const data = scale.bitsUI8(Color.Space.RGB, false);
                 this._textures[i].data(data, true, false);
             });
@@ -185,7 +187,7 @@ class ColorScaleRenderer extends Renderer {
         this._labelPass.labels = this._labels;
 
         for (const label of this._labelPass.labels) {
-            label.fontSize = 15.0 / Label.devicePixelRatio();
+            label.fontSize = 15.0 * Label.devicePixelRatio();
             label.color.fromHex('#fff');
             label.fontSizeUnit = Label.Unit.Pixel;
         }
