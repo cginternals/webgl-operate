@@ -5,7 +5,7 @@ precision lowp float;
 
 
 #if __VERSION__ == 100
-    attribute vec3 a_vertex;
+    attribute vec2 a_vertex;
 
 #else
     layout(location = 0) in vec2 a_vertex;
