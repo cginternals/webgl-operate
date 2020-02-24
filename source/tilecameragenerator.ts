@@ -19,7 +19,6 @@ import { GLsizei2 } from './tuples';
  * tileCameraGenerator.sourceCamera = camera;
  * tileCameraGenerator.sourceViewport = canvSize;
  * tileCameraGenerator.tileSize = [128, 128];
- * tileCameraGenerator.padding = new vec4();
  * tileCamera = tileRender.camera;
  * tileCameraGenerator.algorithm = TileCameraGenerator.IteratorAlgorithm.ScanLine;
  * let offset: [number, number];

@@ -86,9 +86,9 @@
         "disabled": true
     },
     {
-        "target": "tiled-rendering-example",
-        "title": "Tiled Cube Renderer",
-        "object": "TiledRendererExample",
-        "caption": "Rendering of a cube with the Tiled Renderer in 4 different ways."
+        "target": "tilecamera-example",
+        "title": "Tile-based 8k Rendering",
+        "object": "TileCameraExample",
+        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     }
 ]
