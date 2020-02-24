@@ -114,8 +114,15 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected _debugTexture: GLint;
     protected _debugTextureSubject = new ReplaySubject<GLint>(1);
 
+    /**
+     * @see {@link isLoading}
+     */
     protected _isLoading: boolean;
 
+    /**
+     * This property can be observed via `aRenderer.loadingState$.observe()`. It is triggered when `finishLoading` or
+     * `startLoading` is called on this renderer.
+     */
     protected _loadingStatusSubscription: ReplaySubject<LoadingStatus>;
 
     /** @callback Invalidate
@@ -204,11 +211,19 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     protected onSwap(): void { /* default empty impl. */ }
 
+    /**
+     * This method needs to be called by a renderer, when a loading process is started in order to notify listeners via
+     * the observable loadingState$.
+     */
     protected startLoading(): void {
         this._isLoading = true;
         this._loadingStatusSubscription.next(LoadingStatus.Started);
     }
 
+    /**
+     * This method needs to be called when a loading process is finished in order to notify listeners via
+     * the observable loadingState$.
+     */
     protected finishLoading(): void {
         this._isLoading = false;
         this._loadingStatusSubscription.next(LoadingStatus.Finished);
@@ -426,10 +441,18 @@ export abstract class Renderer extends Initializable implements Controllable {
         return this._debugTextureSubject.asObservable();
     }
 
+    /**
+     * This property indicated whether a loading process is currently in progress.
+     * It can be changed by calling `startLoading` or `finishLoading` on this renderer.
+     */
     get isLoading(): boolean {
         return this._isLoading;
     }
 
+    /**
+     * Observable to subscribe to the current loading state of this renderer.
+     * Use `aRenderer.loadingStatus$.subscribe()` to register a new subscriber.
+     */
     get loadingStatus$(): Observable<LoadingStatus> {
         return this._loadingStatusSubscription.asObservable();
     }
