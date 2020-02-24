@@ -128,7 +128,8 @@ export class TriangleRenderer extends Renderer {
 
             this._program.bind();
             gl.uniform1i(this._program.uniform('u_textured'), true);
-            console.log('enabled texture.');
+
+            this.finishLoading();
 
             this.invalidate(true);
         });
@@ -191,6 +192,10 @@ export class TriangleRenderer extends Renderer {
     }
 
     protected onFrame(): void {
+        if (this.isLoading) {
+            return;
+        }
+
         const gl = this._context.gl;
 
         this._defaultFBO.bind();
@@ -225,7 +230,7 @@ export class TriangleExample extends Example {
     private _canvas: Canvas;
     private _renderer: TriangleRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -238,7 +243,7 @@ export class TriangleExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

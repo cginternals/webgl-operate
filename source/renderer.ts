@@ -25,6 +25,11 @@ import { Wizard } from './wizard';
  */
 export interface Invalidate { (force: boolean): void; }
 
+export enum LoadingStatus {
+    Started,
+    Finished,
+}
+
 
 /**
  * Base class for hardware-accelerated processing and/or image-synthesis. It provides information such as the current
@@ -109,6 +114,9 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected _debugTexture: GLint;
     protected _debugTextureSubject = new ReplaySubject<GLint>(1);
 
+    protected _isLoading: boolean;
+
+    protected _loadingStatusSubscription: ReplaySubject<LoadingStatus>;
 
     /** @callback Invalidate
      * A callback intended to be invoked whenever the specialized renderer itself or one of its objects is invalid. This
@@ -196,6 +204,15 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     protected onSwap(): void { /* default empty impl. */ }
 
+    protected startLoading(): void {
+        this._isLoading = true;
+        this._loadingStatusSubscription.next(LoadingStatus.Started);
+    }
+
+    protected finishLoading(): void {
+        this._isLoading = false;
+        this._loadingStatusSubscription.next(LoadingStatus.Finished);
+    }
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
@@ -220,6 +237,9 @@ export abstract class Renderer extends Initializable implements Controllable {
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
+
+        this._isLoading = true;
+        this._loadingStatusSubscription = new ReplaySubject();
 
         return this.onInitialize(context, callback, mouseEventProvider, touchEventProvider);
     }
@@ -404,6 +424,14 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     get debugTexture$(): Observable<GLint> {
         return this._debugTextureSubject.asObservable();
+    }
+
+    get isLoading(): boolean {
+        return this._isLoading;
+    }
+
+    get loadingStatus$(): Observable<LoadingStatus> {
+        return this._loadingStatusSubscription.asObservable();
     }
 
 }
