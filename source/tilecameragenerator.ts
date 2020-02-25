@@ -10,16 +10,14 @@ import { GLsizei2, GLsizei4 } from './tuples';
 
 /**
  * Support Class that wraps the calculation of camera tiling and iteration with various algorithms
- * by giving access to a adjusted camera which NDC-Coordinates match the current tile index.
+ * by giving access to an adjusted camera which NDC-Coordinates match the current tile index.
  * Iteration can be done manually (variant: 1) or automatically (variant: 2).
  * It is intended to be used like:
  *
- * // setup
  * tileCameraGenerator = new TileCameraGenerator();
  * tileCameraGenerator.sourceCamera = camera;
  * tileCameraGenerator.sourceViewport = canvasSize;
  * tileCameraGenerator.tileSize = [128, 128];
- * tileCamera = tileRender.camera;
  * tileCameraGenerator.algorithm = TileCameraGenerator.Algorithm.ScanLine;
  * let offset: [number, number];
  *
@@ -37,7 +35,7 @@ import { GLsizei2, GLsizei4 } from './tuples';
  *      "render"
  * }
  * // reset generator
- * tileCameraGenerator.resetTileRendering();
+ * tileCameraGenerator.reset();
  *
  * NOTE: Use `sourceCameraChanged` if the source camera is altered.
  */
