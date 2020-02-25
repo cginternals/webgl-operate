@@ -56,7 +56,7 @@ export class TileCameraRenderer extends Renderer {
 
     protected _targetSize: tuples.GLsizei2 = TileCameraRenderer.TARGET_SIZE;
 
-    protected _blit: BlitPass;
+    protected _blitPass: BlitPass;
 
     protected _generators = new Array<TileCameraGenerator>(3);
 
@@ -97,15 +97,15 @@ export class TileCameraRenderer extends Renderer {
 
         }
 
-        this._blit = new BlitPass(this._context);
-        this._blit.initialize();
+        this._blitPass = new BlitPass(this._context);
+        this._blitPass.initialize();
 
-        this._blit.readBuffer = gl2facade.COLOR_ATTACHMENT0;
-        this._blit.srcBounds = vec4.fromValues(0, 0, this._targetSize[0], this._targetSize[1]);
-        this._blit.filter = gl.LINEAR;
+        this._blitPass.readBuffer = gl2facade.COLOR_ATTACHMENT0;
+        this._blitPass.srcBounds = vec4.fromValues(0, 0, this._targetSize[0], this._targetSize[1]);
+        this._blitPass.filter = gl.LINEAR;
 
-        this._blit.target = this._defaultFBO;
-        this._blit.drawBuffer = gl.BACK;
+        this._blitPass.target = this._defaultFBO;
+        this._blitPass.drawBuffer = gl.BACK;
 
 
         this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [4.0, 4.0, 4.0]);
@@ -196,7 +196,7 @@ export class TileCameraRenderer extends Renderer {
             this._depthRenderbuffers[i].uninitialize();
             this._intermediateFBOs[i].uninitialize();
         }
-        this._blit.uninitialize();
+        this._blitPass.uninitialize();
     }
 
     /**
@@ -310,21 +310,21 @@ export class TileCameraRenderer extends Renderer {
         const w05 = this._canvasSize[0] / 2 - 3;
         const h05 = this._canvasSize[1] / 2 - 3;
 
-        this._blit.framebuffer = this._intermediateFBOs[0];
-        this._blit.dstBounds = vec4.fromValues(2, 4 + h05, 2 + w05, 4 + 2 * h05);
-        this._blit.frame();
+        this._blitPass.framebuffer = this._intermediateFBOs[0];
+        this._blitPass.dstBounds = vec4.fromValues(2, 4 + h05, 2 + w05, 4 + 2 * h05);
+        this._blitPass.frame();
 
-        this._blit.framebuffer = this._intermediateFBOs[1];
-        this._blit.dstBounds = vec4.fromValues(4 + w05, 4 + h05, 4 + 2 * w05, 4 + 2 * h05);
-        this._blit.frame();
+        this._blitPass.framebuffer = this._intermediateFBOs[1];
+        this._blitPass.dstBounds = vec4.fromValues(4 + w05, 4 + h05, 4 + 2 * w05, 4 + 2 * h05);
+        this._blitPass.frame();
 
-        this._blit.framebuffer = this._intermediateFBOs[2];
-        this._blit.dstBounds = vec4.fromValues(2, 2, 2 + w05, 2 + h05);
-        this._blit.frame();
+        this._blitPass.framebuffer = this._intermediateFBOs[2];
+        this._blitPass.dstBounds = vec4.fromValues(2, 2, 2 + w05, 2 + h05);
+        this._blitPass.frame();
 
-        this._blit.framebuffer = this._intermediateFBOs[3];
-        this._blit.dstBounds = vec4.fromValues(4 + w05, 2, 4 + 2 * w05, 2 + h05);
-        this._blit.frame();
+        this._blitPass.framebuffer = this._intermediateFBOs[3];
+        this._blitPass.dstBounds = vec4.fromValues(4 + w05, 2, 4 + 2 * w05, 2 + h05);
+        this._blitPass.frame();
     }
 
     /**

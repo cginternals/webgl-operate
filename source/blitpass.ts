@@ -22,10 +22,20 @@ import { Texture2D } from './texture2d';
  * For rendering, a direct blit is used. However, if this is not supported, a textured, screen-aligned triangle is used
  * for blitting as fallback.
  *
- * The blit component can be used as follows:
+ * The blit pass can be used as follows:
  * ```
- * this.blit.framebuffer = this.intermediateFBO;
- * this.blit.frame(this.defaultFBO, null, null);
+ * this._blitPass = new BlitPass(this._context);
+ * this._blitPass.initialize();
+ *
+ * this._blitPass.readBuffer = gl2facade.COLOR_ATTACHMENT0;
+ * // this._blitPass.srcBounds = vec4.fromValues(0, 0, this._sourceSize[0], this._sourceSize[1]);
+ * this._blitPass.filter = gl.LINEAR;
+ * this._blitPass.target = this._defaultFBO;
+ * this._blitPass.drawBuffer = gl.BACK;
+ *
+ * this.blitPass.framebuffer = this.intermediateFBO;
+ * // this.blitPass.dstBounds = vec4.fromValues(dstX0, dstY0, dstX1, dstY1);
+ * this.blitPass.frame();
  * ```
  */
 export class BlitPass extends Initializable {
@@ -129,9 +139,13 @@ export class BlitPass extends Initializable {
 
     /**
      * Uses indirect blit by drawing a textured, screen-aligned triangle into the given target framebuffer.
-     * @param program - The program the is used for blitting, either the minimal blit or debug blit.
+     * @param program - The program the is used for minimal blit.
      */
-    private programBlit(program: Program): void {
+    private programBlit(): void {
+        if (this._program === undefined) {
+            this.createProgram();
+        }
+
         assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
         const gl = this._context.gl;
 
@@ -145,7 +159,7 @@ export class BlitPass extends Initializable {
 
         gl.viewport(dstBounds[0], dstBounds[1], dstBounds[2] - dstBounds[0], dstBounds[3] - dstBounds[1]);
 
-        program.bind();
+        this._program.bind();
         gl.uniform4fv(this._uSrcBounds, srcBoundsNormalized);
         gl.uniform4fv(this._uDstBounds, dstBoundsNormalized);
         gl.uniform1i(this._uNearest, this.filter === gl.nearest);
@@ -166,6 +180,39 @@ export class BlitPass extends Initializable {
         // this.program.unbind();
     }
 
+    /**
+     * Used to create (on-demand) the blit program for program based blitting. This function can be specialized, e.g.,
+     * for creating custom blit passes such as the `DebugPass` {@link DebugPass}. This method assumes the program to be
+     * undefined.
+     */
+    protected createProgram(): boolean {
+        assert(this._program === undefined, `expected blit program to be undefined before its creation`);
+        const gl = this._context.gl;
+
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (blit)');
+        vert.initialize(require('./shaders/blit.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag (blit)');
+        frag.initialize(require('./shaders/blit.frag'));
+
+        this._program = new Program(this._context, 'BlitProgram');
+        this._program.initialize([vert, frag], false);
+
+        if (!this._ndcTriangle.initialized) {
+            this._ndcTriangle.initialize();
+        }
+        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
+        this._program.link();
+
+        this._uSrcBounds = this._program.uniform('u_srcBounds');
+        this._uDstBounds = this._program.uniform('u_dstBounds');
+        this._uNearest = this._program.uniform('u_nearest');
+
+        this._program.bind();
+        gl.uniform1i(this._program.uniform('u_source'), 0);
+        this._program.unbind();
+
+        return this._program.valid;
+    }
 
     /**
      * Specializes this pass's initialization. This pass either requires blitFramebuffer support or creates screen-
@@ -185,31 +232,6 @@ export class BlitPass extends Initializable {
         }
 
         this._filter = gl.LINEAR;
-
-        /* Configure program-based blit. */
-
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (blit)');
-        vert.initialize(require('./shaders/blit.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag (blit)');
-        frag.initialize(require('./shaders/blit.frag'));
-
-        this._program = new Program(this._context, 'BlitProgram');
-        this._program.initialize([vert, frag], false);
-
-        if (!this._ndcTriangle.initialized) {
-            this._ndcTriangle.initialize();
-        }
-        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
-        this._program.link();
-
-        this._program.bind();
-        gl.uniform1i(this._program.uniform('u_texture'), 0);
-
-        this._uSrcBounds = this._program.uniform('u_srcBounds');
-        this._uDstBounds = this._program.uniform('u_dstBounds');
-        this._uNearest = this._program.uniform('u_nearest');
-
-        this._program.unbind();
 
         return true;
     }
@@ -242,7 +264,7 @@ export class BlitPass extends Initializable {
             case gl.DEPTH_ATTACHMENT:
             case gl.STENCIL_ATTACHMENT:
             case gl.DEPTH_STENCIL_ATTACHMENT:
-                return this.programBlit(this._program);
+                return this.programBlit();
             default:
                 break;
         }
@@ -251,7 +273,7 @@ export class BlitPass extends Initializable {
         if (this._context.supportsBlitFramebuffer && this._enforceProgramBlit === false) {
             return this.functionBlit();
         }
-        this.programBlit(this._program);
+        this.programBlit();
     }
 
 
