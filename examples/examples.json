@@ -72,6 +72,12 @@
         "caption": "Image based lighting using prefiltered cube maps"
     },
     {
+        "target": "tilecamera-example",
+        "title": "Tile-based 4k Rendering",
+        "object": "TileCameraExample",
+        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
@@ -84,11 +90,5 @@
         "object": "Label3DExample",
         "caption": "Static/dynamic text that can be positioned in 3D space.",
         "disabled": true
-    },
-    {
-        "target": "tilecamera-example",
-        "title": "Tile-based 8k Rendering",
-        "object": "TileCameraExample",
-        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     }
 ]

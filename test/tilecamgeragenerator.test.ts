@@ -16,7 +16,7 @@ import { TileCameraGenerator } from '../source/tilecameragenerator';
 
 describe('Tile Camera Generator Scanline Iteration', () => {
     it(' should render in the correct order', () => {
-        const algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
+        const algorithm = TileCameraGenerator.Algorithm.ScanLine;
         const tileDimensions: [number, number] = [13, 7];
 
         // generate the expected order
@@ -35,7 +35,7 @@ describe('Tile Camera Generator Scanline Iteration', () => {
 
 describe('Tile Camera Generator Hilbert Iteration', () => {
     it(' should render in the correct order', () => {
-        const algorithm = TileCameraGenerator.IterationAlgorithm.HilbertCurve;
+        const algorithm = TileCameraGenerator.Algorithm.HilbertCurve;
         const tileDimensions: [number, number] = [7, 5];
 
         // array contains the expected order
@@ -55,7 +55,7 @@ describe('Tile Camera Generator Hilbert Iteration', () => {
 
 describe('Tile Camera Generator Z-Curve Iteration', () => {
     it(' should render in the correct order', () => {
-        const algorithm = TileCameraGenerator.IterationAlgorithm.ZCurve;
+        const algorithm = TileCameraGenerator.Algorithm.ZCurve;
         const tileDimensions: [number, number] = [7, 5];
 
         // generate the expected order
@@ -73,7 +73,7 @@ describe('Tile Camera Generator Z-Curve Iteration', () => {
 
 });
 
-function testTileCameraIndicesMatchExpected(algorithm: TileCameraGenerator.IterationAlgorithm,
+function testTileCameraIndicesMatchExpected(algorithm: TileCameraGenerator.Algorithm,
     expectedOrder: [number, number][], tileDimensions: [number, number]): void {
     const camera = new Camera(vec3.fromValues(0, 0, 0), vec3.fromValues(1, 0, 0), vec3.fromValues(0, 0, 1));
 

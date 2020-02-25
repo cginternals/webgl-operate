@@ -392,31 +392,4 @@ export class Camera {
         this._altered = status;
     }
 
-    /**
-     * Returns a deep copy of the camera.
-     */
-    public copy(): Camera {
-        const copiedCamera = new Camera(this.eye, this.center, this.up);
-        this.copyAllValues(copiedCamera);
-        return copiedCamera;
-    }
-
-    /**
-     * Sets all variables from camera to the object it is called on.
-     * The values will be a deep copy.
-     * @param camera The camera that should receive the values.
-     */
-    public copyAllValues(camera: Camera): void {
-        camera.altered = true;
-        vec3.copy(camera.eye, this.eye);
-        vec3.copy(camera.center, this.center);
-        vec3.copy(camera.up, this.up);
-        camera.fovy = this.fovy;
-        camera.near = this.near;
-        camera.far = this.far;
-        camera.viewport = [this.viewport[0], this.viewport[1]];
-        camera.aspect = this.aspect;
-        camera.postViewProjection = mat4.copy(m4(), this.postViewProjection);
-        camera.invalidate(true, true, true);
-    }
 }

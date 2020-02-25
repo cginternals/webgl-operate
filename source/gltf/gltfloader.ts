@@ -1,6 +1,8 @@
 
 import { mat4, quat, vec3, vec4 } from 'gl-matrix';
 
+import { assert, isPowerOfTwo, log, LogLevel, upperPowerOfTwo } from '../auxiliaries';
+
 import { GLTF_ELEMENTS_PER_TYPE, GltfAsset, GltfLoader } from 'gltf-loader-ts';
 import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
 
@@ -9,7 +11,6 @@ import { GLTFMesh } from './gltfmesh';
 import { GLTFAlphaMode, GLTFPbrMaterial, GLTFShaderFlags } from './gltfpbrmaterial';
 import { GLTFPrimitive, IndexBinding, VertexBinding } from './gltfprimitive';
 
-import { assert, log, LogLevel } from '../auxiliaries';
 import { Buffer } from '../buffer';
 import { Context } from '../context';
 import { ResourceManager } from '../core';
@@ -86,11 +87,11 @@ export class GLTFLoader {
              * If the texture is not power of two, resize it to avoid problems with REPEAT samplers.
              * See: https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
              */
-            if (!GLTFHelper.isPowerOfTwo(data.width) || !GLTFHelper.isPowerOfTwo(data.height)) {
+            if (!isPowerOfTwo(data.width) || !isPowerOfTwo(data.height)) {
                 // Scale up the texture to the next highest power of two dimensions.
                 const canvas = document.createElement('canvas');
-                canvas.width = GLTFHelper.nextHighestPowerOfTwo(data.width);
-                canvas.height = GLTFHelper.nextHighestPowerOfTwo(data.height);
+                canvas.width = upperPowerOfTwo(data.width);
+                canvas.height = upperPowerOfTwo(data.height);
 
                 const ctx = canvas.getContext('2d');
 

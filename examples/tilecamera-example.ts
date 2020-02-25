@@ -35,8 +35,8 @@ import { Example } from './example';
 
 export class TileCameraRenderer extends Renderer {
 
-    static readonly TILE_SIZE: tuples.GLsizei2 = [256, 256];
-    static readonly TARGET_SIZE: tuples.GLsizei2 = [7680, 4320];
+    static readonly TILE_SIZE: tuples.GLsizei2 = [128, 128];
+    static readonly TARGET_SIZE: tuples.GLsizei2 = [3840, 2160];
 
 
     protected _camera: Camera;
@@ -108,7 +108,7 @@ export class TileCameraRenderer extends Renderer {
         this._blit.drawBuffer = gl.BACK;
 
 
-        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [5.0, 5.0, 5.0]);
+        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [4.0, 4.0, 4.0]);
         this._cuboid.initialize();
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
@@ -172,9 +172,9 @@ export class TileCameraRenderer extends Renderer {
             this._generators[i].tileSize = TileCameraRenderer.TILE_SIZE;
             this._generators[i].sourceViewport = this._targetSize;
         }
-        this._generators[0].algorithm = TileCameraGenerator.IterationAlgorithm.ScanLine;
-        this._generators[1].algorithm = TileCameraGenerator.IterationAlgorithm.HilbertCurve;
-        this._generators[2].algorithm = TileCameraGenerator.IterationAlgorithm.ZCurve;
+        this._generators[0].algorithm = TileCameraGenerator.Algorithm.ScanLine;
+        this._generators[1].algorithm = TileCameraGenerator.Algorithm.HilbertCurve;
+        this._generators[2].algorithm = TileCameraGenerator.Algorithm.ZCurve;
 
 
         return true;
@@ -228,7 +228,7 @@ export class TileCameraRenderer extends Renderer {
     protected onPrepare(): void {
 
         for (const generator of this._generators) {
-            generator.resetTileRendering();
+            generator.reset();
         }
 
         if (this._altered.canvasSize) {
@@ -242,7 +242,7 @@ export class TileCameraRenderer extends Renderer {
         }
         if (this._camera.altered) {
             for (const generator of this._generators) {
-                generator.updateCameraProperties();
+                generator.sourceCameraChanged();
             }
         }
 
@@ -289,11 +289,10 @@ export class TileCameraRenderer extends Renderer {
             if (!this._generators[i].nextTile())
                 continue;
 
-            const offset = this._generators[i].offset;
+            const viewport = this._generators[i].viewport;
+            gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
-            gl.viewport(offset[0], offset[1], this._generators[i].tileSize[0], this._generators[i].tileSize[1]);
-            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._generators[i].camera.viewProjection);
-
+            gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._generators[i].camera!.viewProjection);
             this._cuboid.draw();
         }
 
