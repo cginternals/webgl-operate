@@ -8,8 +8,6 @@ import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
 import { TextureCube } from './texturecube';
-import { Wizard } from './wizard';
-
 
 /**
  * This pass renders an environment from a texture in a single screen-space pass.
@@ -32,8 +30,6 @@ export class EnvironmentRenderingPass extends Initializable {
     protected _polarMapProgram: Program;
 
     protected _ndcTriangle: NdcFillingTriangle;
-    protected _emptyTexture: Texture2D;
-    protected _emptyCubemap: TextureCube;
 
     constructor(context: Context) {
         super();
@@ -45,8 +41,6 @@ export class EnvironmentRenderingPass extends Initializable {
         this._sphereMapProgram = new Program(context, 'SpheremapEnvironmentProgram');
 
         this._ndcTriangle = new NdcFillingTriangle(this._context, 'EnvironmentNdcTriangle');
-        this._emptyTexture = new Texture2D(this._context, 'EmptyTexture');
-        this._emptyCubemap = new TextureCube(this._context, 'EmptyCube');
     }
 
     @Initializable.initialize()
@@ -56,52 +50,58 @@ export class EnvironmentRenderingPass extends Initializable {
 
         this._ndcTriangle.initialize();
 
-        const internalFormatAndType = Wizard.queryInternalTextureFormat(this._context, gl.RGB, Wizard.Precision.byte);
-        this._emptyTexture.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
-        this._emptyCubemap.initialize(1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
-
         /**
          * Compile a program for each projection type.
          */
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'env-projections.vert');
         vert.initialize(require(`./shaders/env-projections.vert`));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
-        frag.initialize(require(`./shaders/env-projections.frag`), false);
 
-        frag.replace('PROJECTION_TYPE', 'CUBE_MAP');
-        frag.compile();
+        // Cube map program
+        const cubemapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        cubemapFrag.initialize(require(`./shaders/env-projections.frag`), false);
+        cubemapFrag.replace('PROJECTION_TYPE', 'CUBE_MAP');
+        cubemapFrag.compile();
 
-        this._cubeMapProgram.initialize([vert, frag], false);
+        this._cubeMapProgram.initialize([vert, cubemapFrag], false);
         this._cubeMapProgram.attribute('a_vertex', this._ndcTriangle.vertexLocation);
         this._cubeMapProgram.link();
         this._cubeMapProgram.bind();
         gl.uniform1i(this._cubeMapProgram.uniform('u_cubemap'), 0);
         this._cubeMapProgram.unbind();
 
-        frag.replace('PROJECTION_TYPE', 'EQUI_MAP');
-        frag.compile();
+        // Equi map program
+        const equimapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        equimapFrag.initialize(require(`./shaders/env-projections.frag`), false);
+        equimapFrag.replace('PROJECTION_TYPE', 'EQUI_MAP');
+        equimapFrag.compile();
 
-        this._equiMapProgram.initialize([vert, frag], false);
+        this._equiMapProgram.initialize([vert, equimapFrag], false);
         this._equiMapProgram.attribute('a_vertex', this._ndcTriangle.vertexLocation);
         this._equiMapProgram.link();
         this._equiMapProgram.bind();
         gl.uniform1i(this._equiMapProgram.uniform('u_equirectmap'), 0);
         this._equiMapProgram.unbind();
 
-        frag.replace('PROJECTION_TYPE', 'SPHERE_MAP');
-        frag.compile();
+        // Sphere map program
+        const spheremapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        spheremapFrag.initialize(require(`./shaders/env-projections.frag`), false);
+        spheremapFrag.replace('PROJECTION_TYPE', 'SPHERE_MAP');
+        spheremapFrag.compile();
 
-        this._sphereMapProgram.initialize([vert, frag], false);
+        this._sphereMapProgram.initialize([vert, spheremapFrag], false);
         this._sphereMapProgram.attribute('a_vertex', this._ndcTriangle.vertexLocation);
         this._sphereMapProgram.link();
         this._sphereMapProgram.bind();
         gl.uniform1i(this._sphereMapProgram.uniform('u_spheremap'), 0);
         this._sphereMapProgram.unbind();
 
-        frag.replace('PROJECTION_TYPE', 'POLAR_MAP');
-        frag.compile();
+        // Polar map program
+        const polarmapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        polarmapFrag.initialize(require(`./shaders/env-projections.frag`), false);
+        polarmapFrag.replace('PROJECTION_TYPE', 'POLAR_MAP');
+        polarmapFrag.compile();
 
-        this._polarMapProgram.initialize([vert, frag], false);
+        this._polarMapProgram.initialize([vert, polarmapFrag], false);
         this._polarMapProgram.attribute('a_vertex', this._ndcTriangle.vertexLocation);
         this._polarMapProgram.link();
         this._polarMapProgram.bind();
@@ -156,6 +156,7 @@ export class EnvironmentRenderingPass extends Initializable {
         program.bind();
 
         gl.uniformMatrix4fv(program.uniform('u_viewProjectionInverse'), false, this._camera!.viewProjectionInverse);
+        gl.disable(gl.DEPTH_TEST);
 
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();

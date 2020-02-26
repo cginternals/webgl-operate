@@ -8,6 +8,8 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EnvironmentRenderingPass,
+    EnvironmentTextureType,
     GeosphereGeometry,
     Invalidate,
     MouseEventProvider,
@@ -31,6 +33,7 @@ export class ImageBasedLightingRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _navigation: Navigation;
+    protected _environmentRenderingPass: EnvironmentRenderingPass;
 
     protected _sphere: GeosphereGeometry;
     protected _albedoTexture: Texture2D;
@@ -183,6 +186,12 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._navigation = new Navigation(callback, mouseEventProvider);
         this._navigation.camera = this._camera;
 
+        this._environmentRenderingPass = new EnvironmentRenderingPass(context);
+        this._environmentRenderingPass.initialize();
+        this._environmentRenderingPass.environmentTextureType = EnvironmentTextureType.CubeMap;
+        this._environmentRenderingPass.environmentTexture = this._cubemap;
+        this._environmentRenderingPass.camera = this._camera;
+
         return true;
     }
 
@@ -247,6 +256,8 @@ export class ImageBasedLightingRenderer extends Renderer {
         }
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+
+        this._environmentRenderingPass.frame();
 
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);

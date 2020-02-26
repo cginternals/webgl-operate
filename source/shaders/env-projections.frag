@@ -18,7 +18,7 @@ precision highp int;
 
 uniform int u_mode;
 
-#ifdef CUBE_MAP
+#if defined(CUBE_MAP)
     uniform samplerCube u_cubemap;
 #elif defined(EQUI_MAP)
     uniform sampler2D u_equirectmap;
@@ -43,7 +43,7 @@ void main(void)
     vec3 ray = normalize(v_ray.xyz);
     ray.x *= -1.0;
 
-    #ifdef CUBE_MAP
+    #if defined(CUBE_MAP)
         #if __VERSION__ == 100
             fragColor = textureCube(u_cubemap, vec3(ray));
         #else
@@ -51,7 +51,7 @@ void main(void)
         #endif
     #endif
 
-    #ifdef EQUI_MAP
+    #if defined(EQUI_MAP)
         float v = acos(-ray.y) * OneOverPI;
         float m = atan(ray.x, ray.z);
         uv = vec2(m * OneOver2PI + 0.5, v);
@@ -59,7 +59,7 @@ void main(void)
         fragColor = texture(u_equirectmap, uv);
     #endif
 
-    #ifdef SPHERE_MAP
+    #if defined(SPHERE_MAP)
         ray = -ray.xzy;
         ray.xy *= -1.0;
         ray.z += +1.0;
@@ -68,7 +68,7 @@ void main(void)
         fragColor = texture(u_spheremap, uv);
     #endif
 
-    #ifdef POLAR_MAP
+    #if defined(POLAR_MAP)
         ray.xz /= abs(ray.y) + 1.0;
         ray.xz = ray.xz * 0.5 + 0.5;
 
