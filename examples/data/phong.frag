@@ -26,7 +26,7 @@ const float strip = 0.075; // horizontal extent in ndc of a vertical strip (thre
 
 void main(void)
 {
-    float t = gl_FragCoord.x / u_frameSize.x;
+    float t = gl_FragCoord.x / u_frameSize.x + 0.01;
     float m = step(0.5 - strip, t) + step(0.5 + strip, t); // yields 0 (left), 1 (middle), and 2 (right)
 
     bool dis = any(bvec2(

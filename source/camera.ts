@@ -4,7 +4,7 @@
 import { mat4, vec3 } from 'gl-matrix';
 import { m4 } from './gl-matrix-extensions';
 
-import { DEG2RAD, log, LogLevel } from './auxiliaries';
+import { DEG2RAD, log, LogLevel, RAD2DEG } from './auxiliaries';
 import { duplicate2, GLsizei2 } from './tuples';
 
 /* spellchecker: enable */
@@ -67,6 +67,10 @@ export class Camera {
     /** @see {@link viewProjectionInverse} */
     protected _viewProjectionInverse: mat4 | undefined | null;
 
+
+    /** @see {@link postViewProjection} */
+    protected _postViewProjection: mat4 | undefined;
+
     /** @see {@link altered} */
     protected _altered = false;
 
@@ -101,7 +105,8 @@ export class Camera {
      * eye, center, and up changes. The projection should be invalidated on fovy, viewport, near, and far changes.
      * The view projection invalidates whenever either one or both view and projection are to be invalidated.
      */
-    protected invalidate(invalidateView: boolean, invalidateProjection: boolean): void {
+    protected invalidate(invalidateView: boolean, invalidateProjection: boolean,
+        invalidateOnlyViewProjection: boolean = false): void {
         if (invalidateView) {
             this._view = undefined;
             this._viewInverse = undefined;
@@ -110,7 +115,7 @@ export class Camera {
             this._projection = undefined;
             this._projectionInverse = undefined;
         }
-        if (invalidateView || invalidateProjection) {
+        if (invalidateView || invalidateProjection || invalidateOnlyViewProjection) {
             this._viewProjection = undefined;
             this._viewProjectionInverse = undefined;
         }
@@ -179,7 +184,7 @@ export class Camera {
     }
 
     /**
-     * Sets the vertical field-of-view. Invalidates the projection.
+     * Sets the vertical field-of-view in degrees. Invalidates the projection.
      */
     set fovy(fovy: GLfloat) {
         if (this._fovy === fovy) {
@@ -187,6 +192,36 @@ export class Camera {
         }
         this._fovy = fovy;
         this.invalidate(false, true);
+    }
+
+    /**
+     * Sets the horizontal field-of-view in degrees. Invalidates the projection.
+     * Note that internally, this will be translated to the corresponding the vertical field.
+     */
+    set fovx(fovx: GLfloat) {
+        const horizontalAngle = fovx * DEG2RAD;
+        const verticalAngle = 2.0 * Math.atan(Math.tan(horizontalAngle / 2.0) * (1.0 / this.aspect));
+
+        const fovy = verticalAngle * RAD2DEG;
+        if (this._fovy === fovy) {
+            return;
+        }
+        this._fovy = fovy;
+        this.invalidate(false, true);
+    }
+
+    /**
+     * With this function the view of a physical camera can be emulated. The width and focal length of
+     * a lens are used to generate the correct field of view.
+     * Blender camera presets can be imported by using the camera setting 'HorizontalFit' and using the
+     * width and focal length values in this function.
+     * See: https://www.scantips.com/lights/fieldofviewmath.html
+     * @param sensorWidth - Width of the sensor in mm
+     * @param focalLength - Focal length of the lens in mm
+     */
+    fovFromLens(sensorWidth: number, focalLength: number): void {
+        const horizontalAngle = 2.0 * Math.atan(sensorWidth / (2.0 * focalLength));
+        this.fovx = horizontalAngle * RAD2DEG;
     }
 
     /**
@@ -335,6 +370,7 @@ export class Camera {
             return this._viewProjection;
         }
         this._viewProjection = mat4.multiply(m4(), this.projection, this.view);
+        this._viewProjection = mat4.multiply(m4(), this.postViewProjection, this._viewProjection);
         return this._viewProjection;
     }
 
@@ -348,6 +384,27 @@ export class Camera {
         }
         this._viewProjectionInverse = mat4.invert(m4(), this.viewProjection);
         return this._viewProjectionInverse;
+    }
+
+    /**
+     * Returns the matrix which contains the operations that are applied to the viewProjection matrix.
+     * For now this is only used by the TiledRenderer to adjust the NDC-coordinates to the tile.
+     */
+    get postViewProjection(): mat4 {
+        if (this._postViewProjection) {
+            return this._postViewProjection;
+        } else {
+            return mat4.identity(m4());
+        }
+    }
+
+    /**
+     * Sets the matrix which contains the operations that are applied to the viewProjection matrix.
+     * For now this is only used by the TiledRenderer to adjust the NDC-coordinates to the tile.
+     */
+    set postViewProjection(matrix: mat4) {
+        this._postViewProjection = matrix;
+        this.invalidate(false, false, true);
     }
 
     /**

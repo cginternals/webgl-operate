@@ -1,8 +1,10 @@
 
-precision highp float;
+precision lowp float;
 
-@import ./facade.frag;
+@import ../../source/shaders/facade.frag;
 
+
+uniform sampler2D u_texture;
 
 #if __VERSION__ == 100
     #define fragColor gl_FragColor
@@ -11,12 +13,10 @@ precision highp float;
 #endif
 
 
-uniform sampler2D u_source;
-
 varying vec2 v_uv;
 
 
 void main(void)
 {
-    fragColor = texture(u_source, v_uv);
+    fragColor = texture(u_texture, v_uv);
 }
