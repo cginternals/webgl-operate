@@ -18,6 +18,7 @@ import {
     MouseEventProvider,
     Navigation,
     Program,
+    PlaneGeometry,
     Renderer,
     SceneNode,
     Shader,
@@ -79,8 +80,8 @@ export class SceneRenderer extends Renderer {
         /* Create mesh rendering program. */
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'mesh.vert');
         vert.initialize(require('./data/mesh.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'mesh.frag');
-        frag.initialize(require('./data/mesh.frag'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'scene.frag');
+        frag.initialize(require('./data/scene.frag'));
 
         this._program = new Program(this._context, 'MeshProgram');
         this._program.initialize([vert, frag], false);
@@ -105,7 +106,7 @@ export class SceneRenderer extends Renderer {
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 0.0, 3.0);
         this._camera.near = 1.0;
-        this._camera.far = 8.0;
+        this._camera.far = 16.0;
 
         /* Create and configure navigation */
 
@@ -219,18 +220,18 @@ export class SceneRenderer extends Renderer {
     protected generateScene(): void {
         this._scene = new SceneNode('root');
 
-        this.generateSphere1Node(this._scene);
-        this.generateSphere2Node(this._scene);
+        this.generateSphereNode(this._scene);
+        this.generatePlaneNode(this._scene);
         this.generateBoxNode(this._scene);
     }
 
-    protected generateSphere1Node(parent: SceneNode): SceneNode {
+    protected generateSphereNode(parent: SceneNode): SceneNode {
         const gl = this._context.gl;
 
         /* Create node and transform */
-        const node = parent.addNode(new SceneNode('mesh'));
-        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, 0.0, 0.0));
-        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
+        const node = parent.addNode(new SceneNode('sphere'));
+        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(-0.5, 0.0, 0.0));
+        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.3, 0.3, 0.3));
         const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
 
         const transform = new TransformComponent(transformMatrix);
@@ -267,11 +268,11 @@ export class SceneRenderer extends Renderer {
         return node;
     }
 
-    protected generateSphere2Node(parent: SceneNode): SceneNode {
+    protected generatePlaneNode(parent: SceneNode): SceneNode {
         /* Create node and transform */
-        const node = parent.addNode(new SceneNode('mesh'));
-        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(1.0, 0.0, 0.0));
-        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.4, 0.4, 0.4));
+        const node = parent.addNode(new SceneNode('plane'));
+        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, -0.4, 0.0));
+        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(3.0, 1.0, 3.0));
         const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
 
         const transform = new TransformComponent(transformMatrix);
@@ -282,13 +283,8 @@ export class SceneRenderer extends Renderer {
         material.textured = false;
 
         /* Create geometry. */
-        const geometry = new GeosphereGeometry(
-            this._context,
-            'mesh',
-            1.0,
-            true);
-
-        geometry.initialize(this._aMeshVertex, this._aMeshTexCoord);
+        const geometry = new PlaneGeometry(this._context);
+        geometry.initialize(this._aMeshVertex);
 
         const sphere = new GeometryComponent();
         sphere.geometry = geometry;
@@ -300,18 +296,28 @@ export class SceneRenderer extends Renderer {
     }
 
     protected generateBoxNode(parent: SceneNode): SceneNode {
+        const gl = this._context.gl;
+
         /* Create node and transform */
-        const node = parent.addNode(new SceneNode('mesh'));
-        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1.0, 0.0, 0.0));
+        const node = parent.addNode(new SceneNode('box'));
+        const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.5, 0.0, 0.0));
         const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(0.5, 0.5, 0.5));
         const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
 
         const transform = new TransformComponent(transformMatrix);
         node.addComponent(transform);
 
+        /* Create and load texture. */
+        const texture = new Texture2D(this._context, 'Texture');
+        texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
+        texture.fetch('./data/blue-painted-planks-diff-1k-modified.webp', false).then(() => {
+            this.invalidate(true);
+        });
+
         /* Create material */
         const material = new SceneExampleMaterial(this._context, 'ExampleMaterial3');
-        material.textured = false;
+        material.texture = texture;
+        material.textured = true;
 
         /* Create geometry. */
         const geometry = new CuboidGeometry(this._context, 'mesh', true);

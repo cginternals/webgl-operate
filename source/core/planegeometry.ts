@@ -64,7 +64,7 @@ export class PlaneGeometry extends Geometry {
      */
     protected unbindBuffers(indices: Array<GLuint>): void {
         /* Please note the implicit unbind in attribEnable is skipped */
-        this._buffers[0].attribDisable(indices[0], true, true);
+        this._buffers[0].attribDisable(this._vertexLocation, true, true);
         this._buffers[1].unbind();
     }
 
