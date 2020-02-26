@@ -148,6 +148,9 @@ class ShadowMapRenderer extends Renderer {
         this._debugPass.target = this._defaultFBO;
         this._debugPass.drawBuffer = gl.BACK;
 
+
+        this.finishLoading();
+
         return true;
     }
 
@@ -266,7 +269,7 @@ export class ShadowMapExample extends Example {
     private _canvas: Canvas;
     private _renderer: ShadowMapRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
         this._canvas.controller.multiFrameNumber = 1;
@@ -281,7 +284,7 @@ export class ShadowMapExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }
