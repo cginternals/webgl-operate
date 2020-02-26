@@ -927,7 +927,7 @@ export class ProgressiveLightingRenderer extends Renderer {
         }
 
         // Show loading spinner and clear background
-        this.showSpinner();
+        this.startLoading();
         this._postProcessingPass.clear();
 
         this._currentScene = scene;
@@ -941,7 +941,7 @@ export class ProgressiveLightingRenderer extends Renderer {
             .then(() => {
                 this._forwardPass.scene = this._loader.defaultScene;
                 this._invalidate(true);
-                this.hideSpinner();
+                this.finishLoading();
             });
     }
 
@@ -1049,24 +1049,6 @@ export class ProgressiveLightingRenderer extends Renderer {
                 negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-${mipLevel}.png`,
             }, mipLevel);
         }
-    }
-
-    /**
-     * Show a spinner that indicates that the demo is still loading.
-     */
-    protected showSpinner(): void {
-        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
-        (spinnerElement as HTMLElement).style.display = 'inline';
-        this._loading = true;
-    }
-
-    /**
-     * Hide the loading spinner.
-     */
-    protected hideSpinner(): void {
-        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
-        (spinnerElement as HTMLElement).style.display = 'none';
-        this._loading = false;
     }
 }
 
