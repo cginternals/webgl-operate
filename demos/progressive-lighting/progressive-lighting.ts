@@ -1075,7 +1075,7 @@ export class ProgressiveLightingDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: ProgressiveLightingRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
         this._canvas.controller.multiFrameNumber = 128;
@@ -1099,7 +1099,7 @@ export class ProgressiveLightingDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }
