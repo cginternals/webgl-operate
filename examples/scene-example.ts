@@ -104,7 +104,7 @@ export class SceneRenderer extends Renderer {
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 3.0);
+        this._camera.eye = vec3.fromValues(-0.5, 2.0, 2.0);
         this._camera.near = 1.0;
         this._camera.far = 16.0;
 
@@ -272,7 +272,7 @@ export class SceneRenderer extends Renderer {
         /* Create node and transform */
         const node = parent.addNode(new SceneNode('plane'));
         const translate = mat4.fromTranslation(mat4.create(), vec3.fromValues(0.0, -0.4, 0.0));
-        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(3.0, 1.0, 3.0));
+        const scale = mat4.fromScaling(mat4.create(), vec3.fromValues(20.0, 1.0, 20.0));
         const transformMatrix = mat4.multiply(mat4.create(), translate, scale);
 
         const transform = new TransformComponent(transformMatrix);
@@ -367,6 +367,8 @@ export class SceneExample extends Example {
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
+
+        this._canvas.clearColor.fromHex('ffffff');
 
         this._renderer = new SceneRenderer();
         this._canvas.renderer = this._renderer;
