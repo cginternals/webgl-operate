@@ -33,6 +33,7 @@ export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
 
 export { Camera } from './camera';
+export { TileCameraGenerator } from './tilecameragenerator';
 export { CameraModifier } from './cameramodifier';
 export { Navigation } from './navigation';
 export { FirstPersonModifier } from './firstpersonmodifier';
@@ -52,6 +53,7 @@ export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel'
 
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
+export { DebugPass } from './debugpass';
 export { EnvironmentRenderingPass, EnvironmentTextureType } from './environmentrenderingpass';
 export { ReadbackPass } from './readbackpass';
 

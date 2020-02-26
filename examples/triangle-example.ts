@@ -128,7 +128,6 @@ export class TriangleRenderer extends Renderer {
 
             this._program.bind();
             gl.uniform1i(this._program.uniform('u_textured'), true);
-            console.log('enabled texture.');
 
             this.invalidate(true);
         });
