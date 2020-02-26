@@ -50,7 +50,6 @@ export class ImageBasedLightingRenderer extends Renderer {
     protected _defaultFBO: DefaultFramebuffer;
 
     protected _promises: Array<Promise<void>>;
-    protected _isLoaded: boolean;
 
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
@@ -65,9 +64,6 @@ export class ImageBasedLightingRenderer extends Renderer {
         /* touchEventProvider: TouchEventProvider */): boolean {
 
         this._promises = new Array();
-
-        this.showSpinner();
-        this._isLoaded = false;
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -171,8 +167,8 @@ export class ImageBasedLightingRenderer extends Renderer {
         }
 
         Promise.all(this._promises).then(() => {
-            this._isLoaded = true;
-            this.hideSpinner();
+            this.finishLoading();
+
             this.invalidate(true);
         });
 
@@ -239,21 +235,14 @@ export class ImageBasedLightingRenderer extends Renderer {
     }
 
     protected onFrame(): void {
+        if (this.isLoading) {
+            return;
+        }
+
         const gl = this._context.gl;
 
         this._defaultFBO.bind();
-
-        if (!this._isLoaded) {
-            this._defaultFBO.clearColor([0.0, 0.0, 0.0, 0.0]);
-        } else {
-            this._defaultFBO.clearColor(this._clearColor);
-        }
-
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
-
-        if (!this._isLoaded) {
-            return;
-        }
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
@@ -292,22 +281,6 @@ export class ImageBasedLightingRenderer extends Renderer {
     }
 
     protected onSwap(): void { }
-
-    /**
-     * Show a spinner that indicates that the example is still loading.
-     */
-    protected showSpinner(): void {
-        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
-        (spinnerElement as HTMLElement).style.display = 'inline';
-    }
-
-    /**
-     * Hide the loading spinner.
-     */
-    protected hideSpinner(): void {
-        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
-        (spinnerElement as HTMLElement).style.display = 'none';
-    }
 }
 
 
@@ -316,7 +289,7 @@ export class ImageBasedLightingExample extends Example {
     private _canvas: Canvas;
     private _renderer: ImageBasedLightingRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -329,7 +302,7 @@ export class ImageBasedLightingExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

@@ -114,6 +114,8 @@ void main(void)
         this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
         this._program.link();
 
+        this.finishLoading();
+
         return true;
     }
 
@@ -186,7 +188,7 @@ export class CanvasSizeExample extends Example {
     private _canvas: Canvas;
     private _renderer: CanvasSizeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -199,7 +201,7 @@ export class CanvasSizeExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

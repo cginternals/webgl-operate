@@ -487,7 +487,7 @@ export class PointCloudDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: PointCloudRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         const aa = auxiliaries.GETparameter('antialias');
 
@@ -512,7 +512,7 @@ export class PointCloudDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }
