@@ -1,5 +1,5 @@
 
-import { mat4, vec2, vec3 } from 'webgl-operate';
+import { mat4, vec2, vec3, vec4 } from 'webgl-operate';
 
 import {
     Camera,
@@ -143,7 +143,7 @@ class ShadowMapRenderer extends Renderer {
         this._debugPass.initialize();
 
         this._debugPass.framebuffer = this._shadowPass.shadowMapFBO;
-        this._debugPass.readBuffer = gl.DEPTH_ATTACHMENT;
+        this._debugPass.readBuffer = gl.COLOR_ATTACHMENT0;
 
         this._debugPass.target = this._defaultFBO;
         this._debugPass.drawBuffer = gl.BACK;
@@ -175,12 +175,22 @@ class ShadowMapRenderer extends Renderer {
         }
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+
+            this._debugPass.dstBounds = vec4.fromValues(
+                this._canvasSize[0] * (1.0 - 0.187), this._canvasSize[1] * (1.0 - 0.187 * this._camera.aspect),
+                this._canvasSize[0] * (1.0 - 0.008), this._canvasSize[1] * (1.0 - 0.008 * this._camera.aspect));
         }
 
         if (this._altered.clearColor) {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        if (this._camera.altered) {
+            this._debugPass.far = this._camera.far;
+            this._debugPass.near = this._camera.near;
+        }
+
+        this._camera.altered = false;
         this._altered.reset();
     }
 

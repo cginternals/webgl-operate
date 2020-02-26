@@ -231,7 +231,7 @@ export class BlitPass extends Initializable {
             this._ndcTriangleShared = true;
         }
 
-        this._filter = gl.LINEAR;
+        this._filter = gl.NEAREST;
 
         return true;
     }
