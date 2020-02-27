@@ -36,6 +36,10 @@ export class ShadowPass extends Initializable {
         this._context = context;
     }
 
+    get shadowMapFBO(): Framebuffer {
+        return this._shadowMapFBO;
+    }
+
     get shadowMapTexture(): Texture2D {
         if (this.hasBlur) {
             return this._blurTexture;

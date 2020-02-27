@@ -152,6 +152,7 @@ class ColorScaleRenderer extends Renderer {
                 }
                 this._fontFace = fontFace;
                 this.updateLabels();
+                this.finishLoading();
                 this.invalidate();
             })
             .catch((reason) => auxiliaries.log(auxiliaries.LogLevel.Error, reason));
@@ -296,7 +297,7 @@ export class ColorScaleExample extends Example {
     private _canvas: Canvas;
     private _renderer: ColorScaleRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -309,7 +310,7 @@ export class ColorScaleExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

@@ -105,6 +105,7 @@ class ColorLerpRenderer extends Renderer {
                 }
                 this._fontFace = fontFace;
                 this.updateLabels();
+                this.finishLoading();
                 this.invalidate();
             })
             .catch((reason) => log(LogLvl.Error, reason));
@@ -351,7 +352,7 @@ export class ColorLerpExample extends Example {
     private _canvas: Canvas;
     private _renderer: ColorLerpRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -365,7 +366,7 @@ export class ColorLerpExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

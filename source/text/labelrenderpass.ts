@@ -254,7 +254,7 @@ export class LabelRenderPass extends Initializable {
      */
     @Initializable.assert_initialized()
     frame(): void {
-        if (this._geometry.numberOfGlyphs === 0 || this._labels.length === 0) {
+        if (this._geometry.numGlyphs === 0 || this._labels.length === 0) {
             return;
         }
 
