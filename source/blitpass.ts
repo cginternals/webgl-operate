@@ -333,7 +333,7 @@ export class BlitPass extends Initializable {
      * @param bounds - [srcX0, srcY0, srcX1, srcY1] as used in glBlitFramebuffer. If bounds is
      * undefined, the full size of the source buffer (framebuffer) will be used.
      */
-    set srcBounds(bounds: vec4) {
+    set srcBounds(bounds: vec4 | undefined) {
         this._srcBounds = bounds ? vec4.clone(bounds) : undefined;
     }
 

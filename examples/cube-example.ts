@@ -98,7 +98,6 @@ export class CubeRenderer extends Renderer {
             gl.uniform1i(this._program.uniform('u_textured'), true);
 
             this.finishLoading();
-
             this.invalidate(true);
         });
 

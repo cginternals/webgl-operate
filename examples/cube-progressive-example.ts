@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import {
     AccumulatePass,
@@ -53,6 +53,9 @@ export class ProgressiveCubeRenderer extends Renderer {
 
     protected _accumulate: AccumulatePass;
     protected _blit: BlitPass;
+
+    protected _zoomSrcBounds: vec4;
+    protected _zoomDstBounds: vec4;
 
 
     /**
@@ -128,6 +131,7 @@ export class ProgressiveCubeRenderer extends Renderer {
             this._program.bind();
             gl.uniform1i(this._program.uniform('u_textured'), true);
 
+            this.finishLoading();
             this.invalidate(true);
         });
 
@@ -191,9 +195,18 @@ export class ProgressiveCubeRenderer extends Renderer {
         if (this._altered.frameSize) {
             this._intermediateFBO.resize(this._frameSize[0], this._frameSize[1]);
             this._camera.viewport = this._canvasSize;
+
+            const aspect = this._frameSize[0] / this._frameSize[1];
+            this._zoomSrcBounds = vec4.fromValues(
+                this._frameSize[0] * (0.3333 - 0.02), this._frameSize[1] * (0.6666 - 0.02 * aspect),
+                this._frameSize[0] * (0.3333 + 0.02), this._frameSize[1] * (0.6666 + 0.02 * aspect));
         }
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+
+            this._zoomDstBounds = vec4.fromValues(
+                this._canvasSize[0] * (1.0 - 0.374), this._canvasSize[1] * (1.0 - 0.374 * this._camera.aspect),
+                this._canvasSize[0] * (1.0 - 0.008), this._canvasSize[1] * (1.0 - 0.008 * this._camera.aspect));
         }
 
         if (this._altered.clearColor) {
@@ -244,12 +257,20 @@ export class ProgressiveCubeRenderer extends Renderer {
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
+
+
+        this._accumulate.frame(frameNumber);
     }
 
     protected onSwap(): void {
         this._blit.framebuffer = this._accumulate.framebuffer ?
             this._accumulate.framebuffer : this._intermediateFBO;
         this._blit.frame();
+
+        this._blit.srcBounds = this._zoomSrcBounds;
+        this._blit.dstBounds = this._zoomDstBounds;
+        this._blit.frame();
+        this._blit.srcBounds = this._blit.dstBounds = undefined;
     }
 
 }
@@ -260,12 +281,12 @@ export class ProgressiveCubeExample extends Example {
     private _canvas: Canvas;
     private _renderer: ProgressiveCubeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 64;
         this._canvas.framePrecision = Wizard.Precision.half;
-        this._canvas.frameScale = [0.25, 0.25];
+        this._canvas.frameScale = [0.5, 0.5];
 
         this._renderer = new ProgressiveCubeRenderer();
         this._canvas.renderer = this._renderer;
@@ -273,7 +294,7 @@ export class ProgressiveCubeExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }
