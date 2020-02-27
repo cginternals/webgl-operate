@@ -129,6 +129,9 @@ export class BlitPass extends Initializable {
 
         gl.viewport(0, 0, this._target.width, this._target.height);
 
+        gl.disable(gl.DEPTH_TEST);
+        gl.depthMask(false);
+
         program.bind();
 
         const texture = this._framebuffer.texture(this._readBuffer) as Texture2D;
@@ -142,6 +145,9 @@ export class BlitPass extends Initializable {
         this._target.unbind(target);
 
         texture.unbind();
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
 
         /* Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
