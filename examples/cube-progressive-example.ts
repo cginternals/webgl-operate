@@ -284,7 +284,8 @@ export class ProgressiveCubeExample extends Example {
     onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
-        this._canvas.controller.multiFrameNumber = 64;
+        this._canvas.controller.multiFrameNumber = 8;
+        // this._canvas.controller.multiFrameDelay = 3000;
         this._canvas.framePrecision = Wizard.Precision.half;
         this._canvas.frameScale = [0.5, 0.5];
 
@@ -308,3 +309,4 @@ export class ProgressiveCubeExample extends Example {
     }
 
 }
+
