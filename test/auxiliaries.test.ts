@@ -63,16 +63,16 @@ describe('auxiliaries log and logIf', () => {
         const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(fake.lastCall.lastArg).to.string('[0]');
+        expect(fake.lastCall.args).to.deep.equal(['[0]', 'log level 0']);
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(fake.lastCall.lastArg).to.string('[1]');
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1']);
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(fake.lastCall.lastArg).to.string('[2]');
+        expect(fake.lastCall.args).to.deep.equal(['[2]', 'log level 2']);
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(fake.lastCall.lastArg).to.string('[3]');
+        expect(fake.lastCall.args).to.deep.equal(['[3]', 'log level 3']);
 
         consoleLogStub.restore();
     });
@@ -82,30 +82,40 @@ describe('auxiliaries log and logIf', () => {
         const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(fake.lastCall.lastArg).to.string('[0]');
+        expect(fake.lastCall.args).to.deep.equal(['[0]', 'log level 0']);
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(fake.lastCall.lastArg).to.string('[1]');
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1']);
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(fake.lastCall.lastArg).to.string('[2]');
+        expect(fake.lastCall.args).to.deep.equal(['[2]', 'log level 2']);
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(fake.lastCall.lastArg).to.string('[3]');
+        expect(fake.lastCall.args).to.deep.equal(['[3]', 'log level 3']);
 
         aux.log(4, 'log level 4');
-        expect(fake.lastCall.lastArg).to.string('[3]'); // uses previous output (nothing changed)
+        expect(fake.lastCall.args).to.deep.equal(['[3]', 'log level 3']); // uses previous output (nothing changed)
 
         const thresholdRestore = aux.logVerbosity();
         aux.logVerbosity(4);
         aux.log(4, 'log level 4');
-        expect(fake.lastCall.lastArg).to.string('[4]');
+        expect(fake.lastCall.args).to.deep.equal(['[4]', 'log level 4']);
 
         aux.logVerbosity(-1);
         aux.log(0, 'log level 0');
-        expect(fake.lastCall.lastArg).to.string('[4]');
+        expect(fake.lastCall.args).to.deep.equal(['[4]', 'log level 4']);
 
         aux.logVerbosity(thresholdRestore);
+        consoleLogStub.restore();
+    });
+
+    it('can be called with more parameters', () => {
+        const fake = sinon.fake();
+        const consoleLogStub = stub(console, 'log').callsFake(fake);
+
+        aux.log(aux.LogLevel.Warning, 'log level 1', {error: 'broke', code: 42});
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1', {error: 'broke', code: 42}]);
+
         consoleLogStub.restore();
     });
 });
