@@ -209,6 +209,29 @@ namespace auxiliaries {
     }
 
     /**
+     * Tests with binary operations if the number is power of two.
+     * @param x The number to test.
+     */
+    export function isPowerOfTwo(x: number): boolean {
+        return Number.isInteger(x) && Number.isInteger(Math.log2(x));
+    }
+
+    /**
+     * Computes the next upper power of two for the given number. Math is based on
+     * {@link https://graphics.stanford.edu/~seander/bithacks.html}.
+     * @param x - Number to compute next upper power of two for.
+     */
+    export function upperPowerOfTwo(x: number): number {
+        --x;
+        x |= x >> 1;
+        x |= x >> 2;
+        x |= x >> 4;
+        x |= x >> 8;
+        x |= x >> 16;
+        return ++x;
+    }
+
+    /**
      * Byte suffixes based on ISO/IEC 80000 used for pretty printing of bytes.
      */
     const byteSuffixes: Array<string> = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi'];

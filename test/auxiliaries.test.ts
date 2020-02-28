@@ -270,3 +270,50 @@ describe('auxiliaries path', () => {
     });
 
 });
+
+
+
+
+describe('auxiliaries power-of-two', () => {
+
+    it('should return detect if number is power of two', () => {
+
+        expect(aux.isPowerOfTwo(0)).to.be.false;
+        for (let i = 0; i < 31; ++i) {
+            expect(aux.isPowerOfTwo(1 << i)).to.be.true;
+        }
+
+        expect(aux.isPowerOfTwo(3)).to.be.false;
+        expect(aux.isPowerOfTwo(5)).to.be.false;
+        expect(aux.isPowerOfTwo(7)).to.be.false;
+        expect(aux.isPowerOfTwo(15)).to.be.false;
+
+        expect(aux.isPowerOfTwo(1 << 31)).to.be.false;
+        expect(aux.isPowerOfTwo((1 << 30) - 1)).to.be.false;
+
+        expect(aux.isPowerOfTwo(-1)).to.be.false;
+        expect(aux.isPowerOfTwo(-2)).to.be.false;
+        expect(aux.isPowerOfTwo(-3)).to.be.false;
+    });
+
+    it('should return upper power of two for a given number', () => {
+
+        expect(aux.upperPowerOfTwo(-2)).to.equal(0);
+        expect(aux.upperPowerOfTwo(-1)).to.equal(0);
+
+        expect(aux.upperPowerOfTwo(0)).to.equal(0);
+        expect(aux.upperPowerOfTwo(1)).to.equal(1);
+        expect(aux.upperPowerOfTwo(2)).to.equal(2);
+        expect(aux.upperPowerOfTwo(3)).to.equal(4);
+        expect(aux.upperPowerOfTwo(4)).to.equal(4);
+        expect(aux.upperPowerOfTwo(5)).to.equal(8);
+
+        expect(aux.upperPowerOfTwo(192)).to.equal(256);
+        expect(aux.upperPowerOfTwo(768)).to.equal(1024);
+
+        expect(aux.upperPowerOfTwo(768)).to.equal(1024);
+        expect(aux.upperPowerOfTwo(708405415)).to.equal(1 << 30);
+    });
+
+});
+
