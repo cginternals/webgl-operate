@@ -41,7 +41,6 @@ void main(void)
 {
     vec2 uv = v_uv;
     vec3 ray = normalize(v_ray.xyz);
-    ray.x *= -1.0;
 
     #if defined(CUBE_MAP)
         #if __VERSION__ == 100
@@ -53,7 +52,7 @@ void main(void)
 
     #if defined(EQUI_MAP)
         float v = acos(-ray.y) * OneOverPI;
-        float m = atan(ray.x, ray.z);
+        float m = atan(-ray.x, ray.z);
         uv = vec2(m * OneOver2PI + 0.5, v);
 
         fragColor = texture(u_equirectmap, uv);
@@ -61,7 +60,7 @@ void main(void)
 
     #if defined(SPHERE_MAP)
         ray = -ray.xzy;
-        ray.xy *= -1.0;
+        ray.y *= -1.0;
         ray.z += +1.0;
         uv = 0.5 + 0.5 * ray.xy / length(ray);
 
@@ -71,6 +70,7 @@ void main(void)
     #if defined(POLAR_MAP)
         ray.xz /= abs(ray.y) + 1.0;
         ray.xz = ray.xz * 0.5 + 0.5;
+        ray.x *= -1.0;
 
         fragColor = mix(texture(u_polarmap[1], ray.xz),
                         texture(u_polarmap[0], vec2(1.0, -1.0) * ray.xz),

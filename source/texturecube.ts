@@ -224,7 +224,14 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
                             `this texture's size ${size}, given ${image.width}`);
                         return;
                     }
+
+                    /**
+                     * Flip image along the Y axis, because the Image API and WebGL use
+                     * different coordinate spaces.
+                     */
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
                     this.data([tuple[0], image], mipLevel);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
                     /* Resolve the promise when all requested images have been loaded. */
                     waiting = waiting - 1;
