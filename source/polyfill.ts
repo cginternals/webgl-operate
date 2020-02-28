@@ -5,7 +5,6 @@
 if (String.prototype.repeat === undefined) {
     // tslint:disable-next-line:space-before-function-paren
     String.prototype.repeat = function (count): string {
-        'use strict';
         if (this === null) {
             throw new TypeError('can\'t convert ' + this + ' to object');
         }
@@ -51,7 +50,6 @@ if (String.prototype.startsWith === undefined) {
     };
 }
 
-
 /**
  * IE11 polyfill for string.endsWith function, from
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
@@ -66,6 +64,46 @@ if (String.prototype.endsWith === undefined) {
     };
 }
 
+/**
+ * IE11 polyfill for string.includes function, from
+ * https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+ */
+if (String.prototype.includes === undefined) {
+    // tslint:disable-next-line: space-before-function-paren
+    String.prototype.includes = function (search, start): boolean {
+        if (typeof start !== 'number') {
+            start = 0;
+        }
+
+        if (start + search.length > this.length) {
+            return false;
+        } else {
+            return this.indexOf(search, start) !== -1;
+        }
+    };
+}
+
+/**
+ * IE11 polyfill for string.trimLeft function, from
+ * https://stackoverflow.com/a/2308168
+ */
+if (String.prototype.trimLeft === undefined) {
+    // tslint:disable-next-line: space-before-function-paren
+    String.prototype.trimLeft = function (): string {
+        return this.replace(/^\s+/, '');
+    };
+}
+
+/**
+ * IE11 polyfill for string.trimLeft function, from
+ * https://stackoverflow.com/a/2308168
+ */
+if (String.prototype.trimRight === undefined) {
+    // tslint:disable-next-line: space-before-function-paren
+    String.prototype.trimRight = function (): string {
+        return this.replace(/^\s+/, '');
+    };
+}
 
 /**
  * IE11 polyfill for Array.forEach function, from ...
@@ -77,7 +115,7 @@ if (Array.prototype.forEach === undefined) {
         /* tslint:disable-prefer-for-of */
         for (let i = 0; i < n; i++) {
             if (i in this) {
-                action.call(that, this[i], i, this);
+                action.call(that, (this as any)[i], i, this);
             }
         }
     };

@@ -56,7 +56,7 @@ export abstract class Label {
     /** @see {@link type} */
     protected _type: Label.Type;
 
-    /** @see {@link transform} */
+    /** @see {@link staticTransform} */
     protected _staticTransform: mat4;
 
     /** @see {@link dynamicTransform} */
@@ -460,13 +460,15 @@ export abstract class Label {
     }
 
     /**
-     * The typesetter sets this extent after typesetting and applying the transform.
+     * The typesetter sets this extent after typesetting and applying the static transform. Don't set this manually
+     * without typesetting.
      */
     set extent(e: [number, number]) {
         this._extent = e;
     }
     /**
-     * Returns the width and height of the typset label. Both are zero if not typeset yet.
+     * Returns the width and height of the typset label in fontSizeUnit. Both are zero if not typeset yet. The static
+     * transform is already applied.
      */
     get extent(): [number, number] {
         return this._extent;

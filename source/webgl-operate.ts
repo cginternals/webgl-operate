@@ -3,8 +3,9 @@
 
 export * from './webgl-operate.slim';
 
+export * from './gltf/index';
 
-// /* ADVANCED facilities */
+/* ADVANCED facilities */
 
 import * as root_properties from './properties';
 export import properties = root_properties;
@@ -16,16 +17,9 @@ import * as root_raymath from './raymath';
 export import ray_math = root_raymath;
 
 
-// /* DEBUG facilities */
+/* DEBUG facilities */
 
-// import * as debug_LabelRenderer from './debug/labelrenderer';
-import * as debug_TestNavigation from './debug/testnavigation';
-import * as debug_TestRenderer from './debug/testrenderer';
-
-export namespace debug {
-    export import TestRenderer = debug_TestRenderer.TestRenderer;
-    export import TestNavigation = debug_TestNavigation.TestNavigation;
-}
+export * from './debug/index';
 
 
 /* VIEWER facilities */

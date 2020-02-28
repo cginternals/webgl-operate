@@ -228,7 +228,7 @@ export class LabelGeometry extends Geometry {
         gl2facade.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
     }
 
-    get numberOfGlyphs(): number {
+    get numGlyphs(): number {
         return this._numberOfGlyphs;
     }
 

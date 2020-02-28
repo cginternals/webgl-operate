@@ -8,6 +8,10 @@
             "spaces",
             4
         ],
+        "max-line-length": [
+            true,
+            120
+        ],
         "member-ordering": [
             true,
             {

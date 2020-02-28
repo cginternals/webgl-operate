@@ -55,7 +55,7 @@ export class LabelRenderPass extends Initializable {
     });
 
     /**
-     * Read-only access to the objects context, used to get context information and WebGL API access.
+     * Context, used to get context information and WebGL API access.
      */
     protected _context: Context;
 
@@ -254,7 +254,7 @@ export class LabelRenderPass extends Initializable {
      */
     @Initializable.assert_initialized()
     frame(): void {
-        if (this._geometry.numberOfGlyphs === 0 || this._labels.length === 0) {
+        if (this._geometry.numGlyphs === 0 || this._labels.length === 0) {
             return;
         }
 
@@ -283,7 +283,7 @@ export class LabelRenderPass extends Initializable {
         this._program.bind();
 
         gl.uniform2fv(this._uNdcOffset, this._ndcOffset);
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
 
         /* Controlling renderer is expected to bind the appropriate target, thus, unbinding is not
         necessary. */
@@ -339,13 +339,13 @@ export class LabelRenderPass extends Initializable {
 
             switch (label0.fontSizeUnit) {
                 case Label.Unit.Pixel:
-                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, identity);
+                    gl.uniformMatrix4fv(this._uViewProjection, false, identity);
                     break;
 
                 case Label.Unit.World:
                 case Label.Unit.Mixed:
                 default:
-                    gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+                    gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
             }
 
             this._geometry.draw(range[0], range[1] - range[0]);

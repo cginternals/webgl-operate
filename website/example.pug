@@ -1,10 +1,18 @@
 
-canvas(id = 'example-canvas' style = { width: '100%', height: '100%'})
+div
+    canvas(id = 'example-canvas' style = { width: '100%', height: '100%'})
+    div.spinner
+        div
+        div
+        div
+        div
 
 script(src = '/js/rxjs.umd.min.js')
 script(src = '/js/webgl-operate.js')
 script(src = '/js/website.js')
 
 script(src = `${example.target}.js`)
+
+link(rel = 'stylesheet' href = '/css/spinner.css')
 
 script window.onload = function () { example(new #{example.object}(), 'example-canvas'); }
