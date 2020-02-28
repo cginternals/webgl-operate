@@ -85,7 +85,7 @@ class CubescapeRenderer extends Renderer {
         gl.enable(gl.DEPTH_TEST);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
         gl.uniform1i(this._program.uniform('u_numcubes'), this._geometry.count);
         gl.uniform1f(this._program.uniform('u_time'), window.performance.now() * 0.0002);
         this._terrain.bind(gl.TEXTURE0);
@@ -118,13 +118,13 @@ class CubescapeRenderer extends Renderer {
         this._terrain.initialize(64, 64, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
         this._terrain.wrap(gl.REPEAT, gl.REPEAT);
         this._terrain.filter(gl.LINEAR, gl.LINEAR);
-        this._terrain.load('/demos/data/cubescape-terrain.png');
+        this._terrain.fetch('/demos/data/cubescape-terrain.png');
 
         this._patches = new Texture2D(this._context);
         this._patches.initialize(64, 16, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
         this._patches.wrap(gl.REPEAT, gl.REPEAT);
         this._patches.filter(gl.NEAREST, gl.NEAREST);
-        this._patches.load('/demos/data/cubescape-patches.png');
+        this._patches.fetch('/demos/data/cubescape-patches.png');
 
         // init cube geometry
         this._geometry = new CubeGeometry(this._context, 'cubes'); // TODO not 16 every time
@@ -178,7 +178,7 @@ export class CubescapeDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: CubescapeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: true });
         this._canvas.controller.multiFrameNumber = 1;
@@ -191,7 +191,7 @@ export class CubescapeDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

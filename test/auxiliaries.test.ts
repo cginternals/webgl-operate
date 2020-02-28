@@ -63,16 +63,16 @@ describe('auxiliaries log and logIf', () => {
         const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(fake.lastCall.lastArg).to.string('[0]');
+        expect(fake.lastCall.args).to.deep.equal(['[0]', 'log level 0']);
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(fake.lastCall.lastArg).to.string('[1]');
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1']);
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(fake.lastCall.lastArg).to.string('[2]');
+        expect(fake.lastCall.args).to.deep.equal(['[2]', 'log level 2']);
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(fake.lastCall.lastArg).to.string('[3]');
+        expect(fake.lastCall.args).to.deep.equal(['[3]', 'log level 3']);
 
         consoleLogStub.restore();
     });
@@ -82,30 +82,40 @@ describe('auxiliaries log and logIf', () => {
         const consoleLogStub = stub(console, 'log').callsFake(fake);
 
         aux.log(aux.LogLevel.Error, 'log level 0');
-        expect(fake.lastCall.lastArg).to.string('[0]');
+        expect(fake.lastCall.args).to.deep.equal(['[0]', 'log level 0']);
 
         aux.log(aux.LogLevel.Warning, 'log level 1');
-        expect(fake.lastCall.lastArg).to.string('[1]');
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1']);
 
         aux.log(aux.LogLevel.Info, 'log level 2');
-        expect(fake.lastCall.lastArg).to.string('[2]');
+        expect(fake.lastCall.args).to.deep.equal(['[2]', 'log level 2']);
 
         aux.log(aux.LogLevel.Debug, 'log level 3');
-        expect(fake.lastCall.lastArg).to.string('[3]');
+        expect(fake.lastCall.args).to.deep.equal(['[3]', 'log level 3']);
 
         aux.log(4, 'log level 4');
-        expect(fake.lastCall.lastArg).to.string('[3]'); // uses previous output (nothing changed)
+        expect(fake.lastCall.args).to.deep.equal(['[3]', 'log level 3']); // uses previous output (nothing changed)
 
         const thresholdRestore = aux.logVerbosity();
         aux.logVerbosity(4);
         aux.log(4, 'log level 4');
-        expect(fake.lastCall.lastArg).to.string('[4]');
+        expect(fake.lastCall.args).to.deep.equal(['[4]', 'log level 4']);
 
         aux.logVerbosity(-1);
         aux.log(0, 'log level 0');
-        expect(fake.lastCall.lastArg).to.string('[4]');
+        expect(fake.lastCall.args).to.deep.equal(['[4]', 'log level 4']);
 
         aux.logVerbosity(thresholdRestore);
+        consoleLogStub.restore();
+    });
+
+    it('can be called with more parameters', () => {
+        const fake = sinon.fake();
+        const consoleLogStub = stub(console, 'log').callsFake(fake);
+
+        aux.log(aux.LogLevel.Warning, 'log level 1', {error: 'broke', code: 42});
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1', {error: 'broke', code: 42}]);
+
         consoleLogStub.restore();
     });
 });
@@ -239,3 +249,71 @@ describe('auxiliaries GETparameter', () => {
     // });
 
 });
+
+
+describe('auxiliaries path', () => {
+
+    it('should return the directory name of a file path', () => {
+        expect(aux.dirname('https://localhost/file.ext')).to.equal('https://localhost');
+        expect(aux.dirname('file.ext')).to.equal('');
+
+        expect(aux.dirname('localhost/file')).to.equal('localhost');
+        expect(aux.dirname('localhost/dir/')).to.equal('localhost/dir');
+    });
+
+    it('should return the base name of a file path', () => {
+        expect(aux.basename('https://localhost/file.ext')).to.equal('file.ext');
+        expect(aux.basename('file.ext')).to.equal('file.ext');
+
+        expect(aux.basename('localhost/file')).to.equal('file');
+        expect(aux.basename('localhost/dir/')).to.equal('');
+    });
+
+});
+
+
+
+
+describe('auxiliaries power-of-two', () => {
+
+    it('should return detect if number is power of two', () => {
+
+        expect(aux.isPowerOfTwo(0)).to.be.false;
+        for (let i = 0; i < 31; ++i) {
+            expect(aux.isPowerOfTwo(1 << i)).to.be.true;
+        }
+
+        expect(aux.isPowerOfTwo(3)).to.be.false;
+        expect(aux.isPowerOfTwo(5)).to.be.false;
+        expect(aux.isPowerOfTwo(7)).to.be.false;
+        expect(aux.isPowerOfTwo(15)).to.be.false;
+
+        expect(aux.isPowerOfTwo(1 << 31)).to.be.false;
+        expect(aux.isPowerOfTwo((1 << 30) - 1)).to.be.false;
+
+        expect(aux.isPowerOfTwo(-1)).to.be.false;
+        expect(aux.isPowerOfTwo(-2)).to.be.false;
+        expect(aux.isPowerOfTwo(-3)).to.be.false;
+    });
+
+    it('should return upper power of two for a given number', () => {
+
+        expect(aux.upperPowerOfTwo(-2)).to.equal(0);
+        expect(aux.upperPowerOfTwo(-1)).to.equal(0);
+
+        expect(aux.upperPowerOfTwo(0)).to.equal(0);
+        expect(aux.upperPowerOfTwo(1)).to.equal(1);
+        expect(aux.upperPowerOfTwo(2)).to.equal(2);
+        expect(aux.upperPowerOfTwo(3)).to.equal(4);
+        expect(aux.upperPowerOfTwo(4)).to.equal(4);
+        expect(aux.upperPowerOfTwo(5)).to.equal(8);
+
+        expect(aux.upperPowerOfTwo(192)).to.equal(256);
+        expect(aux.upperPowerOfTwo(768)).to.equal(1024);
+
+        expect(aux.upperPowerOfTwo(768)).to.equal(1024);
+        expect(aux.upperPowerOfTwo(708405415)).to.equal(1 << 30);
+    });
+
+});
+

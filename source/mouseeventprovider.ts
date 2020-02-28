@@ -4,6 +4,7 @@
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { assert, bitInBitfield } from './auxiliaries';
+import { IS_EDGE, IS_IE11 } from './msagent';
 
 import { PointerLock } from './pointerlock';
 
@@ -42,6 +43,10 @@ export class MouseEventProvider {
     protected _wheelListener: { (event: WheelEvent): void };
     protected _wheelSubject: ReplaySubject<WheelEvent>;
 
+    protected _dragListener: { (event: DragEvent): void };
+    protected _dragSubject: ReplaySubject<DragEvent>;
+
+
     /** @see {@link pointerLock} */
     protected _pointerLockRequestPending = false;
 
@@ -57,6 +62,12 @@ export class MouseEventProvider {
         this._timeframe = timeframe;
 
         this._element.addEventListener('click', () => this.processPointerLockRequests());
+
+        /* Prevent unintentional drag content detection by Microsoft Edge/IE11, e.g., when processing mouse move events
+        during mouse down and up. */
+        if (IS_EDGE || IS_IE11) {
+            this._element.addEventListener('dragstart', (event: DragEvent) => event.preventDefault());
+        }
     }
 
     /**
@@ -74,7 +85,7 @@ export class MouseEventProvider {
 
     /**
      * Checks whether or not to prevent the default handling of the given event. This depends on the internal
-     * `preventDefaultMask` which can be modified using `preventDefault` function @see{@link prevenDefault}.
+     * `preventDefaultMask` which can be modified using `preventDefault` function @see{@link preventDefault}.
      * @param type - Internal event type of the incoming event.
      * @param event - Actual event to prevent default handling on (if masked).
      */
@@ -85,7 +96,7 @@ export class MouseEventProvider {
     }
 
     /**
-     * Prevent default event handling on specific event types (using prevenDefault on the event).
+     * Prevent default event handling on specific event types (using preventDefault on the event).
      * @param types - Event types to prevent default handling on.
      */
     preventDefault(...types: MouseEventProvider.Type[]): void {
@@ -108,7 +119,8 @@ export class MouseEventProvider {
         }
     }
 
-    observable(type: MouseEventProvider.Type): Observable<MouseEvent> | Observable<WheelEvent> | undefined {
+    observable(type: MouseEventProvider.Type): Observable<MouseEvent>
+        | Observable<WheelEvent> | Observable<DragEvent> | undefined {
         switch (type) {
             case MouseEventProvider.Type.Click:
                 return this.click$;
@@ -124,6 +136,8 @@ export class MouseEventProvider {
                 return this.move$;
             case MouseEventProvider.Type.Wheel:
                 return this.wheel$;
+            case MouseEventProvider.Type.Drag:
+                return this.drag$;
             default:
                 return undefined;
         }
@@ -228,6 +242,18 @@ export class MouseEventProvider {
         return this._wheelSubject.asObservable();
     }
 
+    get drag$(): Observable<DragEvent> {
+        if (this._dragSubject === undefined) {
+            this._dragSubject = new ReplaySubject<DragEvent>(undefined, this._timeframe);
+            this._dragListener = (event: DragEvent) => {
+                this.preventDefaultOnEvent(MouseEventProvider.Type.Drag, event);
+                this._dragSubject.next(event);
+            };
+            this._element.addEventListener('drag', this._dragListener);
+        }
+        return this._dragSubject.asObservable();
+    }
+
 }
 
 
@@ -241,6 +267,7 @@ export namespace MouseEventProvider {
         Move = 1 << 4,
         Down = 1 << 5,
         Up = 1 << 6,
+        Drag = 1 << 7,
     }
 
 }

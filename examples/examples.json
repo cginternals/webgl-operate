@@ -1,5 +1,59 @@
 [
     {
+        "target": "triangle-example",
+        "title": "Textured Triangle",
+        "object": "TriangleExample",
+        "caption": "Very basic scene, rendering a textured triangle."
+    },
+    {
+        "target": "cube-example",
+        "title": "Textured Cube",
+        "object": "CubeExample",
+        "caption": "Minimalistic scene featuring a textured unit cube."
+    },
+    {
+        "target": "canvassize-example",
+        "title": "Canvas Size",
+        "object": "CanvasSizeExample",
+        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+    },
+    {
+        "target": "xtoon-example",
+        "title": "XToon Shading",
+        "object": "XToonExample",
+        "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
+        "target": "gouraudphong-example",
+        "title": "Gouraud/Phong Shading",
+        "object": "GouraudPhongExample",
+        "caption": "Comparison between Gouraud shading and Phong shading."
+    },
+    {
+        "target": "shadowmap-example",
+        "title": "Shadow Mapping",
+        "object": "ShadowMapExample",
+        "caption": "Minimalistic scene featuring a textured unit cube and shadow mapping."
+    },
+    {
+        "target": "shadowmap-multiframe-example",
+        "title": "Shadow Mapping (Progressive)",
+        "object": "ShadowMapMultiframeExample",
+        "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
+    },
+    {
+        "target": "colorscale-example",
+        "title": "Color Scale",
+        "object": "ColorScaleExample",
+        "caption": "Variations and presets of color scales."
+    },
+    {
+        "target": "colorlerp-example",
+        "title": "Color Lerp",
+        "object": "ColorLerpExample",
+        "caption": "Nearest and linear interpolation of label colors."
+    },
+    {
         "target": "labelelide-example",
         "title": "Label Elide",
         "object": "LabelElideExample",
@@ -10,6 +64,30 @@
         "title": "Label Anchor",
         "object": "LabelAnchorExample",
         "caption": "Label placement with anchors top, bottom, ascent, descent, and center. "
+    },
+    {
+        "target": "scene-example",
+        "title": "Scene",
+        "object": "SceneExample",
+        "caption": "Rendering with the webgl-operate scene concept"
+    },
+    {
+        "target": "envprojections-example",
+        "title": "Environment Mapping",
+        "object": "EnvironmentProjectionExample",
+        "caption": "Different techniques for environment mapping"
+    },
+        {
+        "target": "imagebasedlighting-example",
+        "title": "Image Based Lighting",
+        "object": "ImageBasedLightingExample",
+        "caption": "Image based lighting using prefiltered cube maps"
+    },
+    {
+        "target": "tilecamera-example",
+        "title": "Tile-based 4k Rendering",
+        "object": "TileCameraExample",
+        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     },
     {
         "target": "label2d-example",

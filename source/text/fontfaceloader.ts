@@ -1,17 +1,13 @@
 
 /* spellchecker: disable */
 
-import { log, logIf, LogLevel } from '../auxiliaries';
+import { dirname, log, logIf, LogLevel } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
 
 /* spellchecker: enable */
-
-
-/** @todo replace path */
-import Path = require('path');
 
 
 type StringPairs = Map<string, string>;
@@ -102,11 +98,12 @@ export class FontFaceLoader {
             return undefined;
         }
 
-        const path = Path.dirname(url);
+        const path = dirname(url);
         let page = pairs.get('file')!;
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
-        return fontFace.glyphTexture.load(`${path}/${page}`)
+        // Texture is flipped due to shader math
+        return fontFace.glyphTexture.fetch(`${path}/${page}`, false, true)
             .catch(() => Promise.reject(`page '${page}' referenced in font file '${url}' was not found`));
     }
 

@@ -24,7 +24,6 @@ export class GL2Facade {
 
     /**
      * @param context - Wrapped gl context for function resolution.
-     * @param extensions - Identifiers of mandatory extensions for which the support is asserted.
      */
     constructor(context: Context) {
         assert(context !== undefined, `gl2 facade expects a valid WebGL context`);
@@ -216,7 +215,7 @@ export class GL2Facade {
     vertexAttribDivisor: (index: GLuint, divisor: GLuint) => void;
 
     /**
-     * Evaluate wether or not ANGLE_instanced_arrays is supported (either by extension or in WebGL2 by default) and, if
+     * Evaluate whether or not ANGLE_instanced_arrays is supported (either by extension or in WebGL2 by default) and, if
      * supported, binds the associated functions.
      * @param context - WebGL context to query extension support in
      */
@@ -246,15 +245,27 @@ export class GL2Facade {
     // DRAW BUFFERS
 
     /**
+     * Stores the MAX_DRAW_BUFFERS enum if supported. @see {@link MAX_DRAW_BUFFERS}
+     */
+    protected _maxDrawBuffers: GLenum;
+
+    /**
+     * The MAX_DRAW_BUFFERS format enum. Is `undefined` if not supported.
+     */
+    get MAX_DRAW_BUFFERS(): GLenum {
+        return this._maxDrawBuffers;
+    }
+
+
+    /**
      * @link https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_draw_buffers/drawBuffersWEBGL
      */
     drawBuffers: ((buffers: Array<GLenum>) => void) | undefined = undefined;
 
     /**
-     * Evaluate wether or not WEBGL_draw_buffers is supported (either by extension or in WebGL2 by default) and, if
+     * Evaluate whether or not WEBGL_draw_buffers is supported (either by extension or in WebGL2 by default) and, if
      * supported, binds the associated functions.
      * @param context - WebGL context to query extension support in.
-     * @returns - True if WEBGL_draw_buffers is supported and associated functions are bound.
      */
     protected queryDrawBuffersSupport(context: Context): void {
         if (!context.isWebGL2 && !context.supportsDrawBuffers) {
@@ -264,6 +275,10 @@ export class GL2Facade {
         this.drawBuffers = context.isWebGL2 ?
             (buffers: Array<GLenum>) => context.gl.drawBuffers(buffers) :
             (buffers: Array<GLenum>) => context.drawBuffers.drawBuffersWEBGL(buffers);
+
+        this._maxDrawBuffers = context.isWebGL2 ?
+            context.gl.MAX_DRAW_BUFFERS :
+            context.drawBuffers.MAX_DRAW_BUFFERS_WEBGL;
     }
 
 
