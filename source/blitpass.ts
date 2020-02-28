@@ -159,6 +159,9 @@ export class BlitPass extends Initializable {
 
         gl.viewport(dstBounds[0], dstBounds[1], dstBounds[2] - dstBounds[0], dstBounds[3] - dstBounds[1]);
 
+        gl.disable(gl.DEPTH_TEST);
+        gl.depthMask(false);
+
         this._program.bind();
         gl.uniform4fv(this._uSrcBounds, srcBoundsNormalized);
         gl.uniform4fv(this._uDstBounds, dstBoundsNormalized);
@@ -175,6 +178,9 @@ export class BlitPass extends Initializable {
         this._target.unbind(target);
 
         texture.unbind();
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
 
         /* Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
@@ -327,7 +333,7 @@ export class BlitPass extends Initializable {
      * @param bounds - [srcX0, srcY0, srcX1, srcY1] as used in glBlitFramebuffer. If bounds is
      * undefined, the full size of the source buffer (framebuffer) will be used.
      */
-    set srcBounds(bounds: vec4) {
+    set srcBounds(bounds: vec4 | undefined) {
         this._srcBounds = bounds ? vec4.clone(bounds) : undefined;
     }
 
