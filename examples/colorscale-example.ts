@@ -99,9 +99,7 @@ class ColorScaleRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        /* mouseEventProvider: MouseEventProvider, */
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        /* eventProvider: eventProvider */): boolean {
 
         const gl = context.gl;
 
