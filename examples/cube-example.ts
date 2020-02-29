@@ -89,12 +89,13 @@ export class CubeRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/blue_painted_planks_diff_1k_modified.webp', false).then(() => {
+        this._texture.fetch('./data/blue-painted-planks-diff-1k-modified.webp', false).then(() => {
             const gl = context.gl;
 
             this._program.bind();
             gl.uniform1i(this._program.uniform('u_textured'), true);
 
+            this.finishLoading();
             this.invalidate(true);
         });
 
@@ -157,6 +158,10 @@ export class CubeRenderer extends Renderer {
     }
 
     protected onFrame(): void {
+        if (this.isLoading) {
+            return;
+        }
+
         const gl = this._context.gl;
 
         this._defaultFBO.bind();
@@ -195,7 +200,7 @@ export class CubeExample extends Example {
     private _canvas: Canvas;
     private _renderer: CubeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -208,7 +213,7 @@ export class CubeExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

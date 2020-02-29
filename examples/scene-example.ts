@@ -197,6 +197,10 @@ export class SceneRenderer extends Renderer {
      * @param frameNumber - for intermediate frames in accumulation rendering.
      */
     protected onFrame(frameNumber: number): void {
+        if (this.isLoading) {
+            return;
+        }
+
         this._forwardPass.frame();
     }
 
@@ -234,6 +238,7 @@ export class SceneRenderer extends Renderer {
         const texture = new Texture2D(this._context, 'Texture');
         texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         texture.fetch('./data/concrete_floor_02_diff_1k.webp', false).then(() => {
+            this.finishLoading();
             this.invalidate(true);
         });
 
@@ -348,7 +353,7 @@ export class SceneExample extends Example {
     private _canvas: Canvas;
     private _renderer: SceneRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -361,7 +366,7 @@ export class SceneExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

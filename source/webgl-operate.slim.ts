@@ -24,7 +24,7 @@ export { Framebuffer } from './framebuffer';
 export { Geometry } from './geometry';
 export { Program } from './program';
 export { Renderbuffer } from './renderbuffer';
-export { Renderer, Invalidate } from './renderer';
+export { Renderer, Invalidate, LoadingStatus } from './renderer';
 export { Shader } from './shader';
 export { Texture2D } from './texture2d';
 export { Texture3D } from './texture3d';
@@ -53,6 +53,7 @@ export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel'
 
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
+export { DebugPass } from './debugpass';
 export { ReadbackPass } from './readbackpass';
 
 export { GaussFilter } from './gaussfilter';

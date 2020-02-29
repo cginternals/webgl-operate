@@ -87,9 +87,14 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
+        /* Query max anisotropy. This is done lazy, that is, only for the first texture created. */
         if (Texture2D.MAX_ANISOTROPY === undefined) {
-            const ext = this._context.textureFilterAnisotropic;
-            Texture2D.MAX_ANISOTROPY = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+            if (this._context.supportsTextureFilterAnisotropic) {
+                const ext = this._context.textureFilterAnisotropic;
+                Texture2D.MAX_ANISOTROPY = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+            } else {
+                Texture2D.MAX_ANISOTROPY = 0.0;
+            }
         }
 
         gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,

@@ -1,15 +1,39 @@
 [
     {
+        "target": "triangle-example",
+        "title": "Textured Triangle",
+        "object": "TriangleExample",
+        "caption": "Very basic scene, rendering a textured triangle."
+    },
+    {
         "target": "cube-example",
         "title": "Textured Cube",
         "object": "CubeExample",
         "caption": "Minimalistic scene featuring a textured unit cube."
     },
     {
-        "target": "triangle-example",
-        "title": "Textured Triangle",
-        "object": "TriangleExample",
-        "caption": "Very basic scene, rendering a textured triangle."
+        "target": "cube-progressive-example",
+        "title": "Textured Cube (Progressive)",
+        "object": "ProgressiveCubeExample",
+        "caption": "Progressive antialiasing on a textured unit cube."
+    },
+    {
+        "target": "canvassize-example",
+        "title": "Canvas Size",
+        "object": "CanvasSizeExample",
+        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+    },
+    {
+        "target": "xtoon-example",
+        "title": "XToon Shading",
+        "object": "XToonExample",
+        "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
+        "target": "gouraudphong-example",
+        "title": "Gouraud/Phong Shading",
+        "object": "GouraudPhongExample",
+        "caption": "Comparison between Gouraud shading and Phong shading."
     },
     {
         "target": "shadowmap-example",
@@ -24,10 +48,16 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
-        "target": "canvassize-example",
-        "title": "Canvas Size",
-        "object": "CanvasSizeExample",
-        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+        "target": "colorscale-example",
+        "title": "Color Scale",
+        "object": "ColorScaleExample",
+        "caption": "Variations and presets of color scales."
+    },
+    {
+        "target": "colorlerp-example",
+        "title": "Color Lerp",
+        "object": "ColorLerpExample",
+        "caption": "Nearest and linear interpolation of label colors."
     },
     {
         "target": "labelelide-example",
@@ -60,6 +90,12 @@
         "caption": "Image based lighting using prefiltered cube maps"
     },
     {
+        "target": "tilecamera-example",
+        "title": "Tile-based 4k Rendering",
+        "object": "TileCameraExample",
+        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
@@ -72,11 +108,5 @@
         "object": "Label3DExample",
         "caption": "Static/dynamic text that can be positioned in 3D space.",
         "disabled": true
-    },
-    {
-        "target": "tiled-rendering-example",
-        "title": "Tiled Cube Renderer",
-        "object": "TiledRendererExample",
-        "caption": "Rendering of a cube with the Tiled Renderer in 4 different ways."
     }
 ]

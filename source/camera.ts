@@ -4,7 +4,7 @@
 import { mat4, vec3 } from 'gl-matrix';
 import { m4 } from './gl-matrix-extensions';
 
-import { DEG2RAD, log, LogLevel } from './auxiliaries';
+import { DEG2RAD, log, LogLevel, RAD2DEG } from './auxiliaries';
 import { duplicate2, GLsizei2 } from './tuples';
 
 /* spellchecker: enable */
@@ -184,7 +184,7 @@ export class Camera {
     }
 
     /**
-     * Sets the vertical field-of-view. Invalidates the projection.
+     * Sets the vertical field-of-view in degrees. Invalidates the projection.
      */
     set fovy(fovy: GLfloat) {
         if (this._fovy === fovy) {
@@ -192,6 +192,36 @@ export class Camera {
         }
         this._fovy = fovy;
         this.invalidate(false, true);
+    }
+
+    /**
+     * Sets the horizontal field-of-view in degrees. Invalidates the projection.
+     * Note that internally, this will be translated to the corresponding the vertical field.
+     */
+    set fovx(fovx: GLfloat) {
+        const horizontalAngle = fovx * DEG2RAD;
+        const verticalAngle = 2.0 * Math.atan(Math.tan(horizontalAngle / 2.0) * (1.0 / this.aspect));
+
+        const fovy = verticalAngle * RAD2DEG;
+        if (this._fovy === fovy) {
+            return;
+        }
+        this._fovy = fovy;
+        this.invalidate(false, true);
+    }
+
+    /**
+     * With this function the view of a physical camera can be emulated. The width and focal length of
+     * a lens are used to generate the correct field of view.
+     * Blender camera presets can be imported by using the camera setting 'HorizontalFit' and using the
+     * width and focal length values in this function.
+     * See: https://www.scantips.com/lights/fieldofviewmath.html
+     * @param sensorWidth - Width of the sensor in mm
+     * @param focalLength - Focal length of the lens in mm
+     */
+    fovFromLens(sensorWidth: number, focalLength: number): void {
+        const horizontalAngle = 2.0 * Math.atan(sensorWidth / (2.0 * focalLength));
+        this.fovx = horizontalAngle * RAD2DEG;
     }
 
     /**
@@ -392,31 +422,4 @@ export class Camera {
         this._altered = status;
     }
 
-    /**
-     * Returns a deep copy of the camera.
-     */
-    public copy(): Camera {
-        const copiedCamera = new Camera(this.eye, this.center, this.up);
-        this.copyAllValues(copiedCamera);
-        return copiedCamera;
-    }
-
-    /**
-     * Sets all variables from camera to the object it is called on.
-     * The values will be a deep copy.
-     * @param camera The camera that should receive the values.
-     */
-    public copyAllValues(camera: Camera): void {
-        camera.altered = true;
-        vec3.copy(camera.eye, this.eye);
-        vec3.copy(camera.center, this.center);
-        vec3.copy(camera.up, this.up);
-        camera.fovy = this.fovy;
-        camera.near = this.near;
-        camera.far = this.far;
-        camera.viewport = [this.viewport[0], this.viewport[1]];
-        camera.aspect = this.aspect;
-        camera.postViewProjection = mat4.copy(m4(), this.postViewProjection);
-        camera.invalidate(true, true, true);
-    }
 }

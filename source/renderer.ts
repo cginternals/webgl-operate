@@ -24,6 +24,11 @@ import { Wizard } from './wizard';
  */
 export interface Invalidate { (force: boolean): void; }
 
+export enum LoadingStatus {
+    Started,
+    Finished,
+}
+
 
 /**
  * Base class for hardware-accelerated processing and/or image-synthesis. It provides information such as the current
@@ -108,6 +113,16 @@ export abstract class Renderer extends Initializable implements Controllable {
     protected _debugTexture: GLint;
     protected _debugTextureSubject = new ReplaySubject<GLint>(1);
 
+    /**
+     * @see {@link isLoading}
+     */
+    protected _isLoading: boolean;
+
+    /**
+     * This property can be observed via `aRenderer.loadingState$.observe()`. It is triggered when `finishLoading` or
+     * `startLoading` is called on this renderer.
+     */
+    protected _loadingStatusSubscription: ReplaySubject<LoadingStatus>;
 
     /** @callback Invalidate
      * A callback intended to be invoked whenever the specialized renderer itself or one of its objects is invalid. This
@@ -193,6 +208,23 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     protected onSwap(): void { /* default empty impl. */ }
 
+    /**
+     * This method needs to be called by a renderer, when a loading process is started in order to notify listeners via
+     * the observable loadingState$.
+     */
+    protected startLoading(): void {
+        this._isLoading = true;
+        this._loadingStatusSubscription.next(LoadingStatus.Started);
+    }
+
+    /**
+     * This method needs to be called when a loading process is finished in order to notify listeners via
+     * the observable loadingState$.
+     */
+    protected finishLoading(): void {
+        this._isLoading = false;
+        this._loadingStatusSubscription.next(LoadingStatus.Finished);
+    }
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
@@ -215,6 +247,9 @@ export abstract class Renderer extends Initializable implements Controllable {
         this._context = context;
         assert(callback !== undefined, `valid multi-frame update callback required`);
         this._invalidate = callback;
+
+        this._isLoading = true;
+        this._loadingStatusSubscription = new ReplaySubject();
 
         return this.onInitialize(context, callback, eventProvider);
     }
@@ -399,6 +434,22 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     get debugTexture$(): Observable<GLint> {
         return this._debugTextureSubject.asObservable();
+    }
+
+    /**
+     * This property indicated whether a loading process is currently in progress.
+     * It can be changed by calling `startLoading` or `finishLoading` on this renderer.
+     */
+    get isLoading(): boolean {
+        return this._isLoading;
+    }
+
+    /**
+     * Observable to subscribe to the current loading state of this renderer.
+     * Use `aRenderer.loadingStatus$.subscribe()` to register a new subscriber.
+     */
+    get loadingStatus$(): Observable<LoadingStatus> {
+        return this._loadingStatusSubscription.asObservable();
     }
 
 }

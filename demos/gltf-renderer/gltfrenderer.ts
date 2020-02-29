@@ -307,6 +307,10 @@ export class GltfRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
+        if (this.isLoading) {
+            return;
+        }
+
         const gl = this._context.gl;
 
         // TODO: proper handling of transparent materials in the loader
@@ -324,6 +328,7 @@ export class GltfRenderer extends Renderer {
      */
     protected loadAsset(): void {
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
+        this.startLoading();
 
         const uri = assetSelect.value;
         this._forwardPass.scene = undefined;
@@ -332,6 +337,7 @@ export class GltfRenderer extends Renderer {
         this._loader.loadAsset(uri)
             .then(() => {
                 this._forwardPass.scene = this._loader.defaultScene;
+                this.finishLoading();
                 this._invalidate(true);
             });
     }
@@ -377,7 +383,7 @@ export class GltfDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: GltfRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: true });
         this._canvas.controller.multiFrameNumber = 1;
@@ -390,7 +396,7 @@ export class GltfDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

@@ -245,6 +245,19 @@ export class GL2Facade {
     // DRAW BUFFERS
 
     /**
+     * Stores the MAX_DRAW_BUFFERS enum if supported. @see {@link MAX_DRAW_BUFFERS}
+     */
+    protected _maxDrawBuffers: GLenum;
+
+    /**
+     * The MAX_DRAW_BUFFERS format enum. Is `undefined` if not supported.
+     */
+    get MAX_DRAW_BUFFERS(): GLenum {
+        return this._maxDrawBuffers;
+    }
+
+
+    /**
      * @link https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_draw_buffers/drawBuffersWEBGL
      */
     drawBuffers: ((buffers: Array<GLenum>) => void) | undefined = undefined;
@@ -262,6 +275,10 @@ export class GL2Facade {
         this.drawBuffers = context.isWebGL2 ?
             (buffers: Array<GLenum>) => context.gl.drawBuffers(buffers) :
             (buffers: Array<GLenum>) => context.drawBuffers.drawBuffersWEBGL(buffers);
+
+        this._maxDrawBuffers = context.isWebGL2 ?
+            context.gl.MAX_DRAW_BUFFERS :
+            context.drawBuffers.MAX_DRAW_BUFFERS_WEBGL;
     }
 
 
