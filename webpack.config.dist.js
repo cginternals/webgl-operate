@@ -7,8 +7,8 @@ module.exports = (env, options) => {
     config.cache = false;
     config.output.path = __dirname + '/dist';
     config.entry = {
-        'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'],
-        'webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
+        'webgl-operate.js': ['polyfill.ts', 'webgl-operate.ts'],
+        'webgl-operate.slim.js': ['polyfill.ts', 'webgl-operate.slim.ts'],
     };
 
     config.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
