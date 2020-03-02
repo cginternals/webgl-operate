@@ -150,8 +150,9 @@ export class BlitPass extends Initializable {
         const gl = this._context.gl;
 
         const srcBounds: vec4 = this._srcBounds ? this._srcBounds :
-            [0, 0, this._framebuffer.width, this._framebuffer.height];
-        const dstBounds: vec4 = this._dstBounds ? this._dstBounds : [0, 0, this._target.width, this._target.height];
+            vec4.fromValues(0, 0, this._framebuffer.width, this._framebuffer.height);
+        const dstBounds: vec4 = this._dstBounds ? this._dstBounds :
+            vec4.fromValues(0, 0, this._target.width, this._target.height);
 
         const srcBoundsNormalized: vec4 = vec4.div(v4(), srcBounds,
             [this._framebuffer.width, this._framebuffer.height, this._framebuffer.width, this._framebuffer.height]);

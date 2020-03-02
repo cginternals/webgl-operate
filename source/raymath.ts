@@ -127,8 +127,9 @@ namespace ray_math {
      * @param normal - Normal of the plane with origin [ 0, 0, 0 ].
      * @returns - If ray intersects, the intersection point on the plane if the plane was hit.
      */
-    export function rayPlaneIntersection(ray0: vec3, ray1: vec3
-        , origin: vec3 = [0.0, 0.0, 0.0], normal: vec3 = [0.0, 1.0, 0.0]): vec3 | undefined {
+    export function rayPlaneIntersection(ray0: vec3, ray1: vec3,
+        origin: vec3 = vec3.fromValues(0.0, 0.0, 0.0),
+        normal: vec3 = vec3.fromValues(0.0, 1.0, 0.0)): vec3 | undefined {
 
         const ray_direction = vec3.normalize(v3(), vec3.subtract(v3(), ray1, ray0));
 
