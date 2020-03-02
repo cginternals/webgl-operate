@@ -105,6 +105,6 @@
             "cgcostume"
         ],
         "caption": "Simple demo showing eye tracking.",
-        "disabled": false
+        "disabled": true
     }
 ]

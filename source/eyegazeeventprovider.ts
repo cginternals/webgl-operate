@@ -33,11 +33,11 @@ export class EyeGazeEventProvider {
 
     protected _eyeGazeDataStream: EyeGazeDataStream;
 
-    constructor(eyeGazeDataStreams: EyeGazeDataStreams, timeframe?: number) {
+    constructor(eyeGazeDataStreams: EyeGazeDataStreams, timeframe?: number, serverAddress?: string) {
         assert(eyeGazeDataStreams !== undefined, `expected a valid eye gaze data streams object on initialization, given ${eyeGazeDataStreams}.`);
         this._eyeGazeDataStream = new EyeGazeDataStream();
         this._eyeGazeDataStream.eyeGazeDataStreams = eyeGazeDataStreams;
-        this._eyeGazeDataStream.connect();
+        this._eyeGazeDataStream.connect(serverAddress);
     }
 
     /**

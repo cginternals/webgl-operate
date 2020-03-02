@@ -1,5 +1,3 @@
-
-
 // tslint:disable:max-classes-per-file
 
 // FORMAT:
@@ -10,7 +8,7 @@ export type EyeGazeEvent = CustomEvent;
 
 export class EyeGazeData {
     // TRACK BOX:
-    // TODO: tobii_get_track_box Retrieves 3d coordinates of the track box frustum,
+    // 3d coordinates of the track box frustum,
     // given in millimeters from the device center.
 
     // gaze position x and y
@@ -41,9 +39,6 @@ export class EyeGazeData {
 
     // user presence, a bool represented as a public number so that everything fits in a char array
     public userPresence = false;
-
-    // TODO: forgot tobii_notifications_subscribe, this is not so useful I guess(tobii_user_position_guide_subscribe)
-
 
     public toString(): string {
         let message = '';

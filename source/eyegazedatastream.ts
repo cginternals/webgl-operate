@@ -44,7 +44,6 @@ export class EyeGazeDataStream {
     protected performHandshake(): void {
         this._eyeGazeDataStreams.recalculateNumberOfFloats();
         const configByte = this.generateStreamConfigByte();
-        console.log('sending config bytes');
         this._webSocket.send(configByte);
     }
 
@@ -96,7 +95,6 @@ export class EyeGazeDataStream {
             detail:
                 { message: EyeGazeDataStream.SUCCESSFULLY_CONNECTED_TO_SERVER, event },
         }));
-        console.log('Connected to server. Performing handshake now.');
         this.performHandshake();
     }
 
@@ -129,8 +127,9 @@ export class EyeGazeDataStream {
         }
     }
 
-    public connect(): void {
-        this._webSocket = new WebSocket(this.websocketAddress);
+    public connect(serverAddress?: string): void {
+        serverAddress = serverAddress ? serverAddress : this.websocketAddress;
+        this._webSocket = new WebSocket(serverAddress);
 
         // Arrow functions needed in order to not loose this-context.
         this._webSocket.onopen = (event: Event) => {
