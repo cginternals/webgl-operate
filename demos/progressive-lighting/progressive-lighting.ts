@@ -53,7 +53,6 @@ export class ProgressiveLightingRenderer extends Renderer {
     static URL = 'https://p-otto.waduhek.de';
 
     protected _loader: GLTFLoader;
-    protected _loading: boolean;
 
     protected _navigation: Navigation;
 
@@ -668,7 +667,7 @@ export class ProgressiveLightingRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
-        if (this._loading) {
+        if (this.isLoading) {
             return;
         }
 
