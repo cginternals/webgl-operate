@@ -101,10 +101,12 @@ export class EyeTrackingRenderer extends Renderer {
         eventProvider: EventProvider): boolean {
 
         /* Create event handler that listens to eye gaze events. */
-        this._eventHandler = new EventHandler(callback, {mouseEventProvider: eventProvider.mouseEventProvider,
-                                                         touchEventProvider: undefined,
-                                                         eyeGazeEventProvider:
-                                                         eventProvider.eyeGazeEventProvider});
+        this._eventHandler = new EventHandler(callback, {
+            mouseEventProvider: eventProvider.mouseEventProvider,
+            touchEventProvider: undefined,
+            eyeGazeEventProvider:
+                eventProvider.eyeGazeEventProvider
+        });
 
         /* Listen to eye gaze events. */
         this._eventHandler.pushEyeGazeDataHandler((latests: Array<EyeGazeEvent>, previous: Array<EyeGazeEvent>) =>
