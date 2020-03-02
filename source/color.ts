@@ -337,7 +337,7 @@ export class Color {
         /* tslint:disable-next-line:switch-default */
         switch (space) {
             case Color.Space.CMYK:
-                vec4.lerp(result, x.cmyk, y.cmyka, a);
+                vec4.lerp(result, x.cmyk, y.cmyk, a);
                 const alpha = mix(x.a, y.a, a);
                 return new Color().fromCMYK(result[0], result[1], result[2], result[3], alpha);
 
