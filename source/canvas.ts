@@ -703,7 +703,7 @@ export class Canvas extends Resizable {
     /**
      * Activates the eye gaze event provider referring to the canvas element.
      */
-    public activateEyeGazeEventProvider(eyeGazeDataStreams: EyeGazeDataStreams, serverAddress?: string): void {
-        this._eyeGazeEventProvider = new EyeGazeEventProvider(eyeGazeDataStreams, 200, serverAddress);
+    public activateEyeGazeEventProvider(eyeGazeDataStreams: EyeGazeDataStreams, serverAddress: string): void {
+        this._eyeGazeEventProvider = new EyeGazeEventProvider(eyeGazeDataStreams, serverAddress);
     }
 }

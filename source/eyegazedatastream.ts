@@ -16,7 +16,6 @@ export class EyeGazeDataStream {
     public static readonly CONNECTION_ERROR = 'connection error with server';
 
     protected _webSocket: WebSocket;
-    protected readonly websocketAddress = 'ws://localhost:1234';
 
     protected _eyeGazeDataStreams: EyeGazeDataStreams = new EyeGazeDataStreams();
     protected _eyeGazeEventTarget = new EventTarget();
@@ -127,8 +126,7 @@ export class EyeGazeDataStream {
         }
     }
 
-    public connect(serverAddress?: string): void {
-        serverAddress = serverAddress ? serverAddress : this.websocketAddress;
+    public connect(serverAddress: string): void {
         this._webSocket = new WebSocket(serverAddress);
 
         // Arrow functions needed in order to not loose this-context.
