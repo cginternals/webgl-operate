@@ -201,6 +201,10 @@ export class XToonRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
+        if (this.isLoading) {
+            return;
+        }
+
         this._forwardPass.frame();
     }
 
@@ -218,6 +222,7 @@ export class XToonRenderer extends Renderer {
         this._loader.loadAsset(uri)
             .then(() => {
                 this._forwardPass.scene = this._loader.defaultScene;
+                this.finishLoading();
                 this.invalidate(true);
             });
     }
@@ -229,7 +234,7 @@ export class XToonExample extends Example {
     private _canvas: Canvas;
     private _renderer: XToonRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
 
@@ -243,7 +248,7 @@ export class XToonExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

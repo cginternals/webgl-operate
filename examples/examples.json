@@ -42,6 +42,18 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
+        "target": "colorscale-example",
+        "title": "Color Scale",
+        "object": "ColorScaleExample",
+        "caption": "Variations and presets of color scales."
+    },
+    {
+        "target": "colorlerp-example",
+        "title": "Color Lerp",
+        "object": "ColorLerpExample",
+        "caption": "Nearest and linear interpolation of label colors."
+    },
+    {
         "target": "labelelide-example",
         "title": "Label Elide",
         "object": "LabelElideExample",
@@ -76,6 +88,12 @@
         "title": "Area Lights",
         "object": "AreaLightExample",
         "caption": "Area lights using Multi-Frame sampling."
+    },
+    {
+        "target": "tilecamera-example",
+        "title": "Tile-based 4k Rendering",
+        "object": "TileCameraExample",
+        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     },
     {
         "target": "label2d-example",

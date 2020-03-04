@@ -54,7 +54,6 @@ export class ProgressiveLightingRenderer extends Renderer {
     static URL = 'https://p-otto.waduhek.de';
 
     protected _loader: GLTFLoader;
-    protected _loading: boolean;
 
     protected _navigation: Navigation;
 
@@ -670,7 +669,7 @@ export class ProgressiveLightingRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
-        if (this._loading) {
+        if (this.isLoading) {
             return;
         }
 
@@ -929,7 +928,7 @@ export class ProgressiveLightingRenderer extends Renderer {
         }
 
         // Show loading spinner and clear background
-        this.showSpinner();
+        this.startLoading();
         this._postProcessingPass.clear();
 
         this._currentScene = scene;
@@ -943,7 +942,7 @@ export class ProgressiveLightingRenderer extends Renderer {
             .then(() => {
                 this._forwardPass.scene = this._loader.defaultScene;
                 this._invalidate(true);
-                this.hideSpinner();
+                this.finishLoading();
             });
     }
 
@@ -1052,24 +1051,6 @@ export class ProgressiveLightingRenderer extends Renderer {
             }, mipLevel);
         }
     }
-
-    /**
-     * Show a spinner that indicates that the demo is still loading.
-     */
-    protected showSpinner(): void {
-        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
-        (spinnerElement as HTMLElement).style.display = 'inline';
-        this._loading = true;
-    }
-
-    /**
-     * Hide the loading spinner.
-     */
-    protected hideSpinner(): void {
-        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
-        (spinnerElement as HTMLElement).style.display = 'none';
-        this._loading = false;
-    }
 }
 
 export class ProgressiveLightingDemo extends Demo {
@@ -1077,7 +1058,7 @@ export class ProgressiveLightingDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: ProgressiveLightingRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
         this._canvas.controller.multiFrameNumber = 128;
@@ -1101,7 +1082,7 @@ export class ProgressiveLightingDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

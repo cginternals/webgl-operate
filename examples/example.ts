@@ -4,6 +4,7 @@
 import {
     Canvas,
     Initializable,
+    LoadingStatus,
     Renderer,
     viewer,
 } from 'webgl-operate';
@@ -13,9 +14,43 @@ import {
 
 export abstract class Example extends Initializable {
 
-    abstract initialize(element: HTMLCanvasElement | string): boolean;
+    /**
+     * Hide the loading spinner.
+     */
+    protected showSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'inline';
+    }
 
-    abstract uninitialize(): void;
+    /**
+     * Hide the loading spinner.
+     */
+    protected hideSpinner(): void {
+        const spinnerElement = document.getElementsByClassName('spinner').item(0)!;
+        (spinnerElement as HTMLElement).style.display = 'none';
+    }
+
+    initialize(element: HTMLCanvasElement | string): boolean {
+        const result = this.onInitialize(element);
+
+        this.renderer.loadingStatus$.subscribe((status: LoadingStatus) => {
+            if (status === LoadingStatus.Finished) {
+                this.hideSpinner();
+            } else if (status === LoadingStatus.Started) {
+                this.showSpinner();
+            }
+        });
+
+        return result;
+    }
+
+    uninitialize(): void {
+        this.onUninitialize();
+    }
+
+    abstract onInitialize(element: HTMLCanvasElement | string): boolean;
+
+    abstract onUninitialize(): void;
 
     abstract get renderer(): Renderer;
 

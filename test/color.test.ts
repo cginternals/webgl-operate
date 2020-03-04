@@ -259,30 +259,63 @@ describe('Color', () => {
     it('should convert LAB color to RGB color', () => {
         const color = new Color();
 
-        expect(Array.from(color.fromLAB(0.0, 0.0, 0.0).rgbUI8)).to.have.ordered.members([0, 0, 0]);
-        expect(Array.from(color.fromLAB(0.5, 0.0, 0.0).rgbUI8)).to.have.ordered.members([118, 118, 118]);
-        expect(Array.from(color.fromLAB(1.0, 0.0, 0.0).rgbUI8)).to.have.ordered.members([255, 255, 255]);
+        expect(Array.from(color.fromLAB(0.0, 0.5, 0.5).rgbUI8)).to.have.ordered.members([0, 0, 0]);
+        expect(Array.from(color.fromLAB(0.5, 0.5, 0.5).rgbUI8)).to.have.ordered.members([118, 118, 118]);
+        expect(Array.from(color.fromLAB(1.0, 0.5, 0.5).rgbUI8)).to.have.ordered.members([255, 255, 255]);
 
-        expect(Array.from(color.fromLAB(1.0, 0.5, 0.0).rgbUI8)).to.have.ordered.members([255, 216, 255]);
-        expect(Array.from(color.fromLAB(0.5, 0.5, 0.0).rgbUI8)).to.have.ordered.members([170, 80, 119]);
-        expect(Array.from(color.fromLAB(0.0, 0.5, 0.0).rgbUI8)).to.have.ordered.members([49, 0, 5]);
+        expect(Array.from(color.fromLAB(0.5, 0.5, 0.5, 0.25).rgbaUI8)).to.have.ordered.members([118, 118, 118, 64]);
 
-        expect(Array.from(color.fromLAB(1.0, 0.0, 0.5).rgbUI8)).to.have.ordered.members([255, 252, 160]);
-        expect(Array.from(color.fromLAB(0.5, 0.0, 0.5).rgbUI8)).to.have.ordered.members([134, 116, 39]);
+        expect(Array.from(color.fromLAB(1.0, 0.0, 0.0).rgbUI8)).to.have.ordered.members([0, 255, 255]);
+        expect(Array.from(color.fromLAB(1.0, 0.0, 0.5).rgbUI8)).to.have.ordered.members([0, 255, 254]);
+        expect(Array.from(color.fromLAB(1.0, 0.0, 1.0).rgbUI8)).to.have.ordered.members([127, 255, 0]);
+        expect(Array.from(color.fromLAB(1.0, 0.5, 0.0).rgbUI8)).to.have.ordered.members([0, 255, 255]);
+        expect(Array.from(color.fromLAB(1.0, 0.5, 1.0).rgbUI8)).to.have.ordered.members([255, 250, 0]);
+        expect(Array.from(color.fromLAB(1.0, 1.0, 0.0).rgbUI8)).to.have.ordered.members([255, 136, 255]);
+        expect(Array.from(color.fromLAB(1.0, 1.0, 0.5).rgbUI8)).to.have.ordered.members([255, 88, 255]);
+        expect(Array.from(color.fromLAB(1.0, 1.0, 1.0).rgbUI8)).to.have.ordered.members([255, 67, 0]);
 
-        expect(Array.from(color.fromLAB(0.8, 0.4, 0.2).rgbUI8)).to.have.ordered.members([253, 167, 162]);
+        expect(Array.from(color.fromLAB(0.0, 0.0, 0.0).rgbUI8)).to.have.ordered.members([0, 66, 189]);
+        // next line: some converters result in [0,0,0] or [0, 49, 0] here?! so this is debatable here
+        expect(Array.from(color.fromLAB(0.0, 0.0, 0.5).rgbUI8)).to.have.ordered.members([0, 52, 0]);
+        expect(Array.from(color.fromLAB(0.0, 0.0, 1.0).rgbUI8)).to.have.ordered.members([0, 49, 0]);
+        expect(Array.from(color.fromLAB(0.0, 0.5, 0.0).rgbUI8)).to.have.ordered.members([0, 44, 189]);
+        expect(Array.from(color.fromLAB(0.0, 0.5, 1.0).rgbUI8)).to.have.ordered.members([52, 0, 0]);
+        expect(Array.from(color.fromLAB(0.0, 1.0, 0.0).rgbUI8)).to.have.ordered.members([0, 0, 190]);
+        expect(Array.from(color.fromLAB(0.0, 1.0, 0.5).rgbUI8)).to.have.ordered.members([97, 0, 10]);
+        // next line: some converters result in [0,0,0] or [133,0,0] here?! so this is debatable:
+        expect(Array.from(color.fromLAB(0.0, 1.0, 1.0).rgbUI8)).to.have.ordered.members([107, 0, 0]);
 
-        expect(Array.from(color.fromLAB(0.5, 0.0, 0.0, 0.25).rgbaUI8)).to.have.ordered.members([118, 118, 118, 64]);
+        expect(Array.from(color.fromLAB(0.5, 0.0, 0.0).rgbUI8)).to.have.ordered.members([0, 168, 255]);
+        expect(Array.from(color.fromLAB(0.5, 0.0, 0.5).rgbUI8)).to.have.ordered.members([0, 153, 118]);
+        expect(Array.from(color.fromLAB(0.5, 0.0, 1.0).rgbUI8)).to.have.ordered.members([0, 151, 0]);
+        expect(Array.from(color.fromLAB(0.5, 0.5, 0.0).rgbUI8)).to.have.ordered.members([0, 137, 255]);
+        // next line: some converters result in [149, 116, 0], but RGB Adobe 98 is [139, 115, 0]
+        expect(Array.from(color.fromLAB(0.5, 0.5, 1.0).rgbUI8)).to.have.ordered.members([139, 115, 0]);
+        // next line: some converters result in [185, 0, 255], but RGB Adobe 98 is [152, 0, 255]
+        expect(Array.from(color.fromLAB(0.5, 1.0, 0.0).rgbUI8)).to.have.ordered.members([152, 0, 255]);
+        // next line: some converters result in [255, 0, 125], but RGB Adobe 98 is [245, 0, 119]
+        expect(Array.from(color.fromLAB(0.5, 1.0, 0.5).rgbUI8)).to.have.ordered.members([245, 0, 120]);
+        expect(Array.from(color.fromLAB(0.5, 1.0, 1.0).rgbUI8)).to.have.ordered.members([254, 0, 0]);
+
+        // some random values
+
+        expect(Array.from(color.fromLAB(0.8, 0.4, 0.2).rgbUI8)).to.have.ordered.members([0, 219, 255]);
+        expect(Array.from(color.fromLAB(0.8, 0.2, 0.4).rgbUI8)).to.have.ordered.members([0, 233, 243]);
+        expect(Array.from(color.fromLAB(0.2, 0.4, 0.8).rgbUI8)).to.have.ordered.members([49, 58, 0]);
+        // next line: some converters result in [141, 10, 223], but RGB Adobe 98 is [120, 19, 218]
+        expect(Array.from(color.fromLAB(0.4, 0.8, 0.2).rgbUI8)).to.have.ordered.members([120, 19, 218]);
+        // next line: some converters result in [150, 40, 0], but RGB Adobe 98 is [129, 44, 0]
+        expect(Array.from(color.fromLAB(0.33, 0.66, 0.99).rgbUI8)).to.have.ordered.members([129, 44, 0]);
     });
 
     it('should log and clamp on out of range LAB components to RGB conversion', () => {
         const color = new Color();
         const consoleLogStub = stub(console, 'log');
 
-        expect(Array.from(color.fromLAB(-0.1, -0.1, -0.1).rgbUI8)).to.have.ordered.members([0, 0, 0]);
-        expect(Array.from(color.fromLAB(+1.1, +0.1, +0.1).rgbUI8)).to.have.ordered.members([255, 248, 236]);
-        expect(Array.from(color.fromLAB(+1.0, +1.1, +0.1).rgbUI8)).to.have.ordered.members([255, 153, 237]);
-        expect(Array.from(color.fromLAB(+1.0, +0.1, +1.1).rgbUI8)).to.have.ordered.members([255, 244, 54]);
+        expect(Array.from(color.fromLAB(-0.1, -0.1, -0.1).rgbUI8)).to.have.ordered.members([0, 66, 189]);
+        expect(Array.from(color.fromLAB(+1.1, +0.1, +0.1).rgbUI8)).to.have.ordered.members([0, 255, 255]);
+        expect(Array.from(color.fromLAB(+1.0, +1.1, +0.1).rgbUI8)).to.have.ordered.members([255, 125, 255]);
+        expect(Array.from(color.fromLAB(+1.0, +0.1, +1.1).rgbUI8)).to.have.ordered.members([167, 255, 0]);
 
         expect(consoleLogStub.callCount).to.equal(4);
         consoleLogStub.restore();
@@ -291,31 +324,31 @@ describe('Color', () => {
     it('should convert RGB color to LAB color', () => {
         const color = new Color();
 
-        expect(Array.from(color.fromUI8(0, 0, 0).lab)).to.have.ordered.members([0.0, 0.0, 0.0]);
+        expect(Array.from(color.fromUI8(0, 0, 0).lab)).to.have.ordered.members([0.0, 0.5, 0.5]);
         let laba = color.fromUI8(255, 255, 255).laba;
         expect(laba[0]).to.be.closeTo(1.0000, 1e-4);
-        expect(laba[1]).to.be.closeTo(0.0000, 1e-4);
-        expect(laba[2]).to.be.closeTo(0.0000, 1e-4);
+        expect(laba[1]).to.be.closeTo(0.5000, 1e-4);
+        expect(laba[2]).to.be.closeTo(0.5000, 1e-4);
 
         laba = color.fromUI8(118, 118, 118).laba;
         expect(laba[0]).to.be.closeTo(0.4994, 1e-4);
-        expect(laba[1]).to.be.closeTo(0.0000, 1e-4);
-        expect(laba[2]).to.be.closeTo(0.0000, 1e-4);
+        expect(laba[1]).to.be.closeTo(0.5000, 1e-4);
+        expect(laba[2]).to.be.closeTo(0.5000, 1e-4);
 
         laba = color.fromUI8(170, 80, 119).laba;
         expect(laba[0]).to.be.closeTo(0.5010, 1e-4);
-        expect(laba[1]).to.be.closeTo(0.5020, 1e-4);
-        expect(laba[2]).to.be.closeTo(0.0000, 1e-4);
+        expect(laba[1]).to.be.closeTo(0.6960, 1e-4);
+        expect(laba[2]).to.be.closeTo(0.4996, 1e-4);
 
         laba = color.fromUI8(134, 116, 39).laba;
         expect(laba[0]).to.be.closeTo(0.5003, 1e-4);
-        expect(laba[1]).to.be.closeTo(0.0036, 1e-4);
-        expect(laba[2]).to.be.closeTo(0.5023, 1e-4);
+        expect(laba[1]).to.be.closeTo(0.5014, 1e-4);
+        expect(laba[2]).to.be.closeTo(0.6962, 1e-4);
 
         laba = color.fromUI8(253, 167, 162, 64).laba;
         expect(laba[0]).to.be.closeTo(0.8003, 1e-4);
-        expect(laba[1]).to.be.closeTo(0.3962, 1e-4);
-        expect(laba[2]).to.be.closeTo(0.1999, 1e-4);
+        expect(laba[1]).to.be.closeTo(0.6547, 1e-4);
+        expect(laba[2]).to.be.closeTo(0.5781, 1e-4);
         expect(laba[3]).to.be.closeTo(0.2510, 1e-4);
     });
 
@@ -378,24 +411,24 @@ describe('Color', () => {
 
         let color2;
 
-        expect(Color.mix(color0, color1, 0.0, Color.Space.RGB).equals(color0)).to.be.true;
-        expect(Color.mix(color0, color1, 1.0, Color.Space.RGB).equals(color1)).to.be.true;
-        color2 = Color.mix(color0, color1, 0.2, Color.Space.RGB);
+        expect(Color.lerp(color0, color1, 0.0, Color.Space.RGB).equals(color0)).to.be.true;
+        expect(Color.lerp(color0, color1, 1.0, Color.Space.RGB).equals(color1)).to.be.true;
+        color2 = Color.lerp(color0, color1, 0.2, Color.Space.RGB);
         expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([12, 24, 48, 96]);
 
-        expect(Color.mix(color0, color1, 0.0, Color.Space.LAB).equals(color0)).to.be.true;
-        expect(Color.mix(color0, color1, 1.0, Color.Space.LAB).equals(color1)).to.be.true;
-        color2 = Color.mix(color0, color1, 0.4, Color.Space.LAB);
-        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([33, 27, 29, 112]);
+        expect(Color.lerp(color0, color1, 0.0, Color.Space.LAB).equals(color0)).to.be.true;
+        expect(Color.lerp(color0, color1, 1.0, Color.Space.LAB).equals(color1)).to.be.true;
+        color2 = Color.lerp(color0, color1, 0.4, Color.Space.LAB);
+        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([16, 29, 55, 112]);
 
-        expect(Color.mix(color0, color1, 0.0, Color.Space.HSL).equals(color0)).to.be.true;
-        expect(Color.mix(color0, color1, 1.0, Color.Space.HSL).equals(color1)).to.be.true;
-        color2 = Color.mix(color0, color1, 0.6, Color.Space.HSL);
+        expect(Color.lerp(color0, color1, 0.0, Color.Space.HSL).equals(color0)).to.be.true;
+        expect(Color.lerp(color0, color1, 1.0, Color.Space.HSL).equals(color1)).to.be.true;
+        color2 = Color.lerp(color0, color1, 0.6, Color.Space.HSL);
         expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([16, 32, 64, 128]);
 
-        expect(Color.mix(color0, color1, 0.0, Color.Space.CMYK).equals(color0)).to.be.true;
-        expect(Color.mix(color0, color1, 1.0, Color.Space.CMYK).equals(color1)).to.be.true;
-        color2 = Color.mix(color0, color1, 0.8, Color.Space.CMYK);
+        expect(Color.lerp(color0, color1, 0.0, Color.Space.CMYK).equals(color0)).to.be.true;
+        expect(Color.lerp(color0, color1, 1.0, Color.Space.CMYK).equals(color1)).to.be.true;
+        color2 = Color.lerp(color0, color1, 0.8, Color.Space.CMYK);
         expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([18, 36, 72, 144]);
     });
 
@@ -422,12 +455,12 @@ describe('Color', () => {
         expect(hsla.length).to.be.equal(4);
         expect(hsla[3]).to.be.equal(1.0);
 
-        const lab = color.fromUI8(134, 116, 39).tuple(Color.Space.LAB, false);
+        const lab = color.fromUI8(100, 116, 39).tuple(Color.Space.LAB, false);
         expect(lab.length).to.be.equal(3);
-        expect(lab[0]).to.be.closeTo(0.5003, 1e-4);
-        expect(lab[1]).to.be.closeTo(0.0036, 1e-4);
-        expect(lab[2]).to.be.closeTo(0.5023, 1e-4);
-        const laba = color.fromUI8(134, 116, 39).tuple(Color.Space.LAB);
+        expect(lab[0]).to.be.closeTo(0.4565, 1e-4);
+        expect(lab[1]).to.be.closeTo(0.4121, 1e-4);
+        expect(lab[2]).to.be.closeTo(0.6744, 1e-4);
+        const laba = color.fromUI8(100, 116, 39).tuple(Color.Space.LAB);
         expect(laba.length).to.be.equal(4);
         expect(laba[3]).to.be.equal(1.0);
 

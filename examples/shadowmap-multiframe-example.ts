@@ -181,6 +181,8 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._shadowPass = new ShadowPass(context);
         this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardLinear, [1024, 1024]);
 
+        this.finishLoading();
+
         return true;
     }
 
@@ -353,7 +355,7 @@ export class ShadowMapMultiframeExample extends Example {
     private _canvas: Canvas;
     private _renderer: ShadowMapMultiframeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
         this._canvas.framePrecision = Wizard.Precision.half;
@@ -368,7 +370,7 @@ export class ShadowMapMultiframeExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

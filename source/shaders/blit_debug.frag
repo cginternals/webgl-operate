@@ -14,7 +14,7 @@ precision highp float;
 #endif
 
 
-uniform sampler2D u_texture;
+uniform sampler2D u_source;
 
 uniform int u_mode; /* Debug mode. */
 uniform vec2 u_linearize; /* [ zNear, zFar ] */
@@ -25,7 +25,7 @@ varying vec2 v_uv;
 
 void main(void)
 {
-    vec4 source = texture(u_texture, v_uv);
+    vec4 source = texture(u_source, v_uv);
 
     if(u_mode == 1) {           /* Depth */
         source.rgb = vec3(source[0]);
