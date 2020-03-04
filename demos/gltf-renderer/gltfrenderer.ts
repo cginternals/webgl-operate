@@ -9,6 +9,7 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     ForwardSceneRenderPass,
     Framebuffer,
     Geometry,
@@ -18,7 +19,6 @@ import {
     GLTFPrimitive,
     Invalidate,
     Material,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -89,9 +89,7 @@ export class GltfRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         const gl = this._context.gl;
 
@@ -149,7 +147,7 @@ export class GltfRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure forward pass. */

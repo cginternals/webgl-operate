@@ -15,7 +15,7 @@ export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
 export { TouchEventProvider } from './toucheventprovider';
 export { PointerEventProvider } from './pointereventprovider';
-export { EventHandler } from './eventhandler';
+export { EventHandler, EventProvider } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
@@ -59,6 +59,11 @@ export { ReadbackPass } from './readbackpass';
 
 export { GaussFilter } from './gaussfilter';
 export { ShadowPass } from './shadowpass';
+
+
+export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
+export { EyeGazeEventProvider } from './eyegazeeventprovider';
+export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
 
 
 export * from './core/index';

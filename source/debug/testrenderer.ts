@@ -8,8 +8,8 @@ import { AntiAliasingKernel } from '../antialiasingkernel';
 import { BlitPass } from '../blitpass';
 import { Context } from '../context';
 import { DefaultFramebuffer } from '../defaultframebuffer';
+import { EventProvider } from '../eventhandler';
 import { Framebuffer } from '../framebuffer';
-import { MouseEventProvider } from '../mouseeventprovider';
 import { NdcFillingTriangle } from '../ndcfillingtriangle';
 import { Program } from '../program';
 import { Renderbuffer } from '../renderbuffer';
@@ -45,9 +45,7 @@ namespace debug {
 
 
         protected onInitialize(context: Context, callback: Invalidate,
-            mouseEventProvider: MouseEventProvider,
-            /* keyEventProvider: KeyEventProvider, */
-            /* touchEventProvider: TouchEventProvider */): boolean {
+            eventProvider: EventProvider): boolean {
 
             const gl = this._context.gl;
             const gl2facade = this._context.gl2facade;
@@ -108,7 +106,7 @@ namespace debug {
 
             /* Create and configure test navigation. */
 
-            this._testNavigation = new TestNavigation(() => this.invalidate(), mouseEventProvider);
+            this._testNavigation = new TestNavigation(() => this.invalidate(), eventProvider.mouseEventProvider);
 
             return true;
         }

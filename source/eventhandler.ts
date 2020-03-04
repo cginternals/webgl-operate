@@ -8,13 +8,18 @@ import { Observable, Subscription } from 'rxjs';
 
 import { assert } from './auxiliaries';
 
+import { EyeGazeEvent } from './eyegazeevent';
+import { EyeGazeEventProvider } from './eyegazeeventprovider';
 import { MouseEventProvider } from './mouseeventprovider';
 import { PointerEventProvider } from './pointereventprovider';
 import { Invalidate } from './renderer';
 import { TouchEventProvider } from './toucheventprovider';
 
 /* spellchecker: enable */
-
+export interface EventProvider {
+    pointerEventProvider: PointerEventProvider;
+    eyeGazeEventProvider?: EyeGazeEventProvider;
+}
 
 /**
  * Callback for handling mouse events, given the latest mouse events (since last update) as well as the previous.
@@ -30,6 +35,11 @@ export interface TouchEventHandler { (latests: Array<TouchEvent>, previous: Arra
  * Callback for handling pointer events, given the latest touch events (since last update) as well as the previous.
  */
 export interface PointerEventHandler { (latests: Array<PointerEvent>, previous: Array<PointerEvent>): void; }
+
+/**
+ * Callback for handling eye gaze events, given the latest eye gaze events (since last update) as well as the previous.
+ */
+export interface EyeGazeEventHandler { (latests: Array<EyeGazeEvent>, previous: Array<EyeGazeEvent>): void; }
 
 
 /**
@@ -68,6 +78,12 @@ export class EventHandler {
      */
     protected _pointerEventProvider: PointerEventProvider | undefined;
 
+    /**
+     * Assigned eye gaze event provider. This is usually created and owned by the eye gaze data stream.
+     */
+    protected _eyeGazeEventProvider: EyeGazeEventProvider | undefined;
+
+
     protected _latestMouseEventsByType =
         new Map<MouseEventProvider.Type, Array<MouseEvent>>();
     protected _previousMouseEventsByType =
@@ -89,18 +105,21 @@ export class EventHandler {
     protected _pointerEventHandlerByType =
         new Map<PointerEventProvider.Type, Array<PointerEventHandler>>();
 
+    protected _latestEyeGazeEventsByType =
+        new Map<EyeGazeEventProvider.Type, Array<EyeGazeEvent>>();
+    protected _previousEyeGazeEventsByType =
+        new Map<EyeGazeEventProvider.Type, Array<EyeGazeEvent>>();
+    protected _eyeGazeEventHandlerByType =
+        new Map<EyeGazeEventProvider.Type, Array<EyeGazeEventHandler>>();
+
 
     constructor(invalidate: Invalidate | undefined,
-        mouseEventProvider: MouseEventProvider | undefined,
-        /* keyEventProvider: KeyEventProvider | undefined,*/
-        touchEventProvider: TouchEventProvider | undefined,
-        pointerEventProvider: PointerEventProvider | undefined) {
+        eventProvider: EventProvider) {
         this._invalidate = invalidate;
-        this._mouseEventProvider = mouseEventProvider;
-        this._touchEventProvider = touchEventProvider;
-        this._pointerEventProvider = pointerEventProvider;
-    }
+        this._pointerEventProvider = eventProvider.pointerEventProvider;
+        this._eyeGazeEventProvider = eventProvider.eyeGazeEventProvider;
 
+    }
 
     /** @callback Invalidate
      * A callback intended to be invoked whenever the specialized event handler itself is invalid. By default only
@@ -115,7 +134,7 @@ export class EventHandler {
 
     /**
      * Utility for registering an additional mouse event handler for updates on mouse events of the given type. The
-     * handler is to be called on update iff at least a single mouse event of the given type has occurred since last
+     * handler is to be called on update if at least a single mouse event of the given type has occurred since last
      * update.
      * @param type - Mouse event type the handler is to be associated with.
      * @param handler - Handler to be called on update.
@@ -246,6 +265,49 @@ export class EventHandler {
             return;
         }
         const previous = this._previousPointerEventsByType.get(type) as Array<PointerEvent>;
+
+        Object.assign(previous, latest);
+        latest.length = 0;
+    }
+
+    /**
+     * Utility for registering an additional touch event handler for updates on touch events of the given type. The
+     * handler is to be called on update iff at least a single touch event of the given type has occurred since last
+     * update.
+     * @param type - Touch event type the handler is to be associated with.
+     * @param handler - Handler to be called on update.
+     */
+    protected pushEyeGazeEventHandler(type: EyeGazeEventProvider.Type, handler: EyeGazeEventHandler): void {
+        if (this._eyeGazeEventHandlerByType.has(type)) {
+            (this._eyeGazeEventHandlerByType.get(type) as Array<EyeGazeEventHandler>).push(handler);
+            return;
+        }
+
+        this._eyeGazeEventHandlerByType.set(type, new Array<EyeGazeEventHandler>());
+
+        this._previousEyeGazeEventsByType.set(type, new Array<EyeGazeEvent>());
+        const latest = new Array<EyeGazeEvent>();
+        this._latestEyeGazeEventsByType.set(type, latest);
+
+        assert(this._eyeGazeEventProvider !== undefined, `expected valid eye gaze event provider`);
+        const observable = (this._eyeGazeEventProvider as EyeGazeEventProvider).observable(type);
+
+        this._subscriptions.push((observable as Observable<EyeGazeEvent>).subscribe(
+            (event) => { latest.push(event); this.invalidate(); }));
+
+        (this._eyeGazeEventHandlerByType.get(type) as Array<EyeGazeEventHandler>).push(handler);
+    }
+
+    protected invokeEyeGazeEventHandler(type: EyeGazeEventProvider.Type): void {
+        const handlers = this._eyeGazeEventHandlerByType.get(type);
+        if (handlers === undefined || handlers.length === 0) {
+            return;
+        }
+        const latest = this._latestEyeGazeEventsByType.get(type) as Array<EyeGazeEvent>;
+        if (latest.length === 0) {
+            return;
+        }
+        const previous = this._previousEyeGazeEventsByType.get(type) as Array<EyeGazeEvent>;
         handlers.forEach((handler) => handler(latest, previous));
 
         Object.assign(previous, latest);
@@ -260,6 +322,8 @@ export class EventHandler {
         this._previousMouseEventsByType.forEach((value) => value.length = 0);
         this._latestTouchEventsByType.forEach((value) => value.length = 0);
         this._previousTouchEventsByType.forEach((value) => value.length = 0);
+        this._previousEyeGazeEventsByType.forEach((value) => value.length = 0);
+        this._latestEyeGazeEventsByType.forEach((value) => value.length = 0);
 
         for (const subscription of this._subscriptions) {
             subscription.unsubscribe();
@@ -289,6 +353,11 @@ export class EventHandler {
         this.invokePointerEventHandler(PointerEventProvider.Type.Up);
         this.invokePointerEventHandler(PointerEventProvider.Type.Leave);
         this.invokePointerEventHandler(PointerEventProvider.Type.Cancel);
+
+        this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.EyeGazeData);
+        this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.NewServerMessage);
+        this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.ConnectionStatus);
+        this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.BinaryMessageParsingError);
     }
 
 
@@ -508,6 +577,43 @@ export class EventHandler {
     pushPointerCancelHandler(handler: PointerEventHandler): void {
         this.pushPointerEventHandler(PointerEventProvider.Type.Cancel, handler);
     }
+
+    /**
+     * Register a eye gaze data event handler that is to be called on update if at least
+     * a single eye gaze data event has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushEyeGazeDataHandler(handler: EyeGazeEventHandler): void {
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.EyeGazeData, handler);
+    }
+
+    /**
+     * Register a eye gaze server message event handler that is to be called on update if at least
+     * a single eye gaze server message event has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushEyeGazeServerMessageHandler(handler: EyeGazeEventHandler): void {
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.NewServerMessage, handler);
+    }
+
+    /**
+     * Register a eye gaze connection status event handler that is to be called on update if at least
+     * a single eye gaze connection status event has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushEyeGazeConnectionStatusHandler(handler: EyeGazeEventHandler): void {
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.ConnectionStatus, handler);
+    }
+
+    /**
+     * Register a eye gaze binary message parsing error event handler that is to be called on update if at least
+     * a single eye gaze binary message parsing error event has occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushEyeGazeBinaryMessageParsingErrorHandler(handler: EyeGazeEventHandler): void {
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.BinaryMessageParsingError, handler);
+    }
+
 
     /**
      * Forward pointer lock request to the mouse event provider (if one exists).

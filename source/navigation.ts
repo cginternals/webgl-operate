@@ -5,7 +5,6 @@ import { vec2 } from 'gl-matrix';
 
 import { Camera } from './camera';
 import { EventHandler } from './eventhandler';
-import { MouseEventProvider } from './mouseeventprovider';
 import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
@@ -13,8 +12,6 @@ import { LogLevel } from './auxiliaries';
 import { FirstPersonModifier } from './firstpersonmodifier';
 import { PanModifier } from './panmodifier';
 import { PinchZoomModifier } from './pinchzoommodifier';
-import { PointerEventProvider } from './pointereventprovider';
-import { TouchEventProvider } from './toucheventprovider';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 import { auxiliaries } from './webgl-operate.slim';
@@ -100,17 +97,18 @@ export class Navigation {
 
     constructor(
         invalidate: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        touchEventProvider?: TouchEventProvider,
-        pointerEventProvider?: PointerEventProvider) {
+        eventProvider: EventProvider) {
 
         this._invalidate = invalidate;
 
         /* Create event handler that listens to mouse events. */
-        this._eventHandler = new EventHandler(invalidate, mouseEventProvider, touchEventProvider, pointerEventProvider);
+        this._eventHandler = new EventHandler(invalidate, {
+            eventProvider.pointerEventProvider
+            eyeGazeEventProvider: undefined
+        });
 
         /* Listen to pointer events. */
-        if (pointerEventProvider !== undefined) {
+        if (eventProvider.pointerEventProvider !== undefined) {
             this._eventHandler.pushPointerDownHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
                 this.onPointerDown(latests, previous));
             this._eventHandler.pushPointerUpHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>

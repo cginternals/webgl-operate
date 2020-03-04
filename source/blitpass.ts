@@ -149,8 +149,10 @@ export class BlitPass extends Initializable {
         assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
         const gl = this._context.gl;
 
-        const srcBounds = this._srcBounds ? this._srcBounds : [0, 0, this._framebuffer.width, this._framebuffer.height];
-        const dstBounds = this._dstBounds ? this._dstBounds : [0, 0, this._target.width, this._target.height];
+        const srcBounds: vec4 = this._srcBounds ? this._srcBounds :
+            vec4.fromValues(0, 0, this._framebuffer.width, this._framebuffer.height);
+        const dstBounds: vec4 = this._dstBounds ? this._dstBounds :
+            vec4.fromValues(0, 0, this._target.width, this._target.height);
 
         const srcBoundsNormalized: vec4 = vec4.div(v4(), srcBounds,
             [this._framebuffer.width, this._framebuffer.height, this._framebuffer.width, this._framebuffer.height]);
@@ -158,6 +160,9 @@ export class BlitPass extends Initializable {
             [this._target.width, this._target.height, this._target.width, this._target.height]);
 
         gl.viewport(dstBounds[0], dstBounds[1], dstBounds[2] - dstBounds[0], dstBounds[3] - dstBounds[1]);
+
+        gl.disable(gl.DEPTH_TEST);
+        gl.depthMask(false);
 
         this._program.bind();
         gl.uniform4fv(this._uSrcBounds, srcBoundsNormalized);
@@ -175,6 +180,9 @@ export class BlitPass extends Initializable {
         this._target.unbind(target);
 
         texture.unbind();
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
 
         /* Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
@@ -327,7 +335,7 @@ export class BlitPass extends Initializable {
      * @param bounds - [srcX0, srcY0, srcX1, srcY1] as used in glBlitFramebuffer. If bounds is
      * undefined, the full size of the source buffer (framebuffer) will be used.
      */
-    set srcBounds(bounds: vec4) {
+    set srcBounds(bounds: vec4 | undefined) {
         this._srcBounds = bounds ? vec4.clone(bounds) : undefined;
     }
 

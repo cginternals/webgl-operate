@@ -13,6 +13,8 @@ import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
+import { EyeGazeDataStreams } from './eyegazedatastream';
+import { EyeGazeEventProvider } from './eyegazeeventprovider';
 import { MouseEventProvider } from './mouseeventprovider';
 import { PointerEventProvider } from './pointereventprovider';
 import { Renderer } from './renderer';
@@ -118,6 +120,9 @@ export class Canvas extends Resizable {
     /** @see {@link pointerEventProvider} */
     protected _pointerEventProvider: PointerEventProvider;
 
+    /** @see {@link eyeGazeEventProvider} */
+    protected _eyeGazeEventProvider: EyeGazeEventProvider;
+
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -168,7 +173,8 @@ export class Canvas extends Resizable {
             logIf(dataClearColor === undefined, LogLevel.Warning,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
-        this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
+        this._clearColor = dataClearColor ?
+            new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
         let dataFramePrecision = dataset.accumulationFormat ?
@@ -358,8 +364,10 @@ export class Canvas extends Resizable {
          * method is assigned to the pipelines invalidation event.
          */
         this._renderer.initialize(this.context, (force) => this._controller.update(force),
-            this._mouseEventProvider /*, this._keyEventProvider */,
-            this._touchEventProvider, this._pointerEventProvider);
+            {
+                pointerEventProvider: this._pointerEventProvider,
+                eyeGazeEventProvider: this._eyeGazeEventProvider,
+            });
 
         this._renderer.frameSize = this._frameSize;
         this._renderer.clearColor = this._clearColor.rgba;
@@ -688,5 +696,19 @@ export class Canvas extends Resizable {
      */
     get touchEventProvider(): TouchEventProvider {
         return this._touchEventProvider;
+    }
+
+    /**
+     * Eye gaze event provider referring to the canvas element.
+     */
+    get eyeGazeEventProvider(): EyeGazeEventProvider {
+        return this._eyeGazeEventProvider;
+    }
+
+    /**
+     * Activates the eye gaze event provider referring to the canvas element.
+     */
+    public activateEyeGazeEventProvider(eyeGazeDataStreams: EyeGazeDataStreams, serverAddress: string): void {
+        this._eyeGazeEventProvider = new EyeGazeEventProvider(eyeGazeDataStreams, serverAddress);
     }
 }
