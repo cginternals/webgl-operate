@@ -8,9 +8,9 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     GeosphereGeometry,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     PlaneGeometry,
     Program,
@@ -60,13 +60,10 @@ export class AreaLightRenderer extends Renderer {
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param mouseEventProvider - required for mouse interaction
+     * @param eventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
-    protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -171,7 +168,7 @@ export class AreaLightRenderer extends Renderer {
         this._camera.near = 1.0;
         this._camera.far = 8.0;
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         return true;

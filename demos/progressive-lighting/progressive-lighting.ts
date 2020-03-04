@@ -12,6 +12,7 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     ForwardSceneRenderPass,
     Framebuffer,
     Geometry,
@@ -21,7 +22,6 @@ import {
     GLTFPrimitive,
     Invalidate,
     Material,
-    MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
     Program,
@@ -31,7 +31,6 @@ import {
     ShadowPass,
     Texture2D,
     TextureCube,
-    TouchEventProvider,
     Wizard,
 } from 'webgl-operate';
 
@@ -169,10 +168,7 @@ export class ProgressiveLightingRenderer extends Renderer {
      * @param mouseEventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
-    protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        touchEventProvider: TouchEventProvider): boolean {
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
 
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
@@ -400,7 +396,7 @@ export class ProgressiveLightingRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, mouseEventProvider, touchEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider, eventProvider.touchEventProvider);
         this._navigation.camera = this._camera;
 
         /**
