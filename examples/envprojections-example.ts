@@ -1,8 +1,6 @@
 
 import { vec3 } from 'gl-matrix';
 
-import { auxiliaries } from 'webgl-operate';
-
 import {
     Camera,
     Canvas,
@@ -47,14 +45,7 @@ class EnvironmentProjectionRenderer extends Renderer {
     protected _uTime: WebGLUniformLocation;
     protected _uMode: WebGLUniformLocation;
 
-    protected onInitialize(context: Context,
-        callback: Invalidate,
-        eventProvider: EventProvider): boolean {
-
-        if (eventProvider.mouseEventProvider === undefined) {
-            auxiliaries.log(auxiliaries.LogLevel.Error, 'MouseEventProvider was not supplied.');
-            return false;
-        }
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
 
         this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -100,7 +91,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 4.0;
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider!);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         gl.uniform2iv(this._uViewport, this._canvasSize);

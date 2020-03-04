@@ -15,6 +15,7 @@ import { PinchZoomModifier } from './pinchzoommodifier';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 import { auxiliaries } from './webgl-operate.slim';
+import { EventProvider } from './eventhandler'
 
 /* spellchecker: enable */
 
@@ -102,10 +103,7 @@ export class Navigation {
         this._invalidate = invalidate;
 
         /* Create event handler that listens to mouse events. */
-        this._eventHandler = new EventHandler(invalidate, {
-            eventProvider.pointerEventProvider
-            eyeGazeEventProvider: undefined
-        });
+        this._eventHandler = new EventHandler(invalidate, eventProvider);
 
         /* Listen to pointer events. */
         if (eventProvider.pointerEventProvider !== undefined) {

@@ -174,7 +174,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._camera.near = 1.0;
         this._camera.far = 8.0;
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         return true;

@@ -24,7 +24,6 @@ import {
     Material,
     Navigation,
     NdcFillingTriangle,
-    PointerEventProvider,
     Program,
     Renderbuffer,
     Renderer,
