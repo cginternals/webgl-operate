@@ -246,7 +246,7 @@ export class EventHandler {
         const latest = new Array<PointerEvent>();
         this._latestPointerEventsByType.set(type, latest);
 
-        assert(this._pointerEventProvider !== undefined, `expected valid touch event provider`);
+        assert(this._pointerEventProvider !== undefined, `expected valid pointer event provider`);
         const observable = (this._pointerEventProvider as PointerEventProvider).observable(type);
 
         this._subscriptions.push((observable as Observable<PointerEvent>).subscribe(
@@ -265,6 +265,7 @@ export class EventHandler {
             return;
         }
         const previous = this._previousPointerEventsByType.get(type) as Array<PointerEvent>;
+        handlers.forEach((handler) => handler(latest, previous));
 
         Object.assign(previous, latest);
         latest.length = 0;
@@ -322,6 +323,8 @@ export class EventHandler {
         this._previousMouseEventsByType.forEach((value) => value.length = 0);
         this._latestTouchEventsByType.forEach((value) => value.length = 0);
         this._previousTouchEventsByType.forEach((value) => value.length = 0);
+        this._latestPointerEventsByType.forEach((value) => value.length = 0);
+        this._previousPointerEventsByType.forEach((value) => value.length = 0);
         this._previousEyeGazeEventsByType.forEach((value) => value.length = 0);
         this._latestEyeGazeEventsByType.forEach((value) => value.length = 0);
 

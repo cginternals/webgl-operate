@@ -82,7 +82,7 @@ export class PointerEventProvider {
      * @param type - Internal event type of the incoming event.
      * @param event - Actual event to prevent default handling on (if masked).
      */
-    protected preventDefaultOnEvent(type: PointerEventProvider.Type, event: MouseEvent): void {
+    protected preventDefaultOnEvent(type: PointerEventProvider.Type, event: PointerEvent): void {
         if (bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
@@ -112,8 +112,7 @@ export class PointerEventProvider {
         }
     }
 
-    observable(type: PointerEventProvider.Type): Observable<MouseEvent>
-        | Observable<WheelEvent> | Observable<DragEvent> | undefined {
+    observable(type: PointerEventProvider.Type): Observable<PointerEvent> | undefined {
         switch (type) {
             case PointerEventProvider.Type.Enter:
                 return this.enter$;
@@ -215,7 +214,7 @@ export class PointerEventProvider {
                 this.preventDefaultOnEvent(PointerEventProvider.Type.Cancel, event);
                 this._cancelSubject.next(event);
             };
-            this._element.addEventListener('pointercancel', this._moveListener);
+            this._element.addEventListener('pointercancel', this._cancelListener);
         }
         return this._cancelSubject.asObservable();
     }

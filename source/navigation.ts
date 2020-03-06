@@ -106,20 +106,18 @@ export class Navigation {
         this._eventHandler = new EventHandler(invalidate, eventProvider);
 
         /* Listen to pointer events. */
-        if (eventProvider.pointerEventProvider !== undefined) {
-            this._eventHandler.pushPointerDownHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
-                this.onPointerDown(latests, previous));
-            this._eventHandler.pushPointerUpHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
-                this.onPointerUp(latests, previous));
-            this._eventHandler.pushPointerEnterHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
-                this.onPointerEnter(latests, previous));
-            this._eventHandler.pushPointerLeaveHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
-                this.onPointerLeave(latests, previous));
-            this._eventHandler.pushPointerMoveHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
-                this.onPointerMove(latests, previous));
-            this._eventHandler.pushPointerCancelHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
-                this.onPointerCancel(latests, previous));
-        }
+        this._eventHandler.pushPointerDownHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
+            this.onPointerDown(latests, previous));
+        this._eventHandler.pushPointerUpHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
+            this.onPointerUp(latests, previous));
+        this._eventHandler.pushPointerEnterHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
+            this.onPointerEnter(latests, previous));
+        this._eventHandler.pushPointerLeaveHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
+            this.onPointerLeave(latests, previous));
+        this._eventHandler.pushPointerMoveHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
+            this.onPointerMove(latests, previous));
+        this._eventHandler.pushPointerCancelHandler((latests: Array<PointerEvent>, previous: Array<PointerEvent>) =>
+            this.onPointerCancel(latests, previous));
 
         // this._eventHandler.pushMouseWheelHandler((latests: Array<WheelEvent>, previous: Array<WheelEvent>) =>
         //     this.onWheel(latests, previous));
