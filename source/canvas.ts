@@ -158,6 +158,12 @@ export class Canvas extends Resizable {
         this._touchEventProvider = new TouchEventProvider(this._element, 200);
         this._pointerEventProvider = new PointerEventProvider(this._element, 200);
 
+        /**
+         * Disable default handling of touch events by the browser.
+         * Touch events are handled using PointerEventProvider.
+         */
+        this._element.style.touchAction = 'none';
+
         const dataset = this._element.dataset;
 
         /* Requesting a context asserts when no context could be created. */
