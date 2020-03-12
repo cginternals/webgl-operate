@@ -12,16 +12,16 @@ export class UnifiedBuffer extends Initializable {
 
     protected _cpuBuffer: ArrayBuffer;
     protected _gpuBuffer: Buffer;
-    protected _usage: GLenum;
-
     protected _updates = new Array<Update>();
+
+    usage: GLenum;
 
     constructor(context: Context, sizeInBytes: number, usage: GLenum, identifier?: string) {
         super();
 
         this._cpuBuffer = new ArrayBuffer(sizeInBytes);
         this._gpuBuffer = new Buffer(context, identifier);
-        this._usage = usage;
+        this.usage = usage;
     }
 
     protected _addUpdate(update: Update): void {
@@ -102,8 +102,8 @@ export class UnifiedBuffer extends Initializable {
             this._gpuBuffer.bind();
         }
 
-        if (this._gpuBuffer.bytes === 0) {
-            this._gpuBuffer.data(this._cpuBuffer, this._usage);
+        if (this._gpuBuffer.bytes !== this._cpuBuffer.byteLength) {
+            this._gpuBuffer.data(this._cpuBuffer, this.usage);
         } else {
             for (const update of this._updates) {
                 this._gpuBuffer.subData(update.begin, this._cpuBuffer, update.begin, update.end - update.begin);
@@ -117,6 +117,15 @@ export class UnifiedBuffer extends Initializable {
         this._updates.length = 0;
     }
 
+    get size(): number {
+        return this._cpuBuffer.byteLength;
+    }
+
+    set size(sizeInBytes: number) {
+        const oldBuffer = this._cpuBuffer;
+        this._cpuBuffer = new ArrayBuffer(sizeInBytes);
+        new Uint8Array(this._cpuBuffer).set(new Uint8Array(oldBuffer).slice(0, sizeInBytes));
+    }
 }
 
 interface Update {

@@ -66,12 +66,15 @@ class BufferMock extends Buffer {
 
 class UnifiedBufferMock extends UnifiedBuffer {
     _gpuBuffer: BufferMock;
-    cpuBuffer = this._cpuBuffer;
 
     constructor(context: ContextMock, size: number, usage: GLenum) {
         super(context as Context, size, usage);
 
         this._gpuBuffer = new BufferMock(context);
+    }
+
+    get cpuBuffer(): ArrayBuffer {
+        return this._cpuBuffer;
     }
 }
 
@@ -106,6 +109,21 @@ describe('UnifiedBuffer', () => {
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
         expect(new Int32Array(buffer._gpuBuffer.subDataCalls[0].data)).to.be.eql(new Int32Array(8).fill(-2134));
     });
+
+    it('should keep content on resize', () => {
+        const context = new ContextMock();
+        const buffer = new UnifiedBufferMock(context, 32, 0);
+
+        buffer.subData(0, new Float32Array(8).fill(17));
+
+        buffer.size = 16;
+        expect(buffer.size).to.be.equal(16);
+        expect(new Float32Array(buffer.cpuBuffer)).to.be.eql(new Float32Array(4).fill(17));
+
+        buffer.size = 32;
+        expect(buffer.size).to.be.equal(32);
+        expect(new Float32Array(buffer.cpuBuffer)).to.be.eql(new Float32Array(8).fill(17).fill(0, 4, 8));
+    });
 });
 
 describe('UnifiedBuffer subData', () => {
@@ -129,13 +147,21 @@ describe('UnifiedBuffer update', () => {
 
         buffer.subData(0, new Uint8Array(32));
         buffer.update();
-
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(0);
+        expect(buffer._gpuBuffer.dataCalled).to.be.equal(true);
 
+        buffer._gpuBuffer.dataCalled = false;
         buffer.subData(0, new Uint8Array(32));
         buffer.update();
-
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
+        expect(buffer._gpuBuffer.dataCalled).to.be.equal(false);
+
+        buffer._gpuBuffer.subDataCalls.length = 0;
+        buffer.size = 16;
+        buffer.subData(0, new Uint8Array(16));
+        buffer.update();
+        expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(0);
+        expect(buffer._gpuBuffer.dataCalled).to.be.equal(true);
     });
 
     it('should discard old updates', () => {
