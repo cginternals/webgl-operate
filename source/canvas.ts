@@ -168,7 +168,8 @@ export class Canvas extends Resizable {
             logIf(dataClearColor === undefined, LogLevel.Warning,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
-        this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
+        this._clearColor = dataClearColor ?
+            new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
         let dataFramePrecision = dataset.accumulationFormat ?
@@ -702,7 +703,7 @@ export class Canvas extends Resizable {
     /**
      * Activates the eye gaze event provider referring to the canvas element.
      */
-    public activateEyeGazeEventProvider(eyeGazeDataStreams: EyeGazeDataStreams): void {
-        this._eyeGazeEventProvider = new EyeGazeEventProvider(eyeGazeDataStreams, 200);
+    public activateEyeGazeEventProvider(eyeGazeDataStreams: EyeGazeDataStreams, serverAddress?: string): void {
+        this._eyeGazeEventProvider = new EyeGazeEventProvider(eyeGazeDataStreams, 200, serverAddress);
     }
 }

@@ -473,7 +473,7 @@ export class EventHandler {
      * @param handler - Handler to be called on update.
      */
     pushEyeGazeServerMessageHandler(handler: EyeGazeEventHandler): void {
-        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.EyeGazeData, handler);
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.NewServerMessage, handler);
     }
 
     /**
@@ -482,7 +482,7 @@ export class EventHandler {
      * @param handler - Handler to be called on update.
      */
     pushEyeGazeConnectionStatusHandler(handler: EyeGazeEventHandler): void {
-        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.EyeGazeData, handler);
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.ConnectionStatus, handler);
     }
 
     /**
@@ -491,7 +491,7 @@ export class EventHandler {
      * @param handler - Handler to be called on update.
      */
     pushEyeGazeBinaryMessageParsingErrorHandler(handler: EyeGazeEventHandler): void {
-        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.EyeGazeData, handler);
+        this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.BinaryMessageParsingError, handler);
     }
 
 

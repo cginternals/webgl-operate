@@ -52,6 +52,16 @@ describe('Color', () => {
         expect(color.a).to.be.closeTo(0.4, 1e-6);
     });
 
+    it('should be settable from RGBA', () => {
+        const color = new Color([0.1, 0.2, 0.3, 0.4]);
+        expect(color.fromRGB(0.1, 0.2, 0.3)).to.eq(color);
+    });
+
+    it('should be settable from RGBA with alpha', () => {
+        const color = new Color([0.1, 0.2, 0.3, 0.4]);
+        expect(color.fromRGB(0.1, 0.2, 0.3, 0.4)).to.eq(color);
+    });
+
     it('should not scale float (32bit) values', () => {
         const color = new Color([0.1, 0.2, 0.3], 0.4);
 
@@ -419,6 +429,11 @@ describe('Color', () => {
         expect(Color.lerp(color0, color1, 0.0, Color.Space.LAB).equals(color0)).to.be.true;
         expect(Color.lerp(color0, color1, 1.0, Color.Space.LAB).equals(color1)).to.be.true;
         color2 = Color.lerp(color0, color1, 0.4, Color.Space.LAB);
+        expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([16, 29, 55, 112]);
+
+        expect(Color.lerp(color0, color1, 0.0).equals(color0)).to.be.true;
+        expect(Color.lerp(color0, color1, 1.0).equals(color1)).to.be.true;
+        color2 = Color.lerp(color0, color1, 0.4);
         expect(Array.from(color2.rgbaUI8)).to.have.ordered.members([16, 29, 55, 112]);
 
         expect(Color.lerp(color0, color1, 0.0, Color.Space.HSL).equals(color0)).to.be.true;
