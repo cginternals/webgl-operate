@@ -135,6 +135,22 @@ describe('UnifiedBuffer subData', () => {
         expect(() => buffer.subData(0, new Uint8Array(64))).to.throw;
         expect(() => buffer.subData(8, new Uint8Array(32))).to.throw;
     });
+
+    it('should work with subarrays', () => {
+        const context = new ContextMock();
+        const buffer = new UnifiedBufferMock(context, 32, 0);
+
+        const tooBigArray = new ArrayBuffer(64);
+        const subArray = new Uint8Array(tooBigArray).fill(13, 0, 16).fill(17, 16, 32).subarray(8, 24);
+
+        buffer.subData(0, subArray);
+        expect(() => buffer.subData(0, subArray)).to.not.throw;
+
+        const expected = new Uint8Array(32);
+        expected.fill(13, 0, 8);
+        expected.fill(17, 8, 16);
+        expect(new Uint8Array(buffer.cpuBuffer)).to.be.eql(expected);
+    });
 });
 
 describe('UnifiedBuffer update', () => {

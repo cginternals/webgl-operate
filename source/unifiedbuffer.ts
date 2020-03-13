@@ -87,9 +87,13 @@ export class UnifiedBuffer extends Initializable {
     }
 
     subData(dstByteOffset: GLintptr, srcData: ArrayBufferView | ArrayBuffer): void {
-        const buffer = (srcData instanceof ArrayBuffer) ? srcData : srcData.buffer;
+        let src: Uint8Array;
+        if (srcData instanceof ArrayBuffer) {
+            src = new Uint8Array(srcData);
+        } else {
+            src = new Uint8Array(srcData.buffer).subarray(srcData.byteOffset, srcData.byteOffset + srcData.byteLength);
+        }
 
-        const src = new Uint8Array(buffer);
         const dst = new Uint8Array(this._cpuBuffer);
 
         dst.set(src, dstByteOffset);
