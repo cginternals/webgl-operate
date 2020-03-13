@@ -153,6 +153,12 @@ describe('gl-matrix extensions', () => {
         expect(vec3.equals(v3, vec3.fromValues(1, 2, 3))).to.be.true;
     });
 
+    it('should derive a vec3 from vec4 without division by w component if w = 0', () => {
+        const v4: vec4 = vec4.fromValues(2, 4, 6, 0);
+        const v3: vec3 = fromVec4(v4);
+        expect(vec3.equals(v3, vec3.fromValues(2, 4, 6))).to.be.true;
+    });
+
     it('should derive a vec4 from vec3 as normalized vec4 with w = 1', () => {
         const v3: vec3 = vec3.fromValues(2, 4, 6);
         const v4: vec4 = fromVec3(v3);
