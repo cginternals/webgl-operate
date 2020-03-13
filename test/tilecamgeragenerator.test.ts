@@ -3,10 +3,12 @@
 
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
+import * as sinon from 'sinon';
 
 chai.use(spies);
 
 const expect = chai.expect;
+const stub = sinon.stub;
 
 import { vec3, vec4 } from 'gl-matrix';
 import { Camera } from '../source/camera';
@@ -160,6 +162,16 @@ describe('TileCameraGenerator.sourceCameraChanged', () => {
 });
 
 describe('TileCameraGenerator.update', () => {
+
+    let consoleLogStub: sinon.SinonStub;
+
+    before(() => {
+        consoleLogStub = stub(console, 'log');
+    });
+
+    after(() => {
+        consoleLogStub.restore();
+    });
 
     it('should return the same offset when called multiple times on same tile index', () => {
         const tileCameraGenerator = createTileCameraGenerator([8, 8]);

@@ -2,8 +2,10 @@
 /* spellchecker: disable */
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 const expect = chai.expect;
+const stub = sinon.stub;
 
 import { ColorScale } from '../source/colorscale';
 import { Color } from '../source/color';
@@ -19,8 +21,9 @@ describe('ColorScale', () => {
     let emptyColorScale: ColorScale;
     let oneColorScale: ColorScale;
     let defaultColorScale: ColorScale;
+    let consoleLogStub: sinon.SinonStub;
 
-    beforeEach(() => {
+    before(() => {
         color = new Color([255, 0, 255]);
         colors = [255, 0, 255];
         let stepCount = 7;
@@ -30,6 +33,11 @@ describe('ColorScale', () => {
         positions = [2, 0, 1];
         defaultColorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGB, stepCount, positions);
         emptyColorScale = ColorScale.fromArray([], ColorScale.ArrayType.RGB, 0);
+        consoleLogStub = stub(console, 'log');
+    });
+
+    after(() => {
+        consoleLogStub.restore();
     });
 
     it('should be loadable from present', () => {

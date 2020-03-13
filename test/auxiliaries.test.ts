@@ -9,7 +9,6 @@ chai.use(spies);
 
 const expect = chai.expect;
 const stub = sinon.stub;
-//const spy = sinon.spy;
 
 import * as aux from '../source/auxiliaries';
 
