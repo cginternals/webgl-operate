@@ -14,6 +14,8 @@ precision lowp float;
 
 # define NUMBER_OF_METABALLS 4
 # define BASE_ENERGY 0.06
+# define POSITVE_METABALL 1.0
+# define NEGATIVE_METABALL -1.0
 
 # define NUMBER_OF_LIGHTS 1
 # define AMBIENT_ILLUMINATION 0.3
@@ -25,6 +27,7 @@ varying vec2 v_uv;
 struct MetaBall {
     vec3 position;
     float energy;
+    float metaballEneryOrientation; // should be POSITIVE_METABALL or NEGATIVE_METABALL
 };
 
 struct FragmentValues {
@@ -56,7 +59,7 @@ FragmentValues rayMarch(MetaBall[NUMBER_OF_METABALLS] metaballs, vec2 rayPositio
         for (int metaballIndex = 0; metaballIndex < NUMBER_OF_METABALLS; metaballIndex++) {
 
             MetaBall currentMetaball = metaballs[metaballIndex];
-            float currentEnergy = distFunc(currentMetaball, currentRayPosition);
+            float currentEnergy = currentMetaball.metaballEneryOrientation * distFunc(currentMetaball, currentRayPosition);
             currentFragmentValues.energy += currentEnergy;
             vec3 currentNormal = currentRayPosition - currentMetaball.position;
             fragmentValues.normal += currentNormal * currentEnergy;
@@ -74,12 +77,16 @@ void main(void)
     MetaBall metaballs[NUMBER_OF_METABALLS];
     metaballs[0].position = vec3(0.0, -0.5, 0.9);
     metaballs[0].energy = BASE_ENERGY;
+    metaballs[0].metaballEneryOrientation = POSITVE_METABALL;
     metaballs[1].position = vec3(-0.2, 0.2, 0.7);
     metaballs[1].energy = BASE_ENERGY * 1.5;
+    metaballs[1].metaballEneryOrientation = POSITVE_METABALL;
     metaballs[2].position = vec3(0.9, -0.2, 0.9);
     metaballs[2].energy = BASE_ENERGY;
+    metaballs[2].metaballEneryOrientation = POSITVE_METABALL;
     metaballs[3].position = vec3(0.5, 0.3, 0.2);
     metaballs[3].energy = BASE_ENERGY;
+    metaballs[3].metaballEneryOrientation = POSITVE_METABALL;
 
     // Point Lights
     PointLight pointLights[NUMBER_OF_LIGHTS];
