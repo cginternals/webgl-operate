@@ -10,6 +10,7 @@ module.exports = {
         'cubescape': ['cubescape/cubescape.ts'],
         'gltf-renderer': ['gltf-renderer/gltfrenderer.ts'],
         'eye-tracking': ['eye-tracking/eyetracking.ts'],
+        'metaballs': ['metaballs/metaballs.ts'],
         'point-cloud': ['point-cloud/point-cloud.ts']
     },
     devtool: 'source-map',
