@@ -191,7 +191,7 @@ describe('UnifiedBuffer update', () => {
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
     });
 
-    it('should split overlapping updates 1', () => {
+    it('should merge overlapping updates 1', () => {
         const buffer = createUsableUnifiedBuffer(32);
 
         /**
@@ -205,23 +205,15 @@ describe('UnifiedBuffer update', () => {
 
         buffer.update();
 
-        const expectedSubDataCalls = new Array<SubDataCall>(2);
-        expectedSubDataCalls[0] = { srcOffset: 0, dstOffset: 0, length: 8, data: new Uint8Array(8).fill(1) };
-        expectedSubDataCalls[1] = { srcOffset: 8, dstOffset: 8, length: 16, data: new Uint8Array(16).fill(2) };
-
-        const actualSubDataCalls = buffer._gpuBuffer.subDataCalls.map((subDataCall: SubDataCall) => {
-            return {
-                srcOffset: subDataCall.srcOffset,
-                dstOffset: subDataCall.dstOffset,
-                length: subDataCall.length,
-                data: new Uint8Array(subDataCall.data),
-            };
+        const expectedData = new Uint8Array(24).fill(1, 0, 16).fill(2, 8, 24);
+        const expectedSubDataCalls = new Array<SubDataCall>({
+            srcOffset: 0, dstOffset: 0, length: 24, data: expectedData,
         });
 
-        expect(actualSubDataCalls).to.be.eql(expectedSubDataCalls);
+        expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
     });
 
-    it('should split overlapping updates 2', () => {
+    it('should merge overlapping updates 2', () => {
         const buffer = createUsableUnifiedBuffer(32);
 
         /**
@@ -235,23 +227,15 @@ describe('UnifiedBuffer update', () => {
 
         buffer.update();
 
-        const expectedSubDataCalls = new Array<SubDataCall>(2);
-        expectedSubDataCalls[0] = { srcOffset: 16, dstOffset: 16, length: 8, data: new Uint8Array(8).fill(1) };
-        expectedSubDataCalls[1] = { srcOffset: 0, dstOffset: 0, length: 16, data: new Uint8Array(16).fill(2) };
-
-        const actualSubDataCalls = buffer._gpuBuffer.subDataCalls.map((subDataCall: SubDataCall) => {
-            return {
-                srcOffset: subDataCall.srcOffset,
-                dstOffset: subDataCall.dstOffset,
-                length: subDataCall.length,
-                data: new Uint8Array(subDataCall.data),
-            };
+        const expectedData = new Uint8Array(24).fill(1, 8, 24).fill(2, 0, 16);
+        const expectedSubDataCalls = new Array<SubDataCall>({
+            srcOffset: 0, dstOffset: 0, length: 24, data: expectedData,
         });
 
-        expect(actualSubDataCalls).to.be.eql(expectedSubDataCalls);
+        expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
     });
 
-    it('should split overlapping updates 3', () => {
+    it('should merge overlapping updates 3', () => {
         const buffer = createUsableUnifiedBuffer(32);
 
         /**
@@ -265,24 +249,15 @@ describe('UnifiedBuffer update', () => {
 
         buffer.update();
 
-        const expectedSubDataCalls = new Array<SubDataCall>(3);
-        expectedSubDataCalls[0] = { srcOffset: 0, dstOffset: 0, length: 8, data: new Uint8Array(8).fill(1) };
-        expectedSubDataCalls[1] = { srcOffset: 24, dstOffset: 24, length: 8, data: new Uint8Array(8).fill(1) };
-        expectedSubDataCalls[2] = { srcOffset: 8, dstOffset: 8, length: 16, data: new Uint8Array(16).fill(2) };
-
-        const actualSubDataCalls = buffer._gpuBuffer.subDataCalls.map((subDataCall: SubDataCall) => {
-            return {
-                srcOffset: subDataCall.srcOffset,
-                dstOffset: subDataCall.dstOffset,
-                length: subDataCall.length,
-                data: new Uint8Array(subDataCall.data),
-            };
+        const expectedData = new Uint8Array(32).fill(1, 0, 32).fill(2, 8, 24);
+        const expectedSubDataCalls = new Array<SubDataCall>({
+            srcOffset: 0, dstOffset: 0, length: 32, data: expectedData,
         });
 
-        expect(actualSubDataCalls).to.be.eql(expectedSubDataCalls);
+        expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
     });
 
-    it('should split overlapping updates 4', () => {
+    it('should merge overlapping updates 4', () => {
         const buffer = createUsableUnifiedBuffer(32);
 
         /**
@@ -296,19 +271,33 @@ describe('UnifiedBuffer update', () => {
 
         buffer.update();
 
-        const expectedSubDataCalls = new Array<SubDataCall>(1);
-        expectedSubDataCalls[0] = { srcOffset: 0, dstOffset: 0, length: 32, data: new Uint8Array(32).fill(2) };
-
-        const actualSubDataCalls = buffer._gpuBuffer.subDataCalls.map((subDataCall: SubDataCall) => {
-            return {
-                srcOffset: subDataCall.srcOffset,
-                dstOffset: subDataCall.dstOffset,
-                length: subDataCall.length,
-                data: new Uint8Array(subDataCall.data),
-            };
+        const expectedData = new Uint8Array(32).fill(2, 0, 32);
+        const expectedSubDataCalls = new Array<SubDataCall>({
+            srcOffset: 0, dstOffset: 0, length: 32, data: expectedData,
         });
 
-        expect(actualSubDataCalls).to.be.eql(expectedSubDataCalls);
+        expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
+    });
+
+    it('should not merge separate updates', () => {
+        const buffer = createUsableUnifiedBuffer(32);
+
+        /**
+         * _______
+         * |______| old
+         *             _______
+         *             |______| new
+         */
+        buffer.subData(0, new Uint8Array(8).fill(1));
+        buffer.subData(24, new Uint8Array(8).fill(2));
+
+        buffer.update();
+
+        const expectedSubDataCalls = new Array<SubDataCall>(
+            { srcOffset: 0, dstOffset: 0, length: 8, data: new Uint8Array(8).fill(1) },
+            { srcOffset: 24, dstOffset: 24, length: 8, data: new Uint8Array(8).fill(2) });
+
+        expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
     });
 });
 
@@ -320,4 +309,15 @@ function createUsableUnifiedBuffer(size: number): UnifiedBufferMock {
     buffer.update();
 
     return buffer;
+}
+
+function mapSubDataCalls(subDataCalls: Array<SubDataCall>): Array<SubDataCall> {
+    return subDataCalls.map((subDataCall: SubDataCall) => {
+        return {
+            dstOffset: subDataCall.dstOffset,
+            srcOffset: subDataCall.srcOffset,
+            length: subDataCall.length,
+            data: new Uint8Array(subDataCall.data),
+        };
+    });
 }

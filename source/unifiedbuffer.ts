@@ -25,32 +25,29 @@ export class UnifiedBuffer extends Initializable {
     }
 
     protected _addUpdate(update: Update): void {
-        const toAdd = new Array<Update>();
         const toRemove = new Array<number>();
+        const toMerge = new Array<Update>();
 
+        // Mark all older updates which overlap with the new update
+        // for removing / merging
         this._updates.forEach((current: Update, index: number) => {
-            if (current.begin >= update.begin && current.end <= update.end) {
+            if (!(update.end < current.begin || update.begin > current.end)) {
                 toRemove.push(index);
-            } else if (current.begin >= update.begin && current.end >= update.end) {
-                toAdd.push({ begin: update.end, end: current.end });
-                toRemove.push(index);
-            } else if (current.begin <= update.begin && current.end <= update.end) {
-                toAdd.push({ begin: current.begin, end: update.begin });
-                toRemove.push(index);
-            } else if (current.begin <= update.begin && current.end >= update.end) {
-                toAdd.push({ begin: current.begin, end: update.begin });
-                toAdd.push({ begin: update.end, end: current.end });
-                toRemove.push(index);
+                toMerge.push(current);
             }
         });
 
-        for (let index = toRemove.length - 1; index >= 0; index--) {
-            this._updates.splice(toRemove[index], 1);
+        // Remove all older updates, since they get merged in the next step
+        for (let i = toRemove.length - 1; i >= 0; i--) {
+            this._updates.splice(toRemove[i], 1);
         }
 
-        this._updates.push(...toAdd);
+        // Finally merge all overlapping updates
+        toMerge.push(update);
+        const begin = Math.min(...toMerge.map((merge: Update) => merge.begin));
+        const end = Math.max(...toMerge.map((merge: Update) => merge.end));
 
-        this._updates.push(update);
+        this._updates.push({ begin, end });
     }
 
     @Initializable.initialize()
