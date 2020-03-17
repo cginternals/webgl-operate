@@ -58,8 +58,6 @@ export class UnifiedBuffer extends Initializable {
     @Initializable.uninitialize()
     uninitialize(): void {
         this._gpuBuffer.uninitialize();
-
-        this.subData(0, new Float32Array());
     }
 
     @Initializable.assert_initialized()
@@ -125,7 +123,12 @@ export class UnifiedBuffer extends Initializable {
     set size(sizeInBytes: number) {
         const oldBuffer = this._cpuBuffer;
         this._cpuBuffer = new ArrayBuffer(sizeInBytes);
-        new Uint8Array(this._cpuBuffer).set(new Uint8Array(oldBuffer).slice(0, sizeInBytes));
+
+        // Takes the whole buffer, if sizeInBytes > oldBuffer
+        // Takes sizeInBytes of oldBuffer otherwise
+        const src = new Uint8Array(oldBuffer).slice(0, sizeInBytes);
+        const dst = new Uint8Array(this._cpuBuffer);
+        dst.set(src);
     }
 }
 

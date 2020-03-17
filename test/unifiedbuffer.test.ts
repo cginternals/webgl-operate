@@ -86,10 +86,10 @@ describe('UnifiedBuffer', () => {
         const buffer = new UnifiedBufferMock(context, 32, 0);
 
         buffer.initialize(0);
-        expect(buffer._gpuBuffer.dataCalled).to.be.equal(false);
+        expect(buffer._gpuBuffer.dataCalled).to.be.false;
 
         buffer.update();
-        expect(buffer._gpuBuffer.dataCalled).to.be.equal(true);
+        expect(buffer._gpuBuffer.dataCalled).to.be.true;
     });
 
     it('should work with different TypedArrays', () => {
@@ -99,7 +99,8 @@ describe('UnifiedBuffer', () => {
         buffer.update();
 
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
-        expect(new Float32Array(buffer._gpuBuffer.subDataCalls[0].data)).to.be.eql(new Float32Array(8).fill(3456));
+        const expectedFloats = new Float32Array(8).fill(3456);
+        expect(new Float32Array(buffer._gpuBuffer.subDataCalls[0].data)).to.be.eql(expectedFloats);
 
         buffer._gpuBuffer.subDataCalls.length = 0;
 
@@ -107,7 +108,8 @@ describe('UnifiedBuffer', () => {
         buffer.update();
 
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
-        expect(new Int32Array(buffer._gpuBuffer.subDataCalls[0].data)).to.be.eql(new Int32Array(8).fill(-2134));
+        const expectedInts = new Int32Array(8).fill(-2134);
+        expect(new Int32Array(buffer._gpuBuffer.subDataCalls[0].data)).to.be.eql(expectedInts);
     });
 
     it('should keep content on resize', () => {
@@ -118,11 +120,16 @@ describe('UnifiedBuffer', () => {
 
         buffer.size = 16;
         expect(buffer.size).to.be.equal(16);
-        expect(new Float32Array(buffer.cpuBuffer)).to.be.eql(new Float32Array(4).fill(17));
+
+        const expectedSmall = new Float32Array(4).fill(17);
+        expect(new Float32Array(buffer.cpuBuffer)).to.be.eql(expectedSmall);
 
         buffer.size = 32;
         expect(buffer.size).to.be.equal(32);
-        expect(new Float32Array(buffer.cpuBuffer)).to.be.eql(new Float32Array(8).fill(17).fill(0, 4, 8));
+
+        const expectedLarge = new Float32Array(8).fill(17);
+        expectedLarge.fill(0, 4, 8);
+        expect(new Float32Array(buffer.cpuBuffer)).to.be.eql(expectedLarge);
     });
 });
 
@@ -141,10 +148,13 @@ describe('UnifiedBuffer subData', () => {
         const buffer = new UnifiedBufferMock(context, 32, 0);
 
         const tooBigArray = new ArrayBuffer(64);
-        const subArray = new Uint8Array(tooBigArray).fill(13, 0, 16).fill(17, 16, 32).subarray(8, 24);
+        const tooBigArrayView = new Uint8Array(tooBigArray);
+        tooBigArrayView.fill(13, 0, 16);
+        tooBigArrayView.fill(17, 16, 32);
+        const subArray = tooBigArrayView.subarray(8, 24);
 
-        buffer.subData(0, subArray);
         expect(() => buffer.subData(0, subArray)).to.not.throw;
+        buffer.subData(0, subArray);
 
         const expected = new Uint8Array(32);
         expected.fill(13, 0, 8);
@@ -164,20 +174,20 @@ describe('UnifiedBuffer update', () => {
         buffer.subData(0, new Uint8Array(32));
         buffer.update();
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(0);
-        expect(buffer._gpuBuffer.dataCalled).to.be.equal(true);
+        expect(buffer._gpuBuffer.dataCalled).to.be.true;
 
         buffer._gpuBuffer.dataCalled = false;
         buffer.subData(0, new Uint8Array(32));
         buffer.update();
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
-        expect(buffer._gpuBuffer.dataCalled).to.be.equal(false);
+        expect(buffer._gpuBuffer.dataCalled).to.be.false;
 
         buffer._gpuBuffer.subDataCalls.length = 0;
         buffer.size = 16;
         buffer.subData(0, new Uint8Array(16));
         buffer.update();
         expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(0);
-        expect(buffer._gpuBuffer.dataCalled).to.be.equal(true);
+        expect(buffer._gpuBuffer.dataCalled).to.be.true;
     });
 
     it('should discard old updates', () => {
