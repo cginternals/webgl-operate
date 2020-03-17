@@ -19,8 +19,6 @@ import { UnifiedBuffer } from '../source/unifiedbuffer';
 
 interface SubDataCall {
     dstOffset: number;
-    srcOffset: number;
-    length: number;
     data: ArrayBuffer;
 }
 
@@ -54,9 +52,13 @@ class BufferMock extends Buffer {
 
     subData(dstByteOffset: GLintptr, srcData: ArrayBufferView | ArrayBuffer,
         srcOffset: GLuint = 0, length: GLuint = 0, bind: boolean = true, unbind: boolean = true): void {
-        const buffer = srcData instanceof ArrayBuffer ? srcData : srcData.buffer;
-        const data = new Uint8Array(buffer).buffer.slice(srcOffset, srcOffset + length);
-        this.subDataCalls.push({ dstOffset: dstByteOffset, srcOffset, length, data });
+        let data: ArrayBuffer;
+        if (srcData instanceof ArrayBuffer) {
+            data = srcData;
+        } else {
+            data = srcData.buffer.slice(srcData.byteOffset, srcData.byteOffset + srcData.byteLength);
+        }
+        this.subDataCalls.push({ dstOffset: dstByteOffset, data });
     }
 
     get bytes(): number {
@@ -217,7 +219,7 @@ describe('UnifiedBuffer update', () => {
 
         const expectedData = new Uint8Array(24).fill(1, 0, 16).fill(2, 8, 24);
         const expectedSubDataCalls = new Array<SubDataCall>({
-            srcOffset: 0, dstOffset: 0, length: 24, data: expectedData,
+            dstOffset: 0, data: expectedData,
         });
 
         expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
@@ -239,7 +241,7 @@ describe('UnifiedBuffer update', () => {
 
         const expectedData = new Uint8Array(24).fill(1, 8, 24).fill(2, 0, 16);
         const expectedSubDataCalls = new Array<SubDataCall>({
-            srcOffset: 0, dstOffset: 0, length: 24, data: expectedData,
+            dstOffset: 0, data: expectedData,
         });
 
         expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
@@ -261,7 +263,7 @@ describe('UnifiedBuffer update', () => {
 
         const expectedData = new Uint8Array(32).fill(1, 0, 32).fill(2, 8, 24);
         const expectedSubDataCalls = new Array<SubDataCall>({
-            srcOffset: 0, dstOffset: 0, length: 32, data: expectedData,
+            dstOffset: 0, data: expectedData,
         });
 
         expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
@@ -283,7 +285,7 @@ describe('UnifiedBuffer update', () => {
 
         const expectedData = new Uint8Array(32).fill(2, 0, 32);
         const expectedSubDataCalls = new Array<SubDataCall>({
-            srcOffset: 0, dstOffset: 0, length: 32, data: expectedData,
+            dstOffset: 0, data: expectedData,
         });
 
         expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
@@ -304,8 +306,8 @@ describe('UnifiedBuffer update', () => {
         buffer.update();
 
         const expectedSubDataCalls = new Array<SubDataCall>(
-            { srcOffset: 0, dstOffset: 0, length: 8, data: new Uint8Array(8).fill(1) },
-            { srcOffset: 24, dstOffset: 24, length: 8, data: new Uint8Array(8).fill(2) });
+            { dstOffset: 0, data: new Uint8Array(8).fill(1) },
+            { dstOffset: 24, data: new Uint8Array(8).fill(2) });
 
         expect(mapSubDataCalls(buffer._gpuBuffer.subDataCalls)).to.be.eql(expectedSubDataCalls);
     });
@@ -325,8 +327,6 @@ function mapSubDataCalls(subDataCalls: Array<SubDataCall>): Array<SubDataCall> {
     return subDataCalls.map((subDataCall: SubDataCall) => {
         return {
             dstOffset: subDataCall.dstOffset,
-            srcOffset: subDataCall.srcOffset,
-            length: subDataCall.length,
             data: new Uint8Array(subDataCall.data),
         };
     });

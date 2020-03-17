@@ -104,8 +104,10 @@ export class UnifiedBuffer extends Initializable {
         if (this._gpuBuffer.bytes !== this._cpuBuffer.byteLength) {
             this._gpuBuffer.data(this._cpuBuffer, this.usage);
         } else {
+            const bufferView = new Uint8Array(this._cpuBuffer);
             for (const update of this._updates) {
-                this._gpuBuffer.subData(update.begin, this._cpuBuffer, update.begin, update.end - update.begin);
+                const subBufferView = bufferView.subarray(update.begin, update.end);
+                this._gpuBuffer.subData(update.begin, subBufferView);
             }
         }
 
