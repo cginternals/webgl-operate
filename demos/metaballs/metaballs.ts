@@ -110,6 +110,7 @@ export class MetaballsRenderer extends Renderer {
         this._program.bind();
 
         this.createMetaballsTexture(context);
+        this.createLightsTexture(context);
 
         this._camera = new Camera();
 
@@ -134,11 +135,12 @@ export class MetaballsRenderer extends Renderer {
             0.0, -0.5, 0.9, 1.0,
             -0.2, 0.2, 0.7, 1.5,
             0.9, -0.2, 0.9, 1.0,
-            0.5, 0.3,  0.2, 1.0,
+            0.5, 0.3, 0.2, 1.0,
         ]);
         const numberOfMetaballs = metaballs.length / 4;
-
         const gl = context.gl;
+
+        gl.activeTexture(gl.TEXTURE0);
         const metaballsTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, metaballsTexture);
 
@@ -149,20 +151,21 @@ export class MetaballsRenderer extends Renderer {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, metaballsTexture);
         gl.uniform1i(this._program.uniform('u_metaballsTexture'), 0);
         gl.uniform1i(this._program.uniform('u_metaballsTextureSize'), numberOfMetaballs);
     }
 
+    // TODO refactor to texture class
     protected createLightsTexture(context: Context): void {
         const lights = new Float32Array([
             // x,  y,   z,  shininess-factor
-            0.0, -0.5, 0.9, 1.0
+            0.2, 0.5, 1.9, 100.0,
         ]);
         const numberOfMetaballs = lights.length / 4;
-
         const gl = context.gl;
+
+        gl.activeTexture(gl.TEXTURE1);
         const lightsTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, lightsTexture);
 
@@ -173,9 +176,8 @@ export class MetaballsRenderer extends Renderer {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, lightsTexture);
-        gl.uniform1i(this._program.uniform('u_lightsTexture'), 0);
+        gl.uniform1i(this._program.uniform('u_lightsTexture'), 1);
         gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfMetaballs);
     }
 }

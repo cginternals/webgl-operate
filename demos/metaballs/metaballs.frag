@@ -24,7 +24,6 @@ varying vec2 v_uv;
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.5
 
-# define NUMBER_OF_LIGHTS 1
 # define AMBIENT_ILLUMINATION 0.3
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
@@ -64,6 +63,14 @@ MetaBall getMetaball(int index) {
     return metaball;
 }
 
+PointLight getPointLight(int index) {
+    vec4 texVals = texture(u_lightsTexture, calculateAbsoluteTextureCoords(index, 0, u_lightsTextureSize, 1));
+    PointLight pointLight;
+    pointLight.position = texVals.xyz;
+    pointLight.shininess = texVals.w;
+    return pointLight;
+}
+
 float distFunc(MetaBall metaball, vec3 rayPosition) {
     return metaball.energy / distance(metaball.position, rayPosition);
 }
@@ -91,37 +98,35 @@ FragmentValues rayMarch(vec2 rayPosition) {
     return fragmentValues;
 }
 
+float calculateIllumination(FragmentValues fragmentValues) {
+    // Phong shading
+    float illumination = AMBIENT_ILLUMINATION;
+    for (int lightIndex = 0; lightIndex < u_lightsTextureSize; lightIndex++) {
+        PointLight pointLight = getPointLight(lightIndex);
+        vec3 lightDirection = normalize(pointLight.position - fragmentValues.rayPosition);
+        vec3 reflectDir = reflect(-lightDirection, fragmentValues.normal);
+
+        float diffuse = max(dot(fragmentValues.normal, lightDirection), 0.0);
+
+        float specularAngle = max(dot(reflectDir, fragmentValues.normal), 0.0);
+        float specular = pow(specularAngle, pointLight.shininess);
+
+        illumination += DIFFUSE_ILLUMINATION * diffuse;
+        illumination += SPECULAR_ILLUMINATION * specular;
+    }
+    return illumination;
+}
+
 void main(void)
 {
-    // Point Lights
-    PointLight pointLights[NUMBER_OF_LIGHTS];
-    pointLights[0].position = vec3(0.0, 3.0, -2.0);
-    pointLights[0].shininess = 100.0;
-
     // Compute the color
     FragmentValues fragmentValues = rayMarch(v_uv);
     fragmentValues.normal = normalize(fragmentValues.normal);
 
     float illumination = 1.0;
-    // Phong shading
     if (fragmentValues.energy > THRESHOLD) {
-        illumination = AMBIENT_ILLUMINATION;
-
-        for (int lightIndex = 0; lightIndex < NUMBER_OF_LIGHTS; lightIndex++) {
-            PointLight pointLight = pointLights[lightIndex];
-            vec3 lightDirection = normalize(pointLight.position - fragmentValues.rayPosition);
-            vec3 reflectDir = reflect(-lightDirection, fragmentValues.normal);
-
-            float diffuse = max(dot(fragmentValues.normal, lightDirection), 0.0);
-
-            float specularAngle = max(dot(reflectDir, fragmentValues.normal), 0.0);
-            float specular = pow(specularAngle, pointLight.shininess);
-
-            illumination += DIFFUSE_ILLUMINATION * diffuse;
-            illumination += SPECULAR_ILLUMINATION * specular;
-        }
+        illumination = calculateIllumination(fragmentValues);
     }
-    //fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
     fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
 }
 
