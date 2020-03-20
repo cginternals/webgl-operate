@@ -10,24 +10,29 @@ precision lowp float;
     layout(location = 0) out vec4 fragColor;
 #endif
 
+uniform sampler2D u_metaballsTexture;
+uniform int u_metaballsTextureSize;
+
+uniform sampler2D u_lightsTexture;
+uniform int u_lightsTextureSize;
+
+
+varying vec2 v_uv;
+
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
 
-# define NUMBER_OF_METABALLS 4
 # define BASE_ENERGY 0.06
-# define POSITVE_METABALL 1.0
-# define NEGATIVE_METABALL -1.0
+# define THRESHOLD 0.5
 
 # define NUMBER_OF_LIGHTS 1
 # define AMBIENT_ILLUMINATION 0.3
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
 
-varying vec2 v_uv;
 
 struct MetaBall {
     vec3 position;
     float energy;
-    float metaballEneryOrientation; // should be POSITIVE_METABALL or NEGATIVE_METABALL
 };
 
 struct FragmentValues {
@@ -44,11 +49,26 @@ struct PointLight {
 const vec3 metaballColor = vec3(1.0, 0.5, 1.0);
 const vec3 backgroundColor = vec3(0.9, 0.9, 0.9);
 
+vec2 calculateAbsoluteTextureCoords(int width, int height, int maxWidth, int maxHeight) {
+    return vec2(
+        (2.0 * float(width) + 1.0) / (2.0 * float(maxWidth)),
+        (2.0 * float(height) + 1.0) / (2.0 * float(maxHeight))
+    );
+}
+
+MetaBall getMetaball(int index) {
+    vec4 texVals = texture(u_metaballsTexture, calculateAbsoluteTextureCoords(index, 0, u_metaballsTextureSize, 1));
+    MetaBall metaball;
+    metaball.position = texVals.xyz;
+    metaball.energy = BASE_ENERGY * texVals.w;
+    return metaball;
+}
+
 float distFunc(MetaBall metaball, vec3 rayPosition) {
     return metaball.energy / distance(metaball.position, rayPosition);
 }
 
-FragmentValues rayMarch(MetaBall[NUMBER_OF_METABALLS] metaballs, vec2 rayPosition) {
+FragmentValues rayMarch(vec2 rayPosition) {
     FragmentValues fragmentValues;
 
     for (float marchDistance = 0.0; marchDistance < 1.0; marchDistance += 0.01) {
@@ -56,10 +76,10 @@ FragmentValues rayMarch(MetaBall[NUMBER_OF_METABALLS] metaballs, vec2 rayPositio
         currentFragmentValues.energy = 0.0;
         vec3 currentRayPosition = vec3(rayPosition, marchDistance);
 
-        for (int metaballIndex = 0; metaballIndex < NUMBER_OF_METABALLS; metaballIndex++) {
+        for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
 
-            MetaBall currentMetaball = metaballs[metaballIndex];
-            float currentEnergy = currentMetaball.metaballEneryOrientation * distFunc(currentMetaball, currentRayPosition);
+            MetaBall currentMetaball = getMetaball(metaballIndex);
+            float currentEnergy = distFunc(currentMetaball, currentRayPosition);
             currentFragmentValues.energy += currentEnergy;
             vec3 currentNormal = currentRayPosition - currentMetaball.position;
             fragmentValues.normal += currentNormal * currentEnergy;
@@ -73,33 +93,18 @@ FragmentValues rayMarch(MetaBall[NUMBER_OF_METABALLS] metaballs, vec2 rayPositio
 
 void main(void)
 {
-    // Define all metaballs
-    MetaBall metaballs[NUMBER_OF_METABALLS];
-    metaballs[0].position = vec3(0.0, -0.5, 0.9);
-    metaballs[0].energy = BASE_ENERGY;
-    metaballs[0].metaballEneryOrientation = POSITVE_METABALL;
-    metaballs[1].position = vec3(-0.2, 0.2, 0.7);
-    metaballs[1].energy = BASE_ENERGY * 1.5;
-    metaballs[1].metaballEneryOrientation = POSITVE_METABALL;
-    metaballs[2].position = vec3(0.9, -0.2, 0.9);
-    metaballs[2].energy = BASE_ENERGY;
-    metaballs[2].metaballEneryOrientation = POSITVE_METABALL;
-    metaballs[3].position = vec3(0.5, 0.3, 0.2);
-    metaballs[3].energy = BASE_ENERGY;
-    metaballs[3].metaballEneryOrientation = POSITVE_METABALL;
-
     // Point Lights
     PointLight pointLights[NUMBER_OF_LIGHTS];
     pointLights[0].position = vec3(0.0, 3.0, -2.0);
     pointLights[0].shininess = 100.0;
 
     // Compute the color
-    FragmentValues fragmentValues = rayMarch(metaballs, v_uv);
+    FragmentValues fragmentValues = rayMarch(v_uv);
     fragmentValues.normal = normalize(fragmentValues.normal);
 
     float illumination = 1.0;
     // Phong shading
-    if (fragmentValues.energy > 0.5) {
+    if (fragmentValues.energy > THRESHOLD) {
         illumination = AMBIENT_ILLUMINATION;
 
         for (int lightIndex = 0; lightIndex < NUMBER_OF_LIGHTS; lightIndex++) {
@@ -116,7 +121,8 @@ void main(void)
             illumination += SPECULAR_ILLUMINATION * specular;
         }
     }
-    fragColor = fragmentValues.energy > 0.5 ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
+    //fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
+    fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
 }
 
 // NOTE for compilation errors look at the line number and subtract 7

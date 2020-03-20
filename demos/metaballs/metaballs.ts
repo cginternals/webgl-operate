@@ -30,7 +30,6 @@ export class MetaballsRenderer extends Renderer {
     protected _ndcTriangle: NdcFillingTriangle;
 
     protected _program: Program;
-    protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
 
@@ -106,8 +105,11 @@ export class MetaballsRenderer extends Renderer {
         this._program.initialize([vert, frag], false);
         this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
 
+
         this._program.link();
         this._program.bind();
+
+        this.createMetaballsTexture(context);
 
         this._camera = new Camera();
 
@@ -124,6 +126,57 @@ export class MetaballsRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected createMetaballsTexture(context: Context): void {
+        const metaballs = new Float32Array([
+            // x,  y,   z,  metaball-energy
+            0.0, -0.5, 0.9, 1.0,
+            -0.2, 0.2, 0.7, 1.5,
+            0.9, -0.2, 0.9, 1.0,
+            0.5, 0.3,  0.2, 1.0,
+        ]);
+        const numberOfMetaballs = metaballs.length / 4;
+
+        const gl = context.gl;
+        const metaballsTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, metaballsTexture);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, numberOfMetaballs, 1, 0,
+            gl.RGBA, gl.FLOAT, metaballs);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, metaballsTexture);
+        gl.uniform1i(this._program.uniform('u_metaballsTexture'), 0);
+        gl.uniform1i(this._program.uniform('u_metaballsTextureSize'), numberOfMetaballs);
+    }
+
+    protected createLightsTexture(context: Context): void {
+        const lights = new Float32Array([
+            // x,  y,   z,  shininess-factor
+            0.0, -0.5, 0.9, 1.0
+        ]);
+        const numberOfMetaballs = lights.length / 4;
+
+        const gl = context.gl;
+        const lightsTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, lightsTexture);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, numberOfMetaballs, 1, 0,
+            gl.RGBA, gl.FLOAT, lights);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, lightsTexture);
+        gl.uniform1i(this._program.uniform('u_lightsTexture'), 0);
+        gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfMetaballs);
     }
 }
 
