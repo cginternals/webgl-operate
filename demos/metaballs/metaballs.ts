@@ -14,6 +14,7 @@ import {
     Renderer,
     Shader,
     TextureCube,
+    Texture2D,
     Wizard,
 } from 'webgl-operate';
 
@@ -30,8 +31,8 @@ export class MetaballsRenderer extends Renderer {
     protected _navigation: Navigation;
     protected _ndcTriangle: NdcFillingTriangle;
     protected _cubeMap: TextureCube;
-    protected _metaballsTexture: WebGLTexture;
-    protected _lightsTexture: WebGLTexture;
+    protected _metaballsTexture: Texture2D;
+    protected _lightsTexture: Texture2D;
 
     protected _program: Program;
 
@@ -70,13 +71,13 @@ export class MetaballsRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this._metaballsTexture);
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, this._lightsTexture);
-        this._cubeMap.bind(gl.TEXTURE3);
-        this._program.bind();
+        // Bind textures
+        this._metaballsTexture.bind(gl.TEXTURE0);
+        this._lightsTexture.bind(gl.TEXTURE1);
+        this._cubeMap.bind(gl.TEXTURE2);
 
+        // Bind Program
+        this._program.bind();
 
         // render geometry
         this._ndcTriangle.bind();
@@ -100,21 +101,17 @@ export class MetaballsRenderer extends Renderer {
 
         const gl = context.gl;
 
-
         this._ndcTriangle = new NdcFillingTriangle(this._context);
         this._ndcTriangle.initialize();
-
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'metaballs.vert');
         vert.initialize(require('./metaballs.vert'));
         const frag = new Shader(context, gl.FRAGMENT_SHADER, 'metaballs.frag');
         frag.initialize(require('./metaballs.frag'));
 
-
         this._program = new Program(context, 'MetaballsProgram');
         this._program.initialize([vert, frag], false);
         this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
-
 
         this._program.link();
         this._program.bind();
@@ -152,18 +149,9 @@ export class MetaballsRenderer extends Renderer {
         const numberOfMetaballs = metaballs.length / 4;
         const gl = this._context.gl;
 
-        gl.activeTexture(gl.TEXTURE0);
-        this._metaballsTexture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this._metaballsTexture);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, numberOfMetaballs, 1, 0,
-            gl.RGBA, gl.FLOAT, metaballs);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-        gl.bindTexture(gl.TEXTURE_2D, this._metaballsTexture);
+        this._metaballsTexture = new Texture2D(this._context, 'metaballsTexture');
+        this._metaballsTexture.initialize(numberOfMetaballs, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
+        this._metaballsTexture.data(metaballs);
         gl.uniform1i(this._program.uniform('u_metaballsTexture'), 0);
         gl.uniform1i(this._program.uniform('u_metaballsTextureSize'), numberOfMetaballs);
     }
@@ -174,29 +162,20 @@ export class MetaballsRenderer extends Renderer {
             // x,  y,   z,  shininess-factor
             0.2, 0.5, 1.9, 100.0,
         ]);
-        const numberOfMetaballs = lights.length / 4;
+        const numberOfLights = lights.length / 4;
         const gl = this._context.gl;
 
-        gl.activeTexture(gl.TEXTURE1);
-        this._lightsTexture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this._lightsTexture);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, numberOfMetaballs, 1, 0,
-            gl.RGBA, gl.FLOAT, lights);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-        gl.bindTexture(gl.TEXTURE_2D, this._lightsTexture);
+        this._lightsTexture = new Texture2D(this._context, 'lightsTexture');
+        this._lightsTexture.initialize(numberOfLights, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
+        this._lightsTexture.data(lights);
         gl.uniform1i(this._program.uniform('u_lightsTexture'), 1);
-        gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfMetaballs);
+        gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfLights);
     }
 
     protected createCubeMapTexture(): void {
         const gl = this._context.gl;
 
-        gl.uniform1i(this._program.uniform('u_cubemap'), 3);
+        gl.uniform1i(this._program.uniform('u_cubemap'), 2);
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGB, Wizard.Precision.byte);
         this._cubeMap = new TextureCube(this._context);
@@ -211,7 +190,6 @@ export class MetaballsRenderer extends Renderer {
 
             this.invalidate(true);
         });
-        this._cubeMap.bind(gl.TEXTURE2);
     }
 }
 

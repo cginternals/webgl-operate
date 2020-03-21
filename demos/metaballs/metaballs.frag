@@ -22,11 +22,10 @@ uniform samplerCube u_cubemap;
 
 varying vec2 v_uv;
 
-// NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
-
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.5
 
+// NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
 # define AMBIENT_ILLUMINATION 0.3
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
@@ -131,8 +130,6 @@ void main(void)
         illumination = calculateIllumination(fragmentValues);
     }
     vec4 envMap = texture(u_cubemap, vec3(normalize(abs(v_uv)), 1.0));
-
-    //fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
     fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : envMap;
 }
 
