@@ -24,6 +24,7 @@ varying vec2 v_uv;
 
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.5
+# define STEP_THRESHOLD 0.01
 
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
 # define AMBIENT_ILLUMINATION 0.3
@@ -77,9 +78,8 @@ float distFunc(MetaBall metaball, vec3 rayPosition) {
     return metaball.energy / distance(metaball.position, rayPosition);
 }
 
-FragmentValues rayMarch(vec2 rayPosition) {
-    FragmentValues fragmentValues;
 
+FragmentValues rayMarch(vec2 rayPosition) {
     for (float marchDistance = 0.0; marchDistance < 1.0; marchDistance += 0.01) {
         FragmentValues currentFragmentValues;
         currentFragmentValues.energy = 0.0;
@@ -90,13 +90,15 @@ FragmentValues rayMarch(vec2 rayPosition) {
             MetaBall currentMetaball = getMetaball(metaballIndex);
             float currentEnergy = distFunc(currentMetaball, currentRayPosition);
             currentFragmentValues.energy += currentEnergy;
-            vec3 currentNormal = currentRayPosition - currentMetaball.position;
-            fragmentValues.normal += currentNormal * currentEnergy;
+            vec3 currentNormal = normalize(currentRayPosition - currentMetaball.position);
+            currentFragmentValues.normal += currentNormal * currentEnergy;
         }
-        fragmentValues.normal = currentFragmentValues.energy > fragmentValues.energy ? currentFragmentValues.normal : fragmentValues.normal;
-        fragmentValues.rayPosition = currentFragmentValues.energy > fragmentValues.energy ? currentRayPosition : fragmentValues.rayPosition;
-        fragmentValues.energy = max(currentFragmentValues.energy, fragmentValues.energy);
+        if(currentFragmentValues.energy > THRESHOLD) {
+            currentFragmentValues.rayPosition = currentRayPosition;
+            return currentFragmentValues;
+        }
     }
+    FragmentValues fragmentValues;
     return fragmentValues;
 }
 
@@ -122,6 +124,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
 void main(void)
 {
     // Compute the color
+    //fragColor = vec4(vec3(rayMarch(v_uv)), 1.0);
     FragmentValues fragmentValues = rayMarch(v_uv);
     fragmentValues.normal = normalize(fragmentValues.normal);
 

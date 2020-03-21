@@ -156,11 +156,10 @@ export class MetaballsRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_metaballsTextureSize'), numberOfMetaballs);
     }
 
-    // TODO refactor to texture class
     protected createLightsTexture(): void {
         const lights = new Float32Array([
             // x,  y,   z,  shininess-factor
-            0.2, 0.5, 1.9, 100.0,
+            0.0, 0.0, -0.0, 100.0,
         ]);
         const numberOfLights = lights.length / 4;
         const gl = this._context.gl;
