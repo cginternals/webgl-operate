@@ -17,6 +17,9 @@ uniform sampler2D u_lightsTexture;
 uniform int u_lightsTextureSize;
 
 
+uniform samplerCube u_cubemap;
+
+
 varying vec2 v_uv;
 
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
@@ -127,7 +130,10 @@ void main(void)
     if (fragmentValues.energy > THRESHOLD) {
         illumination = calculateIllumination(fragmentValues);
     }
-    fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
+    vec4 envMap = texture(u_cubemap, vec3(normalize(abs(v_uv)), 1.0));
+
+    //fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : vec4(backgroundColor, 1.0);
+    fragColor = fragmentValues.energy > THRESHOLD ? vec4(metaballColor * illumination, 1.0) : envMap;
 }
 
 // NOTE for compilation errors look at the line number and subtract 7
