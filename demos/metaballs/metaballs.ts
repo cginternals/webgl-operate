@@ -36,6 +36,7 @@ export class MetaballsRenderer extends Renderer {
     protected _ndcTriangle: NdcFillingTriangle;
     protected _cubeMap: TextureCube;
     protected _metaballsTexture: Texture2D;
+    protected _metaballColorsTexture: Texture2D;
     protected _lightsTexture: Texture2D;
 
     protected _program: Program;
@@ -79,8 +80,9 @@ export class MetaballsRenderer extends Renderer {
 
         // Bind textures and uniforms
         this._metaballsTexture.bind(gl.TEXTURE0);
-        this._lightsTexture.bind(gl.TEXTURE1);
-        this._cubeMap.bind(gl.TEXTURE2);
+        this._metaballColorsTexture.bind(gl.TEXTURE1);
+        this._lightsTexture.bind(gl.TEXTURE2);
+        this._cubeMap.bind(gl.TEXTURE3);
         //const metaball = vec3.fromValues(0.0, -0.5, 0.9);
         //const output = vec3.create();
         console.log(this._camera.viewProjection);
@@ -161,6 +163,13 @@ export class MetaballsRenderer extends Renderer {
             0.9, -0.2, 0.9, 1.0,
             0.5, 0.3, 0.2, 1.0,
         ]);
+        const metaballColors = new Float32Array([
+            // r, g, b, a
+            0.105, 0.768, 0.011, 1.0,
+            0.968, 0.411, 0.737, 1.0,
+            0.325, 0.454, 0.992, 1.0,
+            0.986, 0.274, 0.290, 1.0,
+        ]);
         const numberOfMetaballs = metaballs.length / 4;
         const gl = this._context.gl;
 
@@ -169,6 +178,12 @@ export class MetaballsRenderer extends Renderer {
         this._metaballsTexture.data(metaballs);
         gl.uniform1i(this._program.uniform('u_metaballsTexture'), 0);
         gl.uniform1i(this._program.uniform('u_metaballsTextureSize'), numberOfMetaballs);
+
+        this._metaballColorsTexture = new Texture2D(this._context, 'metaballColorsTexture');
+        this._metaballColorsTexture.initialize(numberOfMetaballs, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
+        this._metaballColorsTexture.data(metaballColors);
+        gl.uniform1i(this._program.uniform('u_metaballColorsTexture'), 1);
+
     }
 
     protected createLightsTexture(): void {
@@ -182,14 +197,14 @@ export class MetaballsRenderer extends Renderer {
         this._lightsTexture = new Texture2D(this._context, 'lightsTexture');
         this._lightsTexture.initialize(numberOfLights, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
         this._lightsTexture.data(lights);
-        gl.uniform1i(this._program.uniform('u_lightsTexture'), 1);
+        gl.uniform1i(this._program.uniform('u_lightsTexture'), 2);
         gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfLights);
     }
 
     protected createCubeMapTexture(): void {
         const gl = this._context.gl;
 
-        gl.uniform1i(this._program.uniform('u_cubemap'), 2);
+        gl.uniform1i(this._program.uniform('u_cubemap'), 3);
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGB, Wizard.Precision.byte);
         this._cubeMap = new TextureCube(this._context);

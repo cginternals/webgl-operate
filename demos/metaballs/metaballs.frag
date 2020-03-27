@@ -13,6 +13,7 @@ precision lowp float;
 uniform mat4 u_viewProjection;
 
 uniform sampler2D u_metaballsTexture;
+uniform sampler2D u_metaballColorsTexture;
 uniform int u_metaballsTextureSize;
 
 uniform sampler2D u_lightsTexture;
@@ -27,7 +28,7 @@ varying vec2 v_uv;
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.5
 # define STEP_THRESHOLD 0.001
-# define METABALL_TRANSPARENCY 0.9
+# define METABALL_TRANSPARENCY 0.8
 
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
 # define AMBIENT_ILLUMINATION 0.3
@@ -37,12 +38,14 @@ varying vec2 v_uv;
 
 struct MetaBall {
     vec4 position;
+    vec3 color;
     float energy;
 };
 
 struct FragmentValues {
     float energy;
     vec4 normal;
+    vec3 color;
     vec4 rayPosition;
 };
 
@@ -62,10 +65,12 @@ vec2 calculateAbsoluteTextureCoords(int width, int height, int maxWidth, int max
 }
 
 MetaBall getMetaball(int index) {
-    vec4 texVals = texture(u_metaballsTexture, calculateAbsoluteTextureCoords(index, 0, u_metaballsTextureSize, 1));
+    vec2 texCoords = calculateAbsoluteTextureCoords(index, 0, u_metaballsTextureSize, 1);
+    vec4 positionAndEnergy = texture(u_metaballsTexture, texCoords);
     MetaBall metaball;
-    metaball.position = vec4(texVals.xyz, 1.0);
-    metaball.energy = BASE_ENERGY * texVals.w;
+    metaball.position = vec4(positionAndEnergy.xyz, 1.0);
+    metaball.energy = BASE_ENERGY * positionAndEnergy.w;
+    metaball.color = texture(u_metaballColorsTexture, texCoords).xyz;
     return metaball;
 }
 
@@ -101,6 +106,7 @@ FragmentValues rayMarch(vec4 rayPosition, vec4 rayDirection) {
             currentFragmentValues.energy += currentEnergy;
             vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
             currentFragmentValues.normal += currentNormal * currentEnergy;
+            currentFragmentValues.color += currentMetaball.color * currentEnergy;
         }
         bool currentFragmentPassedThreshold = currentFragmentValues.energy > THRESHOLD;
         if (currentFragmentPassedThreshold) {
@@ -180,7 +186,7 @@ void main(void)
         illumination = calculateIllumination(fragmentValues);
     }
     vec4 envMap = texture(u_cubemap, vec3(normalize(abs(v_uv)), 1.0));
-    fragColor = fragmentValues.energy > THRESHOLD ? mix(envMap, vec4(metaballColor * illumination, 1.0), METABALL_TRANSPARENCY) : envMap;
+    fragColor = fragmentValues.energy > THRESHOLD ? mix(envMap, vec4((fragmentValues.color * 2.0) * illumination, 1.0), METABALL_TRANSPARENCY) : envMap;
 }
 
 // NOTE for compilation errors look at the line number and subtract 7
