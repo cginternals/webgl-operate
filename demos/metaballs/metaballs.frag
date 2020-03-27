@@ -79,11 +79,11 @@ float distFunc(MetaBall metaball, vec3 rayPosition) {
 }
 
 
-FragmentValues rayMarch(vec2 rayPosition) {
+FragmentValues rayMarch(vec3 rayPosition, vec3 rayDirection) {
     for (float marchDistance = 0.0; marchDistance < 1.0; marchDistance += 0.01) {
         FragmentValues currentFragmentValues;
         currentFragmentValues.energy = 0.0;
-        vec3 currentRayPosition = vec3(rayPosition, marchDistance);
+        vec3 currentRayPosition = rayPosition + rayDirection * marchDistance;
 
         for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
 
@@ -125,7 +125,7 @@ void main(void)
 {
     // Compute the color
     //fragColor = vec4(vec3(rayMarch(v_uv)), 1.0);
-    FragmentValues fragmentValues = rayMarch(v_uv);
+    FragmentValues fragmentValues = rayMarch(vec3(v_uv, 0.0), vec3(0.0, 0.0, 1.0));
     fragmentValues.normal = normalize(fragmentValues.normal);
 
     float illumination = 1.0;
