@@ -1,6 +1,8 @@
 
 /* spellchecker: disable */
 
+import { vec3 } from 'webgl-operate';
+
 import {
     Camera,
     Canvas,
@@ -27,15 +29,16 @@ import { Demo } from '../demo';
 
 export class MetaballsRenderer extends Renderer {
 
+    protected _uViewProjection: WebGLUniformLocation;
     protected _camera: Camera;
     protected _navigation: Navigation;
+
     protected _ndcTriangle: NdcFillingTriangle;
     protected _cubeMap: TextureCube;
     protected _metaballsTexture: Texture2D;
     protected _lightsTexture: Texture2D;
 
     protected _program: Program;
-
     protected _defaultFBO: DefaultFramebuffer;
 
     protected onUpdate(): boolean {
@@ -71,13 +74,17 @@ export class MetaballsRenderer extends Renderer {
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
-        // Bind textures
+        // Bind Program
+        this._program.bind();
+
+        // Bind textures and uniforms
         this._metaballsTexture.bind(gl.TEXTURE0);
         this._lightsTexture.bind(gl.TEXTURE1);
         this._cubeMap.bind(gl.TEXTURE2);
-
-        // Bind Program
-        this._program.bind();
+        //const metaball = vec3.fromValues(0.0, -0.5, 0.9);
+        //const output = vec3.create();
+        console.log(this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
         // render geometry
         this._ndcTriangle.bind();
@@ -120,7 +127,15 @@ export class MetaballsRenderer extends Renderer {
         this.createLightsTexture();
         this.createCubeMapTexture();
 
+
+        this._uViewProjection = this._program.uniform('u_viewProjection');
         this._camera = new Camera();
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
+        this._camera.near = 1.0;
+        this._camera.far = 8.0;
+        this._camera.far = 8.0;
 
         this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
