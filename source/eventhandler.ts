@@ -18,6 +18,7 @@ import { TouchEventProvider } from './toucheventprovider';
 /* spellchecker: enable */
 export interface EventProvider {
     pointerEventProvider: PointerEventProvider;
+    mouseEventProvider: MouseEventProvider;
     eyeGazeEventProvider?: EyeGazeEventProvider;
 }
 
@@ -116,6 +117,9 @@ export class EventHandler {
     constructor(invalidate: Invalidate | undefined,
         eventProvider: EventProvider) {
         this._invalidate = invalidate;
+        this._mouseEventProvider = eventProvider.mouseEventProvider;
+        this._mouseEventProvider.preventDefault(MouseEventProvider.Type.Wheel);
+
         this._pointerEventProvider = eventProvider.pointerEventProvider;
         this._eyeGazeEventProvider = eventProvider.eyeGazeEventProvider;
 

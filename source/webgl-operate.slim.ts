@@ -42,7 +42,8 @@ export { PanModifier } from './panmodifier';
 export { PointerLock } from './pointerlock';
 export { TrackballModifier } from './trackballmodifier';
 export { TurntableModifier } from './turntablemodifier';
-export { ZoomModifier } from './zoommodifier';
+export { PinchZoomModifier } from './pinchzoommodifier';
+export { WheelZoomModifier } from './wheelzoommodifier';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';

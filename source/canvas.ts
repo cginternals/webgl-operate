@@ -372,6 +372,7 @@ export class Canvas extends Resizable {
         this._renderer.initialize(this.context, (force) => this._controller.update(force),
             {
                 pointerEventProvider: this._pointerEventProvider,
+                mouseEventProvider: this._mouseEventProvider,
                 eyeGazeEventProvider: this._eyeGazeEventProvider,
             });
 
