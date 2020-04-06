@@ -152,17 +152,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._cubemap.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._cubemap.levels(0, MIPMAP_LEVELS - 1);
 
-        for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
-            this._promises.push(
-                this._cubemap.fetch({
-                    positiveX: `./data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                    negativeX: `./data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                    positiveY: `./data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                    negativeY: `./data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                    positiveZ: `./data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                    negativeZ: `./data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
-                }, mipLevel));
-        }
+        this._promises.push(this._cubemap.fetchMipmapAtlas('./data/imagebasedlighting/ibl-map.png'))
 
         Promise.all(this._promises).then(() => {
             this.finishLoading();

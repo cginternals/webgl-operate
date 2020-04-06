@@ -148,6 +148,72 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         this._size = 0;
     }
 
+    /**
+     * Crops the contents of an image and returns a ImageData element of the resulting image.
+     * Offsets and sizes of the cropping range need to be supplied. The resulting image data will
+     * have the same height and width as the crop size.
+     */
+    protected cropImage(srcImage: HTMLImageElement,
+        offsetX: number, offsetY: number, width: number, height: number): ImageData {
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        // Get the drawing context
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            console.log(LogLevel.Warning, '2D context creation failed when cropping image.');
+            return new ImageData(0, 0);
+        }
+
+        ctx.drawImage(srcImage, offsetX, offsetY, width, height, 0, 0, width, height);
+
+        return ctx.getImageData(0, 0, width, height);
+    }
+
+    /**
+     * Loads one mip map level from a texture atlas in which all mipmap levels of a cubemap are stored.
+     * The format is assumed to be NX, PZ, PX, NZ in the top row and PY, NY in the bottom row.
+     * The bottom right quarter is assumed to be the next lower mipmap level. This repeats until the highest mipmap
+     * level is reached.
+     * @param image - Source texture atlas.
+     * @param mipLevel - Level to load.
+     */
+    protected extractMipLevelFromAtlas(image: HTMLImageElement, mipLevel: number): void {
+        const gl = this.context.gl;
+
+        const mip0Size = image.height / 2;
+        const mipSize = mip0Size * Math.pow(0.5, mipLevel);
+
+        const offset = [0, 0];
+        const incrementOffset = [image.width, image.height];
+        for (let i = 0; i < mipLevel; ++i) {
+            incrementOffset[0] /= 2;
+            incrementOffset[1] /= 2;
+            offset[0] += incrementOffset[0];
+            offset[1] += incrementOffset[1];
+        }
+
+        const nxData = this.cropImage(image, offset[0], offset[1], mipSize, mipSize);
+        this.data([gl.TEXTURE_CUBE_MAP_NEGATIVE_X, nxData], mipLevel);
+
+        const pzData = this.cropImage(image, offset[0] + mipSize, offset[1], mipSize, mipSize);
+        this.data([gl.TEXTURE_CUBE_MAP_POSITIVE_Z, pzData], mipLevel);
+
+        const pxData = this.cropImage(image, offset[0] + 2 * mipSize, offset[1], mipSize, mipSize);
+        this.data([gl.TEXTURE_CUBE_MAP_POSITIVE_X, pxData], mipLevel);
+
+        const nzData = this.cropImage(image, offset[0] + 3 * mipSize, offset[1], mipSize, mipSize);
+        this.data([gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, nzData], mipLevel);
+
+        const pyData = this.cropImage(image, offset[0], offset[1] + mipSize, mipSize, mipSize);
+        this.data([gl.TEXTURE_CUBE_MAP_POSITIVE_Y, pyData], mipLevel);
+
+        const nyData = this.cropImage(image, offset[0] + mipSize, offset[1] + mipSize, mipSize, mipSize);
+        this.data([gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, nyData], mipLevel);
+    }
 
     /**
      * Bind the texture object to a texture unit.
@@ -247,6 +313,45 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
                 image.src = tuple[1];
             }
 
+        });
+    }
+
+    /**
+     * Asynchronously loads a cubemap and its mipmap levels from a single texture atlas.
+     * The format is assumed to be NX, PZ, PX, NZ in the top row and PY, NY in the bottom row.
+     * The bottom right quarter is assumed to be the next lower mipmap level. This repeats until the highest mipmap
+     * level is reached.
+     * @param uri - URI linking the texture atlas that should be loaded.
+     * @param crossOrigin - Enable cross origin data loading.
+     */
+    @Initializable.assert_initialized()
+    fetchMipmapAtlas(uri: string, crossOrigin: boolean = false): Promise<void> {
+
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onerror = () => reject();
+
+            image.onload = () => {
+                if (image.width !== image.height * 2) {
+                    log(LogLevel.Warning, `Mipmap atlas expected to have dimensions of 2x1.`);
+                    return;
+                }
+
+                const mip0Size = image.height / 2;
+                const numMipLevels = Math.log2(mip0Size);
+
+                for (let i = 0; i < numMipLevels; ++i) {
+                    this.extractMipLevelFromAtlas(image, i);
+                }
+
+                resolve();
+            };
+
+            if (crossOrigin) {
+                image.crossOrigin = 'anonymous';
+            }
+            /* Trigger asynchronous loading of image data. */
+            image.src = uri;
         });
     }
 
