@@ -196,6 +196,12 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
             offset[1] += incrementOffset[1];
         }
 
+        /**
+         * Flip image along the Y axis, because the Image API and WebGL use
+         * different coordinate spaces.
+         */
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
         const nxData = this.cropImage(image, offset[0], offset[1], mipSize, mipSize);
         this.data([gl.TEXTURE_CUBE_MAP_NEGATIVE_X, nxData], mipLevel);
 
@@ -213,6 +219,8 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
 
         const nyData = this.cropImage(image, offset[0] + mipSize, offset[1] + mipSize, mipSize, mipSize);
         this.data([gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, nyData], mipLevel);
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     }
 
     /**
