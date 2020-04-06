@@ -13,18 +13,17 @@ export class UnifiedBuffer extends Initializable {
     protected _cpuBuffer: ArrayBuffer;
     protected _gpuBuffer: Buffer;
     protected _updates = new Array<Update>();
-
-    usage: GLenum;
+    protected _usage: GLenum;
 
     constructor(context: Context, sizeInBytes: number, usage: GLenum, identifier?: string) {
         super();
 
         this._cpuBuffer = new ArrayBuffer(sizeInBytes);
         this._gpuBuffer = new Buffer(context, identifier);
-        this.usage = usage;
+        this._usage = usage;
     }
 
-    protected _addUpdate(update: Update): void {
+    protected addUpdate(update: Update): void {
         const toRemove = new Array<number>();
         const toMerge = new Array<Update>();
 
@@ -92,7 +91,7 @@ export class UnifiedBuffer extends Initializable {
         const dst = new Uint8Array(this._cpuBuffer);
 
         dst.set(src, dstByteOffset);
-        this._addUpdate({ begin: dstByteOffset, end: dstByteOffset + src.byteLength });
+        this.addUpdate({ begin: dstByteOffset, end: dstByteOffset + src.byteLength });
     }
 
     @Initializable.assert_initialized()
@@ -102,7 +101,7 @@ export class UnifiedBuffer extends Initializable {
         }
 
         if (this._gpuBuffer.bytes !== this._cpuBuffer.byteLength) {
-            this._gpuBuffer.data(this._cpuBuffer, this.usage);
+            this._gpuBuffer.data(this._cpuBuffer, this._usage);
         } else {
             const bufferView = new Uint8Array(this._cpuBuffer);
             for (const update of this._updates) {
@@ -131,6 +130,14 @@ export class UnifiedBuffer extends Initializable {
         const src = new Uint8Array(oldBuffer).slice(0, sizeInBytes);
         const dst = new Uint8Array(this._cpuBuffer);
         dst.set(src);
+    }
+
+    get usage(): GLenum {
+        return this._usage;
+    }
+
+    set usage(usage: GLenum) {
+        this._usage = usage;
     }
 }
 
