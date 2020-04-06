@@ -9,8 +9,8 @@ import {
     Context,
     CuboidGeometry,
     DefaultFramebuffer,
+    EventProvider,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -48,9 +48,7 @@ export class CubeRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider ): boolean {
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -110,7 +108,7 @@ export class CubeRenderer extends Renderer {
         this._camera.far = 8.0;
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         return true;

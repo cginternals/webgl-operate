@@ -253,7 +253,6 @@ export class MouseEventProvider {
         }
         return this._dragSubject.asObservable();
     }
-
 }
 
 
