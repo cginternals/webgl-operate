@@ -14,13 +14,20 @@ export class UnifiedBuffer extends Initializable {
     protected _gpuBuffer: Buffer;
     protected _updates = new Array<Update>();
     protected _usage: GLenum;
+    protected _mergeThreshold: number;
 
-    constructor(context: Context, sizeInBytes: number, usage: GLenum, identifier?: string) {
+    protected static updateDistance(update1: Update, update2: Update): number {
+        const orderedUpdate = update1.begin <= update2.begin ? [update1, update2] : [update2, update1];
+        return orderedUpdate[1].begin - orderedUpdate[0].end;
+    }
+
+    constructor(context: Context, sizeInBytes: number, usage: GLenum, mergeThreshold = 0, identifier?: string) {
         super();
 
         this._cpuBuffer = new ArrayBuffer(sizeInBytes);
         this._gpuBuffer = new Buffer(context, identifier);
         this._usage = usage;
+        this._mergeThreshold = mergeThreshold;
     }
 
     protected addUpdate(update: Update): void {
@@ -30,7 +37,7 @@ export class UnifiedBuffer extends Initializable {
         // Mark all older updates which overlap with the new update
         // for removing / merging
         this._updates.forEach((current: Update, index: number) => {
-            if (!(update.end < current.begin || update.begin > current.end)) {
+            if (UnifiedBuffer.updateDistance(current, update) <= this._mergeThreshold || this._mergeThreshold === -1) {
                 toRemove.push(index);
                 toMerge.push(current);
             }
@@ -138,6 +145,14 @@ export class UnifiedBuffer extends Initializable {
 
     set usage(usage: GLenum) {
         this._usage = usage;
+    }
+
+    get mergeThreshold(): number {
+        return this._mergeThreshold;
+    }
+
+    set mergeThreshold(mergeThreshold: number) {
+        this._mergeThreshold = mergeThreshold;
     }
 }
 
