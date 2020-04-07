@@ -16,9 +16,8 @@ export class UnifiedBuffer extends Initializable {
     protected _usage: GLenum;
     protected _mergeThreshold: number;
 
-    protected static updateDistance(update1: Update, update2: Update): number {
-        const orderedUpdate = update1.begin <= update2.begin ? [update1, update2] : [update2, update1];
-        return orderedUpdate[1].begin - orderedUpdate[0].end;
+    protected static updatesNeedMerge(lhsUpdate: Update, rhsUpdate: Update, mergeThreshold: number): boolean {
+        return rhsUpdate.begin - lhsUpdate.end < mergeThreshold || mergeThreshold === -1;
     }
 
     constructor(context: Context, sizeInBytes: number, usage: GLenum, mergeThreshold = 0, identifier?: string) {
@@ -30,30 +29,75 @@ export class UnifiedBuffer extends Initializable {
         this._mergeThreshold = mergeThreshold;
     }
 
-    protected addUpdate(update: Update): void {
-        const toRemove = new Array<number>();
-        const toMerge = new Array<Update>();
+    /**
+     * Merges all updates left of index transitively with the update at index
+     * until there are no more updates within the merge threshold.
+     * @param index - Index of the update that should get merged
+     * @returns - Number of merged updates
+     */
+    protected mergeUpdatesLeft(index: number): number {
+        let removeCount = 0;
+        const rhs = this._updates[index];
 
-        // Mark all older updates which overlap with the new update
-        // for removing / merging
-        this._updates.forEach((current: Update, index: number) => {
-            if (UnifiedBuffer.updateDistance(current, update) <= this._mergeThreshold || this._mergeThreshold === -1) {
-                toRemove.push(index);
-                toMerge.push(current);
+        for (let i = index - 1; i >= 0; i--) {
+            const lhs = this._updates[i];
+
+            if (UnifiedBuffer.updatesNeedMerge(lhs, rhs, this._mergeThreshold)) {
+                rhs.begin = Math.min(rhs.begin, lhs.begin);
+                rhs.end = Math.max(rhs.end, lhs.end);
+                removeCount++;
+            } else {
+                break;
             }
-        });
-
-        // Remove all older updates, since they get merged in the next step
-        for (let i = toRemove.length - 1; i >= 0; i--) {
-            this._updates.splice(toRemove[i], 1);
         }
 
-        // Finally merge all overlapping updates
-        toMerge.push(update);
-        const begin = Math.min(...toMerge.map((merge: Update) => merge.begin));
-        const end = Math.max(...toMerge.map((merge: Update) => merge.end));
+        this._updates.splice(index - removeCount, removeCount);
 
-        this._updates.push({ begin, end });
+        return removeCount + 1;
+    }
+
+    /**
+     * Merges all updates right of index transitively with the update at index
+     * until there are no more updates within the merge threshold.
+     * @param index - Index of the update that should get merged
+     * @returns - Number of merged updates
+     */
+    protected mergeUpdatesRight(index: number): number {
+        let removeCount = 0;
+        const lhs = this._updates[index];
+
+        for (let i = index + 1; i < this._updates.length; i++) {
+            const rhs = this._updates[i];
+
+            if (UnifiedBuffer.updatesNeedMerge(lhs, rhs, this._mergeThreshold)) {
+                lhs.begin = Math.min(lhs.begin, rhs.begin);
+                lhs.end = Math.max(lhs.end, rhs.end);
+                removeCount++;
+            } else {
+                break;
+            }
+        }
+
+        this._updates.splice(index + 1, removeCount);
+
+        return removeCount + 1;
+    }
+
+    protected addUpdate(update: Update): void {
+        const start = this._updates.findIndex((current: Update) => {
+            return update.begin < current.begin;
+        });
+
+        if (start === -1) {
+            this._updates.push(update);
+
+            this.mergeUpdatesLeft(this._updates.length - 1);
+        } else {
+            this._updates.splice(start, 0, update);
+
+            this.mergeUpdatesRight(start);
+            this.mergeUpdatesLeft(start);
+        }
     }
 
     @Initializable.initialize()
@@ -85,6 +129,16 @@ export class UnifiedBuffer extends Initializable {
     @Initializable.assert_initialized()
     attribDisable(index: GLuint, bind: boolean = true, unbind: boolean = true): void {
         this._gpuBuffer.attribDisable(index, bind, unbind);
+    }
+
+    /**
+     * Merges all recorded subData ranges.
+     */
+    mergeSubDataRanges(): void {
+        let index = 0;
+        while (index < this._updates.length) {
+            index += this.mergeUpdatesRight(index);
+        }
     }
 
     subData(dstByteOffset: GLintptr, srcData: ArrayBufferView | ArrayBuffer): void {
