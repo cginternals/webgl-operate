@@ -12,9 +12,9 @@ import {
     Context,
     CuboidGeometry,
     DefaultFramebuffer,
+    EventProvider,
     Framebuffer,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
     PlaneGeometry,
@@ -72,9 +72,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
 
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives',
             'WEBGL_color_buffer_float', 'OES_texture_float', 'OES_texture_float_linear']);
@@ -165,7 +163,7 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._uLightPositionS = this._shadowProgram.uniform('u_lightPosition');
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
 
@@ -183,6 +181,8 @@ class ShadowMapMultiframeRenderer extends Renderer {
 
         this._shadowPass = new ShadowPass(context);
         this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardLinear, [1024, 1024]);
+
+        this.finishLoading();
 
         return true;
     }
@@ -362,7 +362,7 @@ export class ShadowMapMultiframeExample extends Example {
     private _canvas: Canvas;
     private _renderer: ShadowMapMultiframeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
         this._canvas.framePrecision = Wizard.Precision.half;
@@ -377,7 +377,7 @@ export class ShadowMapMultiframeExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

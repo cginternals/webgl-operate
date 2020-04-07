@@ -14,7 +14,7 @@ export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
 export { TouchEventProvider } from './toucheventprovider';
-export { EventHandler } from './eventhandler';
+export { EventHandler, EventProvider } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
@@ -24,7 +24,7 @@ export { Framebuffer } from './framebuffer';
 export { Geometry } from './geometry';
 export { Program } from './program';
 export { Renderbuffer } from './renderbuffer';
-export { Renderer, Invalidate } from './renderer';
+export { Renderer, Invalidate, LoadingStatus } from './renderer';
 export { Shader } from './shader';
 export { Texture2D } from './texture2d';
 export { Texture3D } from './texture3d';
@@ -33,6 +33,7 @@ export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
 
 export { Camera } from './camera';
+export { TileCameraGenerator } from './tilecameragenerator';
 export { CameraModifier } from './cameramodifier';
 export { Navigation } from './navigation';
 export { FirstPersonModifier } from './firstpersonmodifier';
@@ -52,10 +53,16 @@ export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel'
 
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
+export { DebugPass } from './debugpass';
 export { ReadbackPass } from './readbackpass';
 
 export { GaussFilter } from './gaussfilter';
 export { ShadowPass } from './shadowpass';
+
+
+export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
+export { EyeGazeEventProvider } from './eyegazeeventprovider';
+export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
 
 
 export * from './core/index';

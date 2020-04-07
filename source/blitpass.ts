@@ -1,7 +1,10 @@
 
 /* spellchecker: disable */
 
+import { vec4 } from 'gl-matrix';
+
 import { assert, logIf, LogLevel } from './auxiliaries';
+import { v4 } from './gl-matrix-extensions';
 
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
@@ -19,15 +22,21 @@ import { Texture2D } from './texture2d';
  * For rendering, a direct blit is used. However, if this is not supported, a textured, screen-aligned triangle is used
  * for blitting as fallback.
  *
- * The blit component can be used as follows:
+ * The blit pass can be used as follows:
  * ```
- * this.blit.framebuffer = this.intermediateFBO;
- * this.blit.frame(this.defaultFBO, null, null);
- * ```
+ * this._blitPass = new BlitPass(this._context);
+ * this._blitPass.initialize();
  *
- * This pass also provides some basic debugging facilities, such as blitting the input as linearized depth (packed or
- * not packed) etc. An additional WebGL program will be initialized when a debug mode is specified for the first time.
- * The default program blit remains untouched in order to keep it as minimal as possible.
+ * this._blitPass.readBuffer = gl2facade.COLOR_ATTACHMENT0;
+ * // this._blitPass.srcBounds = vec4.fromValues(0, 0, this._sourceSize[0], this._sourceSize[1]);
+ * this._blitPass.filter = gl.LINEAR;
+ * this._blitPass.target = this._defaultFBO;
+ * this._blitPass.drawBuffer = gl.BACK;
+ *
+ * this.blitPass.framebuffer = this.intermediateFBO;
+ * // this.blitPass.dstBounds = vec4.fromValues(dstX0, dstY0, dstX1, dstY1);
+ * this.blitPass.frame();
+ * ```
  */
 export class BlitPass extends Initializable {
 
@@ -48,6 +57,15 @@ export class BlitPass extends Initializable {
     /** @see {@link drawBuffer} */
     protected _drawBuffer: GLenum;
 
+    /** @see {@link filter} */
+    protected _filter: GLenum;
+
+    /** @see {@link srcBounds} */
+    protected _srcBounds: vec4 | undefined;
+
+    /** @see {@link dstBounds} */
+    protected _dstBounds: vec4 | undefined;
+
     /* Indirect blit and fallback implementation. */
 
     /** @see {@link forceProgramBlit} */
@@ -65,26 +83,21 @@ export class BlitPass extends Initializable {
     protected _ndcTriangleShared = false;
 
     protected _program: Program;
-    protected _debugProgram: Program | undefined = undefined;
-
-    /** @see {@link debug} */
-    protected _debug: BlitPass.Debug = BlitPass.Debug.None;
 
     /**
-     * Uniform for passing the debug mode to the specialized blit program.
+     * Uniform for passing the filter to blit: true for nearest, false otherwise (linear).
      */
-    protected _uDebugMode: WebGLUniformLocation | undefined;
+    protected _uNearest: WebGLUniformLocation;
 
     /**
-     * Uniform used to pass near and far data to the specialized blit program for linearization.
+     * Uniform for passing the source bounds to blit.
      */
-    protected _uLinearize: WebGLUniformLocation | undefined;
+    protected _uSrcBounds: WebGLUniformLocation;
 
     /**
-     * If provided, depth will be linearized when depth data is blitted.
+     * Uniform for passing the destination bounds to blit.
      */
-    protected _near: GLfloat = 0.0;
-    protected _far: GLfloat = 0.0;
+    protected _uDstBounds: WebGLUniformLocation;
 
 
     constructor(context: Context) {
@@ -112,8 +125,13 @@ export class BlitPass extends Initializable {
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.disable(gl.SCISSOR_TEST);
 
-        gl.blitFramebuffer(0, 0, this._framebuffer.width, this._framebuffer.height, 0, 0
-            , this._target.width, this._target.height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+        const srcBounds = this._srcBounds ? this._srcBounds : [0, 0, this._framebuffer.width, this._framebuffer.height];
+        const dstBounds = this._dstBounds ? this._dstBounds : [0, 0, this._target.width, this._target.height];
+
+        gl.blitFramebuffer(
+            srcBounds[0], srcBounds[1], srcBounds[2], srcBounds[3],
+            dstBounds[0], dstBounds[1], dstBounds[2], dstBounds[3],
+            gl.COLOR_BUFFER_BIT, this._filter);
 
         this._framebuffer.unbind(gl.READ_FRAMEBUFFER);
         this._target.unbind(gl.DRAW_FRAMEBUFFER);
@@ -121,15 +139,35 @@ export class BlitPass extends Initializable {
 
     /**
      * Uses indirect blit by drawing a textured, screen-aligned triangle into the given target framebuffer.
-     * @param program - The program the is used for blitting, either the minimal blit or debug blit.
+     * @param program - The program the is used for minimal blit.
      */
-    private programBlit(program: Program): void {
+    private programBlit(): void {
+        if (this._program === undefined) {
+            this.createProgram();
+        }
+
         assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
         const gl = this._context.gl;
 
-        gl.viewport(0, 0, this._target.width, this._target.height);
+        const srcBounds: vec4 = this._srcBounds ? this._srcBounds :
+            vec4.fromValues(0, 0, this._framebuffer.width, this._framebuffer.height);
+        const dstBounds: vec4 = this._dstBounds ? this._dstBounds :
+            vec4.fromValues(0, 0, this._target.width, this._target.height);
 
-        program.bind();
+        const srcBoundsNormalized: vec4 = vec4.div(v4(), srcBounds,
+            [this._framebuffer.width, this._framebuffer.height, this._framebuffer.width, this._framebuffer.height]);
+        const dstBoundsNormalized: vec4 = vec4.div(v4(), dstBounds,
+            [this._target.width, this._target.height, this._target.width, this._target.height]);
+
+        gl.viewport(dstBounds[0], dstBounds[1], dstBounds[2] - dstBounds[0], dstBounds[3] - dstBounds[1]);
+
+        gl.disable(gl.DEPTH_TEST);
+        gl.depthMask(false);
+
+        this._program.bind();
+        gl.uniform4fv(this._uSrcBounds, srcBoundsNormalized);
+        gl.uniform4fv(this._uDstBounds, dstBoundsNormalized);
+        gl.uniform1i(this._uNearest, this.filter === gl.nearest);
 
         const texture = this._framebuffer.texture(this._readBuffer) as Texture2D;
         texture.bind(gl.TEXTURE0);
@@ -143,10 +181,46 @@ export class BlitPass extends Initializable {
 
         texture.unbind();
 
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
+
         /* Every pass is expected to bind its own program when drawing, thus, unbinding is not necessary. */
         // this.program.unbind();
     }
 
+    /**
+     * Used to create (on-demand) the blit program for program based blitting. This function can be specialized, e.g.,
+     * for creating custom blit passes such as the `DebugPass` {@link DebugPass}. This method assumes the program to be
+     * undefined.
+     */
+    protected createProgram(): boolean {
+        assert(this._program === undefined, `expected blit program to be undefined before its creation`);
+        const gl = this._context.gl;
+
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (blit)');
+        vert.initialize(require('./shaders/blit.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag (blit)');
+        frag.initialize(require('./shaders/blit.frag'));
+
+        this._program = new Program(this._context, 'BlitProgram');
+        this._program.initialize([vert, frag], false);
+
+        if (!this._ndcTriangle.initialized) {
+            this._ndcTriangle.initialize();
+        }
+        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
+        this._program.link();
+
+        this._uSrcBounds = this._program.uniform('u_srcBounds');
+        this._uDstBounds = this._program.uniform('u_dstBounds');
+        this._uNearest = this._program.uniform('u_nearest');
+
+        this._program.bind();
+        gl.uniform1i(this._program.uniform('u_source'), 0);
+        this._program.unbind();
+
+        return this._program.valid;
+    }
 
     /**
      * Specializes this pass's initialization. This pass either requires blitFramebuffer support or creates screen-
@@ -165,25 +239,7 @@ export class BlitPass extends Initializable {
             this._ndcTriangleShared = true;
         }
 
-        /* Configure program-based blit. */
-
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
-        vert.initialize(require('./shaders/ndcvertices.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag');
-        frag.initialize(require('./shaders/blit.frag'));
-
-        this._program = new Program(this._context, 'BlitProgram');
-        this._program.initialize([vert, frag], false);
-
-        if (!this._ndcTriangle.initialized) {
-            this._ndcTriangle.initialize();
-        }
-        this._program.attribute('a_vertex', this._ndcTriangle.vertexLocation);
-        this._program.link();
-
-        this._program.bind();
-        gl.uniform1i(this._program.uniform('u_texture'), 0);
-        this._program.unbind();
+        this._filter = gl.NEAREST;
 
         return true;
     }
@@ -198,12 +254,6 @@ export class BlitPass extends Initializable {
             this._ndcTriangle.uninitialize();
         }
         this._program.uninitialize();
-
-        if (this._debugProgram) {
-            this._debugProgram.uninitialize();
-            this._uDebugMode = undefined;
-            this._uLinearize = undefined;
-        }
     }
 
     /**
@@ -216,17 +266,13 @@ export class BlitPass extends Initializable {
         logIf(!this._framebuffer || !this._framebuffer.valid, LogLevel.Warning,
             `valid framebuffer for blitting from expected, given ${this._framebuffer}`);
 
-        if (this._debug !== BlitPass.Debug.None) {
-            return this.programBlit(this._debugProgram!);
-        }
-
         const gl = this._context.gl;
         switch (this._readBuffer) {
             /* falls through */
             case gl.DEPTH_ATTACHMENT:
             case gl.STENCIL_ATTACHMENT:
             case gl.DEPTH_STENCIL_ATTACHMENT:
-                return this.programBlit(this._program);
+                return this.programBlit();
             default:
                 break;
         }
@@ -235,7 +281,7 @@ export class BlitPass extends Initializable {
         if (this._context.supportsBlitFramebuffer && this._enforceProgramBlit === false) {
             return this.functionBlit();
         }
-        this.programBlit(this._program);
+        this.programBlit();
     }
 
 
@@ -278,81 +324,37 @@ export class BlitPass extends Initializable {
     }
 
     /**
+     * Specifies the interpolation to be applied if the image is stretched. Must be GL_NEAREST or GL_LINEAR.
+     */
+    set filter(filter: GLenum) {
+        this._filter = filter;
+    }
+
+    /**
+     * Specify the bounds of the source rectangle within the read buffer of the read framebuffer.
+     * @param bounds - [srcX0, srcY0, srcX1, srcY1] as used in glBlitFramebuffer. If bounds is
+     * undefined, the full size of the source buffer (framebuffer) will be used.
+     */
+    set srcBounds(bounds: vec4 | undefined) {
+        this._srcBounds = bounds ? vec4.clone(bounds) : undefined;
+    }
+
+    /**
+     * Specify the bounds of the destination rectangle within the write buffer of the write framebuffer.
+     * @param bounds - [srcX0, srcY0, srcX1, srcY1] as used in glBlitFramebuffer. If bounds is
+     * undefined, the full size of the destination (target) buffer will be used.
+     */
+    set dstBounds(bounds: vec4 | undefined) {
+        this._dstBounds = bounds ? vec4.clone(bounds) : undefined;
+    }
+
+
+    /**
      * Specify whether or not experimental WebGL blit can be used if available.
      * @param enforce - If true, program based blit instead of WebGL experimental blit function will be used.
      */
     set enforceProgramBlit(enforce: boolean) {
         this._enforceProgramBlit = enforce;
-    }
-
-    /**
-     * Specify a debug mode for blitting @see {@link Blitpass.Debug}. If the debug mode is set to anything except
-     * `Debug.None` for the first time, a specialized debug program will be created, initialized, and used for blit.
-     */
-    set debug(mode: BlitPass.Debug) {
-        this.assertInitialized();
-        const gl = this._context.gl;
-
-        this._debug = mode;
-        if (this._debug === BlitPass.Debug.None) {
-            return;
-        }
-        if (this._debugProgram !== undefined) {
-            this._debugProgram!.bind();
-            gl.uniform1i(this._uDebugMode, this._debug);
-            return;
-        }
-
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (blit)');
-        vert.initialize(require('./shaders/ndcvertices.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit_debug.frag (blit)');
-        frag.initialize(require('./shaders/blit_debug.frag'));
-
-        this._debugProgram = new Program(this._context, 'BlitProgramDebug');
-        this._debugProgram.initialize([vert, frag]);
-
-        this._uDebugMode = this._debugProgram.uniform('u_mode');
-        this._uLinearize = this._debugProgram.uniform('u_linearize');
-
-        this._debugProgram.bind();
-        gl.uniform1i(this._debugProgram.uniform('u_texture'), 0);
-        gl.uniform1i(this._uDebugMode, this._debug);
-        gl.uniform2f(this._uLinearize, this._near, this._far);
-    }
-
-    /**
-     * Debug-feature: if linearized is enabled, depth buffer blitting will use this near value for linearization.
-     */
-    set near(near: GLfloat | undefined) {
-        this._near = near ? near : 0.0;
-        if (this._debugProgram) {
-            this._debugProgram.bind();
-            this._context.gl.uniform2f(this._uLinearize, this._near, this._far);
-        }
-    }
-
-    /**
-     * Debug-feature: if linearized is enabled, depth buffer blitting will use this far value for linearization.
-     */
-    set far(far: GLfloat | undefined) {
-        this._far = far ? far : 0.0;
-
-        if (this._debugProgram) {
-            this._debugProgram.bind();
-            this._context.gl.uniform2f(this._uLinearize, this._near, this._far);
-        }
-    }
-
-}
-
-export namespace BlitPass {
-
-    export enum Debug {
-        None,
-        Depth = 1,
-        DepthLinear = 2,
-        DepthPacked = 3,
-        DepthLinearPacked = 4,
     }
 
 }

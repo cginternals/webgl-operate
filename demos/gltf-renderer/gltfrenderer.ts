@@ -9,6 +9,7 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     ForwardSceneRenderPass,
     Framebuffer,
     Geometry,
@@ -17,11 +18,11 @@ import {
     GLTFPrimitive,
     Invalidate,
     Material,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
     Texture2D,
+    TextureCube,
     Wizard,
 } from 'webgl-operate';
 
@@ -47,6 +48,9 @@ export class GltfRenderer extends Renderer {
     protected _program: Program;
     protected _emptyTexture: Texture2D;
 
+    protected _specularEnvironment: TextureCube;
+    protected _brdfLUT: Texture2D;
+
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
     protected _uNormalMatrix: WebGLUniformLocation;
@@ -71,6 +75,9 @@ export class GltfRenderer extends Renderer {
     protected _uEmissiveFactor: WebGLUniformLocation;
     protected _uNormalScale: WebGLUniformLocation;
 
+    protected _uSpecularEnvironment: WebGLUniformLocation;
+    protected _uBRDFLookupTable: WebGLUniformLocation;
+
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
      * @param context - valid context to create the object for.
@@ -79,9 +86,7 @@ export class GltfRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         const gl = this._context.gl;
 
@@ -123,6 +128,9 @@ export class GltfRenderer extends Renderer {
         this._uEmissiveFactor = this._program.uniform('u_emissiveFactor');
         this._uNormalScale = this._program.uniform('u_normalScale');
 
+        this._uSpecularEnvironment = this._program.uniform('u_specularEnvironment');
+        this._uBRDFLookupTable = this._program.uniform('u_brdfLUT');
+
         /* Create and configure camera. */
 
         if (this._camera === undefined) {
@@ -136,7 +144,7 @@ export class GltfRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure forward pass. */
@@ -166,6 +174,11 @@ export class GltfRenderer extends Renderer {
             gl.uniform1i(this._uNormal, 2);
             gl.uniform1i(this._uOcclusion, 3);
             gl.uniform1i(this._uEmissive, 4);
+            gl.uniform1i(this._uSpecularEnvironment, 5);
+            gl.uniform1i(this._uBRDFLookupTable, 6);
+
+            this._specularEnvironment.bind(gl.TEXTURE5);
+            this._brdfLUT.bind(gl.TEXTURE6);
         };
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
             const primitive = geometry as GLTFPrimitive;
@@ -237,6 +250,7 @@ export class GltfRenderer extends Renderer {
         };
 
         this.loadAsset();
+        this.loadEnvironmentMap();
 
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
         assetSelect.onchange = (_) => {
@@ -301,6 +315,10 @@ export class GltfRenderer extends Renderer {
     }
 
     protected onFrame(frameNumber: number): void {
+        if (this.isLoading) {
+            return;
+        }
+
         const gl = this._context.gl;
 
         // TODO: proper handling of transparent materials in the loader
@@ -318,6 +336,7 @@ export class GltfRenderer extends Renderer {
      */
     protected loadAsset(): void {
         const assetSelect = window.document.getElementById('asset-select')! as HTMLSelectElement;
+        this.startLoading();
 
         const uri = assetSelect.value;
         this._forwardPass.scene = undefined;
@@ -326,8 +345,44 @@ export class GltfRenderer extends Renderer {
         this._loader.loadAsset(uri)
             .then(() => {
                 this._forwardPass.scene = this._loader.defaultScene;
+                this.finishLoading();
                 this._invalidate(true);
             });
+    }
+
+    /**
+     * Setup environment lighting
+     */
+    protected loadEnvironmentMap(): void {
+        const gl = this._context.gl;
+
+        this._brdfLUT = new Texture2D(this._context, 'BRDFLookUpTable');
+        this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
+        this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
+        this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
+        this._brdfLUT.fetch('../examples/data/imagebasedlighting/brdfLUT.png');
+
+        const internalFormatAndType = Wizard.queryInternalTextureFormat(
+            this._context, gl.RGBA, Wizard.Precision.byte);
+
+        this._specularEnvironment = new TextureCube(this._context, 'Cubemap');
+        this._specularEnvironment.initialize(512, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
+
+        const MIPMAP_LEVELS = 9;
+
+        this._specularEnvironment.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
+        this._specularEnvironment.levels(0, MIPMAP_LEVELS - 1);
+
+        for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
+            this._specularEnvironment.fetch({
+                positiveX: `../examples/data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `../examples/data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `../examples/data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `../examples/data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `../examples/data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `../examples/data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
+            }, mipLevel);
+        }
     }
 }
 
@@ -336,7 +391,7 @@ export class GltfDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: GltfRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: true });
         this._canvas.controller.multiFrameNumber = 1;
@@ -349,7 +404,7 @@ export class GltfDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

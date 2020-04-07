@@ -8,8 +8,8 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -108,7 +108,7 @@ class CubescapeRenderer extends Renderer {
     }
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider): boolean {
+        eventProvider: EventProvider): boolean {
         const gl = this._context.gl;
 
         context.enable(['ANGLE_instanced_arrays']);
@@ -154,7 +154,7 @@ class CubescapeRenderer extends Renderer {
             this._camera.far = 4.0;
         }
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
@@ -185,7 +185,7 @@ export class CubescapeDemo extends Demo {
     private _canvas: Canvas;
     private _renderer: CubescapeRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: true });
         this._canvas.controller.multiFrameNumber = 1;
@@ -198,7 +198,7 @@ export class CubescapeDemo extends Demo {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

@@ -13,6 +13,8 @@ import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
 import { Color } from './color';
 import { Context } from './context';
 import { Controller } from './controller';
+import { EyeGazeDataStreams } from './eyegazedatastream';
+import { EyeGazeEventProvider } from './eyegazeeventprovider';
 import { MouseEventProvider } from './mouseeventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
@@ -114,6 +116,9 @@ export class Canvas extends Resizable {
     /** @see {@link touchEventProvider} */
     protected _touchEventProvider: TouchEventProvider;
 
+    /** @see {@link eyeGazeEventProvider} */
+    protected _eyeGazeEventProvider: EyeGazeEventProvider;
+
     protected _lostContextExtension: WEBGL_lose_context | undefined;
 
 
@@ -158,8 +163,6 @@ export class Canvas extends Resizable {
 
         this.configureSizeAndScale(dataset);
 
-        this.configureContextLostAndRestore();
-
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
         if (dataset.clearColor) {
@@ -167,7 +170,8 @@ export class Canvas extends Resizable {
             logIf(dataClearColor === undefined, LogLevel.Warning,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
-        this._clearColor = dataClearColor ? new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
+        this._clearColor = dataClearColor ?
+            new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
         let dataFramePrecision = dataset.accumulationFormat ?
@@ -249,20 +253,6 @@ export class Canvas extends Resizable {
         this.onResize(); // invokes frameScaleNext and frameSizeNext
     }
 
-    /**
-     *
-     */
-    protected configureContextLostAndRestore(): void {
-        this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
-        this._element.addEventListener('webglcontextlost', (event) => {
-            event.preventDefault();
-            this.onContextLost();
-        }, false);
-        this._element.addEventListener('webglcontextrestored', (event) => {
-            this.onContextRestore();
-        }, false);
-    }
-
 
     /**
      * Convenience function that triggers the canvas size retrieval. The native width and height of the canvas dom
@@ -314,21 +304,6 @@ export class Canvas extends Resizable {
             /* Swapping here fixes flickering while resizing the canvas for safari. */
             this._renderer.swap();
         }
-    }
-
-    protected onContextLost(): void {
-        this._controller.pause();
-
-        if (this._renderer) {
-            this._renderer.discarded();
-        }
-    }
-
-    protected onContextRestore(): void {
-        const renderer = this._renderer;
-        this._controller.unpause();
-        this.unbind();
-        this.bind(renderer);
     }
 
     /**
@@ -386,7 +361,10 @@ export class Canvas extends Resizable {
          * method is assigned to the pipelines invalidation event.
          */
         this._renderer.initialize(this.context, (force) => this._controller.update(force),
-            this._mouseEventProvider /*, this._keyEventProvider */, this._touchEventProvider);
+            {
+                mouseEventProvider: this._mouseEventProvider, touchEventProvider: this._touchEventProvider,
+                eyeGazeEventProvider: this._eyeGazeEventProvider,
+            });
 
         this._renderer.frameSize = this._frameSize;
         this._renderer.clearColor = this._clearColor.rgba;
@@ -731,5 +709,19 @@ export class Canvas extends Resizable {
         }
 
         this._lostContextExtension.restoreContext();
+    }
+
+    /**
+     * Eye gaze event provider referring to the canvas element.
+     */
+    get eyeGazeEventProvider(): EyeGazeEventProvider {
+        return this._eyeGazeEventProvider;
+    }
+
+    /**
+     * Activates the eye gaze event provider referring to the canvas element.
+     */
+    public activateEyeGazeEventProvider(eyeGazeDataStreams: EyeGazeDataStreams, serverAddress: string): void {
+        this._eyeGazeEventProvider = new EyeGazeEventProvider(eyeGazeDataStreams, serverAddress);
     }
 }

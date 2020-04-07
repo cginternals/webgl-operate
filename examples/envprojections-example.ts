@@ -8,9 +8,9 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     Framebuffer,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
     Program,
@@ -49,9 +49,9 @@ class EnvironmentProjectionRenderer extends Renderer {
 
     protected onInitialize(context: Context,
         callback: Invalidate,
-        mouseEventProvider: MouseEventProvider | undefined): boolean {
+        eventProvider: EventProvider): boolean {
 
-        if (mouseEventProvider === undefined) {
+        if (eventProvider.mouseEventProvider === undefined) {
             auxiliaries.log(auxiliaries.LogLevel.Error, 'MouseEventProvider was not supplied.');
             return false;
         }
@@ -102,7 +102,7 @@ class EnvironmentProjectionRenderer extends Renderer {
             this._camera.far = 4.0;
         }
 
-        this._navigation = new Navigation(callback, mouseEventProvider!);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider!);
         this._navigation.camera = this._camera;
 
         gl.uniform2iv(this._uViewport, this._canvasSize);
@@ -138,6 +138,10 @@ class EnvironmentProjectionRenderer extends Renderer {
     }
 
     protected onFrame(/*frameNumber: number*/): void {
+        if (this.isLoading) {
+            return;
+        }
+
         const gl = this._context.gl;
 
         gl.viewport(0, 0, this._canvasSize[0], this._canvasSize[1]);
@@ -208,6 +212,8 @@ class EnvironmentProjectionRenderer extends Renderer {
     protected fetchTextures(): void {
         const gl = this._context.gl;
 
+        const promises = new Array();
+
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGB, Wizard.Precision.byte);
 
@@ -229,33 +235,41 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._equiRectangularMap = new Texture2D(this._context);
         this._equiRectangularMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._equiRectangularMap.fetch('data/equirectangular-map.jpg').then(() => {
-            this.setupTexture2D(this._equiRectangularMap, gl.TEXTURE1);
-        });
+        promises.push(
+            this._equiRectangularMap.fetch('data/equirectangular-map.jpg').then(() => {
+                this.setupTexture2D(this._equiRectangularMap, gl.TEXTURE1);
+            }));
 
 
         this._sphereMap = new Texture2D(this._context);
         this._sphereMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._sphereMap.fetch('data/sphere-map-ny.jpg').then(() => {
-            this.setupTexture2D(this._sphereMap, gl.TEXTURE2);
-        });
+        promises.push(
+            this._sphereMap.fetch('data/sphere-map-ny.jpg').then(() => {
+                this.setupTexture2D(this._sphereMap, gl.TEXTURE2);
+            }));
 
 
         this._polarMaps = new Array(2);
         this._polarMaps[0] = new Texture2D(this._context);
         this._polarMaps[0].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._polarMaps[0].fetch('data/paraboloid-map-py.jpg').then(() => {
-            this.setupTexture2D(this._polarMaps[0], gl.TEXTURE3);
-        });
+        promises.push(
+            this._polarMaps[0].fetch('data/paraboloid-map-py.jpg').then(() => {
+                this.setupTexture2D(this._polarMaps[0], gl.TEXTURE3);
+            }));
 
 
         this._polarMaps[1] = new Texture2D(this._context);
         this._polarMaps[1].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
-        this._polarMaps[1].fetch('data/paraboloid-map-ny.jpg').then(() => {
-            this.setupTexture2D(this._polarMaps[1], gl.TEXTURE4);
+        promises.push(
+            this._polarMaps[1].fetch('data/paraboloid-map-ny.jpg').then(() => {
+                this.setupTexture2D(this._polarMaps[1], gl.TEXTURE4);
+            }));
+
+        Promise.all(promises).then(() => {
+            this.finishLoading();
         });
     }
 }
@@ -265,7 +279,7 @@ export class EnvironmentProjectionExample extends Example {
     private _canvas: Canvas;
     private _renderer: EnvironmentProjectionRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -278,7 +292,7 @@ export class EnvironmentProjectionExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

@@ -1,14 +1,15 @@
 
-import { mat4, vec2, vec3 } from 'webgl-operate';
+import { mat4, vec2, vec3, vec4 } from 'webgl-operate';
 
 import {
     Camera,
     Canvas,
     Context,
     CuboidGeometry,
+    DebugPass,
     DefaultFramebuffer,
+    EventProvider,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     PlaneGeometry,
     Program,
@@ -43,11 +44,10 @@ class ShadowMapRenderer extends Renderer {
     protected _uModelS: WebGLUniformLocation;
 
     protected _shadowPass: ShadowPass;
+    protected _debugPass: DebugPass;
 
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         context.enable(['ANGLE_instanced_arrays', 'OES_standard_derivatives',
             'WEBGL_color_buffer_float', 'OES_texture_float', 'OES_texture_float_linear']);
@@ -67,7 +67,7 @@ class ShadowMapRenderer extends Renderer {
 
         this._plane = new PlaneGeometry(context, 'plane');
         this._plane.initialize();
-        this._plane.scale = vec2.fromValues(100, 100);
+        this._plane.scale = vec2.fromValues(5.0, 5.0);
 
         if (this._camera === undefined) {
             this._camera = new Camera();
@@ -80,10 +80,11 @@ class ShadowMapRenderer extends Renderer {
 
         if (this._light === undefined) {
             this._light = new Camera();
-            this._light.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._light.center = vec3.fromValues(0.0, 0.75, 0.0);
             this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
             this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
-            this._light.near = 3.0;
+            this._light.fovy = 30.0;
+            this._light.near = 4.0;
             this._light.far = 20.0;
         }
 
@@ -129,13 +130,26 @@ class ShadowMapRenderer extends Renderer {
         this._uModelS = this._shadowProgram.uniform('u_model');
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
 
         this._shadowPass = new ShadowPass(context);
         this._shadowPass.initialize(ShadowPass.ShadowMappingType.HardLinear,
             [1024, 1024], [1024, 1024]);
+
+
+        this._debugPass = new DebugPass(context);
+        this._debugPass.initialize();
+
+        this._debugPass.framebuffer = this._shadowPass.shadowMapFBO;
+        this._debugPass.readBuffer = gl.COLOR_ATTACHMENT0;
+
+        this._debugPass.target = this._defaultFBO;
+        this._debugPass.drawBuffer = gl.BACK;
+
+
+        this.finishLoading();
 
         return true;
     }
@@ -170,12 +184,22 @@ class ShadowMapRenderer extends Renderer {
         }
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
+
+            this._debugPass.dstBounds = vec4.fromValues(
+                this._canvasSize[0] * (1.0 - 0.187), this._canvasSize[1] * (1.0 - 0.187 * this._camera.aspect),
+                this._canvasSize[0] * (1.0 - 0.008), this._canvasSize[1] * (1.0 - 0.008 * this._camera.aspect));
         }
 
         if (this._altered.clearColor) {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        if (this._camera.altered) {
+            this._debugPass.far = this._camera.far;
+            this._debugPass.near = this._camera.near;
+        }
+
+        this._camera.altered = false;
         this._altered.reset();
     }
 
@@ -186,7 +210,6 @@ class ShadowMapRenderer extends Renderer {
             gl.enable(gl.DEPTH_TEST);
             this._shadowProgram.bind();
             this.drawCuboids(this._uModelS);
-            this.drawPlane(this._uModelS);
             this._shadowProgram.unbind();
             gl.disable(gl.DEPTH_TEST);
         });
@@ -208,7 +231,10 @@ class ShadowMapRenderer extends Renderer {
         this.drawCuboids(this._uModel);
 
         gl.uniform1i(this._uColored, Number(false));
-        this.drawPlane(this._uModel);
+
+        gl.uniformMatrix4fv(this._uModel, false, this._plane.transformation);
+        this._plane.bind();
+        this._plane.draw();
 
         this._program.unbind();
         this._shadowPass.shadowMapTexture.unbind();
@@ -218,7 +244,7 @@ class ShadowMapRenderer extends Renderer {
     }
 
     protected onSwap(): void {
-
+        this._debugPass.frame();
     }
 
     protected drawCuboids(model: WebGLUniformLocation): void {
@@ -239,11 +265,7 @@ class ShadowMapRenderer extends Renderer {
     }
 
     protected drawPlane(model: WebGLUniformLocation): void {
-        const gl = this._context.gl;
 
-        gl.uniformMatrix4fv(model, false, this._plane.transformation);
-        this._plane.bind();
-        this._plane.draw();
     }
 
 }
@@ -253,7 +275,7 @@ export class ShadowMapExample extends Example {
     private _canvas: Canvas;
     private _renderer: ShadowMapRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element);
         this._canvas.controller.multiFrameNumber = 1;
@@ -268,7 +290,7 @@ export class ShadowMapExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

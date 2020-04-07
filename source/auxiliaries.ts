@@ -84,13 +84,13 @@ namespace auxiliaries {
      * ```
      * @param statement - Result of an statement expected to be true.
      * @param verbosity - Verbosity of log level: user, developer, or module developer.
-     * @param message - Message to be passed to the error (if thrown).
+     * @param message - Message to be passed to the log (if verbosity high enough).
      */
-    export function log(verbosity: LogLevel, message: string): void {
+    export function log(verbosity: LogLevel, ...message: any[]): void {
         if (verbosity > logVerbosityThreshold) {
             return;
         }
-        console.log(`[${verbosity}] ${message}`);
+        console.log(`[${verbosity}]`, ...message);
     }
 
     /**
@@ -100,15 +100,14 @@ namespace auxiliaries {
      * ```
      * @param statement - Result of an statement expected to be true.
      * @param verbosity - Verbosity of log level: debug, info, warning, or error.
-     * @param message - Message to be passed to the error (if thrown).
+     * @param message - Message to be passed to the log (if thrown and verbosity high enough).
      */
-    export function logIf(statement: boolean, verbosity: LogLevel, message: string): void {
+    export function logIf(statement: boolean, verbosity: LogLevel, ...message: any[]): void {
         if (!statement) {
             return;
         }
-        log(verbosity, message);
+        log(verbosity, ...message);
     }
-
 
     /**
      * Starts performance measure using the performance API. This call initiates a performance mark and should be
@@ -207,6 +206,29 @@ namespace auxiliaries {
      */
     export function rand(min: number = 0.0, max: number = 1.0): number {
         return Math.random() * (max - min) + min;
+    }
+
+    /**
+     * Tests with binary operations if the number is power of two.
+     * @param x The number to test.
+     */
+    export function isPowerOfTwo(x: number): boolean {
+        return Number.isInteger(x) && Number.isInteger(Math.log2(x));
+    }
+
+    /**
+     * Computes the next upper power of two for the given number. Math is based on
+     * {@link https://graphics.stanford.edu/~seander/bithacks.html}.
+     * @param x - Number to compute next upper power of two for.
+     */
+    export function upperPowerOfTwo(x: number): number {
+        --x;
+        x |= x >> 1;
+        x |= x >> 2;
+        x |= x >> 4;
+        x |= x >> 8;
+        x |= x >> 16;
+        return ++x;
     }
 
     /**
