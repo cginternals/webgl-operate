@@ -163,6 +163,8 @@ export class Canvas extends Resizable {
 
         this.configureSizeAndScale(dataset);
 
+        this.configureContextLostAndRestore();
+
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
         if (dataset.clearColor) {
@@ -251,6 +253,36 @@ export class Canvas extends Resizable {
         this._frameSize = dataFrameSize ? tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
 
         this.onResize(); // invokes frameScaleNext and frameSizeNext
+    }
+
+    /**
+     *
+     */
+    protected configureContextLostAndRestore(): void {
+        this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
+        this._element.addEventListener("webglcontextlost", (event) => {
+            event.preventDefault();
+            this.onContextLost();
+        }, false);
+        this._element.addEventListener("webglcontextrestored", (event) => {
+            this.onContextRestore();
+        }, false);
+    }
+
+    protected onContextLost(): void {
+        this._controller.pause();
+
+        if (this._renderer) {
+            this._renderer.discard();
+        }
+    }
+
+    protected onContextRestore(): void {
+        const renderer = this._renderer;
+        this.unbind();
+        this.bind(renderer);
+        this._controller.unpause();
+        this._controller.update(true);
     }
 
 

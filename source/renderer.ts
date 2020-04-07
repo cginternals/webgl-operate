@@ -274,7 +274,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * overriding this function.
      */
     @Initializable.discard()
-    public discarded(): void {
+    public discard(): void {
         this.onDiscarded();
     }
 
