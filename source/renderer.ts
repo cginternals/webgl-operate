@@ -270,7 +270,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
 
     /**
-     * Should discard all assets and uninitialize all stages. `super.discarded()` should always be call first when
+     * Should discard all assets and uninitialize all stages. `super.discarded()` should always be called first when
      * overriding this function.
      */
     @Initializable.discard()
