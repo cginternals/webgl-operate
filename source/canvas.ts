@@ -149,6 +149,10 @@ export class Canvas extends Resizable {
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
 
+        this._element.addEventListener("webglcontextcreationerror", (e: WebGLContextEvent) => {
+            console.log(e.statusMessage || "Unknown error");
+        }, false);
+
         /* Register element for style mutation changes to invoke resize events. */
         this.observe(this._element);
 
@@ -270,6 +274,7 @@ export class Canvas extends Resizable {
     }
 
     protected onContextLost(): void {
+        log(LogLevel.Warning, `WebGL Context lost. Discarding renderer...`);
         this._controller.pause();
 
         if (this._renderer) {
@@ -278,11 +283,26 @@ export class Canvas extends Resizable {
     }
 
     protected onContextRestore(): void {
+        log(LogLevel.Warning, `WebGL Context restored. Reinitializing renderer...`);
         const renderer = this._renderer;
         this.unbind();
         this.bind(renderer);
         this._controller.unpause();
         this._controller.update(true);
+
+        /*
+        *  Dirtiest force of redraw that is required for Firefox.
+        *  More subtle redraw strategies seems to not be working for my Firefox 75.0
+        *  This results in blank flashes for one frame, but on other browsers this is
+        *  the behavior without redraw any way so we can perform this code on any system.
+        *
+        *  TODO: need to check for mobile, though.
+        */
+        const formerVisibility = this._element.style.visibility;
+        this._element.style.visibility = 'hidden';
+        this._element.offsetHeight;
+        this._element.style.visibility = formerVisibility;
+        /* */
     }
 
 
