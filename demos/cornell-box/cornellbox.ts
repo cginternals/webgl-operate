@@ -182,8 +182,11 @@ export class CornellBoxRenderer extends Renderer {
     }
 
     protected onSwap(): void {
-        this._blit.framebuffer = this._accumulate.framebuffer ?
-            this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
+        if (this._accumulate.framebuffer) {
+            this._blit.framebuffer = this._accumulate.framebuffer;
+        } else {
+            this._blit.framebuffer = this._intermediateFBO;
+        }
         this._blit.frame();
     }
 
