@@ -149,8 +149,8 @@ export class Canvas extends Resizable {
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
 
-        this._element.addEventListener("webglcontextcreationerror", (e: WebGLContextEvent) => {
-            console.log(e.statusMessage || "Unknown error");
+        this._element.addEventListener('webglcontextcreationerror', (e: WebGLContextEvent) => {
+            console.log(e.statusMessage || 'Unknown error');
         }, false);
 
         /* Register element for style mutation changes to invoke resize events. */
@@ -264,17 +264,17 @@ export class Canvas extends Resizable {
      */
     protected configureContextLostAndRestore(): void {
         this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
-        this._element.addEventListener("webglcontextlost", (event) => {
+        this._element.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
             this.onContextLost();
         }, false);
-        this._element.addEventListener("webglcontextrestored", (event) => {
+        this._element.addEventListener('webglcontextrestored', (event) => {
             this.onContextRestore();
         }, false);
     }
 
     protected onContextLost(): void {
-        log(LogLevel.Warning, `WebGL Context lost. Discarding renderer...`);
+        log(LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
         this._controller.pause();
 
         if (this._renderer) {
@@ -283,7 +283,7 @@ export class Canvas extends Resizable {
     }
 
     protected onContextRestore(): void {
-        log(LogLevel.Warning, `WebGL Context restored. Reinitializing renderer...`);
+        log(LogLevel.Warning, 'WebGL Context restored. Reinitializing renderer...');
         const renderer = this._renderer;
         this.unbind();
         this.bind(renderer);
@@ -300,6 +300,7 @@ export class Canvas extends Resizable {
         */
         const formerVisibility = this._element.style.visibility;
         this._element.style.visibility = 'hidden';
+        // tslint:disable-next-line:no-unused-expression
         this._element.offsetHeight;
         this._element.style.visibility = formerVisibility;
         /* */
