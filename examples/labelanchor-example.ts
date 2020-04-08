@@ -63,7 +63,9 @@ class LabelAnchorRenderer extends Renderer {
 
         /* Create and configure test navigation. */
 
-        this._camera = new Camera();
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+        }
 
         /* Create and configure label pass. */
 

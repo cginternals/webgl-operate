@@ -168,6 +168,7 @@ export class Canvas extends Resizable {
         this.configureSizeAndScale(dataset);
 
         this.configureContextLostAndRestore();
+        this.configureContextLostAndRestoreEmulation();
 
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
@@ -260,10 +261,10 @@ export class Canvas extends Resizable {
     }
 
     /**
-     *
+     * Register 'webglcontextlost' and 'webglcontextrestored' to handle lost and restoration
+     * of WebGL contexts.
      */
     protected configureContextLostAndRestore(): void {
-        this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
         this._element.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
             this.onContextLost();
@@ -273,6 +274,18 @@ export class Canvas extends Resizable {
         }, false);
     }
 
+    /**
+     * Obtain the WEBGL_lose_context extension, store it with this canvas instance and use it
+     * for emulation of the context lost and restore feature.
+     */
+    protected configureContextLostAndRestoreEmulation(): void {
+        this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
+    }
+
+    /**
+     * Handle a WebGL context lost event.
+     * This is for both natural and emulated lost contexts.
+     */
     protected onContextLost(): void {
         log(LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
         this._controller.pause();
@@ -282,6 +295,10 @@ export class Canvas extends Resizable {
         }
     }
 
+    /**
+     * Handle a WebGL context restore event.
+     * This is for both natural and emulated restored contexts.
+     */
     protected onContextRestore(): void {
         log(LogLevel.Warning, 'WebGL Context restored. Reinitializing renderer...');
         const renderer = this._renderer;
@@ -305,7 +322,6 @@ export class Canvas extends Resizable {
         this._element.style.visibility = formerVisibility;
         /* */
     }
-
 
     /**
      * Convenience function that triggers the canvas size retrieval. The native width and height of the canvas dom
@@ -748,6 +764,11 @@ export class Canvas extends Resizable {
         return this._touchEventProvider;
     }
 
+    /**
+     * Emulate a WebGL context loss.
+     * This functionality requires to have configureContextLostAndRestoreEmulation() called before.
+     * This function is usually called within the constructor of this canvas.
+     */
     public testLoseContext(): void {
         if (this._lostContextExtension === undefined) {
             return;
@@ -756,6 +777,11 @@ export class Canvas extends Resizable {
         this._lostContextExtension.loseContext();
     }
 
+    /**
+     * Emulate a WebGL context restore.
+     * This functionality requires to have configureContextLostAndRestoreEmulation() called before.
+     * This function is usually called within the constructor of this canvas.
+     */
     public testRestoreContext(): void {
         if (this._lostContextExtension === undefined) {
             return;

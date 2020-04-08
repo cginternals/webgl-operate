@@ -233,7 +233,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
-     * that are shared between multiple stages. Note that `super.initialize()` should always be call first when
+     * that are shared between multiple stages. Note that `super.initialize()` should always be called first when
      * 'overriding' this function.
      *
      * Note: the context handle is stored in a property, but should be passed to the stages by specializing
@@ -260,7 +260,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     }
 
     /**
-     * Should release all assets and uninitialize all stages. `super.uninitialize()` should always be call first when
+     * Should release all assets and uninitialize all stages. `super.uninitialize()` should always be called first when
      * overriding this function.
      */
     @Initializable.uninitialize()

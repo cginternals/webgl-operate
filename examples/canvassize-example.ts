@@ -130,8 +130,9 @@ void main(void)
     }
 
     protected onDiscarded(): void {
-        // TODO: implement discard?
+        this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
     }
 
     /**

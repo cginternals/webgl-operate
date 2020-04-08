@@ -238,7 +238,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
         this._labelPass.labels = [this._labelSize
             , this._labelLeft, this._labelRight, this._labelMiddle, this._labelCustom];
 
-        this._interval = setInterval(() => {
+        this._interval = window.setInterval(() => {
             if (!this.initialized) {
                 return;
             }
@@ -253,7 +253,7 @@ and warm within me, that it might be the mirror of my soul, as my soul is the mi
             this._labelCustom.ellipsis = '.'.repeat(Math.floor(Math.sin(performance.now() * 0.001) * 4.0) + 5);
 
             this.invalidate();
-        }, 1000.0 / 60.0) as unknown as number;
+        }, 1000.0 / 60.0);
 
     }
 
