@@ -360,6 +360,39 @@ describe('UnifiedBuffer update', () => {
     });
 });
 
+describe('UnifiedBuffer mergeSubDataRanges', () => {
+
+    it('should merge all ranges within threshold', () => {
+        const buffer = createUsableUnifiedBuffer(32, 0);
+
+        buffer.subData(0, new Uint8Array(8).fill(1));
+        buffer.subData(16, new Uint8Array(8).fill(2));
+        buffer.subData(30, new Uint8Array(2).fill(3));
+
+        buffer.mergeThreshold = 8;
+        buffer.mergeSubDataRanges();
+
+        buffer.update();
+
+        expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(2);
+    });
+
+    it('should merge all ranges if threshold == -1', () => {
+        const buffer = createUsableUnifiedBuffer(32, 0);
+
+        buffer.subData(0, new Uint8Array(8).fill(1));
+        buffer.subData(16, new Uint8Array(8).fill(2));
+        buffer.subData(30, new Uint8Array(2).fill(3));
+
+        buffer.mergeThreshold = -1;
+        buffer.mergeSubDataRanges();
+
+        buffer.update();
+
+        expect(buffer._gpuBuffer.subDataCalls.length).to.be.equal(1);
+    });
+});
+
 function createUsableUnifiedBuffer(size: number, mergeThreshold = 0): UnifiedBufferMock {
     const context = new ContextMock();
     const buffer = new UnifiedBufferMock(context as Context, 32, mergeThreshold);
