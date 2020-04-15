@@ -49,7 +49,11 @@ export class UnifiedBuffer extends Initializable {
     protected _cpuBuffer: ArrayBuffer;
     protected _gpuBuffer: Buffer;
     protected _updates = new Array<Update>();
+    
+    /** @see {@link usage} */
     protected _usage: GLenum;
+    
+    /** @see {@link mergeThreshold} */
     protected _mergeThreshold: number;
 
     /**
