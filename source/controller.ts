@@ -204,7 +204,10 @@ export class Controller {
         }
 
         if (source === Controller.RequestType.Frame && this._frameNumber === 1) {
-            this.startWaitMultiFrame();
+            if (this._timeoutID === undefined) {
+                this.startWaitMultiFrame();
+            }
+
             this._animationFrameID = 0;
             return;
         }
