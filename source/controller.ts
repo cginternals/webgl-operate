@@ -122,7 +122,6 @@ export class Controller {
      * a new multi frame.
      */
     protected _timeoutID: number | undefined;
-    protected _timeoutFinished = true;
 
     /**
      * Stores the controller's pause state.
@@ -186,13 +185,13 @@ export class Controller {
     protected _force = false;
     protected _multiFrameDelay = 500;
 
-    protected request(): void {
+    protected request(source: Controller.RequestType = Controller.RequestType.Frame): void {
         const force = this._force;
         this._force = false;
-        this._animationFrameID = window.requestAnimationFrame(() => this.invoke(force));
+        this._animationFrameID = window.requestAnimationFrame(() => this.invoke(force, source));
     }
 
-    protected invoke(force: boolean): void {
+    protected invoke(force: boolean, source: Controller.RequestType): void {
         if (this._invalidated) {
             this._invalidated = false;
 
@@ -204,19 +203,10 @@ export class Controller {
             }
         }
 
-        if (this._frameNumber === 1) {
-            if (this._timeoutID !== undefined) {
-                if (this._timeoutFinished) {
-                    this._timeoutID = undefined;
-                } else {
-                    this._animationFrameID = 0;
-                    return;
-                }
-            } else {
-                this._animationFrameID = 0;
-                this.startWaitMultiFrame();
-                return;
-            }
+        if (source === Controller.RequestType.Frame && this._frameNumber === 1) {
+            this.startWaitMultiFrame();
+            this._animationFrameID = 0;
+            return;
         }
 
         if (this._frameNumber >= this._multiFrameNumber) {
@@ -313,10 +303,9 @@ export class Controller {
 
     protected startWaitMultiFrame(): void {
         const startMultiFrame = () => {
-            this._timeoutFinished = true;
-            this.request();
+            this.request(Controller.RequestType.MultiFrame);
+            this._timeoutID = undefined;
         };
-        this._timeoutFinished = false;
         this._timeoutID = window.setTimeout(startMultiFrame, this._multiFrameDelay);
     }
 
@@ -324,7 +313,6 @@ export class Controller {
         if (this._timeoutID !== undefined) {
             window.clearTimeout(this._timeoutID);
             this._timeoutID = undefined;
-            this._timeoutFinished = true;
         }
     }
 
@@ -710,6 +698,6 @@ export class Controller {
 
 export namespace Controller {
 
-    export enum RequestType { Update, NonOptionalUpdate, Prepare, Frame }
+    export enum RequestType { Frame, MultiFrame }
 
 }
