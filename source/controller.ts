@@ -100,8 +100,8 @@ export class Controller {
     protected _frameNumberSubject = new ReplaySubject<number>(1);
 
 
-    // /** @see {@link multiFrameDelay} */
-    // protected _multiFrameDelay = 0;
+    /** @see {@link multiFrameDelay} */
+    protected _multiFrameDelay = 0;
     // protected _delayedRequestTimeout: number | undefined;
 
 
@@ -183,20 +183,19 @@ export class Controller {
 
     protected _invalidated = false;
     protected _force = false;
-    protected _multiFrameDelay = 500;
+
 
     protected request(source: Controller.RequestType = Controller.RequestType.Frame): void {
-        const force = this._force;
-        this._force = false;
-        this._animationFrameID = window.requestAnimationFrame(() => this.invoke(force, source));
+        this._animationFrameID = window.requestAnimationFrame(() => this.invoke(source));
     }
 
-    protected invoke(force: boolean, source: Controller.RequestType): void {
+    protected invoke(source: Controller.RequestType): void {
         if (this._invalidated) {
             this._invalidated = false;
 
             const redraw = this.invokeUpdate();
-            if (redraw || force) {
+            if (redraw || this._force) {
+                this._force = false;
                 this.resetFrameNumber();
                 this.cancelWaitMultiFrame();
                 this.invokePrepare();
@@ -222,6 +221,10 @@ export class Controller {
         this.request();
     }
 
+    /**
+     * Actual invocation of the controllable's update method. Returns true if multi frame rendering should be restarted,
+     * false otherwise.
+     */
     protected invokeUpdate(): boolean {
         logIf(Controller._debug, LogLevel.Debug, `c invoke update     | ` +
             `pending: '${this._animationFrameID}', mfnum: ${this._multiFrameNumber}`);
@@ -418,13 +421,6 @@ export class Controller {
         }
     }
 
-    /* prepare(): void {
-        if (this.reset()) {
-            return;
-        }
-        this.request(Controller.RequestType.Prepare);
-    } */
-
 
     /**
      * Block implicit updates, e.g., caused by various setters. This can be used to reconfigure the controller without
@@ -585,27 +581,26 @@ export class Controller {
     }
 
 
-    // /**
-    //  * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
-    //  * after an update.
-    //  * @param multiFrameDelay - A multi-frame delay in milliseconds.
-    //  */
+    /**
+     * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
+     * after an update.
+     * @param multiFrameDelay - A multi-frame delay in milliseconds.
+     */
+    set multiFrameDelay(multiFrameDelay: number) {
+        const value: number = Math.max(0, multiFrameDelay);
+        if (value === this._multiFrameDelay) {
+            return;
+        }
+        this._multiFrameDelay = value;
+    }
 
-    // set multiFrameDelay(multiFrameDelay: number) {
-    //     const value: number = Math.max(0, multiFrameDelay);
-    //     if (value === this._multiFrameDelay) {
-    //         return;
-    //     }
-    //     this._multiFrameDelay = value;
-    // }
-
-    // /**
-    //  * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
-    //  * @returns - The current multi-frame delay in milliseconds.
-    //  */
-    // get multiFrameDelay(): number {
-    //     return this._multiFrameDelay;
-    // }
+    /**
+     * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
+     * @returns - The current multi-frame delay in milliseconds.
+     */
+    get multiFrameDelay(): number {
+        return this._multiFrameDelay;
+    }
 
 
     /**
