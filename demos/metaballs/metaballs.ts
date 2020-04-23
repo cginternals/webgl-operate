@@ -29,7 +29,7 @@ import { Demo } from '../demo';
 
 export class MetaballsRenderer extends Renderer {
 
-    protected _uViewProjection: WebGLUniformLocation;
+    protected _uInverseViewProjection: WebGLUniformLocation;
     protected _camera: Camera;
     protected _navigation: Navigation;
 
@@ -83,10 +83,8 @@ export class MetaballsRenderer extends Renderer {
         this._metaballColorsTexture.bind(gl.TEXTURE1);
         this._lightsTexture.bind(gl.TEXTURE2);
         this._cubeMap.bind(gl.TEXTURE3);
-        //const metaball = vec3.fromValues(0.0, -0.5, 0.9);
-        //const output = vec3.create();
-        console.log(this._camera.viewProjection);
-        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
+        console.log(this._camera.viewProjectionInverse);
+        gl.uniformMatrix4fv(this._uInverseViewProjection, gl.GL_FALSE, this._camera.viewProjectionInverse);
 
         // render geometry
         this._ndcTriangle.bind();
@@ -130,7 +128,7 @@ export class MetaballsRenderer extends Renderer {
         this.createCubeMapTexture();
 
 
-        this._uViewProjection = this._program.uniform('u_viewProjection');
+        this._uInverseViewProjection = this._program.uniform('u_inverseViewProjection');
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
@@ -138,6 +136,7 @@ export class MetaballsRenderer extends Renderer {
         this._camera.near = 1.0;
         this._camera.far = 8.0;
         this._camera.far = 8.0;
+
 
         this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;

@@ -10,7 +10,6 @@ precision lowp float;
     layout(location = 0) out vec4 fragColor;
 #endif
 
-uniform mat4 u_viewProjection;
 
 uniform sampler2D u_metaballsTexture;
 uniform sampler2D u_metaballColorsTexture;
@@ -23,7 +22,9 @@ uniform int u_lightsTextureSize;
 uniform samplerCube u_cubemap;
 
 
-varying vec2 v_uv;
+varying vec4 fragmentPosition;
+varying vec4 fragmentRayDirection;
+
 
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.5
@@ -34,6 +35,9 @@ varying vec2 v_uv;
 # define AMBIENT_ILLUMINATION 0.3
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
+# define REFRACTION_ANGLE 0.3
+# define REFLECTION_INTENSITY 0.25
+# define REFRACTION_INTENSITY 0.25
 
 
 struct MetaBall {
@@ -87,106 +91,145 @@ float distFunc(MetaBall metaball, vec4 rayPosition) {
 }
 
 
-FragmentValues rayMarch(vec4 rayPosition, vec4 rayDirection) {
-    FragmentValues fragmentValues;
-    float stepWidth = 0.1;
-    bool alreadyPassedThreshold = false;
-    float marchSign = 1.0;
-    bool finishedSearching = false;
-    for (float marchDistance = 0.0; marchDistance < 1.0 && !finishedSearching; marchDistance += stepWidth * marchSign) {
+FragmentValues calculateEnergyAndOtherFragmentValues(vec4 currentRayPosition) {
     FragmentValues currentFragmentValues;
-        currentFragmentValues.normal = vec4(0.0);
-        currentFragmentValues.energy = 0.0;
-        vec4 currentRayPosition = rayPosition + vec4(rayDirection.xyz * marchDistance, 0.0);
+    currentFragmentValues.normal = vec4(0.0);
+    currentFragmentValues.energy = 0.0;
+    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
 
-        for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
+        MetaBall currentMetaball = getMetaball(metaballIndex);
+        float currentEnergy = distFunc(currentMetaball, currentRayPosition);
+        currentFragmentValues.energy += currentEnergy;
+        vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
+        currentFragmentValues.normal += currentNormal * currentEnergy;
+        currentFragmentValues.color += currentMetaball.color * currentEnergy;
+    }
+    currentFragmentValues.rayPosition = currentRayPosition;
+    return currentFragmentValues;
+}
 
-            MetaBall currentMetaball = getMetaball(metaballIndex);
-            float currentEnergy = distFunc(currentMetaball, currentRayPosition);
-            currentFragmentValues.energy += currentEnergy;
-            vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
-            currentFragmentValues.normal += currentNormal * currentEnergy;
-            currentFragmentValues.color += currentMetaball.color * currentEnergy;
-        }
-        bool currentFragmentPassedThreshold = currentFragmentValues.energy > THRESHOLD;
+float calculateEnergy(vec4 currentRayPosition) {
+    float energy = 0.0;
+    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
+        MetaBall currentMetaball = getMetaball(metaballIndex);
+        energy += distFunc(currentMetaball, currentRayPosition);
+    }
+    return energy;
+}
+
+vec2 calculateEnergyAndDerivative(vec4 rayPosition, vec4 rayDirection, float marchDistance, float derivativeDistance) {
+    derivativeDistance = 0.00000000001;
+    float energy = 0.0;
+    float fartherEnergy = 0.0;
+    vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
+    vec4 currentFartherRayPosition = rayPosition + rayDirection * (marchDistance + derivativeDistance);
+    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
+        MetaBall currentMetaball = getMetaball(metaballIndex);
+        energy += distFunc(currentMetaball, currentRayPosition);
+        fartherEnergy += distFunc(currentMetaball, currentFartherRayPosition);
+    }
+    float derivativeValue = (fartherEnergy - energy) / derivativeDistance;
+    return vec2(energy, derivativeValue);
+}
+
+FragmentValues newtonMethod(vec4 rayPosition, vec4 rayDirection, float marchDistance, int numberOfNewtonIterations)
+{
+    vec2 energyFunctionAndDerivativeVal = vec2(0.0);
+    float derivativeDistance = 0.00000001;
+    float oldMarchDistance;
+    for (int i = 0; i < numberOfNewtonIterations; i++)
+    //while (!(energyFunctionAndDerivativeVal[0] > THRESHOLD  - 0.001 && energyFunctionAndDerivativeVal[0] < THRESHOLD + 0.001 ))
+    {
+        energyFunctionAndDerivativeVal = calculateEnergyAndDerivative(rayPosition, rayDirection, marchDistance, derivativeDistance) - THRESHOLD;
+        oldMarchDistance = marchDistance;
+        marchDistance = marchDistance - (energyFunctionAndDerivativeVal[0] / energyFunctionAndDerivativeVal[1]);
+        derivativeDistance = abs((oldMarchDistance - marchDistance) * 0.0001);
+    }
+    vec4 finalRayPositionAndEnergy = rayPosition + rayDirection * marchDistance;
+    FragmentValues finalFragmentValues = calculateEnergyAndOtherFragmentValues(finalRayPositionAndEnergy);
+    finalFragmentValues.energy = finalFragmentValues.energy > THRESHOLD ? finalFragmentValues.energy : 0.51;
+    return finalFragmentValues;
+}
+
+FragmentValues rayMarchWithFragmentValues(vec4 rayPosition, vec4 rayDirection, float stepWidth, float initialMarchDistance, int numberOfNewtonIterations) {
+    FragmentValues fragmentValues;
+    // TODO stepWitdth as parameter.
+    for (float marchDistance = initialMarchDistance; marchDistance < 1.0; marchDistance += stepWidth) {
+        vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
+        float energy = calculateEnergy(currentRayPosition);
+        bool currentFragmentPassedThreshold = energy > THRESHOLD;
         if (currentFragmentPassedThreshold) {
-            currentFragmentValues.rayPosition = currentRayPosition;
-            fragmentValues = currentFragmentValues;
-            alreadyPassedThreshold = true;
+            return newtonMethod(rayPosition, rayDirection, marchDistance, numberOfNewtonIterations);
         }
-        stepWidth = alreadyPassedThreshold ? stepWidth / 2.0 : stepWidth;
-        marchSign = alreadyPassedThreshold && currentFragmentPassedThreshold ? -1.0 : 1.0;
-        finishedSearching = stepWidth < STEP_THRESHOLD;
     }
     return fragmentValues;
 }
 
-/*FragmentValues rayMarch(vec4 rayPosition, vec4 rayDirection) {
-    for (float marchDistance = 0.0; marchDistance < 1.0; marchDistance += 0.01) {
-        FragmentValues currentFragmentValues;
-        currentFragmentValues.energy = 0.0;
-        vec4 currentRayPosition = rayPosition + vec4(rayDirection.xyz * marchDistance, 0.0);
-
-        for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
-
-            MetaBall currentMetaball = getMetaball(metaballIndex);
-            float currentEnergy = distFunc(currentMetaball, currentRayPosition);
-            currentFragmentValues.energy += currentEnergy;
-            vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
-            currentFragmentValues.normal += currentNormal * currentEnergy;
-        }
-        if(currentFragmentValues.energy > THRESHOLD) {
-            currentFragmentValues.rayPosition = currentRayPosition;
-            return currentFragmentValues;
+bool rayMarchHitMetaball(vec4 rayPosition, vec4 rayDirection, float stepWidth, float initialMarchDistance) {
+    FragmentValues fragmentValues;
+    // TODO stepWitdth as parameter.
+    for (float marchDistance = initialMarchDistance; marchDistance < 1.0; marchDistance += stepWidth) {
+        vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
+        float energy = calculateEnergy(currentRayPosition);
+        bool currentFragmentPassedThreshold = energy > THRESHOLD;
+        if (currentFragmentPassedThreshold) {
+            return true;
         }
     }
-    FragmentValues fragmentValues;
-    return fragmentValues;
-}*/
+    return false;
+}
 
 float calculateIllumination(FragmentValues fragmentValues) {
     // Phong shading
     float illumination = AMBIENT_ILLUMINATION;
     for (int lightIndex = 0; lightIndex < u_lightsTextureSize; lightIndex++) {
         PointLight pointLight = getPointLight(lightIndex);
-        vec4 lightDirection = normalize(pointLight.position - fragmentValues.rayPosition);
-        vec4 reflectDir = reflect(-lightDirection, fragmentValues.normal);
+        vec4 lightDirection = pointLight.position - fragmentValues.rayPosition;
+        // TODO is this neccesary?
+        bool hitMetaballBetweenLight = rayMarchHitMetaball(fragmentValues.rayPosition, lightDirection, 0.1, 0.011);
+        if (!hitMetaballBetweenLight) {
+            vec4 lightDirectionNormalized = normalize(lightDirection);
+            vec4 reflectDir = reflect(-lightDirectionNormalized, fragmentValues.normal);
 
-        float diffuse = max(dot(fragmentValues.normal, lightDirection), 0.0);
+            float diffuse = max(dot(fragmentValues.normal, lightDirectionNormalized), 0.0);
 
-        float specularAngle = max(dot(reflectDir, fragmentValues.normal), 0.0);
-        float specular = pow(specularAngle, pointLight.shininess);
+            float specularAngle = max(dot(reflectDir, fragmentValues.normal), 0.0);
+            float specular = pow(specularAngle, pointLight.shininess);
 
-        illumination += DIFFUSE_ILLUMINATION * diffuse;
-        illumination += SPECULAR_ILLUMINATION * specular;
+            illumination += DIFFUSE_ILLUMINATION * diffuse;
+            illumination += SPECULAR_ILLUMINATION * specular;
+        }
     }
     return illumination;
 }
 
-void main(void)
+FragmentValues fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection)
 {
-    // Compute the color
-    /*vec4 fragmentPosition = u_viewProjection * vec4(v_uv, 0.0, 1.0);
-    fragmentPosition.w = 1.0;
-    vec4 fragmentRayDirection = u_viewProjection * vec4(0.0, 0.0, 1.0, 1.0);
-    fragColor = fragmentRayDirection == vec4(0.0, 0.0, 1.0, 1.0) ? backgroundColor : metaballColor;
-    fragColor = fragmentPosition;
-    /*if (distance(fragmentPosition, vec4(0.0, 0.0, 0.0, 1.0)) > distance(vec4(v_uv, 0.0, 1.0), vec4(0.0, 0.0, 0.0, 1.0)))
-    {
-        fragColor = metaballColor;
-    }*/
-    //fragColor = vec4(v_uv, 0.0, 1.0);*/
-    vec4 fragmentPosition = vec4(v_uv, 0.0, 1.0);
-    vec4 fragmentRayDirection = vec4(0.0, 0.0, 1.0, 1.0);
-    FragmentValues fragmentValues = rayMarch(fragmentPosition, fragmentRayDirection);
+    FragmentValues fragmentValues = rayMarchWithFragmentValues(rayPosition, rayDirection, 0.001, 0.01, 0);
     fragmentValues.normal = normalize(fragmentValues.normal);
 
     float illumination = 1.0;
     if (fragmentValues.energy > THRESHOLD) {
         illumination = calculateIllumination(fragmentValues);
     }
-    vec4 envMap = texture(u_cubemap, vec3(normalize(abs(v_uv)), 1.0));
-    fragColor = fragmentValues.energy > THRESHOLD ? mix(envMap, vec4((fragmentValues.color * 2.0) * illumination, 1.0), METABALL_TRANSPARENCY) : envMap;
+    vec4 texturePositon = fragmentPosition + fragmentRayDirection;
+    vec4 envMap = texture(u_cubemap, texturePositon.xyz);
+    fragmentValues.color = fragmentValues.energy > THRESHOLD ? mix(envMap.xyz, (fragmentValues.color * 2.0) * illumination, METABALL_TRANSPARENCY) : envMap.xyz;
+    return fragmentValues;
+}
+
+void main(void)
+{
+    // Compute the color
+    FragmentValues fragmentValues = fullRayMarchWithLightCalculation(fragmentPosition, fragmentRayDirection);
+    vec4 reflectionDir = reflect(normalize(fragmentRayDirection), fragmentValues.normal);
+    FragmentValues reflectionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, reflectionDir);
+    vec4 refractionDir = refract(normalize(fragmentRayDirection), fragmentValues.normal, REFRACTION_ANGLE);
+    FragmentValues refractionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, refractionDir);
+    vec4 finalColor = vec4(fragmentValues.color * (1.0 - REFLECTION_INTENSITY - REFRACTION_INTENSITY) +
+                            reflectionValues.color * REFLECTION_INTENSITY +
+                            refractionValues.color * REFRACTION_INTENSITY, 1.0);
+    fragColor = finalColor;
 }
 
 // NOTE for compilation errors look at the line number and subtract 7
