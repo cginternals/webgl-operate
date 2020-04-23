@@ -1,5 +1,5 @@
 
-precision lowp float;
+precision highp float;
 
 @import ../../source/shaders/facade.frag;
 
@@ -51,6 +51,8 @@ struct FragmentValues {
     vec4 normal;
     vec3 color;
     vec4 rayPosition;
+    // Remove later
+    float newtonLastIterationStep;
 };
 
 struct PointLight {
@@ -118,36 +120,43 @@ float calculateEnergy(vec4 currentRayPosition) {
 }
 
 vec2 calculateEnergyAndDerivative(vec4 rayPosition, vec4 rayDirection, float marchDistance, float derivativeDistance) {
-    derivativeDistance = 0.00000000001;
+    derivativeDistance = 0.01;
     float energy = 0.0;
     float fartherEnergy = 0.0;
+    float nearerEnergy = 0.0;
     vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
     vec4 currentFartherRayPosition = rayPosition + rayDirection * (marchDistance + derivativeDistance);
+    vec4 currentNearerRayPosition = rayPosition + rayDirection * (marchDistance - derivativeDistance);
     for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
         MetaBall currentMetaball = getMetaball(metaballIndex);
         energy += distFunc(currentMetaball, currentRayPosition);
         fartherEnergy += distFunc(currentMetaball, currentFartherRayPosition);
+        nearerEnergy += distFunc(currentMetaball, currentNearerRayPosition);
     }
-    float derivativeValue = (fartherEnergy - energy) / derivativeDistance;
+    float derivativeValue = (fartherEnergy - nearerEnergy) / (2.0 * derivativeDistance);
+    derivativeValue = derivativeValue != 0.0 ? derivativeValue : 0.000000001;
     return vec2(energy, derivativeValue);
 }
 
 FragmentValues newtonMethod(vec4 rayPosition, vec4 rayDirection, float marchDistance, int numberOfNewtonIterations)
 {
     vec2 energyFunctionAndDerivativeVal = vec2(0.0);
-    float derivativeDistance = 0.00000001;
+    float derivativeDistance = 0.0001;
     float oldMarchDistance;
+    float derivativeMarchDist = 0.0;
     for (int i = 0; i < numberOfNewtonIterations; i++)
     //while (!(energyFunctionAndDerivativeVal[0] > THRESHOLD  - 0.001 && energyFunctionAndDerivativeVal[0] < THRESHOLD + 0.001 ))
     {
-        energyFunctionAndDerivativeVal = calculateEnergyAndDerivative(rayPosition, rayDirection, marchDistance, derivativeDistance) - THRESHOLD;
+        energyFunctionAndDerivativeVal = calculateEnergyAndDerivative(rayPosition, rayDirection, marchDistance, derivativeDistance) - vec2(THRESHOLD, 0.0);
         oldMarchDistance = marchDistance;
         marchDistance = marchDistance - (energyFunctionAndDerivativeVal[0] / energyFunctionAndDerivativeVal[1]);
-        derivativeDistance = abs((oldMarchDistance - marchDistance) * 0.0001);
+        derivativeMarchDist = abs((energyFunctionAndDerivativeVal[0] / energyFunctionAndDerivativeVal[1]));
+        //derivativeDistance = abs((oldMarchDistance - marchDistance) * 0.0001);
     }
     vec4 finalRayPositionAndEnergy = rayPosition + rayDirection * marchDistance;
     FragmentValues finalFragmentValues = calculateEnergyAndOtherFragmentValues(finalRayPositionAndEnergy);
     finalFragmentValues.energy = finalFragmentValues.energy > THRESHOLD ? finalFragmentValues.energy : 0.51;
+    finalFragmentValues.newtonLastIterationStep = derivativeMarchDist;
     return finalFragmentValues;
 }
 
@@ -205,7 +214,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
 
 FragmentValues fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection)
 {
-    FragmentValues fragmentValues = rayMarchWithFragmentValues(rayPosition, rayDirection, 0.001, 0.01, 0);
+    FragmentValues fragmentValues = rayMarchWithFragmentValues(rayPosition, rayDirection, 0.1, 0.01, 10);
     fragmentValues.normal = normalize(fragmentValues.normal);
 
     float illumination = 1.0;
@@ -230,6 +239,7 @@ void main(void)
                             reflectionValues.color * REFLECTION_INTENSITY +
                             refractionValues.color * REFRACTION_INTENSITY, 1.0);
     fragColor = finalColor;
+    fragColor = vec4(vec3(fragmentValues.newtonLastIterationStep), 1.0);
 }
 
 // NOTE for compilation errors look at the line number and subtract 7
