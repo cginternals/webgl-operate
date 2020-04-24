@@ -124,11 +124,6 @@ export class Controller {
     protected _timeoutID: number | undefined;
 
     /**
-     * Stores the controller's pause state.
-     */
-    protected _pause = false;
-
-    /**
      * Blocking updates can be used to re-configure the controller without triggering
      */
     protected _block = false;
@@ -175,21 +170,23 @@ export class Controller {
      */
     protected _multiTime: Array<number> = [0.0, 0.0];
 
-    /**
-     * Point in time when the pause started. This is used to shift the gross rendering time measurement in _multiTime.
-     */
-    protected _pauseTime: number | undefined;
-
 
     protected _invalidated = false;
     protected _force = false;
 
 
     protected request(source: Controller.RequestType = Controller.RequestType.Frame): void {
+        if (this._block) {
+            this._blockedUpdates++;
+            return;
+        }
+
         this._animationFrameID = window.requestAnimationFrame(() => this.invoke(source));
     }
 
     protected invoke(source: Controller.RequestType): void {
+        assert(this._controllable !== undefined, `frame sequence invoked without controllable set`);
+
         if (this._invalidated) {
             this._invalidated = false;
 
@@ -229,9 +226,6 @@ export class Controller {
         logIf(Controller._debug, LogLevel.Debug, `c invoke update     | ` +
             `pending: '${this._animationFrameID}', mfnum: ${this._multiFrameNumber}`);
 
-        this.unblock();
-        assert(!this._pause, `updates should not be invoked when paused`);
-
         const redraw: boolean = (this._controllable as Controllable).update(this._multiFrameNumber);
         return redraw;
     }
@@ -241,9 +235,6 @@ export class Controller {
      */
     protected invokePrepare(): void {
         logIf(Controller._debug, LogLevel.Debug, `c invoke prepare    |`);
-
-        this._pause = false;
-        this._pauseTime = undefined;
 
         this._multiFrameTime = 0.0;
         this._intermediateFrameTimes[0] = Number.MAX_VALUE;
@@ -265,13 +256,10 @@ export class Controller {
      * asserts to assure correct control logic and absolutely prevent unnecessary frame requests.
      */
     protected invokeFrameAndSwap(): void {
-        assert(!this._pause, `frames should not be invoked when paused`);
         logIf(Controller._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._animationFrameID}'`);
 
         const debug = this._debugFrameNumber > 0;
         assert(!debug || this._frameNumber < this._debugFrameNumber, `frame number about to exceed debug-frame number`);
-
-        assert(this._controllable !== undefined, `update invoked without controllable set`);
 
 
         /* Trigger an intermediate frame and measure and accumulate execution time for average frame time. This should
@@ -331,30 +319,6 @@ export class Controller {
     }
 
     /**
-     * Cancel a pending frame invocation (if existing).
-     */
-    protected cancel(): void {
-        if (this._animationFrameID === 0) {
-            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
-            return;
-        }
-        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._animationFrameID}'`);
-
-        window.cancelAnimationFrame(this._animationFrameID);
-        this._animationFrameID = 0;
-
-        if (this._timeoutID === undefined) {
-            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) | timeout: '${this._timeoutID}'`);
-            return;
-        }
-        logIf(Controller._debug, LogLevel.Debug, `c cancel            | timeout: '${this._timeoutID}'`);
-
-        window.clearTimeout(this._timeoutID);
-        this._timeoutID = undefined;
-    }
-
-
-    /**
      * Utility for communicating this._multiFrameNumber changes to its associated subject.
      */
     protected multiFrameNumberNext(): void {
@@ -375,46 +339,6 @@ export class Controller {
         this._frameNumberSubject.next(this._frameNumber);
     }
 
-
-    /**
-     * Sets pause state to true which affects subsequent requests. Any pending requests are canceled.
-     */
-    pause(): void {
-        const ignore = this._pause;
-        logIf(Controller._debug, LogLevel.Debug, `c pause   ${ignore ? '(ignored)' : ''}`);
-
-        if (this._pause) {
-            return;
-        }
-        this._pause = true;
-        this._pauseTime = performance.now();
-
-        this.cancel();
-    }
-
-    /**
-     * Sets pause state to false which affects subsequent requests. Furthermore, a request is invoked.
-     */
-    unpause(): void {
-        const ignore = !this._pause;
-        logIf(Controller._debug, LogLevel.Debug, `c unpause ${ignore ? '(ignored)' : ''}`);
-
-        if (ignore) {
-            return;
-        }
-        this._pause = false;
-
-        if (this._pauseTime !== undefined && !isNaN(this._pauseTime)) {
-            /* Subtract paused time from multi-frame time. */
-            const pauseDelay = performance.now() - this._pauseTime;
-            this._multiTime[0] += pauseDelay;
-
-            /* Note: this is just in case the fps is gathered while a request is pending. */
-            this._multiTime[1] += pauseDelay;
-        }
-        this.request();
-    }
-
     update(force: boolean = false): void {
         this._invalidated = true;
         this._force = this._force || force;
@@ -432,9 +356,6 @@ export class Controller {
     block(): void {
         logIf(Controller._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
 
-        if (this._block) {
-            return;
-        }
         this._block = true;
     }
 
@@ -453,15 +374,6 @@ export class Controller {
             this._blockedUpdates = 0;
             this.update();
         }
-    }
-
-
-    /**
-     * Returns whether or not the control is paused.
-     * @returns - True if paused, else false.
-     */
-    get paused(): boolean {
-        return this._pause;
     }
 
     /**
@@ -484,7 +396,6 @@ export class Controller {
             return;
         }
         this._controllable = controllable;
-        this._invalidated = true;
         this.update(true);
     }
 
@@ -563,10 +474,6 @@ export class Controller {
 
         logIf(value !== debugFrameNumber, LogLevel.Debug,
             `debug-frame number adjusted to ${value}, given ${debugFrameNumber}`);
-
-        if (this._block) {
-            return;
-        }
 
         this.update(this.debugFrameNumber < this._frameNumber);
     }
