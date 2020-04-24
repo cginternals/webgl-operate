@@ -196,7 +196,7 @@ export class Controller {
             const redraw = this.invokeUpdate();
             if (redraw || this._force) {
                 this._force = false;
-                this.resetFrameNumber();
+                this._frameNumber = 0;
                 this.cancelWaitMultiFrame();
                 this.invokePrepare();
             }
@@ -211,7 +211,7 @@ export class Controller {
             return;
         }
 
-        if (this._frameNumber >= this._multiFrameNumber) {
+        if (this.isMultiFrameFinished()) {
             this._animationFrameID = 0;
             return;
         }
@@ -322,9 +322,12 @@ export class Controller {
         }
     }
 
-    protected resetFrameNumber(): void {
-        this._frameNumber = 0;
-        this.frameNumberNext();
+    protected isMultiFrameFinished(): boolean {
+        if (this._debugFrameNumber > 0) {
+            return this._frameNumber === this._debugFrameNumber;
+        }
+
+        return this._frameNumber === this._multiFrameNumber;
     }
 
     /**
@@ -565,12 +568,7 @@ export class Controller {
             return;
         }
 
-        if (this.debugFrameNumber < this._frameNumber) {
-            // this.prepare();
-        } else if (this._animationFrameID !== 0) {
-            this.unpause();
-            this.request();
-        }
+        this.update(this.debugFrameNumber < this._frameNumber);
     }
 
     /**

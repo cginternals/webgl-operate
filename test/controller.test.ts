@@ -26,16 +26,16 @@ class ControllerMock extends Controller {
         super.cancel();
     }
 
-    get pendingRequest(): number {
-        return this._pendingRequest;
+    get animationFrameID(): number {
+        return this._animationFrameID;
     }
 
     get blockedUpdates(): number {
         return this._blockedUpdates;
     }
 
-    invokeFrame(): void {
-        super.invokeFrame();
+    invokeFrameAndSwap(): void {
+        super.invokeFrameAndSwap();
     }
 }
 
@@ -220,17 +220,17 @@ describe('Controller', () => {
 
         controller.cancel();
 
-        expect(controller.pendingRequest).to.equal(0);
+        expect(controller.animationFrameID).to.equal(0);
 
         controller.update();
 
         expect(rafStub.calledOnce).to.be.true;
         expect(controller.blockedUpdates).to.equal(0);
-        expect(controller.pendingRequest).to.not.equal(0);
+        expect(controller.animationFrameID).to.not.equal(0);
 
         rafStub.reset();
 
-        controller.invokeFrame();
+        controller.invokeFrameAndSwap();
 
         expect(rafStub.calledOnce).to.be.true;
     });
