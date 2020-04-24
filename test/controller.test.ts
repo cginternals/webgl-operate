@@ -18,16 +18,20 @@ class ControllerMock extends Controller {
 
     static nextAnimationFrame = 1;
 
-    request(type?: Controller.RequestType): void {
-        super.request(type);
+    request(type: Controller.RequestType = Controller.RequestType.Frame): void {
+        super.request();
     }
 
-    cancel(): void {
-        super.cancel();
+    invoke(type: Controller.RequestType): void {
+        super.invoke(type);
     }
 
     get animationFrameID(): number {
         return this._animationFrameID;
+    }
+
+    set animationFrameID(animationFrameID: number) {
+        this._animationFrameID = animationFrameID;
     }
 
     get blockedUpdates(): number {
@@ -71,10 +75,9 @@ describe('Controller', () => {
         expect(new Controller()).to.not.throw;
     });
 
-    it('should not be paused nor blocked after initialization', () => {
+    it('should not be blocked after initialization', () => {
         const controller = new ControllerMock();
 
-        expect(controller.paused).to.be.false;
         expect(controller.blocked).to.be.false;
 
         expect(controller.frameNumber).to.equal(0);
@@ -84,48 +87,50 @@ describe('Controller', () => {
     it('should block explicit updates when blocked', () => {
         const controller = new ControllerMock();
 
-        const cancelStub = stub(controller, 'cancel');
-        const requestStub = stub(controller, 'request');
+        const invokeStub = stub(controller, 'invoke');
 
         controller.block();
         controller.update();
 
-        expect(cancelStub.called).to.be.false;
-        expect(requestStub.called).to.be.false;
+        expect(invokeStub.called).to.be.false;
     });
 
     it('should block implicit updates on re-configuration', () => {
         const controller = new ControllerMock();
         controller.block();
 
-        const cancelStub = stub(controller, 'cancel');
-        const requestStub = stub(controller, 'request');
+        const invokeStub = stub(controller, 'invoke');
 
         controller.controllable = renderer;
 
-        expect(cancelStub.called).to.be.false;
-        expect(requestStub.called).to.be.false;
+        expect(invokeStub.called).to.be.false;
     });
 
     it('should render on unblock after initialization', () => {
         const controller = new ControllerMock();
+
+        (global as any).window = {
+            requestAnimationFrame: () => {
+                controller.invoke(Controller.RequestType.Frame);
+                return ++ControllerMock.nextAnimationFrame;
+            },
+            cancelAnimationFrame: () => undefined,
+        };
+
         controller.block();
 
-        const cancelStub = stub(controller, 'cancel');
-        const requestStub = stub(controller, 'request');
+        const invokeStub = stub(controller, 'invoke');
 
         controller.controllable = renderer;
 
         controller.unblock();
-        expect(cancelStub.called).to.be.true;
-        expect(requestStub.calledOnce).to.be.true;
+        expect(invokeStub.calledOnce).to.be.true;
     });
 
     it('should not render when not initialized', () => {
         const controller = new ControllerMock();
 
         expect(() => { controller.update(); }).to.throw;
-        expect(() => { controller.cancel(); }).to.throw;
         expect(() => { controller.request(); }).to.throw;
     });
 
@@ -161,22 +166,27 @@ describe('Controller', () => {
         const controller = new ControllerMock();
 
         (global as any).window = {
-            requestAnimationFrame: () => ++ControllerMock.nextAnimationFrame,
+            requestAnimationFrame: () => {
+                controller.invoke(Controller.RequestType.Frame);
+                return ++ControllerMock.nextAnimationFrame;
+            },
             cancelAnimationFrame: () => undefined,
         };
+
+        const requestStub = stub(controller, 'request');
 
         controller.block();
         controller.controllable = renderer;
         controller.unblock();
-        controller.cancel();
 
-        const requestStub = stub(controller, 'request');
-        expect(requestStub.called).to.be.false;
+        requestStub.restore();
+
+        const invokeStub = stub(controller, 'invoke');
 
         expect(controller.multiFrameNumber).to.equal(1);
         controller.multiFrameNumber = 2;
 
-        expect(requestStub.calledOnce).to.be.true;
+        expect(invokeStub.calledOnce).to.be.true;
     });
 
     it('should request next animation frame only once a frame (simple renderer)', () => {
@@ -195,6 +205,13 @@ describe('Controller', () => {
         controller.unblock();
 
         expect(rafStub.calledOnce).to.be.true;
+
+        controller.animationFrameID = 0;
+        rafStub.reset();
+
+        controller.update();
+
+        expect(rafStub.calledOnce).to.be.true;
     });
 
     it('should request next animation frame only once a frame (self-invalidating renderer)', () => {
@@ -208,29 +225,21 @@ describe('Controller', () => {
 
         (global as any).performance = { now: (): number => 0 };
 
+        const rafStub = stub((global as any).window, 'requestAnimationFrame');
+        expect(rafStub.called).to.be.false;
+
         controller.block();
         renderer.controller = controller;
         controller.controllable = renderer;
         controller.unblock();
 
-        const rafStub = stub((global as any).window, 'requestAnimationFrame');
-
-        expect(rafStub.called).to.be.false;
         expect(controller.blockedUpdates).to.equal(0);
-
-        controller.cancel();
-
-        expect(controller.animationFrameID).to.equal(0);
-
-        controller.update();
-
         expect(rafStub.calledOnce).to.be.true;
-        expect(controller.blockedUpdates).to.equal(0);
-        expect(controller.animationFrameID).to.not.equal(0);
 
+        controller.animationFrameID = 0;
         rafStub.reset();
 
-        controller.invokeFrameAndSwap();
+        controller.update();
 
         expect(rafStub.calledOnce).to.be.true;
     });
