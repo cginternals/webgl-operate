@@ -33,9 +33,10 @@ varying vec4 v_ray;
 # define AMBIENT_ILLUMINATION 0.3
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
-# define REFRACTION_INDEX 1.3
-# define REFLECTION_INTENSITY 0.30
+# define REFRACTION_INDEX 1.2
+# define REFLECTION_INTENSITY 0.25
 # define REFRACTION_INTENSITY 0.25
+# define REFRACTION_AND_REFLECTION_INTENSITY 0.60
 
 struct MetaBall {
     vec4 position;
@@ -154,11 +155,40 @@ float calculateEnergyOverDerivative(vec4 rayPosition, vec4 rayDirection, float m
     return (energy - THRESHOLD) / derivativeValue;
 }
 
+float calculateEnergyOverDerivativeForInverseNewton(vec4 rayPosition, vec4 rayDirection, float marchDistance) {
+    const float derivativeDistance = 0.1;
+    float energy = 0.0;
+    float fartherEnergy = 0.0;
+    vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
+    vec4 currentFartherRayPosition = rayPosition + rayDirection * (marchDistance + derivativeDistance);
+    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
+        MetaBall currentMetaball = getMetaball(metaballIndex);
+        energy += distFunc(currentMetaball, currentRayPosition);
+        fartherEnergy += distFunc(currentMetaball, currentFartherRayPosition);
+    }
+    float derivativeValue = (fartherEnergy - energy) / (derivativeDistance);
+    derivativeValue = derivativeValue != 0.0 ? derivativeValue : 0.0000000001;
+    return (energy - THRESHOLD) / derivativeValue;
+}
+
 FragmentValues newtonMethod(vec4 rayPosition, vec4 rayDirection, float marchDistance, int numberOfNewtonIterations)
 {
     for (int i = 0; i < numberOfNewtonIterations; i++)
     {
         float energyOverDerivative = calculateEnergyOverDerivative(rayPosition, rayDirection, marchDistance);
+        marchDistance = marchDistance - energyOverDerivative;
+    }
+    vec4 finalRayPositionAndEnergy = rayPosition + rayDirection * marchDistance;
+    FragmentValues finalFragmentValues = calculateEnergyAndOtherFragmentValues(finalRayPositionAndEnergy);
+    finalFragmentValues.energy = finalFragmentValues.energy > THRESHOLD ? finalFragmentValues.energy : THRESHOLD + 0.01;
+    return finalFragmentValues;
+}
+
+FragmentValues inverseNewtonMethod(vec4 rayPosition, vec4 rayDirection, float marchDistance, int numberOfNewtonIterations)
+{
+    for (int i = 0; i < numberOfNewtonIterations; i++)
+    {
+        float energyOverDerivative = calculateEnergyOverDerivativeForInverseNewton(rayPosition, rayDirection, marchDistance);
         marchDistance = marchDistance - energyOverDerivative;
     }
     vec4 finalRayPositionAndEnergy = rayPosition + rayDirection * marchDistance;
@@ -185,7 +215,7 @@ FragmentValues inverseRayMarchWithFragmentValues(vec4 rayPosition, vec4 rayDirec
         vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
         float energy = calculateEnergy(currentRayPosition);
         if (energy < THRESHOLD) {
-            return newtonMethod(rayPosition, rayDirection, marchDistance, numberOfNewtonIterations);
+            return inverseNewtonMethod(rayPosition, rayDirection, marchDistance, numberOfNewtonIterations);
         }
     }
     return fragmentValues;
@@ -241,37 +271,56 @@ FragmentValues fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirect
     return fragmentValues;
 }
 
+FragmentValues fullInverseRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection)
+{
+    FragmentValues fragmentValues = inverseRayMarchWithFragmentValues(rayPosition, rayDirection, 0.1, 0.001, 5);
+    fragmentValues.normal = normalize(fragmentValues.normal);
+
+    float illumination = 1.0;
+    if (fragmentValues.energy > THRESHOLD) {
+        illumination = calculateIllumination(fragmentValues);
+    }
+    // TODO refract again?
+    vec4 texturePositon = rayPosition + rayDirection;
+    vec4 envMap = texture(u_cubemap, texturePositon.xyz);
+    fragmentValues.color = fragmentValues.energy > THRESHOLD ? mix(envMap.xyz, (fragmentValues.color * 2.0) * illumination, METABALL_TRANSPARENCY) : envMap.xyz;
+    return fragmentValues;
+}
+
 void main(void)
 {
-    vec2 uv = v_uv;
     vec3 ray = v_ray.xyz;
-    //ray.x += uv.x;
-    //ray.y += uv.y;
     ray = normalize(ray);
     ray.x *= -1.0;
     // Compute the color
     FragmentValues fragmentValues = fullRayMarchWithLightCalculation(vec4(vec3(0.0), 1.0), vec4(ray, 0.0));
     vec3 reflectionDir = reflect(ray, fragmentValues.normal.xyz);
-    FragmentValues reflectionValues;
+    vec3 refractionAndReflectionColor;
     if (fragmentValues.energy > THRESHOLD) {
-        reflectionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(reflectionDir, 0.0));
+        FragmentValues reflectionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(reflectionDir, 0.0));
+
+        vec3 refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
+        if (refractionDir != vec3(0.0)) {
+            FragmentValues refractionValues = fullInverseRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(refractionDir, 0.0));
+            float reflectionPercentage = fresnelReflection(ray, fragmentValues.normal.xyz);
+            refractionAndReflectionColor = mix(refractionValues.color, reflectionValues.color, reflectionPercentage);
+        }
+        else
+        {
+            refractionAndReflectionColor = reflectionValues.color;
+        }
     }
     else {
-        reflectionValues.color = fragmentValues.color;
+        refractionAndReflectionColor = fragmentValues.color;
     }
-    reflectionValues.color = mix(reflectionValues.color, fragmentValues.color, 1.0 - REFLECTION_INTENSITY);
-    vec3 refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
-    //FragmentValues refractionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, refractionDir);
     //vec4 finalColor = vec4(fragmentValues.color * (1.0 - REFLECTION_INTENSITY - REFRACTION_INTENSITY) +
                             //reflectionValues.color * REFLECTION_INTENSITY +
                             //refractionValues.color * REFRACTION_INTENSITY, 1.0);
-    //PointLight temp = getPointLight(0);
-    //fragColor = vec4(vec3(fresnelSchlick(normalize((fragmentValues.rayPosition - temp.position).xyz), normalize(fragmentValues.normal.xyz), 0.017)), 1.0);
-    //fragColor = vec4(vec3(fresnelReflection(normalize((fragmentValues.rayPosition - temp.position).xyz), normalize(fragmentValues.normal.xyz))), 1.0);
-    //fragColor = vec4(fragmentValues.normal.xyz, 1.0);
-    //fragColor = vec4(u_lookAt, 1.0);
-    //fragColor = vec4(normalize(abs(reflectionDir)), 1.0);
-    fragColor = vec4(reflectionValues.color, 1.0);
+    vec4 finalColor = vec4(mix(fragmentValues.color, refractionAndReflectionColor, REFRACTION_AND_REFLECTION_INTENSITY), 1.0);
+    //fragColor = vec4(vec3(fresnelSchlick(ray, fragmentValues.normal.xyz), 0.017)), 1.0);
+    //fragColor = vec4(vec3(fresnelReflection(ray, normalize(fragmentValues.normal.xyz))), 1.0);
+    //fragColor = vec4(reflectionAndRefractionColor, 1.0);
+    fragColor = finalColor;
 }
 
 // NOTE for compilation errors look at the line number and subtract 7

@@ -12,12 +12,10 @@ precision lowp float;
 
 uniform mat4 u_inverseViewProjection;
 
-varying vec2 v_uv;
 varying vec4 v_ray;
 
 void main()
 {
-    v_uv = (u_inverseViewProjection * vec4(a_vertex, 0.0, 0.0)).xy;
     v_ray = u_inverseViewProjection * vec4(a_vertex, 1.0, 1.0);
 
     gl_Position = vec4(a_vertex, 0.0, 1.0);
