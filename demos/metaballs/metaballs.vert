@@ -11,17 +11,15 @@ precision lowp float;
 #endif
 
 uniform mat4 u_inverseViewProjection;
+uniform vec3 u_lookAt;
 
-varying vec4 fragmentPosition;
-varying vec4 fragmentRayDirection;
+varying vec2 v_uv;
+varying vec4 v_ray;
 
 void main()
 {
-    vec2 v_uv = a_vertex;
-    v_uv.y *= 9.0 / 16.0;
-
-    fragmentPosition = vec4(v_uv, 0.0, 1.0);
-    fragmentRayDirection = vec4(0.0, 0.0, 1.0, 0.0);
+    v_uv = (u_inverseViewProjection * vec4(a_vertex, 0.0, 0.0)).xy;
+    v_ray = u_inverseViewProjection * vec4(a_vertex, 1.0, 1.0);
 
     gl_Position = vec4(a_vertex, 0.0, 1.0);
 }
