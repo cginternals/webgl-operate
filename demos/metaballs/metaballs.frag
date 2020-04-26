@@ -14,7 +14,6 @@ precision lowp float;
 uniform sampler2D u_metaballsTexture;
 uniform sampler2D u_metaballColorsTexture;
 uniform int u_metaballsTextureSize;
-uniform vec3 u_lookAt;
 
 uniform sampler2D u_lightsTexture;
 uniform int u_lightsTextureSize;
@@ -26,7 +25,7 @@ varying vec4 v_ray;
 
 
 # define BASE_ENERGY 0.06
-# define THRESHOLD 0.5
+# define THRESHOLD 0.51
 # define STEP_THRESHOLD 0.001
 # define METABALL_TRANSPARENCY 0.8
 
@@ -34,8 +33,8 @@ varying vec4 v_ray;
 # define AMBIENT_ILLUMINATION 0.3
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
-# define REFRACTION_INDEX 1.0
-# define REFLECTION_INTENSITY 0.25
+# define REFRACTION_INDEX 1.3
+# define REFLECTION_INTENSITY 0.30
 # define REFRACTION_INTENSITY 0.25
 
 struct MetaBall {
@@ -164,7 +163,7 @@ FragmentValues newtonMethod(vec4 rayPosition, vec4 rayDirection, float marchDist
     }
     vec4 finalRayPositionAndEnergy = rayPosition + rayDirection * marchDistance;
     FragmentValues finalFragmentValues = calculateEnergyAndOtherFragmentValues(finalRayPositionAndEnergy);
-    finalFragmentValues.energy = finalFragmentValues.energy > THRESHOLD ? finalFragmentValues.energy : 0.51;
+    finalFragmentValues.energy = finalFragmentValues.energy > THRESHOLD ? finalFragmentValues.energy : THRESHOLD + 0.01;
     return finalFragmentValues;
 }
 
@@ -229,7 +228,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
 
 FragmentValues fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection)
 {
-    FragmentValues fragmentValues = rayMarchWithFragmentValues(rayPosition, rayDirection, 0.1, 0.01, 5);
+    FragmentValues fragmentValues = rayMarchWithFragmentValues(rayPosition, rayDirection, 0.1, 0.2, 7);
     fragmentValues.normal = normalize(fragmentValues.normal);
 
     float illumination = 1.0;
@@ -238,7 +237,7 @@ FragmentValues fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirect
     }
     vec4 texturePositon = rayPosition + rayDirection;
     vec4 envMap = texture(u_cubemap, texturePositon.xyz);
-    fragmentValues.color = fragmentValues.energy > THRESHOLD ? mix(envMap.xyz, (fragmentValues.color * 2.0) * illumination, METABALL_TRANSPARENCY) : envMap.xyz;
+    fragmentValues.color = fragmentValues.energy > THRESHOLD ? (fragmentValues.color * 2.0) * illumination : envMap.xyz;
     return fragmentValues;
 }
 
@@ -252,10 +251,16 @@ void main(void)
     ray.x *= -1.0;
     // Compute the color
     FragmentValues fragmentValues = fullRayMarchWithLightCalculation(vec4(vec3(0.0), 1.0), vec4(ray, 0.0));
-    //vec4 reflectionDir = reflect(normalize(fragmentRayDirection), fragmentValues.normal);
-    //FragmentValues reflectionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, reflectionDir);
-    //vec4 refractionDir = refract(normalize(fragmentRayDirection), fragmentValues.normal, REFRACTION_INDEX);
-    //vec4 refractionDir = fragmentRayDirection;
+    vec3 reflectionDir = reflect(ray, fragmentValues.normal.xyz);
+    FragmentValues reflectionValues;
+    if (fragmentValues.energy > THRESHOLD) {
+        reflectionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(reflectionDir, 0.0));
+    }
+    else {
+        reflectionValues.color = fragmentValues.color;
+    }
+    reflectionValues.color = mix(reflectionValues.color, fragmentValues.color, 1.0 - REFLECTION_INTENSITY);
+    vec3 refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
     //FragmentValues refractionValues = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, refractionDir);
     //vec4 finalColor = vec4(fragmentValues.color * (1.0 - REFLECTION_INTENSITY - REFRACTION_INTENSITY) +
                             //reflectionValues.color * REFLECTION_INTENSITY +
@@ -265,11 +270,8 @@ void main(void)
     //fragColor = vec4(vec3(fresnelReflection(normalize((fragmentValues.rayPosition - temp.position).xyz), normalize(fragmentValues.normal.xyz))), 1.0);
     //fragColor = vec4(fragmentValues.normal.xyz, 1.0);
     //fragColor = vec4(u_lookAt, 1.0);
-
-
-    //fragColor = vec4(texture(u_cubemap, ray).xyz, 1.0);
-    fragColor = vec4(fragmentValues.color, 1.0);
-    //fragColor = vec4(ray, 1.0);
+    //fragColor = vec4(normalize(abs(reflectionDir)), 1.0);
+    fragColor = vec4(reflectionValues.color, 1.0);
 }
 
 // NOTE for compilation errors look at the line number and subtract 7

@@ -11,7 +11,6 @@ precision lowp float;
 #endif
 
 uniform mat4 u_inverseViewProjection;
-uniform vec3 u_lookAt;
 
 varying vec2 v_uv;
 varying vec4 v_ray;

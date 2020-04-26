@@ -30,7 +30,6 @@ import { Demo } from '../demo';
 export class MetaballsRenderer extends Renderer {
 
     protected _uInverseViewProjection: WebGLUniformLocation;
-    protected _uLookAt: WebGLUniformLocation;
     protected _camera: Camera;
     protected _navigation: Navigation;
 
@@ -88,7 +87,6 @@ export class MetaballsRenderer extends Renderer {
         vec3.sub(lookAt, this._camera.center, this._camera.eye);
 
         gl.uniformMatrix4fv(this._uInverseViewProjection, gl.GL_FALSE, this._camera.viewProjectionInverse);
-        gl.uniform3fv(this._uLookAt, lookAt);
 
         // render geometry
         this._ndcTriangle.bind();
@@ -133,11 +131,7 @@ export class MetaballsRenderer extends Renderer {
 
 
         this._uInverseViewProjection = this._program.uniform('u_inverseViewProjection');
-        this._uLookAt = this._program.uniform('u_lookAt');
         this._camera = new Camera();
-        //this._camera.center = vec3.fromValues(0.0, 0.0, 1.0);
-        //this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        //this._camera.eye = vec3.fromValues(0.0, 0.0, -2.0);
         this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
         this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
@@ -164,10 +158,10 @@ export class MetaballsRenderer extends Renderer {
     protected createMetaballsTexture(): void {
         const metaballs = new Float32Array([
             // x,  y,   z,  metaball-energy
-            0.0, -0.5, 0.9, 1.0,
-            -0.2, 0.2, 0.7, 1.5,
-            0.9, -0.2, 0.9, 1.0,
-            0.5, 0.3, 0.2, 1.0,
+            0.0, -0.3, 0.9, 0.8,
+            -0.2, 0.1, 0.7, 0.8,
+            0.4, -0.2, 0.6, 0.9,
+            0.5, 0.3, 0.2, 0.9,
         ]);
         const metaballColors = new Float32Array([
             // r, g, b, a
