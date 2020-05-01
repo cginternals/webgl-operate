@@ -283,6 +283,8 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
             let waiting = images.length;
             for (const tuple of images) {
                 const image = new Image();
+                image.crossOrigin = 'anonymous';
+
                 image.onerror = () => reject();
 
                 image.onload = () => {
