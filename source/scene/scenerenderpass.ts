@@ -21,6 +21,13 @@ export abstract class SceneRenderPass extends Initializable {
     protected _scene: SceneNode | undefined;
 
     /**
+     * This method is called after a new scene is registered in a SceneRenderPass.
+     * It can be used to preprocess the scene hierarchy to allow preprocessing tasks
+     * that will speedup the rendering later on.
+     */
+    protected abstract preprocessScene(): void;
+
+    /**
      * @todo comment
      */
     abstract update(): void;
@@ -35,13 +42,16 @@ export abstract class SceneRenderPass extends Initializable {
      */
     abstract frame(): void;
 
-
     /**
      * Setter for the scene of this render pass.
      * @param scene - Scene to be rendered
      */
     set scene(scene: SceneNode | undefined) {
         this._scene = scene;
+
+        if (this._scene !== undefined) {
+            this.preprocessScene();
+        }
     }
 
     /**

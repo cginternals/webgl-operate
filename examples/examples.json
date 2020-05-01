@@ -90,6 +90,12 @@
         "caption": "Image based lighting using prefiltered cube maps"
     },
     {
+        "target": "arealight-example",
+        "title": "Area Lights",
+        "object": "AreaLightExample",
+        "caption": "Area lights using Multi-Frame sampling."
+    },
+    {
         "target": "tilecamera-example",
         "title": "Tile-based 4k Rendering",
         "object": "TileCameraExample",
