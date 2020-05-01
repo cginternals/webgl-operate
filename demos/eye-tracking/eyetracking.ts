@@ -177,6 +177,8 @@ export class EyeTrackingRenderer extends Renderer {
 
 export class EyeTrackingDemo extends Demo {
 
+    static readonly serverAddress = 'ws://localhost:1234';
+
     private _canvas: Canvas;
     private _renderer: EyeTrackingRenderer;
 
@@ -198,7 +200,7 @@ export class EyeTrackingDemo extends Demo {
         eyeGazeDataStreams.headPositionAndRotation = true;
         eyeGazeDataStreams.userPresence = true;
 
-        this._canvas.activateEyeGazeEventProvider(eyeGazeDataStreams);
+        this._canvas.activateEyeGazeEventProvider(eyeGazeDataStreams, EyeTrackingDemo.serverAddress);
         this._renderer = new EyeTrackingRenderer(eyeGazeDataStreams);
         this._canvas.renderer = this._renderer;
 
