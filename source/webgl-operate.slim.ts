@@ -30,6 +30,7 @@ export { Shader } from './shader';
 export { Texture2D } from './texture2d';
 export { Texture3D } from './texture3d';
 export { TextureCube } from './texturecube';
+export { UnifiedBuffer } from './unifiedbuffer';
 export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
 
