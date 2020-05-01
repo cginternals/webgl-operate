@@ -14,7 +14,7 @@ export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
 export { TouchEventProvider } from './toucheventprovider';
-export { EventHandler } from './eventhandler';
+export { EventHandler, EventProvider } from './eventhandler';
 
 export { Buffer } from './buffer';
 export { Color } from './color';
@@ -29,6 +29,7 @@ export { Shader } from './shader';
 export { Texture2D } from './texture2d';
 export { Texture3D } from './texture3d';
 export { TextureCube } from './texturecube';
+export { UnifiedBuffer } from './unifiedbuffer';
 export { VertexArray } from './vertexarray';
 export { Wizard } from './wizard';
 
@@ -58,6 +59,11 @@ export { ReadbackPass } from './readbackpass';
 
 export { GaussFilter } from './gaussfilter';
 export { ShadowPass } from './shadowpass';
+
+
+export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
+export { EyeGazeEventProvider } from './eyegazeeventprovider';
+export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
 
 
 export * from './core/index';

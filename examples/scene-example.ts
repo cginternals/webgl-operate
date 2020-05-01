@@ -9,13 +9,13 @@ import {
     Context,
     CuboidGeometry,
     DefaultFramebuffer,
+    EventProvider,
     ForwardSceneRenderPass,
     Framebuffer,
     GeometryComponent,
     GeosphereGeometry,
     Invalidate,
     Material,
-    MouseEventProvider,
     Navigation,
     Program,
     PlaneGeometry,
@@ -68,9 +68,7 @@ export class SceneRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         const gl = this._context.gl;
 
@@ -110,7 +108,7 @@ export class SceneRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure forward pass. */
