@@ -13,8 +13,8 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     Program,
     Renderer,
@@ -83,9 +83,7 @@ export class PointCloudRenderer extends Renderer {
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
         const gl = context.gl;
         const gl2facade = context.gl2facade;
 
@@ -161,7 +159,7 @@ export class PointCloudRenderer extends Renderer {
         gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
 
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
 
         this._model = mat4.fromRotationTranslationScale(mat4.create(), quat.create()

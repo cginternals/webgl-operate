@@ -8,9 +8,9 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     Framebuffer,
     Invalidate,
-    MouseEventProvider,
     Navigation,
     NdcFillingTriangle,
     Program,
@@ -49,9 +49,9 @@ class EnvironmentProjectionRenderer extends Renderer {
 
     protected onInitialize(context: Context,
         callback: Invalidate,
-        mouseEventProvider: MouseEventProvider | undefined): boolean {
+        eventProvider: EventProvider): boolean {
 
-        if (mouseEventProvider === undefined) {
+        if (eventProvider.mouseEventProvider === undefined) {
             auxiliaries.log(auxiliaries.LogLevel.Error, 'MouseEventProvider was not supplied.');
             return false;
         }
@@ -100,7 +100,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 4.0;
 
-        this._navigation = new Navigation(callback, mouseEventProvider!);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider!);
         this._navigation.camera = this._camera;
 
         gl.uniform2iv(this._uViewport, this._canvasSize);

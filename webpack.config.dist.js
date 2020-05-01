@@ -7,8 +7,8 @@ module.exports = (env, options) => {
     config.cache = false;
     config.output.path = __dirname + '/dist';
     config.entry = {
-        'webgl-operate': ['require.ts', 'polyfill.ts', 'webgl-operate.ts'],
-        'webgl-operate.slim': ['require.ts', 'polyfill.ts', 'webgl-operate.slim.ts'],
+        'webgl-operate.js': ['polyfill.ts', 'webgl-operate.ts'],
+        'webgl-operate.slim.js': ['polyfill.ts', 'webgl-operate.slim.ts'],
     };
 
     config.module.rules[0].use.options.compilerOptions.noUnusedLocals = true;
@@ -19,9 +19,11 @@ module.exports = (env, options) => {
     // config.output.libraryTarget = 'umd';
 
     // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
-    config.plugins[0].definitions.DISABLE_ASSERTIONS = JSON.stringify(false);
+    config.plugins[0].definitions.DISABLE_ASSERTIONS
+        = JSON.stringify(false);
     // Log verbosity levels: debug = 3, info = 2, warn = 1, error = 0
-    config.plugins[0].definitions.LOG_VERBOSITY_THRESHOLD = JSON.stringify(options.mode === 'development' ? 3 : 2);
+    config.plugins[0].definitions.LOG_VERBOSITY_THRESHOLD
+        = JSON.stringify(options.mode === 'development' ? 3 : 2);
 
     return config;
 };
