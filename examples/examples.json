@@ -104,6 +104,19 @@
         "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     },
     {
+        "target": "context-lost-example",
+        "title": "Context Lost Example",
+        "object": "ContextLostExample",
+        "caption": "Very basic scene handling context losses repeatedly."
+    },
+    {
+        "target": "label2d-example",
+        "title": "Label 2D",
+        "object": "Label2DExample",
+        "caption": "Static/dynamic text that can be positioned in 2D space.",
+        "disabled": true
+    },
+    {
         "target": "triangle-example",
         "title": "Textured Triangle",
         "object": "TriangleExample",

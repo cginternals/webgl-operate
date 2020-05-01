@@ -55,12 +55,14 @@ class EnvironmentProjectionRenderer extends Renderer {
         this.fetchTextures();
 
         // Initialize camera
-        this._camera = new Camera();
-        this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
-        this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.near = 0.1;
-        this._camera.far = 4.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
+            this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.near = 0.1;
+            this._camera.far = 4.0;
+        }
 
         this._navigation = new Navigation(callback, eventProvider.mouseEventProvider!);
         this._navigation.camera = this._camera;
@@ -80,6 +82,10 @@ class EnvironmentProjectionRenderer extends Renderer {
         for (const map of this._polarMaps) {
             map.uninitialize();
         }
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
     }
 
     protected onUpdate(): boolean {

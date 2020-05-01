@@ -182,8 +182,11 @@ export class CornellBoxRenderer extends Renderer {
     }
 
     protected onSwap(): void {
-        this._blit.framebuffer = this._accumulate.framebuffer ?
-            this._accumulate.framebuffer : this._blit.framebuffer = this._intermediateFBO;
+        if (this._accumulate.framebuffer) {
+            this._blit.framebuffer = this._accumulate.framebuffer;
+        } else {
+            this._blit.framebuffer = this._intermediateFBO;
+        }
         this._blit.frame();
     }
 
@@ -201,12 +204,14 @@ export class CornellBoxRenderer extends Renderer {
             this._extensions = true;
         }
 
-        this._camera = new Camera();
-        this._camera.eye = _gEye;
-        this._camera.center = _gCenter;
-        this._camera.up = _gUp;
-        this._camera.near = 0.1;
-        this._camera.far = 4.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.eye = _gEye;
+            this._camera.center = _gCenter;
+            this._camera.up = _gUp;
+            this._camera.near = 0.1;
+            this._camera.far = 4.0;
+        }
 
         // Initialize navigation
         this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
@@ -366,6 +371,13 @@ export class CornellBoxRenderer extends Renderer {
         this._depthRenderbuffer.uninitialize();
 
         this._blit.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
 
