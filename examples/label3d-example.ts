@@ -67,7 +67,7 @@ class Label3DRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 4.0;
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure label pass. */
