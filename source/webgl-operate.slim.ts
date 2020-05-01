@@ -55,6 +55,7 @@ export { KernelF32, KernelI32, KernelI8, KernelUI32, KernelUI8 } from './kernel'
 export { AccumulatePass } from './accumulatepass';
 export { BlitPass } from './blitpass';
 export { DebugPass } from './debugpass';
+export { EnvironmentRenderingPass, EnvironmentTextureType } from './environmentrenderingpass';
 export { ReadbackPass } from './readbackpass';
 
 export { GaussFilter } from './gaussfilter';

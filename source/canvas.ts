@@ -288,7 +288,7 @@ export class Canvas extends Resizable {
      */
     protected onContextLost(): void {
         log(LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
-        this._controller.pause();
+        this._controller.block();
 
         if (this._renderer) {
             this._renderer.discard();
@@ -304,8 +304,7 @@ export class Canvas extends Resizable {
         const renderer = this._renderer;
         this.unbind();
         this.bind(renderer);
-        this._controller.unpause();
-        this._controller.update(true);
+        this._controller.unblock();
 
         /*
         *  Dirtiest force of redraw that is required for Firefox.

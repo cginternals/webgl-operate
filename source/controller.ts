@@ -100,8 +100,8 @@ export class Controller {
     protected _frameNumberSubject = new ReplaySubject<number>(1);
 
 
-    // /** @see {@link multiFrameDelay} */
-    // protected _multiFrameDelay = 0;
+    /** @see {@link multiFrameDelay} */
+    protected _multiFrameDelay = 0;
     // protected _delayedRequestTimeout: number | undefined;
 
 
@@ -112,15 +112,16 @@ export class Controller {
 
 
     /**
-     * Holds the handle of the pending animate frame request, if requested. Throughout the controller, only a single
-     * request at a time is allowed.
+     * Holds the handle of the pending / executed animate frame request, if requested. Throughout the controller, only a
+     * single request at a time is allowed.
      */
-    protected _pendingRequest = 0;
+    protected _animationFrameID = 0;
 
     /**
-     * Stores the controller's pause state.
+     * Holds the handle of the running timeout to execute a new multi frame. Undefined if we currently do not wait for
+     * a new multi frame.
      */
-    protected _pause = false;
+    protected _timeoutID: number | undefined;
 
     /**
      * Blocking updates can be used to re-configure the controller without triggering
@@ -169,114 +170,64 @@ export class Controller {
      */
     protected _multiTime: Array<number> = [0.0, 0.0];
 
-    /**
-     * Point in time when the pause started. This is used to shift the gross rendering time measurement in _multiTime.
-     */
-    protected _pauseTime: number | undefined;
+
+    protected _invalidated = false;
+    protected _force = false;
 
 
-    /**
-     * Triggers a frame invocation before the browser repaints. If no rendering callback is setup, the request
-     * is ignored.
-     */
-    protected request(type?: Controller.RequestType): void {
-        /**
-         * Prevent unnecessary canceling and requesting of animation frames when updating multiple times before an
-         * actual first frame is triggered.
-         */
-        if (this._pendingRequest !== 0) {
-            logIf(Controller._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
+    protected request(source: Controller.RequestType = Controller.RequestType.Frame): void {
+        if (this._block) {
+            this._blockedUpdates++;
             return;
         }
-        if (this._pause || !this._controllable) {
-            logIf(Controller._debug, LogLevel.Debug, `c request (ignored) | pending: '${this._pendingRequest}'`);
-            return;
-        }
-        logIf(Controller._debug, LogLevel.Debug, `c request           | intermediates: #${this._frameNumber}`);
 
-        const dfnum = this._debugFrameNumber;
-        const mfnum = this._multiFrameNumber;
-
-        assert(dfnum <= mfnum, `debug-frame number exceeds multi-frame number`);
-        assert(this._pendingRequest === 0, `another request is pending, cannot invoke multiple requests`);
-
-        if (dfnum > 0 && this._frameNumber >= dfnum) {
-            this.pause();
-        }
-
-        const numRemainingIntermediates = Math.max((dfnum > 0 ? dfnum : mfnum) - this._frameNumber, 0);
-
-        if (type !== undefined) {
-            this._pendingRequest = window.requestAnimationFrame(() => this.invoke(type));
-        } else if (numRemainingIntermediates > 0) {
-            this._pendingRequest = window.requestAnimationFrame(() => this.invoke(Controller.RequestType.Frame));
-        } else if (dfnum === mfnum || dfnum === 0) {
-            ++this._multiFrameCount;
-        }
+        this._animationFrameID = window.requestAnimationFrame(() => this.invoke(source));
     }
 
+    protected invoke(source: Controller.RequestType): void {
+        assert(this._controllable !== undefined, `frame sequence invoked without controllable set`);
 
-    // protected requestDelayed(type?: Controller.RequestType): void {
-    //     if (this._multiFrameDelay === 0 || this._frameNumber !== 1) {
-    //         return this.request(type);
-    //     }
+        if (this._invalidated) {
+            this._invalidated = false;
 
-    //     if (this._delayedRequestTimeout !== undefined) {
-    //         clearTimeout(this._delayedRequestTimeout);
-    //     }
-    //     this._delayedRequestTimeout = window.setTimeout(() => this.request(type), this._multiFrameDelay);
-    // }
-
-
-    protected reset(): boolean {
-        const block = this._block || (this._frameNumber === 0 && this._pendingRequest);
-        logIf(Controller._debug, LogLevel.Debug, `c update  ${block ? '(blocked) ' : '          '}| ` +
-            `pending: '${this._pendingRequest}', intermediates: #${this._frameNumber}`);
-
-        if (block) {
-            ++this._blockedUpdates;
-            return true;
-        }
-        this.cancel();
-        return false;
-    }
-
-    protected invoke(type: Controller.RequestType): void {
-        assert(this._pendingRequest !== 0, `manual/explicit invocation not anticipated`);
-        assert(this._controllable !== undefined, `expected valid controllable for invocation`);
-
-        this._pendingRequest = 0;
-
-        /* tslint:disable-next-line:switch-default */
-        switch (type) {
-            case Controller.RequestType.Update:
-                this.invokeUpdate(false);
-                break;
-            case Controller.RequestType.NonOptionalUpdate:
-                this.invokeUpdate(true);
-                break;
-            case Controller.RequestType.Prepare:
+            const redraw = this.invokeUpdate();
+            if (redraw || this._force) {
+                this._force = false;
+                this._frameNumber = 0;
+                this.cancelWaitMultiFrame();
                 this.invokePrepare();
-                break;
-            case Controller.RequestType.Frame:
-                this.invokeFrame();
-                break;
+            }
         }
+
+        if (source === Controller.RequestType.Frame && this._frameNumber === 1) {
+            if (this._timeoutID === undefined) {
+                this.startWaitMultiFrame();
+            }
+
+            this._animationFrameID = 0;
+            return;
+        }
+
+        if (this.isMultiFrameFinished()) {
+            this._animationFrameID = 0;
+            return;
+        }
+
+        this.invokeFrameAndSwap();
+
+        this.request();
     }
 
-    protected invokeUpdate(force: boolean = false): void {
+    /**
+     * Actual invocation of the controllable's update method. Returns true if multi frame rendering should be restarted,
+     * false otherwise.
+     */
+    protected invokeUpdate(): boolean {
         logIf(Controller._debug, LogLevel.Debug, `c invoke update     | ` +
-            `pending: '${this._pendingRequest}', mfnum: ${this._multiFrameNumber}`);
-
-        this.unblock();
-        assert(!this._pause, `updates should not be invoked when paused`);
+            `pending: '${this._animationFrameID}', mfnum: ${this._multiFrameNumber}`);
 
         const redraw: boolean = (this._controllable as Controllable).update(this._multiFrameNumber);
-        if (force || redraw) {
-            this.invokePrepare();
-            return;
-        }
-        this.invokeFrame();
+        return redraw;
     }
 
     /**
@@ -284,11 +235,6 @@ export class Controller {
      */
     protected invokePrepare(): void {
         logIf(Controller._debug, LogLevel.Debug, `c invoke prepare    |`);
-
-        this._frameNumber = 0;
-
-        this._pause = false;
-        this._pauseTime = undefined;
 
         this._multiFrameTime = 0.0;
         this._intermediateFrameTimes[0] = Number.MAX_VALUE;
@@ -302,8 +248,6 @@ export class Controller {
         const updateDuration = this._multiTime[1] - this._multiTime[0];
         this._multiFrameTime = updateDuration;
         this._updateFrameTime = updateDuration;
-
-        this.invokeFrame();
     }
 
     /**
@@ -311,21 +255,11 @@ export class Controller {
      * frame. The rendering is invoked by means of a callback to the canvas renderer. This function implements various
      * asserts to assure correct control logic and absolutely prevent unnecessary frame requests.
      */
-    protected invokeFrame(): void {
-        assert(!this._pause, `frames should not be invoked when paused`);
-        logIf(Controller._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._pendingRequest}'`);
+    protected invokeFrameAndSwap(): void {
+        logIf(Controller._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._animationFrameID}'`);
 
-        const dfnum = this._debugFrameNumber;
-        const mfnum = this._multiFrameNumber;
-
-        if (this._frameNumber === mfnum) {
-            return;
-        }
-
-        const debug = dfnum > 0;
-        assert(!debug || this._frameNumber < dfnum, `frame number about to exceed debug-frame number`);
-
-        assert(this._controllable !== undefined, `update invoked without controllable set`);
+        const debug = this._debugFrameNumber > 0;
+        assert(!debug || this._frameNumber < this._debugFrameNumber, `frame number about to exceed debug-frame number`);
 
 
         /* Trigger an intermediate frame and measure and accumulate execution time for average frame time. This should
@@ -359,10 +293,30 @@ export class Controller {
         this._intermediateFrameTimes[1] = Math.max(this._intermediateFrameTimes[1], frameDuration);
 
         this.frameNumberNext();
-
-        this.request();
     }
 
+    protected startWaitMultiFrame(): void {
+        const startMultiFrame = () => {
+            this.request(Controller.RequestType.MultiFrame);
+            this._timeoutID = undefined;
+        };
+        this._timeoutID = window.setTimeout(startMultiFrame, this._multiFrameDelay);
+    }
+
+    protected cancelWaitMultiFrame(): void {
+        if (this._timeoutID !== undefined) {
+            window.clearTimeout(this._timeoutID);
+            this._timeoutID = undefined;
+        }
+    }
+
+    protected isMultiFrameFinished(): boolean {
+        if (this._debugFrameNumber > 0) {
+            return this._frameNumber === this._debugFrameNumber;
+        }
+
+        return this._frameNumber === this._multiFrameNumber;
+    }
 
     /**
      * Utility for communicating this._multiFrameNumber changes to its associated subject.
@@ -385,62 +339,13 @@ export class Controller {
         this._frameNumberSubject.next(this._frameNumber);
     }
 
-
-    /**
-     * Sets pause state to true which affects subsequent requests. Any pending requests are canceled.
-     */
-    pause(): void {
-        const ignore = this._pause;
-        logIf(Controller._debug, LogLevel.Debug, `c pause   ${ignore ? '(ignored)' : ''}`);
-
-        if (this._pause) {
-            return;
-        }
-        this._pause = true;
-        this._pauseTime = performance.now();
-
-        this.cancel();
-    }
-
-    /**
-     * Sets pause state to false which affects subsequent requests. Furthermore, a request is invoked.
-     */
-    unpause(): void {
-        const ignore = !this._pause;
-        logIf(Controller._debug, LogLevel.Debug, `c unpause ${ignore ? '(ignored)' : ''}`);
-
-        if (ignore) {
-            return;
-        }
-        this._pause = false;
-
-        if (this._pauseTime !== undefined && !isNaN(this._pauseTime)) {
-            /* Subtract paused time from multi-frame time. */
-            const pauseDelay = performance.now() - this._pauseTime;
-            this._multiTime[0] += pauseDelay;
-
-            /* Note: this is just in case the fps is gathered while a request is pending. */
-            this._multiTime[1] += pauseDelay;
-        }
-        this.request();
-    }
-
-    /**
-     * Resets multi-frame rendering by restarting at the first frame. If paused, this unpauses the controller.
-     * If updates where blocked using `block`, block updates is disabled.
-     */
     update(force: boolean = false): void {
-        if (this.reset()) {
-            return;
-        }
-        this.request(force ? Controller.RequestType.NonOptionalUpdate : Controller.RequestType.Update);
-    }
+        this._invalidated = true;
+        this._force = this._force || force;
 
-    prepare(): void {
-        if (this.reset()) {
-            return;
+        if (this._animationFrameID === 0) {
+            this.request();
         }
-        this.request(Controller.RequestType.Prepare);
     }
 
 
@@ -451,9 +356,6 @@ export class Controller {
     block(): void {
         logIf(Controller._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
 
-        if (this._block) {
-            return;
-        }
         this._block = true;
     }
 
@@ -472,29 +374,6 @@ export class Controller {
             this._blockedUpdates = 0;
             this.update();
         }
-    }
-
-    /**
-     * Cancel a pending frame invocation (if existing).
-     */
-    cancel(): void {
-        if (this._pendingRequest === 0) {
-            logIf(Controller._debug, LogLevel.Debug, `c cancel  (ignored) |`);
-            return;
-        }
-        logIf(Controller._debug, LogLevel.Debug, `c cancel            | pending: '${this._pendingRequest}'`);
-
-        window.cancelAnimationFrame(this._pendingRequest);
-        this._pendingRequest = 0;
-    }
-
-
-    /**
-     * Returns whether or not the control is paused.
-     * @returns - True if paused, else false.
-     */
-    get paused(): boolean {
-        return this._pause;
     }
 
     /**
@@ -517,7 +396,7 @@ export class Controller {
             return;
         }
         this._controllable = controllable;
-        this.update();
+        this.update(true);
     }
 
 
@@ -596,16 +475,7 @@ export class Controller {
         logIf(value !== debugFrameNumber, LogLevel.Debug,
             `debug-frame number adjusted to ${value}, given ${debugFrameNumber}`);
 
-        if (this._block) {
-            return;
-        }
-
-        if (this.debugFrameNumber < this._frameNumber) {
-            this.prepare();
-        } else if (!this._pendingRequest) {
-            this.unpause();
-            this.request();
-        }
+        this.update(this.debugFrameNumber < this._frameNumber);
     }
 
     /**
@@ -616,27 +486,26 @@ export class Controller {
     }
 
 
-    // /**
-    //  * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
-    //  * after an update.
-    //  * @param multiFrameDelay - A multi-frame delay in milliseconds.
-    //  */
+    /**
+     * Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
+     * after an update.
+     * @param multiFrameDelay - A multi-frame delay in milliseconds.
+     */
+    set multiFrameDelay(multiFrameDelay: number) {
+        const value: number = Math.max(0, multiFrameDelay);
+        if (value === this._multiFrameDelay) {
+            return;
+        }
+        this._multiFrameDelay = value;
+    }
 
-    // set multiFrameDelay(multiFrameDelay: number) {
-    //     const value: number = Math.max(0, multiFrameDelay);
-    //     if (value === this._multiFrameDelay) {
-    //         return;
-    //     }
-    //     this._multiFrameDelay = value;
-    // }
-
-    // /**
-    //  * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
-    //  * @returns - The current multi-frame delay in milliseconds.
-    //  */
-    // get multiFrameDelay(): number {
-    //     return this._multiFrameDelay;
-    // }
+    /**
+     * Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.
+     * @returns - The current multi-frame delay in milliseconds.
+     */
+    get multiFrameDelay(): number {
+        return this._multiFrameDelay;
+    }
 
 
     /**
@@ -732,6 +601,6 @@ export class Controller {
 
 export namespace Controller {
 
-    export enum RequestType { Update, NonOptionalUpdate, Prepare, Frame }
+    export enum RequestType { Frame, MultiFrame }
 
 }

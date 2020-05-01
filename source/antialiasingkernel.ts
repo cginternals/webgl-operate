@@ -33,6 +33,10 @@ export class AntiAliasingKernel extends RandomSquareKernel {
                 this.fromJSON(require('./data/goldenset64.json'));
                 break;
 
+            case 128:
+                this.fromJSON(require('./data/goldenset128.json'));
+                break;
+
             default:
                 super.generate();
         }
