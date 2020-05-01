@@ -106,6 +106,13 @@ class Label3DRenderer extends Renderer {
         this._labelPass.uninitialize();
     }
 
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
+    }
+
     /**
      * This is invoked in order to check if rendering of a frame is required by means of implementation specific
      * evaluation (e.g., lazy non continuous rendering). Regardless of the return value a new frame (preparation,
