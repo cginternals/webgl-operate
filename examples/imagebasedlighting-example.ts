@@ -8,6 +8,8 @@ import {
     Canvas,
     Context,
     DefaultFramebuffer,
+    EnvironmentRenderingPass,
+    EnvironmentTextureType,
     EventProvider,
     GeosphereGeometry,
     Invalidate,
@@ -31,6 +33,7 @@ export class ImageBasedLightingRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _navigation: Navigation;
+    protected _environmentRenderingPass: EnvironmentRenderingPass;
 
     protected _sphere: GeosphereGeometry;
     protected _albedoTexture: Texture2D;
@@ -149,17 +152,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._cubemap.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._cubemap.levels(0, MIPMAP_LEVELS - 1);
 
-        for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
-            this._promises.push(
-                this._cubemap.fetch({
-                    positiveX: `./data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                    negativeX: `./data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                    positiveY: `./data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                    negativeY: `./data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                    positiveZ: `./data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                    negativeZ: `./data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
-                }, mipLevel));
-        }
+        this._promises.push(this._cubemap.fetchMipmapAtlas('./data/imagebasedlighting/ibl-map.png'))
 
         Promise.all(this._promises).then(() => {
             this.finishLoading();
@@ -176,6 +169,12 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
+
+        this._environmentRenderingPass = new EnvironmentRenderingPass(context);
+        this._environmentRenderingPass.initialize();
+        this._environmentRenderingPass.environmentTextureType = EnvironmentTextureType.CubeMap;
+        this._environmentRenderingPass.environmentTexture = this._cubemap;
+        this._environmentRenderingPass.camera = this._camera;
 
         return true;
     }
@@ -234,6 +233,8 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
+
+        this._environmentRenderingPass.frame();
 
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);

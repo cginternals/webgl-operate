@@ -71,10 +71,7 @@ void main(void)
     normal = normalize(TBN * normal);
 
     float roughness = texture(u_roughnessTexture, v_uv).r;
-    roughness = pow(roughness, GAMMA);
-
     float metallic = texture(u_metallicTexture, v_uv).r;
-    metallic = pow(metallic, GAMMA);
 
     const vec3 f0 = vec3(0.04);
     vec3 diffuseColor = albedoColor * (vec3(1.0) - f0) * (1.0 - metallic);

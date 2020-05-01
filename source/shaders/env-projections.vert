@@ -1,6 +1,6 @@
 precision highp float;
 
-@import ../../source/shaders/facade.vert;
+@import ./facade.vert;
 
 
 #if __VERSION__ == 100

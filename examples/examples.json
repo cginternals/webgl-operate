@@ -112,7 +112,6 @@
         "target": "label3d-example",
         "title": "Label 3D",
         "object": "Label3DExample",
-        "caption": "Static/dynamic text that can be positioned in 3D space.",
-        "disabled": true
+        "caption": "Static/dynamic text that can be positioned in 3D space."
     }
 ]
