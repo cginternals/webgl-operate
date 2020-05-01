@@ -10,6 +10,7 @@ import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
 import { FirstPersonModifier } from './firstpersonmodifier';
+import { TouchEventProvider } from './toucheventprovider';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
 
@@ -70,13 +71,19 @@ export class Navigation {
     protected _eventHandler: EventHandler;
 
 
-    constructor(invalidate: Invalidate, mouseEventProvider: MouseEventProvider) {
+    constructor(
+        invalidate: Invalidate,
+        mouseEventProvider: MouseEventProvider,
+        touchEventProvider?: TouchEventProvider) {
+
         this._invalidate = invalidate;
 
         /* Create event handler that listens to mouse events. */
-        this._eventHandler = new EventHandler(invalidate, {mouseEventProvider,
-                                                           touchEventProvider: undefined,
-                                                           eyeGazeEventProvider: undefined});
+        this._eventHandler = new EventHandler(invalidate, {
+            mouseEventProvider,
+            touchEventProvider,
+            eyeGazeEventProvider: undefined
+        });
 
         /* Listen to mouse events. */
         this._eventHandler.pushMouseDownHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
@@ -88,6 +95,16 @@ export class Navigation {
 
         this._eventHandler.pushClickHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
             this.onClick(latests, previous));
+
+        /* Listen to touch events. */
+        if (touchEventProvider !== undefined) {
+            this._eventHandler.pushTouchStartHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
+                this.onTouchStart(latests, previous));
+            this._eventHandler.pushTouchEndHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
+                this.onTouchEnd(latests, previous));
+            this._eventHandler.pushTouchMoveHandler((latests: Array<TouchEvent>, previous: Array<TouchEvent>) =>
+                this.onTouchMove(latests, previous));
+        }
 
         // this._eventHandler.pushMouseWheelHandler((latests: Array<WheelEvent>, previous: Array<WheelEvent>) =>
         //     this.onWheel(latests, previous));
@@ -107,9 +124,15 @@ export class Navigation {
         const isMouseDown = event.type === 'mousedown';
         const isMouseMove = event.type === 'mousemove';
 
+        const touchEvent = event as TouchEvent;
+        let isTouchEvent = false;
+        if (touchEvent !== undefined) {
+            isTouchEvent = touchEvent.touches !== undefined && touchEvent.touches.length > 0;
+        }
+
         const isPointerLockedRotate = PointerLock.active() && this._alwaysRotateOnMove;
 
-        if (isPointerLockedRotate || ((isMouseDown || isMouseMove) && isPrimaryButtonDown)) {
+        if (isPointerLockedRotate || ((isMouseDown || isMouseMove) && isPrimaryButtonDown) || isTouchEvent) {
             return Navigation.Modes.Rotate;
 
             // } else if ((event.type === 'mousedown' || event.type === 'mousemove')
@@ -134,19 +157,25 @@ export class Navigation {
                     movement = vec2.fromValues((event as MouseEvent).movementX, (event as MouseEvent).movementY);
                 }
                 start ? firstPerson.initiate(point) : firstPerson.process(point, movement);
-                event.preventDefault();
+                if (event.cancelable) {
+                    event.preventDefault();
+                }
                 break;
 
             case Navigation.Metaphor.Trackball:
                 const trackball = this._trackball as TrackballModifier;
                 start ? trackball.initiate(point) : trackball.process(point);
-                event.preventDefault();
+                if (event.cancelable) {
+                    event.preventDefault();
+                }
                 break;
 
             case Navigation.Metaphor.Turntable:
                 const turntable = this._turntable as TurntableModifier;
                 start ? turntable.initiate(point) : turntable.process(point);
-                event.preventDefault();
+                if (event.cancelable) {
+                    event.preventDefault();
+                }
                 break;
 
             default:
@@ -175,6 +204,26 @@ export class Navigation {
         }
     }
 
+    protected onTouchStart(latests: Array<TouchEvent>, previous: Array<TouchEvent>): void {
+        const event: TouchEvent = latests[latests.length - 1];
+        // for (const event of latests) {
+
+        this._mode = this.mode(event);
+        switch (this._mode) {
+            case Navigation.Modes.Zoom:
+                // this.startZoom(event);
+                break;
+
+            case Navigation.Modes.Rotate:
+                this.rotate(event, true);
+                break;
+
+            default:
+                break;
+            // }
+        }
+    }
+
     protected onMouseUp(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         const event: MouseEvent = latests[latests.length - 1];
 
@@ -182,12 +231,52 @@ export class Navigation {
         if (undefined === this._mode) {
             return;
         }
-        event.preventDefault();
+
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+
+        // }
+    }
+
+    protected onTouchEnd(latests: Array<TouchEvent>, previous: Array<TouchEvent>): void {
+        const event: TouchEvent = latests[latests.length - 1];
+
+        // for (const event of latests) {
+        if (undefined === this._mode) {
+            return;
+        }
+
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+
         // }
     }
 
     protected onMouseMove(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         const event: MouseEvent = latests[latests.length - 1];
+        // for (const event of latests) {
+
+        const modeWasUndefined = (this._mode === undefined);
+        this._mode = this.mode(event);
+        switch (this._mode) {
+            // case Navigation.Modes.Zoom:
+            //     // modeWasUndefined ? this.startZoom(event) : this.updateZoom(event);
+            //     break;
+
+            case Navigation.Modes.Rotate:
+                this.rotate(event, modeWasUndefined);
+                break;
+
+            default:
+                break;
+            // }
+        }
+    }
+
+    protected onTouchMove(latests: Array<TouchEvent>, previous: Array<TouchEvent>): void {
+        const event: TouchEvent = latests[latests.length - 1];
         // for (const event of latests) {
 
         const modeWasUndefined = (this._mode === undefined);
