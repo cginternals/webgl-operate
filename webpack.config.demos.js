@@ -9,6 +9,7 @@ module.exports = {
         'cornell-box': ['cornell-box/cornellbox.ts'],
         'cubescape': ['cubescape/cubescape.ts'],
         'gltf-renderer': ['gltf-renderer/gltfrenderer.ts'],
+        'progressive-lighting': ['progressive-lighting/progressive-lighting.ts'],
         'eye-tracking': ['eye-tracking/eyetracking.ts'],
         'metaballs': ['metaballs/metaballs.ts'],
         'point-cloud': ['point-cloud/point-cloud.ts']
