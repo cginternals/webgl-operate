@@ -178,6 +178,7 @@ export class Controller {
     protected request(source: Controller.RequestType = Controller.RequestType.Frame): void {
         if (this._block) {
             this._blockedUpdates++;
+            this._animationFrameID = 0;
             return;
         }
 
