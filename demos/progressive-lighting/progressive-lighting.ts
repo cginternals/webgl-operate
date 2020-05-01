@@ -396,7 +396,7 @@ export class ProgressiveLightingRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider, eventProvider.touchEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         /**

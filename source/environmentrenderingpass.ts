@@ -21,7 +21,7 @@ export class EnvironmentRenderingPass extends Initializable {
 
     protected _environmentTexture: Texture2D | TextureCube | undefined;
     protected _environmentTexture2: Texture2D | undefined;
-    protected _environmenTextureType: EnvironmentTextureType;
+    protected _envTextureType: EnvironmentTextureType;
     protected _camera: Camera | undefined;
 
     protected _cubeMapProgram: Program;
@@ -29,7 +29,13 @@ export class EnvironmentRenderingPass extends Initializable {
     protected _sphereMapProgram: Program;
     protected _polarMapProgram: Program;
 
+    protected _uSkipLod: WebGLUniformLocation;
+
     protected _ndcTriangle: NdcFillingTriangle;
+
+    protected _skipCubeLod = false;
+    protected _altered = true;
+
 
     constructor(context: Context) {
         super();
@@ -67,6 +73,9 @@ export class EnvironmentRenderingPass extends Initializable {
         this._cubeMapProgram.link();
         this._cubeMapProgram.bind();
         gl.uniform1i(this._cubeMapProgram.uniform('u_cubemap'), 0);
+
+        this._uSkipLod = this._cubeMapProgram.uniform('u_skipLod');
+
         this._cubeMapProgram.unbind();
 
         // Equi map program
@@ -121,6 +130,16 @@ export class EnvironmentRenderingPass extends Initializable {
 
     update(): void {
 
+        if (this._altered === false) {
+            return;
+        }
+
+        const gl = this._context.gl;
+
+        this._cubeMapProgram.bind();
+        gl.uniform1i(this._uSkipLod, this._skipCubeLod);
+
+        this._altered = false;
     }
 
     frame(): void {
@@ -132,19 +151,19 @@ export class EnvironmentRenderingPass extends Initializable {
 
         let program = this._cubeMapProgram;
 
-        if (this._environmenTextureType === EnvironmentTextureType.EquirectangularMap) {
+        if (this._envTextureType === EnvironmentTextureType.EquirectangularMap) {
             assert(this._environmentTexture instanceof Texture2D, `Input texture expected to be Texture2D for equirectangular mapping.`);
             this._environmentTexture!.bind(gl.TEXTURE0);
             program = this._equiMapProgram;
-        } else if (this._environmenTextureType === EnvironmentTextureType.SphereMap) {
+        } else if (this._envTextureType === EnvironmentTextureType.SphereMap) {
             assert(this._environmentTexture instanceof Texture2D, `Input texture expected to be Texture2D for sphere mapping.`);
             this._environmentTexture!.bind(gl.TEXTURE0);
             program = this._sphereMapProgram;
-        } else if (this._environmenTextureType === EnvironmentTextureType.CubeMap) {
+        } else if (this._envTextureType === EnvironmentTextureType.CubeMap) {
             assert(this._environmentTexture instanceof TextureCube, `Input texture expected to be a TextureCube for cube mapping.`);
             this._environmentTexture!.bind(gl.TEXTURE0);
             program = this._cubeMapProgram;
-        } else if (this._environmenTextureType === EnvironmentTextureType.PolarMap) {
+        } else if (this._envTextureType === EnvironmentTextureType.PolarMap) {
             assert(this._environmentTexture2 !== undefined, `Two input textures expected for polar mapping.`);
             assert(this._environmentTexture instanceof Texture2D, `Input texture expected to be a Texture2D for polar mapping.`);
             assert(this._environmentTexture2 instanceof Texture2D, `Input texture expected to be a Texture2D for polar mapping.`);
@@ -156,7 +175,6 @@ export class EnvironmentRenderingPass extends Initializable {
         program.bind();
 
         gl.uniformMatrix4fv(program.uniform('u_viewProjectionInverse'), false, this._camera!.viewProjectionInverse);
-        gl.disable(gl.DEPTH_TEST);
 
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();
@@ -165,7 +183,7 @@ export class EnvironmentRenderingPass extends Initializable {
     }
 
     set environmentTextureType(type: EnvironmentTextureType) {
-        this._environmenTextureType = type;
+        this._envTextureType = type;
     }
 
     set environmentTexture(texture: Texture2D | TextureCube) {
@@ -178,6 +196,14 @@ export class EnvironmentRenderingPass extends Initializable {
 
     set camera(camera: Camera) {
         this._camera = camera;
+    }
+
+    set skipCubeLod(skip: boolean) {
+        if (this._skipCubeLod === skip) {
+            return;
+        }
+        this._skipCubeLod = skip;
+        this._altered = true;
     }
 
 }

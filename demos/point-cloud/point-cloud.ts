@@ -159,7 +159,7 @@ export class PointCloudRenderer extends Renderer {
         gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
 
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         this._model = mat4.fromRotationTranslationScale(mat4.create(), quat.create()

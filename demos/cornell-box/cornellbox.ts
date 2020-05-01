@@ -214,7 +214,7 @@ export class CornellBoxRenderer extends Renderer {
         }
 
         // Initialize navigation
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
 

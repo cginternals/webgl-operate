@@ -56,11 +56,10 @@ export class GouraudPhongRenderer extends Renderer {
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param mouseEventProvider - required for mouse interaction
+     * @param eventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
-    protected onInitialize(context: Context, callback: Invalidate,
-        eventProvider: EventProvider): boolean {
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
 
         const gl = this._context.gl;
 
@@ -96,7 +95,7 @@ export class GouraudPhongRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure forward pass. */

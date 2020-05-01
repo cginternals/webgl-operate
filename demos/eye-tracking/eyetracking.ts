@@ -97,16 +97,10 @@ export class EyeTrackingRenderer extends Renderer {
 
     protected onSwap(): void { }
 
-    protected onInitialize(context: Context, callback: Invalidate,
-        eventProvider: EventProvider): boolean {
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
 
         /* Create event handler that listens to eye gaze events. */
-        this._eventHandler = new EventHandler(callback, {
-            mouseEventProvider: eventProvider.mouseEventProvider,
-            touchEventProvider: undefined,
-            eyeGazeEventProvider:
-                eventProvider.eyeGazeEventProvider
-        });
+        this._eventHandler = new EventHandler(callback, eventProvider);
 
         /* Listen to eye gaze events. */
         this._eventHandler.pushEyeGazeDataHandler((latests: Array<EyeGazeEvent>, previous: Array<EyeGazeEvent>) =>
@@ -158,7 +152,7 @@ export class EyeTrackingRenderer extends Renderer {
         this._camera.far = 8.0;
 
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         return true;

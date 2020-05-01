@@ -98,6 +98,12 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
+        "target": "arealight-example",
+        "title": "Area Lights",
+        "object": "AreaLightExample",
+        "caption": "Area lights using Multi-Frame sampling."
+    },
+    {
         "target": "tilecamera-example",
         "title": "Tile-based 4k Rendering",
         "object": "TileCameraExample",

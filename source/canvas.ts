@@ -16,6 +16,7 @@ import { Controller } from './controller';
 import { EyeGazeDataStreams } from './eyegazedatastream';
 import { EyeGazeEventProvider } from './eyegazeeventprovider';
 import { MouseEventProvider } from './mouseeventprovider';
+import { PointerEventProvider } from './pointereventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
 import { TouchEventProvider } from './toucheventprovider';
@@ -116,6 +117,9 @@ export class Canvas extends Resizable {
     /** @see {@link touchEventProvider} */
     protected _touchEventProvider: TouchEventProvider;
 
+    /** @see {@link pointerEventProvider} */
+    protected _pointerEventProvider: PointerEventProvider;
+
     /** @see {@link eyeGazeEventProvider} */
     protected _eyeGazeEventProvider: EyeGazeEventProvider;
 
@@ -158,6 +162,13 @@ export class Canvas extends Resizable {
 
         this._mouseEventProvider = new MouseEventProvider(this._element, 200);
         this._touchEventProvider = new TouchEventProvider(this._element, 200);
+        this._pointerEventProvider = new PointerEventProvider(this._element, 200);
+
+        /**
+         * Disable default handling of touch events by the browser.
+         * Touch events are handled using PointerEventProvider.
+         */
+        this._element.style.touchAction = 'none';
 
         const dataset = this._element.dataset;
 
@@ -430,7 +441,8 @@ export class Canvas extends Resizable {
          */
         this._renderer.initialize(this.context, (force) => this._controller.update(force),
             {
-                mouseEventProvider: this._mouseEventProvider, touchEventProvider: this._touchEventProvider,
+                pointerEventProvider: this._pointerEventProvider,
+                mouseEventProvider: this._mouseEventProvider,
                 eyeGazeEventProvider: this._eyeGazeEventProvider,
             });
 

@@ -106,7 +106,7 @@ namespace debug {
 
             /* Create and configure test navigation. */
 
-            this._testNavigation = new TestNavigation(() => this.invalidate(), eventProvider.mouseEventProvider);
+            this._testNavigation = new TestNavigation(() => this.invalidate(), eventProvider);
 
             return true;
         }
