@@ -99,12 +99,14 @@ export class SceneRenderer extends Renderer {
 
         /* Create and configure camera. */
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(-0.5, 2.0, 2.0);
-        this._camera.near = 1.0;
-        this._camera.far = 16.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(-0.5, 2.0, 2.0);
+            this._camera.near = 1.0;
+            this._camera.far = 16.0;
+        }
 
         /* Create and configure navigation */
 
@@ -155,6 +157,12 @@ export class SceneRenderer extends Renderer {
 
         // this._mesh.uninitialize();
         // this._meshProgram.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('frameSize');
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
     /**

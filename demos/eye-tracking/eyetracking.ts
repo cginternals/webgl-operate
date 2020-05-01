@@ -172,6 +172,13 @@ export class EyeTrackingRenderer extends Renderer {
 
         this._defaultFBO.uninitialize();
     }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
+    }
 }
 
 

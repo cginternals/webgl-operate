@@ -155,14 +155,22 @@ class ColorLerpRenderer extends Renderer {
             this.updateLabels();
         }
 
-        if (this._altered.clearColor) {
-            this._defaultFBO.clearColor(this._clearColor);
-        }
+        // This would render the clear color to be black?
+        //if (this._altered.clearColor) {
+        //     this._defaultFBO.clearColor(this._clearColor);
+        //}
 
         this._labelPass.update();
 
         this._altered.reset();
         this._camera.altered = false;
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**

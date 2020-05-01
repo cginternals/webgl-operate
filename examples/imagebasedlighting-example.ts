@@ -160,12 +160,14 @@ export class ImageBasedLightingRenderer extends Renderer {
             this.invalidate(true);
         });
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
-        this._camera.near = 1.0;
-        this._camera.far = 8.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
+            this._camera.near = 1.0;
+            this._camera.far = 8.0;
+        }
 
         this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
@@ -189,6 +191,11 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
     /**
