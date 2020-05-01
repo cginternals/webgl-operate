@@ -69,22 +69,24 @@ class ShadowMapRenderer extends Renderer {
         this._plane.initialize();
         this._plane.scale = vec2.fromValues(5.0, 5.0);
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(1.8, 2.6, 3.4);
-        this._camera.near = 2.0;
-        this._camera.far = 11.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(1.8, 2.6, 3.4);
+            this._camera.near = 2.0;
+            this._camera.far = 11.0;
+        }
 
-
-        this._light = new Camera();
-        this._light.center = vec3.fromValues(0.0, 0.75, 0.0);
-        this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
-        this._light.fovy = 30.0;
-        this._light.near = 4.0;
-        this._light.far = 20.0;
-
+        if (this._light === undefined) {
+            this._light = new Camera();
+            this._light.center = vec3.fromValues(0.0, 0.75, 0.0);
+            this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
+            this._light.fovy = 30.0;
+            this._light.near = 4.0;
+            this._light.far = 20.0;
+        }
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh-shadowed.vert');
         vert.initialize(require('./data/mesh-shadowed.vert'));
@@ -163,6 +165,12 @@ class ShadowMapRenderer extends Renderer {
         this._plane.uninitialize();
 
         this._shadowPass.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
     }
 
     protected onUpdate(): boolean {

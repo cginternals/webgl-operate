@@ -1,9 +1,28 @@
 [
     {
-        "target": "triangle-example",
-        "title": "Textured Triangle",
-        "object": "TriangleExample",
-        "caption": "Very basic scene, rendering a textured triangle."
+        "target": "arealight-example",
+        "title": "Area Lights",
+        "object": "AreaLightExample",
+        "caption": "Area lights using Multi-Frame sampling.",
+        "disabled": true
+    },
+    {
+        "target": "canvassize-example",
+        "title": "Canvas Size",
+        "object": "CanvasSizeExample",
+        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
+    },
+    {
+        "target": "colorlerp-example",
+        "title": "Color Lerp",
+        "object": "ColorLerpExample",
+        "caption": "Nearest and linear interpolation of label colors."
+    },
+    {
+        "target": "colorscale-example",
+        "title": "Color Scale",
+        "object": "ColorScaleExample",
+        "caption": "Variations and presets of color scales."
     },
     {
         "target": "cube-example",
@@ -18,22 +37,53 @@
         "caption": "Progressive antialiasing on a textured unit cube."
     },
     {
-        "target": "canvassize-example",
-        "title": "Canvas Size",
-        "object": "CanvasSizeExample",
-        "caption": "Rendering native sized pattern for testing/debugging (re)size issues."
-    },
-    {
-        "target": "xtoon-example",
-        "title": "XToon Shading",
-        "object": "XToonExample",
-        "caption": "Minimal example showing XToon shading for simple geometry."
+        "target": "envprojections-example",
+        "title": "Environment Mapping",
+        "object": "EnvironmentProjectionExample",
+        "caption": "Different techniques for environment mapping"
     },
     {
         "target": "gouraudphong-example",
         "title": "Gouraud/Phong Shading",
         "object": "GouraudPhongExample",
         "caption": "Comparison between Gouraud shading and Phong shading."
+    },
+    {
+        "target": "imagebasedlighting-example",
+        "title": "Image Based Lighting",
+        "object": "ImageBasedLightingExample",
+        "caption": "Image based lighting using prefiltered cube maps"
+    },
+    {
+        "target": "label2d-example",
+        "title": "Label 2D",
+        "object": "Label2DExample",
+        "caption": "Static/dynamic text that can be positioned in 2D space.",
+        "disabled": true
+    },
+    {
+        "target": "label3d-example",
+        "title": "Label 3D",
+        "object": "Label3DExample",
+        "caption": "Static/dynamic text that can be positioned in 3D space."
+    },
+    {
+        "target": "labelanchor-example",
+        "title": "Label Anchor",
+        "object": "LabelAnchorExample",
+        "caption": "Label placement with anchors top, bottom, ascent, descent, and center. "
+    },
+    {
+        "target": "labelelide-example",
+        "title": "Label Elide",
+        "object": "LabelElideExample",
+        "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
+    },
+    {
+        "target": "scene-example",
+        "title": "Scene",
+        "object": "SceneExample",
+        "caption": "Rendering with the webgl-operate scene concept"
     },
     {
         "target": "shadowmap-example",
@@ -48,48 +98,6 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
-        "target": "colorscale-example",
-        "title": "Color Scale",
-        "object": "ColorScaleExample",
-        "caption": "Variations and presets of color scales."
-    },
-    {
-        "target": "colorlerp-example",
-        "title": "Color Lerp",
-        "object": "ColorLerpExample",
-        "caption": "Nearest and linear interpolation of label colors."
-    },
-    {
-        "target": "labelelide-example",
-        "title": "Label Elide",
-        "object": "LabelElideExample",
-        "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
-    },
-    {
-        "target": "labelanchor-example",
-        "title": "Label Anchor",
-        "object": "LabelAnchorExample",
-        "caption": "Label placement with anchors top, bottom, ascent, descent, and center. "
-    },
-    {
-        "target": "scene-example",
-        "title": "Scene",
-        "object": "SceneExample",
-        "caption": "Rendering with the webgl-operate scene concept"
-    },
-    {
-        "target": "envprojections-example",
-        "title": "Environment Mapping",
-        "object": "EnvironmentProjectionExample",
-        "caption": "Different techniques for environment mapping"
-    },
-        {
-        "target": "imagebasedlighting-example",
-        "title": "Image Based Lighting",
-        "object": "ImageBasedLightingExample",
-        "caption": "Image based lighting using prefiltered cube maps"
-    },
-    {
         "target": "arealight-example",
         "title": "Area Lights",
         "object": "AreaLightExample",
@@ -102,6 +110,12 @@
         "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     },
     {
+        "target": "context-lost-example",
+        "title": "Context Lost Example",
+        "object": "ContextLostExample",
+        "caption": "Very basic scene handling context losses repeatedly."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
@@ -109,10 +123,15 @@
         "disabled": true
     },
     {
-        "target": "label3d-example",
-        "title": "Label 3D",
-        "object": "Label3DExample",
-        "caption": "Static/dynamic text that can be positioned in 3D space.",
-        "disabled": true
+        "target": "triangle-example",
+        "title": "Textured Triangle",
+        "object": "TriangleExample",
+        "caption": "Very basic scene, rendering a textured triangle."
+    },
+    {
+        "target": "xtoon-example",
+        "title": "XToon Shading",
+        "object": "XToonExample",
+        "caption": "Minimal example showing XToon shading for simple geometry."
     }
 ]

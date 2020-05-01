@@ -129,6 +129,13 @@ namespace debug {
             this._accumulate.uninitialize();
         }
 
+        protected onDiscarded(): void {
+            this._altered.alter('frameSize');
+            this._altered.alter('multiFrameNumber');
+            this._altered.alter('framePrecision');
+            this._altered.alter('clearColor');
+        }
+
 
         protected onUpdate(): boolean {
             this._testNavigation.update();

@@ -48,6 +48,8 @@ export class TriangleRenderer extends Renderer {
 
     protected _defaultFBO: DefaultFramebuffer;
 
+    private _rotationInterval: number | undefined;
+
 
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
@@ -139,8 +141,18 @@ export class TriangleRenderer extends Renderer {
         this._camera.far = 4.0;
 
 
-        this._navigation = new Navigation(callback, eventProvider);
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
         this._navigation.camera = this._camera;
+
+        this._rotationInterval = setInterval(() => {
+            if (!this.initialized) {
+                return;
+            }
+
+            this._camera.eye = vec3.fromValues(this._camera.eye[0], this._camera.eye[1], this._camera.eye[2] * 0.996);
+
+            this.invalidate();
+        }, 1000.0 / 60.0) as unknown as number;
 
         return true;
     }
@@ -151,6 +163,8 @@ export class TriangleRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
+        window.clearInterval(this._rotationInterval);
+
         this._program.uninitialize();
         this._context.gl.deleteBuffer(this._buffer);
 
@@ -158,6 +172,7 @@ export class TriangleRenderer extends Renderer {
     }
 
     protected onDiscarded(): void {
+        window.clearInterval(this._rotationInterval);
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
         this._altered.alter('frameSize');
@@ -229,10 +244,21 @@ export class TriangleRenderer extends Renderer {
 }
 
 
-export class TriangleExample extends Example {
+export class ContextLostExample extends Example {
 
     private _canvas: Canvas;
     private _renderer: TriangleRenderer;
+    private _contextLostTimeout: number | undefined;
+
+    protected loseContext(): void {
+        this._canvas.testLoseContext();
+        this._contextLostTimeout = window.setTimeout(() => this.restoreContext(), 2000);
+    }
+
+    protected restoreContext(): void {
+        this._canvas.testRestoreContext();
+        this._contextLostTimeout = window.setTimeout(() => this.loseContext(), 2000);
+    }
 
     onInitialize(element: HTMLCanvasElement | string): boolean {
 
@@ -244,10 +270,13 @@ export class TriangleExample extends Example {
         this._renderer = new TriangleRenderer();
         this._canvas.renderer = this._renderer;
 
+        this._contextLostTimeout = window.setTimeout(() => this.loseContext(), 2000);
+
         return true;
     }
 
     onUninitialize(): void {
+        window.clearTimeout(this._contextLostTimeout);
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

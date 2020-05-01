@@ -123,6 +123,8 @@ export class Canvas extends Resizable {
     /** @see {@link eyeGazeEventProvider} */
     protected _eyeGazeEventProvider: EyeGazeEventProvider;
 
+    protected _lostContextExtension: WEBGL_lose_context | undefined;
+
 
     /**
      * Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas's webgl
@@ -151,6 +153,10 @@ export class Canvas extends Resizable {
         this._element = element instanceof HTMLCanvasElement ? element :
             document.getElementById(element) as HTMLCanvasElement;
 
+        this._element.addEventListener('webglcontextcreationerror', (e: WebGLContextEvent) => {
+            console.log(e.statusMessage || 'Unknown error');
+        }, false);
+
         /* Register element for style mutation changes to invoke resize events. */
         this.observe(this._element);
 
@@ -171,6 +177,9 @@ export class Canvas extends Resizable {
         this.configureController(dataset);
 
         this.configureSizeAndScale(dataset);
+
+        this.configureContextLostAndRestore();
+        this.configureContextLostAndRestoreEmulation();
 
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
@@ -262,6 +271,67 @@ export class Canvas extends Resizable {
         this.onResize(); // invokes frameScaleNext and frameSizeNext
     }
 
+    /**
+     * Register 'webglcontextlost' and 'webglcontextrestored' to handle lost and restoration
+     * of WebGL contexts.
+     */
+    protected configureContextLostAndRestore(): void {
+        this._element.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
+            this.onContextLost();
+        }, false);
+        this._element.addEventListener('webglcontextrestored', (event) => {
+            this.onContextRestore();
+        }, false);
+    }
+
+    /**
+     * Obtain the WEBGL_lose_context extension, store it with this canvas instance and use it
+     * for emulation of the context lost and restore feature.
+     */
+    protected configureContextLostAndRestoreEmulation(): void {
+        this._lostContextExtension = this._context.gl.getExtension('WEBGL_lose_context');
+    }
+
+    /**
+     * Handle a WebGL context lost event.
+     * This is for both natural and emulated lost contexts.
+     */
+    protected onContextLost(): void {
+        log(LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
+        this._controller.block();
+
+        if (this._renderer) {
+            this._renderer.discard();
+        }
+    }
+
+    /**
+     * Handle a WebGL context restore event.
+     * This is for both natural and emulated restored contexts.
+     */
+    protected onContextRestore(): void {
+        log(LogLevel.Warning, 'WebGL Context restored. Reinitializing renderer...');
+        const renderer = this._renderer;
+        this.unbind();
+        this.bind(renderer);
+        this._controller.unblock();
+
+        /*
+        *  Dirtiest force of redraw that is required for Firefox.
+        *  More subtle redraw strategies seems to not be working for my Firefox 75.0
+        *  This results in blank flashes for one frame, but on other browsers this is
+        *  the behavior without redraw any way so we can perform this code on any system.
+        *
+        *  TODO: need to check for mobile, though.
+        */
+        const formerVisibility = this._element.style.visibility;
+        this._element.style.visibility = 'hidden';
+        // tslint:disable-next-line:no-unused-expression
+        this._element.offsetHeight;
+        this._element.style.visibility = formerVisibility;
+        /* */
+    }
 
     /**
      * Convenience function that triggers the canvas size retrieval. The native width and height of the canvas dom
@@ -703,6 +773,32 @@ export class Canvas extends Resizable {
      */
     get touchEventProvider(): TouchEventProvider {
         return this._touchEventProvider;
+    }
+
+    /**
+     * Emulate a WebGL context loss.
+     * This functionality requires to have configureContextLostAndRestoreEmulation() called before.
+     * This function is usually called within the constructor of this canvas.
+     */
+    public testLoseContext(): void {
+        if (this._lostContextExtension === undefined) {
+            return;
+        }
+
+        this._lostContextExtension.loseContext();
+    }
+
+    /**
+     * Emulate a WebGL context restore.
+     * This functionality requires to have configureContextLostAndRestoreEmulation() called before.
+     * This function is usually called within the constructor of this canvas.
+     */
+    public testRestoreContext(): void {
+        if (this._lostContextExtension === undefined) {
+            return;
+        }
+
+        this._lostContextExtension.restoreContext();
     }
 
     /**

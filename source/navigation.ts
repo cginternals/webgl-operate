@@ -101,7 +101,6 @@ export class Navigation {
      */
     protected _lastInteractionTime: number;
 
-
     constructor(
         invalidate: Invalidate,
         eventProvider: EventProvider) {
@@ -158,6 +157,12 @@ export class Navigation {
 
         const isPrimaryButtonDown = primaryEvent.buttons & 1;
         const isShiftKeyDown = primaryEvent.shiftKey;
+
+        const touchEvent = event as TouchEvent;
+        let isTouchEvent = false;
+        if (touchEvent !== undefined) {
+            isTouchEvent = touchEvent.touches !== undefined && touchEvent.touches.length > 0;
+        }
 
         const isPointerLockedRotate = PointerLock.active() && this._alwaysRotateOnMove;
         const numPointers = this._activeEvents.size;

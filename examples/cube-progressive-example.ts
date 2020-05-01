@@ -62,7 +62,7 @@ export class ProgressiveCubeRenderer extends Renderer {
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param mouseEventProvider - required for mouse interaction
+     * @param eventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
@@ -170,6 +170,13 @@ export class ProgressiveCubeRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**

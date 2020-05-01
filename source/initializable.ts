@@ -113,6 +113,32 @@ export abstract class Initializable {
     }
 
     /**
+     * Method decorator for discarding of Initializable inheritors. This decorator asserts the initialization
+     * status of the instance that is to be discarded, invokes its uninitialization, and falsifies the
+     * initialization status. In order to encourage the use of `assertInitialized` and `assertUninitialized` they are
+     * dynamically bound to a static, always-failing assert and an empty/undefined function respectively.
+     */
+    static discard(): MethodDecorator {
+        return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+
+            const discard = descriptor.value;
+            /* tslint:disable-next-line:space-before-function-paren only-arrow-functions */
+            descriptor.value = function (): void {
+                assert(this._initialized === true, `expected object to be initialized in order to uninitialize`);
+
+                /* call actual uninitialization */
+                discard.apply(this);
+                this._initialized = false;
+
+                /* assign assert functions for better performance when uninitialized */
+                this.assertUninitialized = () => undefined;
+                this.assertInitialized = () => Initializable.assertInitializedFalse(this);
+            };
+            return descriptor;
+        };
+    }
+
+    /**
      * Method decorator for asserting the initialization status of an initializable to be true.
      * @see {@link assertInitialized}
      */

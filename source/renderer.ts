@@ -176,6 +176,11 @@ export abstract class Renderer extends Initializable implements Controllable {
      */
     protected abstract onUninitialize(): void;
 
+    /**
+     * Actual discard call specified by inheritor.
+     */
+    protected abstract onDiscarded(): void;
+
 
     /**
      * Actual update call specified by inheritor. This is invoked in order to check if rendering of a frame is required
@@ -228,7 +233,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * When extending (specializing) this class, initialize should initialize all required stages and allocate assets
-     * that are shared between multiple stages. Note that `super.initialize()` should always be call first when
+     * that are shared between multiple stages. Note that `super.initialize()` should always be called first when
      * 'overriding' this function.
      *
      * Note: the context handle is stored in a property, but should be passed to the stages by specializing
@@ -255,7 +260,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     }
 
     /**
-     * Should release all assets and uninitialize all stages. `super.uninitialize()` should always be call first when
+     * Should release all assets and uninitialize all stages. `super.uninitialize()` should always be called first when
      * overriding this function.
      */
     @Initializable.uninitialize()
@@ -263,6 +268,15 @@ export abstract class Renderer extends Initializable implements Controllable {
         this.onUninitialize();
     }
 
+
+    /**
+     * Should discard all assets and uninitialize all stages. `super.discarded()` should always be called first when
+     * overriding this function.
+     */
+    @Initializable.discard()
+    public discard(): void {
+        this.onDiscarded();
+    }
 
     /**
      *
@@ -294,7 +308,7 @@ export abstract class Renderer extends Initializable implements Controllable {
 
     /**
      * Controllable interface intended to trigger rendering of a full pass of the renderer that results in either an
-     * intermediate frame for accumulation to a full multi-frame or full frame for itself.  The inheritor should invoke
+     * intermediate frame for accumulation to a full multi-frame or full frame for itself. The inheritor should invoke
      * frames of relevant rendering and processing stages.
      * @param frameNumber - The current frame number forwarded to onFrame.
      */

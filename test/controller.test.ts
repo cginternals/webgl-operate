@@ -127,6 +127,31 @@ describe('Controller', () => {
         expect(invokeStub.calledOnce).to.be.true;
     });
 
+    it('should render on unblock after already rendering before', () => {
+        const controller = new ControllerMock();
+
+        (global as any).window = {
+            requestAnimationFrame: () => {
+                controller.invoke(Controller.RequestType.Frame);
+                return ++ControllerMock.nextAnimationFrame;
+            },
+            cancelAnimationFrame: () => undefined,
+        };
+        const invokeStub = stub(controller, 'invoke');
+
+        controller.request();
+        expect(invokeStub.calledOnce).to.be.true;
+
+        invokeStub.reset();
+
+        controller.block();
+        controller.request();
+        expect(invokeStub.calledOnce).to.be.false;
+
+        controller.unblock();
+        expect(invokeStub.calledOnce).to.be.true;
+    });
+
     it('should not render when not initialized', () => {
         const controller = new ControllerMock();
 

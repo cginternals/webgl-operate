@@ -98,20 +98,23 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._ndcTriangle.initialize();
 
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(1.8, 2.6, 3.4);
-        this._camera.near = 2.0;
-        this._camera.far = 11.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.75, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(1.8, 2.6, 3.4);
+            this._camera.near = 2.0;
+            this._camera.far = 11.0;
+        }
 
-
-        this._light = new Camera();
-        this._light.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
-        this._light.near = 3.0;
-        this._light.far = 20.0;
+        if (this._light === undefined) {
+            this._light = new Camera();
+            this._light.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._light.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._light.eye = vec3.fromValues(-3.0, 5.0, 4.0);
+            this._light.near = 3.0;
+            this._light.far = 20.0;
+        }
 
 
         this._colorRenderTexture = new Texture2D(this._context, 'ColorRenderTexture');
@@ -196,6 +199,12 @@ class ShadowMapMultiframeRenderer extends Renderer {
         this._ndcTriangle.uninitialize();
 
         this._shadowPass.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
     }
 
     protected onUpdate(): boolean {

@@ -145,12 +145,14 @@ class CubescapeRenderer extends Renderer {
         this._uViewProjection = this._program.uniform('u_viewProjection');
 
         // init camera
-        this._camera = new Camera();
-        this._camera.eye = _gEye;
-        this._camera.center = _gCenter;
-        this._camera.up = _gUp;
-        this._camera.near = 0.1;
-        this._camera.far = 4.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.eye = _gEye;
+            this._camera.center = _gCenter;
+            this._camera.up = _gUp;
+            this._camera.near = 0.1;
+            this._camera.far = 4.0;
+        }
 
         this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
@@ -168,6 +170,11 @@ class CubescapeRenderer extends Renderer {
         this._terrain.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
 }

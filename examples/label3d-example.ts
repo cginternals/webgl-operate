@@ -1,18 +1,20 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries, vec3 } from 'webgl-operate';
 
 import {
     Camera,
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     FontFace,
     Invalidate,
     Label,
     LabelRenderPass,
-    Position2DLabel,
+    Navigation,
+    Position3DLabel,
     Renderer,
     Text,
     Wizard,
@@ -25,24 +27,19 @@ import { Example } from './example';
 // tslint:disable:max-classes-per-file
 
 
-class LabelAnchorRenderer extends Renderer {
+class Label3DRenderer extends Renderer {
 
     protected _extensions = false;
 
     protected _labelPass: LabelRenderPass;
 
-    protected _labelTop: Position2DLabel;
-    protected _labelAscent: Position2DLabel;
-    protected _labelCenter: Position2DLabel;
-    protected _labelBaseline: Position2DLabel;
-    protected _labelDescent: Position2DLabel;
-    protected _labelBottom: Position2DLabel;
-
+    protected _labelWrap: Position3DLabel;
+    protected _labelCentered: Position3DLabel;
 
     protected _camera: Camera;
+    protected _navigation: Navigation;
 
     protected _defaultFBO: DefaultFramebuffer;
-
 
     protected _fontFace: FontFace | undefined;
 
@@ -50,11 +47,11 @@ class LabelAnchorRenderer extends Renderer {
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param mouseEventProvider - required for mouse interaction
+     * @param eventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
-        /* eventProvider: EventProvider */): boolean {
+        eventProvider: EventProvider): boolean {
 
         /* Create framebuffers, textures, and render buffers. */
 
@@ -63,9 +60,15 @@ class LabelAnchorRenderer extends Renderer {
 
         /* Create and configure test navigation. */
 
-        if (this._camera === undefined) {
-            this._camera = new Camera();
-        }
+        this._camera = new Camera();
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 1.0);
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.near = 0.1;
+        this._camera.far = 4.0;
+
+        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation.camera = this._camera;
 
         /* Create and configure label pass. */
 
@@ -82,8 +85,9 @@ class LabelAnchorRenderer extends Renderer {
                 }
                 this._fontFace = fontFace;
                 this.updateLabels();
+
                 this.finishLoading();
-                this.invalidate();
+                this.invalidate(true);
             })
             .catch((reason) => auxiliaries.log(auxiliaries.LogLevel.Error, reason));
 
@@ -105,6 +109,8 @@ class LabelAnchorRenderer extends Renderer {
     protected onDiscarded(): void {
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**
@@ -115,6 +121,7 @@ class LabelAnchorRenderer extends Renderer {
      * @returns whether to redraw
      */
     protected onUpdate(): boolean {
+        this._navigation.update();
 
         for (const label of this._labelPass.labels) {
             if (label.altered || label.color.altered) {
@@ -172,58 +179,42 @@ class LabelAnchorRenderer extends Renderer {
 his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his \
 brown belly, slightly domed and divided by arches into stiff sections.';
 
-        this._labelTop = new Position2DLabel(new Text(`Label.Anchor.Top |  ${kafka}`), Label.Type.Dynamic);
-        this._labelTop.lineAnchor = Label.LineAnchor.Top;
+        this._labelWrap = new Position3DLabel(new Text(`Wrap: ${kafka}`), Label.Type.Dynamic);
+        this._labelWrap.wrap = true;
+        this._labelWrap.lineWidth = 0.8;
 
-        this._labelAscent = new Position2DLabel(new Text(`Label.Anchor.Ascent |  ${kafka}`), Label.Type.Dynamic);
-        this._labelAscent.lineAnchor = Label.LineAnchor.Ascent;
+        this._labelCentered = new Position3DLabel(new Text(`Label.LineAnchor\n+\nLabel.Alignment.Center`),
+            Label.Type.Dynamic);
+        this._labelCentered.lineAnchor = Label.LineAnchor.Center;
+        this._labelCentered.alignment = Label.Alignment.Center;
 
-        this._labelCenter = new Position2DLabel(new Text(`Label.Anchor.Center |  ${kafka}`), Label.Type.Dynamic);
-        this._labelCenter.lineAnchor = Label.LineAnchor.Center;
-
-        this._labelBaseline = new Position2DLabel(new Text(`Label.Anchor.Baseline |  ${kafka}`), Label.Type.Dynamic);
-        this._labelBaseline.lineAnchor = Label.LineAnchor.Baseline;
-
-        this._labelDescent = new Position2DLabel(new Text(`Label.Anchor.Descent |  ${kafka}`), Label.Type.Dynamic);
-        this._labelDescent.lineAnchor = Label.LineAnchor.Descent;
-
-        this._labelBottom = new Position2DLabel(new Text(`Label.Anchor.Bottom |  ${kafka}`), Label.Type.Dynamic);
-        this._labelBottom.lineAnchor = Label.LineAnchor.Bottom;
-
-        this._labelPass.labels = [this._labelTop, this._labelAscent, this._labelCenter,
-        this._labelBaseline, this._labelDescent, this._labelBottom];
+        this._labelPass.labels = [this._labelWrap, this._labelCentered];
 
         for (const label of this._labelPass.labels) {
-            label.fontSize = 20;
+            label.fontSize = 0.05;
             label.color.fromHex('#fff');
-            label.fontSizeUnit = Label.Unit.Pixel;
+            label.fontSizeUnit = Label.Unit.World;
         }
     }
 
     protected updateLabels(): void {
-        if (!this._labelBaseline.valid) {
+        if (!this._labelWrap.valid) {
             return;
         }
 
-        const step = this._canvasSize[1] / 6.0;
-        const top = 2.5 * step;
-        const width = this._canvasSize[0] - 32.0 /* margin */ * Label.devicePixelRatio();
+        this._labelWrap.position = [-0.3, 0.0, 0.0];
+        this._labelWrap.up = [0.0, 0.0, -1.0];
 
-        this._labelTop.position = [-width * 0.5, top - 0.0 * step];
-        this._labelAscent.position = [-width * 0.5, top - 1.0 * step];
-        this._labelCenter.position = [-width * 0.5, top - 2.0 * step];
-        this._labelBaseline.position = [-width * 0.5, top - 3.0 * step];
-        this._labelDescent.position = [-width * 0.5, top - 4.0 * step];
-        this._labelBottom.position = [-width * 0.5, top - 5.0 * step];
+        this._labelCentered.position = [0.0, 0.0, 0.0];
     }
 
 }
 
 
-export class LabelAnchorExample extends Example {
+export class Label3DExample extends Example {
 
     private _canvas: Canvas;
-    private _renderer: LabelAnchorRenderer;
+    private _renderer: Label3DRenderer;
 
     onInitialize(element: HTMLCanvasElement | string): boolean {
 
@@ -232,34 +223,26 @@ export class LabelAnchorExample extends Example {
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
 
-        this._renderer = new LabelAnchorRenderer();
+        this._renderer = new Label3DRenderer();
         this._canvas.renderer = this._renderer;
 
-        // Create some horizontal rules/lines as reference for the different anchors.
-        const hrStyle = 'z-index: 1; position: absolute; width: 98%; margin: 0; margin-left: 1%;'
-            + 'border: none; border-top: 1pt solid #1c75bc;';
+        // Create a target cross as reference for coordinate origin [0,0,0]
 
-        const hr0 = document.createElement('hr');
-        hr0.setAttribute('style', `${hrStyle} top:  8.3333%;`);
-        const hr1 = document.createElement('hr');
-        hr1.setAttribute('style', `${hrStyle} top: 25.0000%;`);
-        const hr2 = document.createElement('hr');
-        hr2.setAttribute('style', `${hrStyle} top: 41.6666%;`);
-        const hr3 = document.createElement('hr');
-        hr3.setAttribute('style', `${hrStyle} top: 58.3333%;`);
-        const hr4 = document.createElement('hr');
-        hr4.setAttribute('style', `${hrStyle} top: 75.0000%;`);
-        const hr5 = document.createElement('hr');
-        hr5.setAttribute('style', `${hrStyle} top: 91.6666%;`);
+        const hlStyle = 'z-index: 1; position: absolute; width: 100%; margin: 0; margin-left: 0%;'
+            + 'border: none; border-bottom: 1pt solid #1c75bc; border-top: 1pt solid #1c75bc;';
+        const vlStyle = 'z-index: 1; position: absolute; height: 100%; margin: 0; margin-top: 0%;'
+            + 'border: none; border-left: 1pt solid #1cbc75; border-right: 1pt solid #1cbc75;';
+
+        const hl = document.createElement('hl');
+        hl.setAttribute('style', `${hlStyle} top: 50%;`);
+        const vl = document.createElement('vl');
+        vl.setAttribute('style', `${vlStyle} left: 50%;`);
+
 
         const parent = this._canvas.element!.parentElement!;
         const reference = this._canvas.element!;
-        parent.insertBefore(hr0, reference);
-        parent.insertBefore(hr1, reference);
-        parent.insertBefore(hr2, reference);
-        parent.insertBefore(hr3, reference);
-        parent.insertBefore(hr4, reference);
-        parent.insertBefore(hr5, reference);
+        parent.insertBefore(hl, reference);
+        parent.insertBefore(vl, reference);
 
         return true;
     }
@@ -273,7 +256,7 @@ export class LabelAnchorExample extends Example {
         return this._canvas;
     }
 
-    get renderer(): LabelAnchorRenderer {
+    get renderer(): Label3DRenderer {
         return this._renderer;
     }
 
