@@ -176,12 +176,13 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._environmentRenderingPass.initialize();
         this._environmentRenderingPass.environmentTextureType = EnvironmentTextureType.CubeMap;
         this._environmentRenderingPass.environmentTexture = this._cubemap;
+        this._environmentRenderingPass.skipCubeLod = true;
         this._environmentRenderingPass.camera = this._camera;
 
         return true;
     }
 
-    /**
+    /**<
      * Uninitializes buffers, geometry and program.
      */
     protected onUninitialize(): void {
@@ -225,6 +226,8 @@ export class ImageBasedLightingRenderer extends Renderer {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        this._environmentRenderingPass.update();
+
         this._altered.reset();
         this._camera.altered = false;
     }
@@ -241,7 +244,6 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        this._environmentRenderingPass.frame();
 
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
@@ -273,6 +275,12 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
+
+        gl.enable(gl.DEPTH_TEST);
+
+        this._environmentRenderingPass.frame();
+
+
     }
 
     protected onSwap(): void { }
