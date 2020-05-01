@@ -241,7 +241,7 @@ export class TileCameraGenerator {
      * Returns if tiles still need to be rendered.
      */
     public hasNextTile(): boolean {
-        return this.tile < this.numTiles - 1 && this.tile >= 0;
+        return this.tile <= this.numTiles - 1 && this.tile >= 0;
     }
 
     /**
