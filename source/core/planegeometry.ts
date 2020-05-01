@@ -15,9 +15,17 @@ export class PlaneGeometry extends Geometry {
         +1.0, 0.0, +1.0,
     ]);
 
+    protected static readonly UV = new Float32Array([
+        -1.0, -1.0,
+        -1.0, +1.0,
+        +1.0, -1.0,
+        +1.0, +1.0,
+    ]);
+
     protected static readonly INDICES = new Uint8Array([0, 1, 2, 3]);
 
     protected _vertexLocation: GLuint = 0;
+    protected _texCoordLocation: GLuint = 1;
 
     /** @see {@link translation} */
     protected _translation: vec3;
@@ -43,9 +51,11 @@ export class PlaneGeometry extends Geometry {
         /* Generate identifier from constructor name if none given. */
         identifier = identifier !== undefined && identifier !== `` ? identifier : this.constructor.name;
 
-        const vertexVBO = new Buffer(context, identifier + 'VBO');
+        const vertexVBO = new Buffer(context, identifier + 'VertexVBO');
+        const texCoordVBO = new Buffer(context, identifier + 'TexCoordVBO');
         const indexBuffer = new Buffer(context, identifier + 'IndexBuffer');
         this._buffers.push(vertexVBO);
+        this._buffers.push(texCoordVBO);
         this._buffers.push(indexBuffer);
     }
 
@@ -56,16 +66,18 @@ export class PlaneGeometry extends Geometry {
     protected bindBuffers(): void {
         /* Please note the implicit bind in attribEnable */
         this._buffers[0].attribEnable(this._vertexLocation, 3, this.context.gl.FLOAT, false, 0, 0, true, false);
-        this._buffers[1].bind();
+        this._buffers[1].attribEnable(this._texCoordLocation, 2, this.context.gl.FLOAT, false, 0, 0, true, false);
+        this._buffers[2].bind();
     }
 
     /**
      * Unbinds the vertex buffer object (VBO) and disables the binding point.
      */
-    protected unbindBuffers(indices: Array<GLuint>): void {
+    protected unbindBuffers(): void {
         /* Please note the implicit unbind in attribEnable is skipped */
         this._buffers[0].attribDisable(this._vertexLocation, true, true);
-        this._buffers[1].unbind();
+        this._buffers[1].attribDisable(this._texCoordLocation, true, true);
+        this._buffers[2].unbind();
     }
 
 
@@ -73,15 +85,19 @@ export class PlaneGeometry extends Geometry {
      * Creates the vertex buffer object (VBO) and creates and initializes the buffer's data store.
      * @param aVertex - Attribute binding point for vertices.
      */
-    initialize(aVertex: GLuint = 0): boolean {
+    initialize(aVertex: GLuint = 0, aTexCoord = 1): boolean {
         const gl = this.context.gl;
 
         this._vertexLocation = aVertex;
+        this._texCoordLocation = aTexCoord;
 
-        const valid = super.initialize([gl.ARRAY_BUFFER, gl.ELEMENT_ARRAY_BUFFER], [aVertex, 8]);
+        const valid = super.initialize(
+            [gl.ARRAY_BUFFER, gl.ARRAY_BUFFER, gl.ELEMENT_ARRAY_BUFFER],
+            [aVertex, aTexCoord, 8]);
 
         this._buffers[0].data(PlaneGeometry.VERTICES, gl.STATIC_DRAW);
-        this._buffers[1].data(PlaneGeometry.INDICES, gl.STATIC_DRAW);
+        this._buffers[1].data(PlaneGeometry.UV, gl.STATIC_DRAW);
+        this._buffers[2].data(PlaneGeometry.INDICES, gl.STATIC_DRAW);
 
         return valid;
     }
@@ -121,5 +137,19 @@ export class PlaneGeometry extends Geometry {
     get transformation(): mat4 {
         const out = mat4.create();
         return mat4.fromRotationTranslationScale(out, this._rotation, this._translation, this._scale);
+    }
+
+    /**
+     * Attribute location to which this geometrys vertices are bound to.
+     */
+    get vertexLocation(): GLuint {
+        return this._vertexLocation;
+    }
+
+    /**
+     * Attribute location to which this geometrys texture coordinates are bound to.
+     */
+    get texCoordLocation(): GLuint {
+        return this._texCoordLocation;
     }
 }

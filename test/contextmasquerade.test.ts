@@ -52,6 +52,11 @@ describe('ContextMasquerade', () => {
         expect(safariMasquerade.functionsUndefine).to.include('readBuffer');
     });
 
+    it('should raise an exception if present does not exists', () => {
+        const presentThatDoesNotExist = 'undefined_present'
+        expect(() => {ContextMasquerade.fromPreset(presentThatDoesNotExist)}).to.throw();
+    });
+
     it('should be initializable from empty preset', () => {
         const jsonStub = sandbox.stub(ContextMasquerade, 'presets');
         jsonStub.returns([{ identifier: 'empty', backend: 'webgl1' }]);

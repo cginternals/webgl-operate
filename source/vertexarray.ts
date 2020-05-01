@@ -19,7 +19,7 @@ import { AbstractObject } from './object';
  * ```
  * export class ScreenFillingTriangle extends VertexArray {
  * // ...
- *     bind(index: GLuint): void { ...  }
+ *     bind(index: GLuint): void { ... }
  *     unbind(index: GLuint): void { ... }
  *     draw(): void { ... }
  * }

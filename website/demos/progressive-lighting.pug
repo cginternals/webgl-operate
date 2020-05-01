@@ -1,0 +1,77 @@
+extends demo.pug
+
+
+block canvas
+
+  div.spinnercontainer
+    canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
+    // canvas(id = 'demo-canvas', data-backend = 'auto', width = '1920', height = '1080')
+    // canvas(id = 'demo-canvas', data-backend = 'auto', width = '1280', height = '720')
+    div.spinner
+        div
+        div
+        div
+        div
+
+  div.row
+    div.col
+      .form-group.row
+        label(for = 'asset-select').col-md-2.col-form-label Asset:
+        .col-md-10
+          select.custom-select.custom-select-sm.multiple#asset-select
+            option(value='Cornell') Cornell
+            option(value='Kitchen') Kitchen
+            option(value='Skyline') Skyline
+            option(value='Datsun') Datsun
+      .form-group.row
+        label(for = 'environment-select').col-md-2.col-form-label Environment:
+        .col-md-10
+          select.custom-select.custom-select-sm.multiple#environment-select
+            option(value='studio006') studio006
+            option(value='studio010' selected) studio010
+            option(value='studio011') studio011
+            option(value='studio015') studio015
+            option(value='cayley_interior') cayley_interior
+            option(value='noon_grass') noon_grass
+      .form-group.row
+        label(for = 'debug-select').col-md-2.col-form-label Debug Mode:
+        .col-md-10
+          select.custom-select.custom-select-sm.multiple#debug-select
+            option(value='Final') Final
+            option(value='Flat') Flat
+            option(value='IBL') IBL
+            option(value='Light sources') Light sources
+            option(value='Illuminance') Illuminance
+      .form-group.row
+        label(for = 'occlusion-range').col-md-2.col-form-label Occlusion Range:
+        .col-md-10
+          input(type = 'range', min = '5', max = '300', value = '200').form-control-range#occlusion-range
+      .form-group.row
+        label(for = 'exposure-range').col-md-2.col-form-label Exposure:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '10').form-control-range#exposure-range
+      .form-group.row
+        label(for = 'ibl-range').col-md-2.col-form-label IBL strength:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '50').form-control-range#ibl-range
+      .form-group.row
+        label(for = 'dof-range').col-md-2.col-form-label DoF strength:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '0').form-control-range#dof-range
+      .form-group.row
+        label(for = 'frame-scale').col-md-2.col-form-label Frame Scale:
+        .col-md-10
+          input(type = 'range', min = '0', max = '100', value = '100').form-control-range#frame-scale
+      .form-group.row
+        label(for = 'multiframe-count').col-md-2.col-form-label Multiframe Count:
+        .col-md-10
+          input(type = 'number', min = '2', max = '1024', value = '128').form-control-range#multiframe-count
+
+  //block breakdown
+  //  p This should describe the demo in much more detail, e.g., referring to relevant code snippets and resources
+  //
+  //  include ../partials/code.pug
+  //  +code('demo-code', 'const demo.code.for.breakdown = here;', 'Some demo code for source break down:')
+
+block onload
+  script window.onload = function () { clipboard(); demo(new ProgressiveLightingDemo(), 'demo-canvas'); }
