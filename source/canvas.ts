@@ -299,6 +299,7 @@ export class Canvas extends Resizable {
      */
     protected onContextLost(): void {
         log(LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
+        this._controller.cancel();
         this._controller.block();
 
         if (this._renderer) {
