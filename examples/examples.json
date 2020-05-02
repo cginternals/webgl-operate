@@ -25,16 +25,10 @@
         "caption": "Variations and presets of color scales."
     },
     {
-        "target": "cube-example",
-        "title": "Textured Cube",
-        "object": "CubeExample",
-        "caption": "Minimalistic scene featuring a textured unit cube."
-    },
-    {
-        "target": "cube-progressive-example",
-        "title": "Textured Cube (Progressive)",
-        "object": "ProgressiveCubeExample",
-        "caption": "Progressive antialiasing on a textured unit cube."
+        "target": "context-lost-example",
+        "title": "Context Lost Example",
+        "object": "ContextLostExample",
+        "caption": "Very basic scene handling context losses repeatedly."
     },
     {
         "target": "envprojections-example",
@@ -98,35 +92,28 @@
         "caption": "Scene showcasing how to achieve soft shadows using multi-frame sampling."
     },
     {
-        "target": "arealight-example",
-        "title": "Area Lights",
-        "object": "AreaLightExample",
-        "caption": "Area lights using Multi-Frame sampling."
+        "target": "cube-example",
+        "title": "Textured Cube",
+        "object": "CubeExample",
+        "caption": "Minimalistic scene featuring a textured unit cube."
     },
     {
-        "target": "tilecamera-example",
-        "title": "Tile-based 4k Rendering",
-        "object": "TileCameraExample",
-        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
-    },
-    {
-        "target": "context-lost-example",
-        "title": "Context Lost Example",
-        "object": "ContextLostExample",
-        "caption": "Very basic scene handling context losses repeatedly."
-    },
-    {
-        "target": "label2d-example",
-        "title": "Label 2D",
-        "object": "Label2DExample",
-        "caption": "Static/dynamic text that can be positioned in 2D space.",
-        "disabled": true
+        "target": "cube-progressive-example",
+        "title": "Textured Cube (Progressive)",
+        "object": "ProgressiveCubeExample",
+        "caption": "Progressive antialiasing on a textured unit cube."
     },
     {
         "target": "triangle-example",
         "title": "Textured Triangle",
         "object": "TriangleExample",
         "caption": "Very basic scene, rendering a textured triangle."
+    },
+    {
+        "target": "tilecamera-example",
+        "title": "Tile-based 4k Rendering",
+        "object": "TileCameraExample",
+        "caption": "Rendering of a cube with the tiled camera in 4 different ways."
     },
     {
         "target": "xtoon-example",

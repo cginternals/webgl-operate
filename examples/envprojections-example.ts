@@ -161,9 +161,9 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._cubeMap.initialize(592, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         this._cubeMap.fetch({
-            positiveX: 'data/cube-map-px.jpg', negativeX: 'data/cube-map-nx.jpg',
-            positiveY: 'data/cube-map-py.jpg', negativeY: 'data/cube-map-ny.jpg',
-            positiveZ: 'data/cube-map-pz.jpg', negativeZ: 'data/cube-map-nz.jpg',
+            positiveX: '/examples/data/cube-map-px.jpg', negativeX: '/examples/data/cube-map-nx.jpg',
+            positiveY: '/examples/data/cube-map-py.jpg', negativeY: '/examples/data/cube-map-ny.jpg',
+            positiveZ: '/examples/data/cube-map-pz.jpg', negativeZ: '/examples/data/cube-map-nz.jpg',
         }).then(() => {
             const gl = this._context.gl;
             this._cubeMap.filter(gl.NEAREST, gl.NEAREST, true, true);
@@ -176,7 +176,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._equiRectangularMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._equiRectangularMap.fetch('data/equirectangular-map.jpg').then(() => {
+            this._equiRectangularMap.fetch('/examples/data/equirectangular-map.jpg').then(() => {
                 this.setupTexture2D(this._equiRectangularMap);
             }));
 
@@ -185,7 +185,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._sphereMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._sphereMap.fetch('data/sphere-map-ny.jpg').then(() => {
+            this._sphereMap.fetch('/examples/data/sphere-map-ny.jpg').then(() => {
                 this.setupTexture2D(this._sphereMap);
             }));
 
@@ -195,7 +195,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._polarMaps[0].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._polarMaps[0].fetch('data/paraboloid-map-py.jpg').then(() => {
+            this._polarMaps[0].fetch('/examples/data/paraboloid-map-py.jpg').then(() => {
                 this.setupTexture2D(this._polarMaps[0]);
             }));
 
@@ -204,7 +204,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._polarMaps[1].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._polarMaps[1].fetch('data/paraboloid-map-ny.jpg').then(() => {
+            this._polarMaps[1].fetch('/examples/data/paraboloid-map-ny.jpg').then(() => {
                 this.setupTexture2D(this._polarMaps[1]);
             }));
 

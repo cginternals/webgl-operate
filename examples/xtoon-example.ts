@@ -94,7 +94,7 @@ export class XToonRenderer extends Renderer {
         // this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         // this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/gradient.png', false).then(() => {
+        this._texture.fetch('/examples/data/gradient.png', false).then(() => {
             this.invalidate(true);
         });
 

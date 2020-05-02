@@ -395,7 +395,7 @@ export class GltfRenderer extends Renderer {
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
-        this._brdfLUT.fetch('../examples/data/imagebasedlighting/brdfLUT.png');
+        this._brdfLUT.fetch('/examples/data/imagebasedlighting/brdfLUT.png');
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
@@ -410,13 +410,13 @@ export class GltfRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `../examples/data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `../examples/data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `../examples/data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `../examples/data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `../examples/data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `../examples/data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
-            }, mipLevel);
+                positiveX: `/examples/data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `/examples/data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `/examples/data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `/examples/data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `/examples/data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `/examples/data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
+            }, false, mipLevel);
         }
     }
 }

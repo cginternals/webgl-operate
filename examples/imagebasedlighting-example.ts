@@ -108,7 +108,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._albedoTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._albedoTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._albedoTexture.fetch('./data/imagebasedlighting/Metal_001_basecolor.png', false));
+            this._albedoTexture.fetch('/examples/data/imagebasedlighting/Metal_001_basecolor.png'));
 
         this._roughnessTexture = new Texture2D(context, 'RoughnessTexture');
         this._roughnessTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
@@ -116,7 +116,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._roughnessTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._roughnessTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._roughnessTexture.fetch('./data/imagebasedlighting/Metal_001_roughness.png', false));
+            this._roughnessTexture.fetch('/examples/data/imagebasedlighting/Metal_001_roughness.png'));
 
         this._metallicTexture = new Texture2D(context, 'MetallicTexture');
         this._metallicTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
@@ -124,7 +124,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._metallicTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._metallicTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._metallicTexture.fetch('./data/imagebasedlighting/Metal_001_metallic.png', false));
+            this._metallicTexture.fetch('/examples/data/imagebasedlighting/Metal_001_metallic.png'));
 
         this._normalTexture = new Texture2D(context, 'NormalTexture');
         this._normalTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
@@ -132,14 +132,14 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._normalTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._normalTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false));
+            this._normalTexture.fetch('/examples/data/imagebasedlighting/Metal_001_normal.png'));
 
         this._brdfLUT = new Texture2D(context, 'BRDFLookUpTable');
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
         this._promises.push(
-            this._brdfLUT.fetch('./data/imagebasedlighting/brdfLUT.png'));
+            this._brdfLUT.fetch('/examples/data/imagebasedlighting/brdfLUT.png'));
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);

@@ -1016,7 +1016,7 @@ export class ProgressiveLightingRenderer extends Renderer {
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
-        this._brdfLUT.fetch('../examples/data/imagebasedlighting/brdfLUT.png');
+        this._brdfLUT.fetch('/examples/data/imagebasedlighting/brdfLUT.png');
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
@@ -1031,7 +1031,7 @@ export class ProgressiveLightingRenderer extends Renderer {
             negativeY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-ny-diffuse.png`,
             positiveZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-pz-diffuse.png`,
             negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-diffuse.png`,
-        });
+        }, true);
 
         this._specularEnvironment = new TextureCube(this._context, 'SpecularEnvironment');
         this._specularEnvironment.initialize(512, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
@@ -1049,7 +1049,7 @@ export class ProgressiveLightingRenderer extends Renderer {
                 negativeY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-ny-${mipLevel}.png`,
                 positiveZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-pz-${mipLevel}.png`,
                 negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-${mipLevel}.png`,
-            }, mipLevel);
+            }, true, mipLevel);
         }
     }
 }

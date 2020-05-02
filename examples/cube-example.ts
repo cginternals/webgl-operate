@@ -88,7 +88,7 @@ export class CubeRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/blue-painted-planks-diff-1k-modified.webp', false).then(() => {
+        this._texture.fetch('/examples/data/blue-painted-planks-diff-1k-modified.webp').then(() => {
             const gl = context.gl;
 
             this._program.bind();

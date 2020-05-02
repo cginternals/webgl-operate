@@ -246,7 +246,7 @@ export class SceneRenderer extends Renderer {
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
         texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
-        texture.fetch('./data/concrete_floor_02_diff_1k.webp', false).then(() => {
+        texture.fetch('/examples/data/concrete_floor_02_diff_1k.webp').then(() => {
             this.finishLoading();
             this.invalidate(true);
         });
@@ -316,7 +316,7 @@ export class SceneRenderer extends Renderer {
         /* Create and load texture. */
         const texture = new Texture2D(this._context, 'Texture');
         texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
-        texture.fetch('./data/blue-painted-planks-diff-1k-modified.webp', false).then(() => {
+        texture.fetch('/examples/data/blue-painted-planks-diff-1k-modified.webp').then(() => {
             this.invalidate(true);
         });
 
