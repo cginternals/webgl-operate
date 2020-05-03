@@ -62,7 +62,7 @@ export class ProgressiveCubeRenderer extends Renderer {
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param mouseEventProvider - required for mouse interaction
+     * @param eventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
     protected onInitialize(context: Context, callback: Invalidate,
@@ -123,7 +123,7 @@ export class ProgressiveCubeRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/blue-painted-planks-diff-1k-modified.webp', false).then(() => {
+        this._texture.fetch('/examples/data/blue-painted-planks-diff-1k-modified.webp').then(() => {
             const gl = context.gl;
 
             this._program.bind();
@@ -142,7 +142,7 @@ export class ProgressiveCubeRenderer extends Renderer {
         this._camera.far = 8.0;
 
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
 
@@ -170,6 +170,13 @@ export class ProgressiveCubeRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**

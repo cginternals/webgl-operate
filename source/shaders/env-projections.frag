@@ -17,6 +17,7 @@ precision highp int;
 
 
 uniform int u_mode;
+uniform bool u_skipLod;
 
 #if defined(CUBE_MAP)
     uniform samplerCube u_cubemap;
@@ -44,9 +45,9 @@ void main(void)
 
     #if defined(CUBE_MAP)
         #if __VERSION__ == 100
-            fragColor = textureCube(u_cubemap, vec3(ray));
+            fragColor = u_skipLod ? textureCubeLod(u_cubemap, vec3(ray), 0.0) : textureCube(u_cubemap, vec3(ray));
         #else
-            fragColor = texture(u_cubemap, vec3(ray));
+            fragColor = u_skipLod ? textureLod(u_cubemap, vec3(ray), 0.0) : texture(u_cubemap, vec3(ray));
         #endif
     #endif
 

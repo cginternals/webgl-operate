@@ -63,7 +63,9 @@ class LabelAnchorRenderer extends Renderer {
 
         /* Create and configure test navigation. */
 
-        this._camera = new Camera();
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+        }
 
         /* Create and configure label pass. */
 
@@ -98,6 +100,11 @@ class LabelAnchorRenderer extends Renderer {
 
         this._defaultFBO.uninitialize();
         this._labelPass.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
     /**

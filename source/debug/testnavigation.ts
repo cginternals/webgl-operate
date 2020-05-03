@@ -1,8 +1,7 @@
 
 /* spellchecker: disable */
 
-import { EventHandler } from '../eventhandler';
-import { MouseEventProvider } from '../mouseeventprovider';
+import { EventHandler, EventProvider } from '../eventhandler';
 import { Invalidate } from '../renderer';
 
 /* spellchecker: enable */
@@ -15,10 +14,8 @@ export class TestNavigation {
     protected _altered = false;
 
 
-    constructor(invalidate: Invalidate, mouseEventProvider: MouseEventProvider) {
-        this._eventHandler = new EventHandler(invalidate, {mouseEventProvider,
-                                                           touchEventProvider: undefined,
-                                                           eyeGazeEventProvider: undefined});
+    constructor(invalidate: Invalidate, eventProvider: EventProvider) {
+        this._eventHandler = new EventHandler(invalidate, eventProvider);
         this._eventHandler.pushMouseEnterHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>
             this.onMouseEnter(latests, previous));
         this._eventHandler.pushMouseLeaveHandler((latests: Array<MouseEvent>, previous: Array<MouseEvent>) =>

@@ -1,18 +1,18 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries, vec3 } from 'webgl-operate';
 
 import {
     Camera,
     Canvas,
     Context,
     DefaultFramebuffer,
+    EventProvider,
     FontFace,
     Invalidate,
     Label,
     LabelRenderPass,
-    MouseEventProvider,
     Navigation,
     Position3DLabel,
     Renderer,
@@ -20,7 +20,6 @@ import {
     Wizard,
 } from 'webgl-operate';
 
-import { vec3 } from 'gl-matrix';
 import { Example } from './example';
 
 /* spellchecker: enable */
@@ -48,12 +47,11 @@ class Label3DRenderer extends Renderer {
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param mouseEventProvider - required for mouse interaction
+     * @param eventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
-    protected onInitialize(context: Context, callback: Invalidate, mouseEventProvider: MouseEventProvider,
-        /* keyEventProvider: KeyEventProvider, */
-        /* touchEventProvider: TouchEventProvider */): boolean {
+    protected onInitialize(context: Context, callback: Invalidate,
+        eventProvider: EventProvider): boolean {
 
         /* Create framebuffers, textures, and render buffers. */
 
@@ -69,7 +67,7 @@ class Label3DRenderer extends Renderer {
         this._camera.near = 0.1;
         this._camera.far = 4.0;
 
-        this._navigation = new Navigation(callback, mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure label pass. */
@@ -87,7 +85,9 @@ class Label3DRenderer extends Renderer {
                 }
                 this._fontFace = fontFace;
                 this.updateLabels();
-                this.invalidate();
+
+                this.finishLoading();
+                this.invalidate(true);
             })
             .catch((reason) => auxiliaries.log(auxiliaries.LogLevel.Error, reason));
 
@@ -104,6 +104,13 @@ class Label3DRenderer extends Renderer {
 
         this._defaultFBO.uninitialize();
         this._labelPass.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**
@@ -209,7 +216,7 @@ export class Label3DExample extends Example {
     private _canvas: Canvas;
     private _renderer: Label3DRenderer;
 
-    initialize(element: HTMLCanvasElement | string): boolean {
+    onInitialize(element: HTMLCanvasElement | string): boolean {
 
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
@@ -240,7 +247,7 @@ export class Label3DExample extends Example {
         return true;
     }
 
-    uninitialize(): void {
+    onUninitialize(): void {
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }

@@ -255,7 +255,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
      * @returns - Promise for handling images load status.
      */
     @Initializable.assert_initialized()
-    fetch(urisByFace: TextureCube.PerFaceURI, mipLevel: number = 0, crossOrigin: boolean = false): Promise<void> {
+    fetch(urisByFace: TextureCube.PerFaceURI, crossOrigin: boolean = false, mipLevel: number = 0): Promise<void> {
 
         const gl = this.context.gl;
         return new Promise((resolve, reject) => {

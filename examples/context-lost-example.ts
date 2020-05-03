@@ -4,10 +4,10 @@
 import { mat4, vec3 } from 'gl-matrix';
 
 import {
+    Buffer,
     Camera,
     Canvas,
     Context,
-    CuboidGeometry,
     DefaultFramebuffer,
     EventProvider,
     Invalidate,
@@ -26,12 +26,21 @@ import { Example } from './example';
 
 // tslint:disable:max-classes-per-file
 
-export class CubeRenderer extends Renderer {
+const p = Math.sin(Math.PI / 3.0) * 0.5;
+
+export class TriangleRenderer extends Renderer {
 
     protected _camera: Camera;
     protected _navigation: Navigation;
 
-    protected _cuboid: CuboidGeometry;
+    protected _triangle = new Float32Array([ // x, y, z, u, v
+        -0.5, -p, 0.0, 0.0, 0.0,
+        +0.5, -p, 0.0, 1.0, 0.0,
+        +0.0, +p, 0.0, 0.5, p * 2.0,
+    ]);
+    protected _vertexLocation: GLuint;
+    protected _uvCoordLocation: GLuint;
+    protected _buffer: WebGLBuffer;
     protected _texture: Texture2D;
 
     protected _program: Program;
@@ -39,15 +48,18 @@ export class CubeRenderer extends Renderer {
 
     protected _defaultFBO: DefaultFramebuffer;
 
+    private _rotationInterval: number | undefined;
+
 
     /**
      * Initializes and sets up buffer, cube geometry, camera and links shaders with program.
      * @param context - valid context to create the object for.
      * @param identifier - meaningful name for identification of this instance.
-     * @param eventProvider - required for mouse interaction
+     * @param mouseEventProvider - required for mouse interaction
      * @returns - whether initialization was successful
      */
-    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
+    protected onInitialize(context: Context, callback: Invalidate,
+        eventProvider: EventProvider): boolean {
 
         this._defaultFBO = new DefaultFramebuffer(context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -55,9 +67,9 @@ export class CubeRenderer extends Renderer {
 
         const gl = context.gl;
 
-
-        this._cuboid = new CuboidGeometry(context, 'Cuboid', true, [2.0, 2.0, 2.0]);
-        this._cuboid.initialize();
+        this._buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this._triangle, gl.STATIC_DRAW);
 
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'mesh.vert');
@@ -66,18 +78,41 @@ export class CubeRenderer extends Renderer {
         frag.initialize(require('./data/mesh.frag'));
 
 
-        this._program = new Program(context, 'CubeProgram');
+        this._program = new Program(context, 'TriangleProgram');
         this._program.initialize([vert, frag], false);
 
-        this._program.attribute('a_vertex', this._cuboid.vertexLocation);
-        this._program.attribute('a_texCoord', this._cuboid.uvCoordLocation);
         this._program.link();
         this._program.bind();
+
+        this._vertexLocation = this._program.attribute('a_vertex', this._vertexLocation);
+        this._uvCoordLocation = this._program.attribute('a_texCoord', this._uvCoordLocation);
+
+
+        gl.vertexAttribPointer(
+            this._vertexLocation,   // Attribute Location
+            3,                      // Number of elements per attribute
+            gl.FLOAT,               // Type of elements
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            0, // Offset from the beginning of a single vertex to this attribute
+        );
+
+        gl.vertexAttribPointer(
+            this._uvCoordLocation,  // Attribute Location
+            2,                      // Number of elements per attribute
+            gl.FLOAT,               // Type of elements
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            3 * Float32Array.BYTES_PER_ELEMENT, // Offset from the beginning of a single vertex to this attribute
+        );
+
+        gl.enableVertexAttribArray(this._vertexLocation);
+        gl.enableVertexAttribArray(this._uvCoordLocation);
 
 
         this._uViewProjection = this._program.uniform('u_viewProjection');
         const identity = mat4.identity(mat4.create());
-        gl.uniformMatrix4fv(this._program.uniform('u_model'), false, identity);
+        gl.uniformMatrix4fv(this._program.uniform('u_model'), gl.FALSE, identity);
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         gl.uniform1i(this._program.uniform('u_textured'), false);
 
@@ -88,7 +123,7 @@ export class CubeRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('/examples/data/blue-painted-planks-diff-1k-modified.webp').then(() => {
+        this._texture.fetch('/examples/data/triangle-texture.webp').then(() => {
             const gl = context.gl;
 
             this._program.bind();
@@ -98,17 +133,26 @@ export class CubeRenderer extends Renderer {
             this.invalidate(true);
         });
 
-        if (this._camera === undefined) {
-            this._camera = new Camera();
-            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-            this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
-            this._camera.near = 1.0;
-            this._camera.far = 8.0;
-        }
+        this._camera = new Camera();
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 2.0);
+        this._camera.near = 1.0;
+        this._camera.far = 4.0;
+
 
         this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
+
+        this._rotationInterval = setInterval(() => {
+            if (!this.initialized) {
+                return;
+            }
+
+            this._camera.eye = vec3.fromValues(this._camera.eye[0], this._camera.eye[1], this._camera.eye[2] * 0.996);
+
+            this.invalidate();
+        }, 1000.0 / 60.0) as unknown as number;
 
         return true;
     }
@@ -119,15 +163,20 @@ export class CubeRenderer extends Renderer {
     protected onUninitialize(): void {
         super.uninitialize();
 
-        this._cuboid.uninitialize();
+        window.clearInterval(this._rotationInterval);
+
         this._program.uninitialize();
+        this._context.gl.deleteBuffer(this._buffer);
 
         this._defaultFBO.uninitialize();
     }
 
     protected onDiscarded(): void {
+        window.clearInterval(this._rotationInterval);
         this._altered.alter('canvasSize');
         this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**
@@ -173,25 +222,21 @@ export class CubeRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        gl.enable(gl.DEPTH_TEST);
-
         this._texture.bind(gl.TEXTURE0);
 
         this._program.bind();
-        gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
+        gl.uniformMatrix4fv(this._uViewProjection, gl.GL_FALSE, this._camera.viewProjection);
 
-        this._cuboid.bind();
-        this._cuboid.draw();
-        this._cuboid.unbind();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, Buffer.DEFAULT_BUFFER);
 
         this._program.unbind();
 
         this._texture.unbind(gl.TEXTURE0);
 
-        gl.cullFace(gl.BACK);
-        gl.disable(gl.CULL_FACE);
     }
 
     protected onSwap(): void { }
@@ -199,10 +244,21 @@ export class CubeRenderer extends Renderer {
 }
 
 
-export class CubeExample extends Example {
+export class ContextLostExample extends Example {
 
     private _canvas: Canvas;
-    private _renderer: CubeRenderer;
+    private _renderer: TriangleRenderer;
+    private _contextLostTimeout: number | undefined;
+
+    protected loseContext(): void {
+        this._canvas.testLoseContext();
+        this._contextLostTimeout = window.setTimeout(() => this.restoreContext(), 2000);
+    }
+
+    protected restoreContext(): void {
+        this._canvas.testRestoreContext();
+        this._contextLostTimeout = window.setTimeout(() => this.loseContext(), 2000);
+    }
 
     onInitialize(element: HTMLCanvasElement | string): boolean {
 
@@ -211,13 +267,16 @@ export class CubeExample extends Example {
         this._canvas.framePrecision = Wizard.Precision.byte;
         this._canvas.frameScale = [1.0, 1.0];
 
-        this._renderer = new CubeRenderer();
+        this._renderer = new TriangleRenderer();
         this._canvas.renderer = this._renderer;
+
+        this._contextLostTimeout = window.setTimeout(() => this.loseContext(), 2000);
 
         return true;
     }
 
     onUninitialize(): void {
+        window.clearTimeout(this._contextLostTimeout);
         this._canvas.dispose();
         (this._renderer as Renderer).uninitialize();
     }
@@ -226,7 +285,7 @@ export class CubeExample extends Example {
         return this._canvas;
     }
 
-    get renderer(): CubeRenderer {
+    get renderer(): TriangleRenderer {
         return this._renderer;
     }
 

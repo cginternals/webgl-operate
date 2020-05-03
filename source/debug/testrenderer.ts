@@ -106,7 +106,7 @@ namespace debug {
 
             /* Create and configure test navigation. */
 
-            this._testNavigation = new TestNavigation(() => this.invalidate(), eventProvider.mouseEventProvider);
+            this._testNavigation = new TestNavigation(() => this.invalidate(), eventProvider);
 
             return true;
         }
@@ -127,6 +127,13 @@ namespace debug {
 
             this._blit.uninitialize();
             this._accumulate.uninitialize();
+        }
+
+        protected onDiscarded(): void {
+            this._altered.alter('frameSize');
+            this._altered.alter('multiFrameNumber');
+            this._altered.alter('framePrecision');
+            this._altered.alter('clearColor');
         }
 
 

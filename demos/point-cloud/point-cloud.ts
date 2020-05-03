@@ -35,7 +35,7 @@ import { importPointsFromCSV } from './csv-import';
 
 export class PointCloudRenderer extends Renderer {
 
-    protected static readonly DEFAULT_POINT_SIZE = 1.0 / 128.0;
+    protected static readonly DEFAULT_POINT_SIZE = 1.0 / 8.0;
 
     // protected _benchmark: Benchmark;
 
@@ -159,13 +159,13 @@ export class PointCloudRenderer extends Renderer {
         gl.uniform2f(this._program.uniform('u_nearFar'), this._camera.near, this._camera.far);
 
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         this._model = mat4.fromRotationTranslationScale(mat4.create(), quat.create()
             , [0.0, 0.0, 0.0], [2.0, 2.0, 2.0]);
 
-        const positions = new Float32Array(3 * 4e6);
+        const positions = new Float32Array(1 * 1e4);
         positions.forEach((value, index, array) => array[index] = Math.random() * 5.0 - 2.5);
 
         this.data = new Array(positions);
@@ -209,6 +209,13 @@ export class PointCloudRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**

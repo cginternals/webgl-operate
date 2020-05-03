@@ -121,7 +121,7 @@ export class TriangleRenderer extends Renderer {
         this._texture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._texture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._texture.fetch('./data/triangle-texture.webp', false).then(() => {
+        this._texture.fetch('/examples/data/triangle-texture.webp').then(() => {
             const gl = context.gl;
 
             this._program.bind();
@@ -139,7 +139,7 @@ export class TriangleRenderer extends Renderer {
         this._camera.far = 4.0;
 
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         return true;
@@ -155,6 +155,13 @@ export class TriangleRenderer extends Renderer {
         this._context.gl.deleteBuffer(this._buffer);
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**

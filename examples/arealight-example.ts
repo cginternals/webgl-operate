@@ -131,7 +131,7 @@ export class AreaLightRenderer extends Renderer {
         this._albedoTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._albedoTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
 
-        this._albedoTexture.fetch('./data/imagebasedlighting/Metal_001_basecolor.png', false).then(() => {
+        this._albedoTexture.fetch('/examples/data/imagebasedlighting/Metal_001_basecolor.png').then(() => {
             const gl = context.gl;
 
             this._program.bind();
@@ -145,21 +145,21 @@ export class AreaLightRenderer extends Renderer {
         this._roughnessTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._roughnessTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._roughnessTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._roughnessTexture.fetch('./data/imagebasedlighting/Metal_001_roughness.png', false);
+        this._roughnessTexture.fetch('/examples/data/imagebasedlighting/Metal_001_roughness.png');
 
         this._metallicTexture = new Texture2D(context, 'MetallicTexture');
         this._metallicTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._metallicTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._metallicTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._metallicTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._metallicTexture.fetch('./data/imagebasedlighting/Metal_001_metallic.png', false);
+        this._metallicTexture.fetch('/examples/data/imagebasedlighting/Metal_001_metallic.png');
 
         this._normalTexture = new Texture2D(context, 'NormalTexture');
         this._normalTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._normalTexture.wrap(gl.REPEAT, gl.REPEAT);
         this._normalTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._normalTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
-        this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false);
+        this._normalTexture.fetch('/examples/data/imagebasedlighting/Metal_001_normal.png');
 
         this._camera = new Camera();
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
@@ -168,7 +168,7 @@ export class AreaLightRenderer extends Renderer {
         this._camera.near = 1.0;
         this._camera.far = 8.0;
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         return true;
@@ -185,6 +185,13 @@ export class AreaLightRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**

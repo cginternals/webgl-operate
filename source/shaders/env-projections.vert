@@ -22,5 +22,5 @@ void main(void)
     v_uv = a_vertex * 0.5 + 0.5;
     v_ray = u_viewProjectionInverse * vec4(a_vertex, 1.0, 1.0);
 
-    gl_Position = vec4(a_vertex.xy, 1.0, 1.0);
+    gl_Position = vec4(a_vertex.xy, 1.0 - 1e-6, 1.0);
 }

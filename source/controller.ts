@@ -176,6 +176,8 @@ export class Controller {
 
 
     protected request(source: Controller.RequestType = Controller.RequestType.Frame): void {
+        this._animationFrameID = 0;
+
         if (this._block) {
             this._blockedUpdates++;
             return;
@@ -185,6 +187,11 @@ export class Controller {
     }
 
     protected invoke(source: Controller.RequestType): void {
+        if (this._animationFrameID === 0) {
+            // We got a former request animation frame that was already canceled
+            return;
+        }
+
         assert(this._controllable !== undefined, `frame sequence invoked without controllable set`);
 
         if (this._invalidated) {
@@ -375,6 +382,16 @@ export class Controller {
             this.update();
         }
     }
+
+    cancel(): void {
+        if (this._animationFrameID === 0) {
+            return;
+        }
+
+        window.cancelAnimationFrame(this._animationFrameID);
+        this._animationFrameID = 0;
+    }
+
 
     /**
      * Returns whether or not the control is blocking updates.

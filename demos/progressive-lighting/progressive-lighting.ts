@@ -396,7 +396,7 @@ export class ProgressiveLightingRenderer extends Renderer {
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider, eventProvider.touchEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         /**
@@ -513,6 +513,13 @@ export class ProgressiveLightingRenderer extends Renderer {
 
         // this._mesh.uninitialize();
         // this._meshProgram.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+        this._altered.alter('multiFrameNumber');
     }
 
     /**
@@ -1009,7 +1016,7 @@ export class ProgressiveLightingRenderer extends Renderer {
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
-        this._brdfLUT.fetch('../examples/data/imagebasedlighting/brdfLUT.png');
+        this._brdfLUT.fetch('/examples/data/imagebasedlighting/brdfLUT.png');
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
@@ -1024,7 +1031,7 @@ export class ProgressiveLightingRenderer extends Renderer {
             negativeY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-ny-diffuse.png`,
             positiveZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-pz-diffuse.png`,
             negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-diffuse.png`,
-        });
+        }, true);
 
         this._specularEnvironment = new TextureCube(this._context, 'SpecularEnvironment');
         this._specularEnvironment.initialize(512, internalFormatAndType[0], gl.RGBA, internalFormatAndType[1]);
@@ -1042,7 +1049,7 @@ export class ProgressiveLightingRenderer extends Renderer {
                 negativeY: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-ny-${mipLevel}.png`,
                 positiveZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-pz-${mipLevel}.png`,
                 negativeZ: `${ProgressiveLightingRenderer.URL}/${environmentName}/preprocessed-map-nz-${mipLevel}.png`,
-            }, mipLevel);
+            }, true, mipLevel);
         }
     }
 }

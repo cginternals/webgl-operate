@@ -1,8 +1,6 @@
 
 import { vec3 } from 'gl-matrix';
 
-import { auxiliaries } from 'webgl-operate';
-
 import {
     Camera,
     Canvas,
@@ -39,14 +37,7 @@ class EnvironmentProjectionRenderer extends Renderer {
     protected _navigation: Navigation;
 
 
-    protected onInitialize(context: Context,
-        callback: Invalidate,
-        eventProvider: EventProvider): boolean {
-
-        if (eventProvider.mouseEventProvider === undefined) {
-            auxiliaries.log(auxiliaries.LogLevel.Error, 'MouseEventProvider was not supplied.');
-            return false;
-        }
+    protected onInitialize(context: Context, callback: Invalidate, eventProvider: EventProvider): boolean {
 
         this._defaultFBO = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._defaultFBO.initialize();
@@ -55,14 +46,16 @@ class EnvironmentProjectionRenderer extends Renderer {
         this.fetchTextures();
 
         // Initialize camera
-        this._camera = new Camera();
-        this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
-        this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.near = 0.1;
-        this._camera.far = 4.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
+            this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.near = 0.1;
+            this._camera.far = 4.0;
+        }
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider!);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         this._environmentRenderingPass = new EnvironmentRenderingPass(this._context);
@@ -80,6 +73,10 @@ class EnvironmentProjectionRenderer extends Renderer {
         for (const map of this._polarMaps) {
             map.uninitialize();
         }
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
     }
 
     protected onUpdate(): boolean {
@@ -164,9 +161,9 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._cubeMap.initialize(592, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         this._cubeMap.fetch({
-            positiveX: 'data/cube-map-px.jpg', negativeX: 'data/cube-map-nx.jpg',
-            positiveY: 'data/cube-map-py.jpg', negativeY: 'data/cube-map-ny.jpg',
-            positiveZ: 'data/cube-map-pz.jpg', negativeZ: 'data/cube-map-nz.jpg',
+            positiveX: '/examples/data/cube-map-px.jpg', negativeX: '/examples/data/cube-map-nx.jpg',
+            positiveY: '/examples/data/cube-map-py.jpg', negativeY: '/examples/data/cube-map-ny.jpg',
+            positiveZ: '/examples/data/cube-map-pz.jpg', negativeZ: '/examples/data/cube-map-nz.jpg',
         }).then(() => {
             const gl = this._context.gl;
             this._cubeMap.filter(gl.NEAREST, gl.NEAREST, true, true);
@@ -179,7 +176,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._equiRectangularMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._equiRectangularMap.fetch('data/equirectangular-map.jpg').then(() => {
+            this._equiRectangularMap.fetch('/examples/data/equirectangular-map.jpg').then(() => {
                 this.setupTexture2D(this._equiRectangularMap);
             }));
 
@@ -188,7 +185,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._sphereMap.initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._sphereMap.fetch('data/sphere-map-ny.jpg').then(() => {
+            this._sphereMap.fetch('/examples/data/sphere-map-ny.jpg').then(() => {
                 this.setupTexture2D(this._sphereMap);
             }));
 
@@ -198,7 +195,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._polarMaps[0].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._polarMaps[0].fetch('data/paraboloid-map-py.jpg').then(() => {
+            this._polarMaps[0].fetch('/examples/data/paraboloid-map-py.jpg').then(() => {
                 this.setupTexture2D(this._polarMaps[0]);
             }));
 
@@ -207,7 +204,7 @@ class EnvironmentProjectionRenderer extends Renderer {
         this._polarMaps[1].initialize(1, 1, internalFormatAndType[0], gl.RGB, internalFormatAndType[1]);
 
         promises.push(
-            this._polarMaps[1].fetch('data/paraboloid-map-ny.jpg').then(() => {
+            this._polarMaps[1].fetch('/examples/data/paraboloid-map-ny.jpg').then(() => {
                 this.setupTexture2D(this._polarMaps[1]);
             }));
 

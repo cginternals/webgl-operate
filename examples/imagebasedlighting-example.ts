@@ -108,7 +108,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._albedoTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._albedoTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._albedoTexture.fetch('./data/imagebasedlighting/Metal_001_basecolor.png', false));
+            this._albedoTexture.fetch('/examples/data/imagebasedlighting/Metal_001_basecolor.png'));
 
         this._roughnessTexture = new Texture2D(context, 'RoughnessTexture');
         this._roughnessTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
@@ -116,7 +116,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._roughnessTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._roughnessTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._roughnessTexture.fetch('./data/imagebasedlighting/Metal_001_roughness.png', false));
+            this._roughnessTexture.fetch('/examples/data/imagebasedlighting/Metal_001_roughness.png'));
 
         this._metallicTexture = new Texture2D(context, 'MetallicTexture');
         this._metallicTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
@@ -124,7 +124,7 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._metallicTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._metallicTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._metallicTexture.fetch('./data/imagebasedlighting/Metal_001_metallic.png', false));
+            this._metallicTexture.fetch('/examples/data/imagebasedlighting/Metal_001_metallic.png'));
 
         this._normalTexture = new Texture2D(context, 'NormalTexture');
         this._normalTexture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
@@ -132,14 +132,14 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._normalTexture.filter(gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR);
         this._normalTexture.maxAnisotropy(Texture2D.MAX_ANISOTROPY);
         this._promises.push(
-            this._normalTexture.fetch('./data/imagebasedlighting/Metal_001_normal.png', false));
+            this._normalTexture.fetch('/examples/data/imagebasedlighting/Metal_001_normal.png'));
 
         this._brdfLUT = new Texture2D(context, 'BRDFLookUpTable');
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
         this._promises.push(
-            this._brdfLUT.fetch('./data/imagebasedlighting/brdfLUT.png'));
+            this._brdfLUT.fetch('/examples/data/imagebasedlighting/brdfLUT.png'));
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
@@ -160,26 +160,29 @@ export class ImageBasedLightingRenderer extends Renderer {
             this.invalidate(true);
         });
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
-        this._camera.near = 1.0;
-        this._camera.far = 8.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(0.0, 0.0, 5.0);
+            this._camera.near = 1.0;
+            this._camera.far = 8.0;
+        }
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         this._environmentRenderingPass = new EnvironmentRenderingPass(context);
         this._environmentRenderingPass.initialize();
         this._environmentRenderingPass.environmentTextureType = EnvironmentTextureType.CubeMap;
         this._environmentRenderingPass.environmentTexture = this._cubemap;
+        this._environmentRenderingPass.skipCubeLod = true;
         this._environmentRenderingPass.camera = this._camera;
 
         return true;
     }
 
-    /**
+    /**<
      * Uninitializes buffers, geometry and program.
      */
     protected onUninitialize(): void {
@@ -189,6 +192,11 @@ export class ImageBasedLightingRenderer extends Renderer {
         this._program.uninitialize();
 
         this._defaultFBO.uninitialize();
+    }
+
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
     }
 
     /**
@@ -218,6 +226,8 @@ export class ImageBasedLightingRenderer extends Renderer {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        this._environmentRenderingPass.update();
+
         this._altered.reset();
         this._camera.altered = false;
     }
@@ -234,7 +244,6 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        this._environmentRenderingPass.frame();
 
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
@@ -266,6 +275,12 @@ export class ImageBasedLightingRenderer extends Renderer {
 
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
+
+        gl.enable(gl.DEPTH_TEST);
+
+        this._environmentRenderingPass.frame();
+
+
     }
 
     protected onSwap(): void { }

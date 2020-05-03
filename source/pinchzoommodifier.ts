@@ -9,11 +9,14 @@ import { CameraModifier } from './cameramodifier';
 
 /* spellchecker: enable */
 
-export class PanModifier extends CameraModifier {
+export class PinchZoomModifier extends CameraModifier {
 
-    protected static readonly DEFAULT_SENSITIVITY = 0.002;
+    protected static readonly DEFAULT_SENSITIVITY = 2.0;
 
-    protected _sensitivity: number = PanModifier.DEFAULT_SENSITIVITY;
+    protected _sensitivity: number = PinchZoomModifier.DEFAULT_SENSITIVITY;
+
+    protected _initialDistance: number;
+    protected _currentDistance: number;
 
     protected _translation: vec3 = v3();
 
@@ -21,34 +24,29 @@ export class PanModifier extends CameraModifier {
      * Initiate a new panning at a specific event position.
      * @param point - Position of the current event to derive the magnitude for rotation from.
      */
-    initiate(point: vec2): void {
+    initiate(point1: vec2, point2: vec2): void {
         Object.assign(this._reference, this._camera);
 
-        /* Retrieve initial event position. */
-        this._initialPoint = point;
+        const magnitudes = vec2.subtract(v2(), point1, point2);
+        this._initialDistance = vec2.length(magnitudes);
     }
 
     /**
      * Update the panning transform w.r.t. a specific event position.
      * @param point - Position of the current event to derive the magnitude for translation from.
      */
-    process(point: vec2): void {
+    process(point1: vec2, point2: vec2): void {
         /* Retrieve current event positions. */
-        this._currentPoint = point;
+        const magnitudes = vec2.subtract(v2(), point1, point2);
+        this._currentDistance = vec2.length(magnitudes);
 
-        const magnitudes = vec2.subtract(v2(), this._initialPoint, this._currentPoint);
-        vec2.scale(magnitudes, magnitudes, window.devicePixelRatio * this._sensitivity);
+        const change = (this._currentDistance / this._initialDistance) - 1.0;
+        const magnitude = change * PinchZoomModifier.DEFAULT_SENSITIVITY;
 
-        const centerToEye = vec3.sub(v3(), this._reference.eye, this._reference.center);
-        vec3.normalize(centerToEye, centerToEye);
-        const up = this._reference.up;
-        vec3.normalize(up, up);
-        const right = vec3.cross(v3(), up, centerToEye);
+        const eyeToCenter = vec3.sub(v3(), this._reference.center, this._reference.eye);
+        vec3.normalize(eyeToCenter, eyeToCenter);
 
-        const rightTranslation = vec3.scale(v3(), right, magnitudes[0]);
-        const upTranslation = vec3.scale(v3(), up, magnitudes[1]);
-        vec3.negate(upTranslation, upTranslation);
-        this._translation = vec3.add(v3(), upTranslation, rightTranslation);
+        this._translation = vec3.scale(v3(), eyeToCenter, magnitude);
 
         this.update();
     }
@@ -65,10 +63,8 @@ export class PanModifier extends CameraModifier {
         const T = mat4.fromTranslation(m4(), this._translation);
 
         const eye = vec3.transformMat4(v3(), this._reference.eye, T);
-        const center = vec3.transformMat4(v3(), this._reference.center, T);
 
         this._camera.eye = eye;
-        this._camera.center = center;
     }
 
 }

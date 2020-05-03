@@ -14,6 +14,7 @@ export { ExtensionsHash } from './extensionshash';
 export { ChangeLookup } from './changelookup';
 export { MouseEventProvider } from './mouseeventprovider';
 export { TouchEventProvider } from './toucheventprovider';
+export { PointerEventProvider } from './pointereventprovider';
 export { EventHandler, EventProvider } from './eventhandler';
 
 export { Buffer } from './buffer';
@@ -42,7 +43,8 @@ export { PanModifier } from './panmodifier';
 export { PointerLock } from './pointerlock';
 export { TrackballModifier } from './trackballmodifier';
 export { TurntableModifier } from './turntablemodifier';
-export { ZoomModifier } from './zoommodifier';
+export { PinchZoomModifier } from './pinchzoommodifier';
+export { WheelZoomModifier } from './wheelzoommodifier';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';

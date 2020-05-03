@@ -138,16 +138,18 @@ export class GltfRenderer extends Renderer {
 
         /* Create and configure camera. */
 
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 3.0, 1.0);
-        this._camera.near = 0.1;
-        this._camera.far = 32.0;
+        if (this._camera === undefined) {
+            this._camera = new Camera();
+            this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+            this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+            this._camera.eye = vec3.fromValues(0.0, 3.0, 1.0);
+            this._camera.near = 0.1;
+            this._camera.far = 32.0;
+        }
 
         /* Create and configure navigation */
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         /* Create and configure forward pass. */
@@ -282,6 +284,12 @@ export class GltfRenderer extends Renderer {
         // this._meshProgram.uninitialize();
     }
 
+    protected onDiscarded(): void {
+        this._altered.alter('frameSize');
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+    }
+
     /**
      * This is invoked in order to check if rendering of a frame is required by means of implementation specific
      * evaluation (e.g., lazy non continuous rendering). Regardless of the return value a new frame (preparation,
@@ -387,7 +395,7 @@ export class GltfRenderer extends Renderer {
         this._brdfLUT.initialize(1, 1, gl.RG16F, gl.RG, gl.FLOAT);
         this._brdfLUT.wrap(gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
         this._brdfLUT.filter(gl.LINEAR, gl.LINEAR);
-        this._brdfLUT.fetch('../examples/data/imagebasedlighting/brdfLUT.png');
+        this._brdfLUT.fetch('/examples/data/imagebasedlighting/brdfLUT.png');
 
         const internalFormatAndType = Wizard.queryInternalTextureFormat(
             this._context, gl.RGBA, Wizard.Precision.byte);
@@ -402,13 +410,13 @@ export class GltfRenderer extends Renderer {
 
         for (let mipLevel = 0; mipLevel < MIPMAP_LEVELS; ++mipLevel) {
             this._specularEnvironment.fetch({
-                positiveX: `../examples/data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
-                negativeX: `../examples/data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
-                positiveY: `../examples/data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
-                negativeY: `../examples/data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
-                positiveZ: `../examples/data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
-                negativeZ: `../examples/data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
-            }, mipLevel);
+                positiveX: `/examples/data/imagebasedlighting/preprocessed-map-px-${mipLevel}.png`,
+                negativeX: `/examples/data/imagebasedlighting/preprocessed-map-nx-${mipLevel}.png`,
+                positiveY: `/examples/data/imagebasedlighting/preprocessed-map-py-${mipLevel}.png`,
+                negativeY: `/examples/data/imagebasedlighting/preprocessed-map-ny-${mipLevel}.png`,
+                positiveZ: `/examples/data/imagebasedlighting/preprocessed-map-pz-${mipLevel}.png`,
+                negativeZ: `/examples/data/imagebasedlighting/preprocessed-map-nz-${mipLevel}.png`,
+            }, false, mipLevel);
         }
     }
 }
