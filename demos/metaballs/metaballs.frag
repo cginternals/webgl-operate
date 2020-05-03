@@ -24,8 +24,7 @@ varying vec4 v_ray;
 
 
 # define BASE_ENERGY 0.06
-# define THRESHOLD 0.51
-# define STEP_THRESHOLD 0.001
+# define THRESHOLD 0.50
 # define METABALL_TRANSPARENCY 0.8
 
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
@@ -33,9 +32,7 @@ varying vec4 v_ray;
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
 # define REFRACTION_INDEX 0.96
-# define REFLECTION_INTENSITY 0.25
-# define REFRACTION_INTENSITY 0.25
-# define REFRACTION_AND_REFLECTION_INTENSITY 1.00
+# define REFRACTION_AND_REFLECTION_INTENSITY 0.80
 
 struct MetaBall {
     vec4 position;
@@ -54,9 +51,6 @@ struct PointLight {
     vec4 position;
     float shininess;
 };
-
-const vec3 metaballColor = vec3(1.0, 0.5, 1.0);
-const vec3 backgroundColor = vec3(0.9, 0.9, 0.9);
 
 vec2 calculateAbsoluteTextureCoords(int width, int height, int maxWidth, int maxHeight) {
     return vec2(
@@ -87,22 +81,6 @@ float distFunc(MetaBall metaball, vec4 rayPosition) {
     return metaball.energy / distance(metaball.position, rayPosition);
 }
 
-void calculateEnergyAndOtherFragmentValues(vec4 currentRayPosition, inout FragmentValues fragmentValues) {
-    fragmentValues.normal = vec4(0.0);
-    fragmentValues.energy = 0.0;
-    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
-
-        MetaBall currentMetaball = getMetaball(metaballIndex);
-        float currentEnergy = distFunc(currentMetaball, currentRayPosition);
-        fragmentValues.energy += currentEnergy;
-        vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
-        fragmentValues.normal += currentNormal * currentEnergy;
-        fragmentValues.color += currentMetaball.color * currentEnergy;
-    }
-    fragmentValues.rayPosition = currentRayPosition;
-    fragmentValues.normal = normalize(fragmentValues.normal);
-}
-
 float fresnelReflection(vec3 rayDirection, vec3 normal)
 {
     float cosi = clamp(dot(rayDirection, normal), -1.0, 1.0);
@@ -123,11 +101,6 @@ float fresnelReflection(vec3 rayDirection, vec3 normal)
     }
 }
 
-float fresnelSchlick(vec3 rayDir, vec3 normal, float bias) {
-    float cosTheta = dot(rayDir, normal);
-    return bias + (1.0 - bias) * pow(1.0 - cosTheta, 5.0);
-}
-
 float calculateEnergy(vec4 currentRayPosition) {
     float energy = 0.0;
     for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
@@ -135,6 +108,22 @@ float calculateEnergy(vec4 currentRayPosition) {
         energy += distFunc(currentMetaball, currentRayPosition);
     }
     return energy;
+}
+
+void calculateEnergyAndOtherFragmentValues(vec4 currentRayPosition, inout FragmentValues fragmentValues) {
+    fragmentValues.normal = vec4(0.0);
+    fragmentValues.energy = 0.0;
+    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
+
+        MetaBall currentMetaball = getMetaball(metaballIndex);
+        float currentEnergy = distFunc(currentMetaball, currentRayPosition);
+        fragmentValues.energy += currentEnergy;
+        vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
+        fragmentValues.normal += currentNormal * currentEnergy;
+        fragmentValues.color += currentMetaball.color * currentEnergy;
+    }
+    fragmentValues.rayPosition = currentRayPosition;
+    fragmentValues.normal = normalize(fragmentValues.normal);
 }
 
 float calculateEnergyOverDerivative(vec4 rayPosition, vec4 rayDirection, float marchDistance, bool isInverseRayMarch) {
@@ -162,7 +151,7 @@ void newtonMethod(vec4 rayPosition, vec4 rayDirection, float marchDistance, int 
     }
     vec4 finalRayPositionAndEnergy = rayPosition + rayDirection * marchDistance;
     calculateEnergyAndOtherFragmentValues(finalRayPositionAndEnergy, fragmentValues);
-    // Set the energy slightly higher since we might be sloghtly below the threshold because of the newton method.
+    // Set the energy slightly higher since we might be slightly below the threshold because of the newton method.
     fragmentValues.energy = THRESHOLD + 0.01;
 }
 
