@@ -101,7 +101,7 @@ if (String.prototype.trimLeft === undefined) {
 if (String.prototype.trimRight === undefined) {
     // tslint:disable-next-line: space-before-function-paren
     String.prototype.trimRight = function (): string {
-        return this.replace(/^\s+/, '');
+        return this.replace(/\s+$/, '');
     };
 }
 
