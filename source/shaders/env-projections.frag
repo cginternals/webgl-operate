@@ -58,7 +58,6 @@ void main(void)
 
         fragColor = texture(u_equirectmap, uv);
     #endif
-
     #if defined(SPHERE_MAP)
         ray = -ray.xzy;
         ray.y *= -1.0;

@@ -37,7 +37,7 @@ export class MetaballsRenderer extends Renderer {
     protected _cubeMap: TextureCube;
     protected _metaballsTexture: Texture2D;
     protected _metaballColorsTexture: Texture2D;
-    protected _lightsTexture: Texture2D;
+    //protected _lightsTexture: Texture2D;
 
     protected _program: Program;
     protected _defaultFBO: DefaultFramebuffer;
@@ -87,7 +87,7 @@ export class MetaballsRenderer extends Renderer {
         // Bind textures and uniforms
         this._metaballsTexture.bind(gl.TEXTURE0);
         this._metaballColorsTexture.bind(gl.TEXTURE1);
-        this._lightsTexture.bind(gl.TEXTURE2);
+        //this._lightsTexture.bind(gl.TEXTURE2);
         this._cubeMap.bind(gl.TEXTURE3);
         const lookAt = vec3.create();
         vec3.sub(lookAt, this._camera.center, this._camera.eye);
@@ -132,7 +132,7 @@ export class MetaballsRenderer extends Renderer {
         this._program.bind();
 
         this.createMetaballsTexture();
-        this.createLightsTexture();
+        // this.createLightsTexture();
         this.createCubeMapTexture();
 
 
@@ -162,29 +162,43 @@ export class MetaballsRenderer extends Renderer {
     }
 
     protected createMetaballsTexture(): void {
-        //const metaballs = new Float32Array(256);
+        const numberOfMetaballs = 7;
+        //const metaballs = new Float32Array(numberOfMetaballs * 4);
         //metaballs.forEach((val, i, array) => array[i] = Math.random() + 0.5);
         const metaballs = new Float32Array([
             // x,  y,   z,  metaball-energy
-            -0.3, -0.3, 0.9, 0.8,
-            -0.8, 0.1, 0.4, 0.8,
-            0.4, -0.4, 0.6, 0.9,
-            0.5, 0.7, 0.2, 0.9,
-            //-0.5, 0.5, 0.2, 0.9,
+            -0.3, -0.3, 0.9, 0.7,
+            -0.8, 0.1, 0.4, 0.7,
+            0.4, -0.4, 0.6, 0.7,
+            0.5, 0.7, 0.2, 0.7,
+            -0.5, 0.5, 0.2, 0.7,
+            0.0, 0.5, 0.2, 0.7,
+            0.2, -0.1, -0.5, 0.5,
         ]);
         console.log(metaballs);
 
-        //const metaballColors = new Float32Array(256);
+        const metaballColors = new Float32Array(numberOfMetaballs * 4);
+        for (let i = 0; i < numberOfMetaballs; i++)
+        {
+            let temp = vec3.fromValues(Math.random(), Math.random(), Math.random());
+            vec3.normalize(temp, temp);
+            metaballColors[i + 0] = (Math.random() / 2.0) + 0.5;  //r
+            metaballColors[i + 1] = (Math.random() / 2.0) + 0.5;  //g
+            metaballColors[i + 2] = (Math.random() / 2.0) + 0.5;  //b
+            metaballColors[i + 3] = 1.0;                          //a
+        }
+        console.log(metaballColors);
         //metaballColors.forEach((val, i, array) => array[i] = Math.random());
-        const metaballColors = new Float32Array([
+        /*const metaballColors = new Float32Array([
             // r, g, b, a
             0.105, 0.768, 0.011, 1.0,
             0.968, 0.411, 0.737, 1.0,
             0.325, 0.454, 0.992, 1.0,
             0.986, 0.274, 0.290, 1.0,
-            //0.986, 0.274, 0.290, 1.0,
-        ]);
-        const numberOfMetaballs = metaballs.length / 4;
+            0.986, 0.274, 0.290, 1.0,
+            0.968, 0.411, 0.737, 1.0,
+            0.105, 0.768, 0.011, 1.0,
+        ]);*/
         const gl = this._context.gl;
 
         this._metaballsTexture = new Texture2D(this._context, 'metaballsTexture');
@@ -200,10 +214,10 @@ export class MetaballsRenderer extends Renderer {
 
     }
 
-    protected createLightsTexture(): void {
+    /*protected createLightsTexture(): void {
         const lights = new Float32Array([
             // x,  y,   z,  shininess-factor
-            0.0, 0.0, -0.0, 100.0,
+            // 0.0, 0.0, -0.0, 100.0,
         ]);
         const numberOfLights = lights.length / 4;
         const gl = this._context.gl;
@@ -213,7 +227,7 @@ export class MetaballsRenderer extends Renderer {
         this._lightsTexture.data(lights);
         gl.uniform1i(this._program.uniform('u_lightsTexture'), 2);
         gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfLights);
-    }
+    }*/
 
     protected createCubeMapTexture(): void {
         const gl = this._context.gl;
@@ -229,7 +243,7 @@ export class MetaballsRenderer extends Renderer {
             positiveZ: '/demos/data/cube-map-pz.jpg', negativeZ: '/demos/data/cube-map-nz.jpg',
         }).then(() => {
             const gl = this._context.gl;
-            this._cubeMap.filter(gl.NEAREST, gl.NEAREST, true, true);
+            this._cubeMap.filter(gl.LINEAR, gl.LINEAR, true, true);
 
             this.invalidate(true);
         });
