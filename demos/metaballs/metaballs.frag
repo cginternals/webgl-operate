@@ -204,7 +204,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
 void fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool isInverseMarch, inout FragmentValues outValues)
 {
     float stepWidth = 0.1;
-    float initialMarchDistance = isInverseMarch ? 0.001 : 0.2;
+    float initialMarchDistance = isInverseMarch ? 0.01 : 0.2;
     int numberOfNewtonIterations = isInverseMarch ? 5 : 7;
     rayMarchWithFragmentValues(rayPosition, rayDirection, stepWidth, initialMarchDistance, numberOfNewtonIterations, isInverseMarch, outValues);
 
@@ -238,13 +238,15 @@ void main(void)
     vec3 refractionAndReflectionColor;
     FragmentValues refractionValues;
     FragmentValues reflectionValues;
+    float reflectionPercentage;
+    vec3 refractionDir;
     if (fragmentValues.energy > THRESHOLD) {
         fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(reflectionDir, 0.0), false, reflectionValues);
 
-        vec3 refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
+        refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
         if (refractionDir != vec3(0.0)) {
             fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(refractionDir, 0.0), true, refractionValues);
-            float reflectionPercentage = fresnelReflection(ray, fragmentValues.normal.xyz);
+            reflectionPercentage = fresnelReflection(ray, fragmentValues.normal.xyz);
             refractionAndReflectionColor = mix(refractionValues.color, reflectionValues.color, reflectionPercentage);
         }
         else
@@ -258,7 +260,7 @@ void main(void)
     vec4 finalColor = vec4(mix(fragmentValues.color, refractionAndReflectionColor, REFRACTION_AND_REFLECTION_INTENSITY), 1.0);
     //fragColor = vec4(refractionValues.color, 1.0);
     //fragColor = vec4(vec3(fresnelReflection(ray, normalize(fragmentValues.normal.xyz))), 1.0);
-    //fragColor = vec4(reflectionAndRefractionColor, 1.0);
+    //fragColor = vec4(refractionValues.normal.xyz, 1.0);
     fragColor = finalColor;
 }
 

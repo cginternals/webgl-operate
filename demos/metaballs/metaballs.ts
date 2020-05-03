@@ -49,6 +49,12 @@ export class MetaballsRenderer extends Renderer {
         return this._altered.any || this._camera.altered;
     }
 
+    protected onDiscarded(): void {
+        this._altered.alter('canvasSize');
+        this._altered.alter('clearColor');
+        this._altered.alter('frameSize');
+    }
+
     protected onPrepare(): void {
         if (this._altered.canvasSize) {
             this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
@@ -139,7 +145,7 @@ export class MetaballsRenderer extends Renderer {
         this._camera.far = 4.0;
 
 
-        this._navigation = new Navigation(callback, eventProvider.mouseEventProvider);
+        this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
         return true;
@@ -161,10 +167,10 @@ export class MetaballsRenderer extends Renderer {
         const metaballs = new Float32Array([
             // x,  y,   z,  metaball-energy
             -0.3, -0.3, 0.9, 0.8,
-            -0.8, 0.1, 0.7, 0.8,
+            -0.8, 0.1, 0.4, 0.8,
             0.4, -0.4, 0.6, 0.9,
             0.5, 0.7, 0.2, 0.9,
-            -0.5, 0.5, 0.2, 0.9,
+            //-0.5, 0.5, 0.2, 0.9,
         ]);
         console.log(metaballs);
 
@@ -176,7 +182,7 @@ export class MetaballsRenderer extends Renderer {
             0.968, 0.411, 0.737, 1.0,
             0.325, 0.454, 0.992, 1.0,
             0.986, 0.274, 0.290, 1.0,
-            0.986, 0.274, 0.290, 1.0,
+            //0.986, 0.274, 0.290, 1.0,
         ]);
         const numberOfMetaballs = metaballs.length / 4;
         const gl = this._context.gl;
