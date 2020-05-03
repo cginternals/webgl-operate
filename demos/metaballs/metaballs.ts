@@ -156,18 +156,26 @@ export class MetaballsRenderer extends Renderer {
     }
 
     protected createMetaballsTexture(): void {
+        //const metaballs = new Float32Array(256);
+        //metaballs.forEach((val, i, array) => array[i] = Math.random() + 0.5);
         const metaballs = new Float32Array([
             // x,  y,   z,  metaball-energy
-            0.0, -0.3, 0.9, 0.8,
-            -0.2, 0.1, 0.7, 0.8,
-            0.4, -0.2, 0.6, 0.9,
-            0.5, 0.3, 0.2, 0.9,
+            -0.3, -0.3, 0.9, 0.8,
+            -0.8, 0.1, 0.7, 0.8,
+            0.4, -0.4, 0.6, 0.9,
+            0.5, 0.7, 0.2, 0.9,
+            -0.5, 0.5, 0.2, 0.9,
         ]);
+        console.log(metaballs);
+
+        //const metaballColors = new Float32Array(256);
+        //metaballColors.forEach((val, i, array) => array[i] = Math.random());
         const metaballColors = new Float32Array([
             // r, g, b, a
             0.105, 0.768, 0.011, 1.0,
             0.968, 0.411, 0.737, 1.0,
             0.325, 0.454, 0.992, 1.0,
+            0.986, 0.274, 0.290, 1.0,
             0.986, 0.274, 0.290, 1.0,
         ]);
         const numberOfMetaballs = metaballs.length / 4;
