@@ -1,4 +1,3 @@
-
 precision highp float;
 
 @import ../../source/shaders/facade.frag;
@@ -13,6 +12,7 @@ precision highp float;
 uniform sampler2D u_metaballsTexture;
 uniform sampler2D u_metaballColorsTexture;
 uniform int u_metaballsTextureSize;
+uniform int u_metaballsColorTextureSize;
 
 uniform sampler2D u_lightsTexture;
 //uniform int u_lightsTextureSize;
@@ -64,12 +64,13 @@ vec2 calculateAbsoluteTextureCoords(int width, int height, int maxWidth, int max
 }
 
 MetaBall getMetaball(int index) {
-    vec2 texCoords = calculateAbsoluteTextureCoords(index, 0, u_metaballsTextureSize, 1);
+    vec2 texCoords = calculateAbsoluteTextureCoords(index * 2, 0, u_metaballsTextureSize, 1);
     vec4 positionAndEnergy = texture(u_metaballsTexture, texCoords);
     MetaBall metaball;
     metaball.position = vec4(positionAndEnergy.xyz, 1.0);
     metaball.energy = BASE_ENERGY * positionAndEnergy.w;
-    metaball.color = texture(u_metaballColorsTexture, texCoords).xyz;
+    vec2 colorTexCoords = calculateAbsoluteTextureCoords(index, 0, u_metaballsColorTextureSize, 1);
+    metaball.color = texture(u_metaballColorsTexture, colorTexCoords).xyz;
     return metaball;
 }
 
