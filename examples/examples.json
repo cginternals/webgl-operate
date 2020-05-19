@@ -31,6 +31,12 @@
         "caption": "Very basic scene handling context losses repeatedly."
     },
     {
+        "target": "dfdx-dfdy-example",
+        "title": "dFdx-dFdy Example",
+        "object": "DfdxDfdyExample",
+        "caption": "An example to showcase the dFdx and dFdy usage pattern."
+    },
+    {
         "target": "envprojections-example",
         "title": "Environment Mapping",
         "object": "EnvironmentProjectionExample",
