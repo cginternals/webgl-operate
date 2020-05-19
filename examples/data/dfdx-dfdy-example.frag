@@ -26,6 +26,9 @@ void main(void)
         1.0
     );
 
+    // Show actual pixel pattern
+    fragColor = PixelPatternColor;
+
     // Derivatives pattern
     vec2 TwoByTwoPatternCoords = step(mod(gl_FragCoord.xy, vec2(4.0)), vec2(2.0));
     vec4 TwoByTwoPatternColor = vec4(
@@ -33,9 +36,18 @@ void main(void)
         1.0
     );
 
+    // Show actual pixel pattern and derivative pattern (superimposed)
+    fragColor = mix(PixelPatternColor, TwoByTwoPatternColor, 0.75);
+
     // Irregular pattern
     vec2 v = step(mod(gl_FragCoord.xy, vec2(13.0)), vec2(6.0));
     vec4 patternColor = vec4(v.x, v.y, 0.0, 1.0);
+
+    // Show test pattern pattern and actual pixel pattern (superimposed)
+    fragColor = mix(patternColor, PixelPatternColor, 0.5);
+
+    // Show test pattern pattern and derivative pattern (superimposed)
+    fragColor = mix(patternColor, TwoByTwoPatternColor, 0.5);
 
     // Derivatives
     vec4 v2 = abs(vec4(
@@ -49,10 +61,10 @@ void main(void)
         1.0
     );
 
-    // fragColor = PixelPatternColor;
-    // fragColor = mix(PixelPatternColor, patternColor, 0.5);
-    // fragColor = mix(TwoByTwoPatternColor, patternColor, 0.5);
-    // fragColor = mix(TwoByTwoPatternColor, diffColor, 0.5);
-    // fragColor = mix(diffColor, patternColor, 0.5);
+    // Show dFdx-dFdy-result pattern and derivative pattern (superimposed)
+    fragColor = mix(diffColor, patternColor, 0.8);
+    fragColor = mix(diffColor, TwoByTwoPatternColor, 0.5);
+
+    // Show test pattern, dFdx-dFdy-result pattern, and derivative pattern (superimposed)
     fragColor = mix(TwoByTwoPatternColor, mix(patternColor, diffColor, 0.1), 0.6);
 }

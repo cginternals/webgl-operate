@@ -207,7 +207,8 @@ export class DfdxDfdyExample extends Example {
         this._canvas = new Canvas(element, { antialias: false });
         this._canvas.controller.multiFrameNumber = 1;
         this._canvas.framePrecision = Wizard.Precision.half;
-        this._canvas.frameScale = [0.5, 0.5];
+        // this._canvas.frameScale = [0.5, 0.5];
+        this._canvas.frameScale = [0.07760416716337204, 0.08425925672054291];
 
         this._renderer = new DfdxDfdyRenderer();
         this._canvas.renderer = this._renderer;
