@@ -74,6 +74,12 @@
         "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
     },
     {
+        "target": "perlinnoise-example",
+        "title": "Perlin Noise",
+        "object": "PerlinNoiseExample",
+        "caption": "Value Noise, Gradient Noise, and Simplex Noise implementation."
+    },
+    {
         "target": "scene-example",
         "title": "Scene",
         "object": "SceneExample",
