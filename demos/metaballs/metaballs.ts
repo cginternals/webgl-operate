@@ -37,9 +37,9 @@ export class MetaballsRenderer extends Renderer {
     protected _cubeMap: TextureCube;
     protected _metaballsTexture: Texture2D;
     protected numberOfMetaballs = 7;
+    protected numberOfMetaballAttributes = 2; // number of vec4's per metaball.
     protected _metaballsPhysicsTexture: Texture2D;
     protected _metaballColorsTexture: Texture2D;
-    //protected _lightsTexture: Texture2D;
 
     protected _program: Program;
     protected _physicsProgram: Program;
@@ -73,40 +73,16 @@ export class MetaballsRenderer extends Renderer {
         this._camera.altered = false;
     }
 
-    protected renderToTexture(): void {
+    protected renderPhysicsToTexture(): void {
         const gl = this._context.gl;
-        const metaballAttributes = 2;
-        const numberOfPrimitivesPerAttribute = 4;
-        const targetTextureWidth = this.numberOfMetaballs * metaballAttributes;
+        const targetTextureWidth = this.numberOfMetaballs * this.numberOfMetaballAttributes;
         const targetTextureHeight = 1;
 
-        this._metaballsPhysicsTexture = new Texture2D(this._context, 'metaballsPhysics');
-        this._metaballsPhysicsTexture.initialize(targetTextureWidth, targetTextureHeight,
-            gl.RGBA32F, gl.RGBA, gl.FLOAT);
-        this._metaballsPhysicsTexture.filter(gl.NEAREST, gl.NEAREST);
-
-        this._physicsFBO = new Framebuffer(this._context, 'PhysicsFBO');
-        this._physicsFBO.initialize([[gl.COLOR_ATTACHMENT0, this._metaballsPhysicsTexture]]);
-        this._physicsFBO.resize(targetTextureWidth, targetTextureHeight);
-
-        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'physics.vert');
-        vert.initialize(require('./physics.vert'));
-        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'physics.frag');
-        frag.initialize(require('./physics.frag'));
-
-        this._physicsProgram = new Program(this._context, 'MetaballsPhysicsProgram');
-        this._physicsProgram.initialize([vert, frag], false);
-        this._physicsProgram.attribute('a_vertex', this._ndcTriangle.vertexLocation);
-
         this._physicsFBO.bind();
+        this._physicsFBO.attachTexture(gl.COLOR_ATTACHMENT0, this._metaballsPhysicsTexture);
         gl.viewport(0, 0, targetTextureWidth, targetTextureHeight);
 
-        this._physicsProgram.link();
         this._physicsProgram.bind();
-
-        gl.uniform1i(this._physicsProgram.uniform('u_metaballsTexture'), 0);
-        // TODO refactor magic number
-        gl.uniform1i(this._physicsProgram.uniform('u_metaballsTextureSize'), this.numberOfMetaballs * 2);
 
         this._metaballsTexture.bind(gl.TEXTURE0);
 
@@ -115,14 +91,21 @@ export class MetaballsRenderer extends Renderer {
         this._ndcTriangle.draw();
         this._ndcTriangle.unbind();
 
-        this._program.unbind();
-        const data = new Float32Array(targetTextureWidth * targetTextureHeight * numberOfPrimitivesPerAttribute);
+        this._metaballsTexture.unbind();
+        this._physicsProgram.unbind();
+
+        const data = new Float32Array(targetTextureWidth * targetTextureHeight * 4);
         gl.readPixels(0, 0, targetTextureWidth, targetTextureHeight, gl.RGBA, gl.FLOAT, data);
-        console.log(data);
+        //console.log(data);
+        this._physicsFBO.detachTexture(gl.COLOR_ATTACHMENT0);
+        this._physicsFBO.unbind();
     }
 
     protected onFrame(): void {
         const gl = this._context.gl;
+
+        this.renderPhysicsToTexture();
+        this.performTexturePingPong();
 
         this._defaultFBO.bind();
         this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
@@ -137,12 +120,9 @@ export class MetaballsRenderer extends Renderer {
         this._program.bind();
 
         // Bind textures and uniforms
-        this._metaballsTexture.bind(gl.TEXTURE0);
+        this._metaballsPhysicsTexture.bind(gl.TEXTURE0);
         this._metaballColorsTexture.bind(gl.TEXTURE1);
-        //this._lightsTexture.bind(gl.TEXTURE2);
         this._cubeMap.bind(gl.TEXTURE3);
-        const lookAt = vec3.create();
-        vec3.sub(lookAt, this._camera.center, this._camera.eye);
 
         gl.uniformMatrix4fv(this._uInverseViewProjection, gl.GL_FALSE, this._camera.viewProjectionInverse);
 
@@ -153,8 +133,18 @@ export class MetaballsRenderer extends Renderer {
 
         this._program.unbind();
 
+        //const data = new Uint8Array(this._frameSize[0] * this._frameSize[1] * 4);
+        //gl.readPixels(0, 0, this._frameSize[0], this._frameSize[1], gl.RGBA, gl.UNSIGNED_BYTE, data);
+        //console.log(data);
+
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
+    }
+
+    protected performTexturePingPong(): void {
+        const tempReference = this._metaballsPhysicsTexture;
+        this._metaballsPhysicsTexture = this._metaballsTexture;
+        this._metaballsTexture = tempReference;
     }
 
     protected onSwap(): void { }
@@ -185,9 +175,7 @@ export class MetaballsRenderer extends Renderer {
 
         this.createMetaballsTexture();
         this.createCubeMapTexture();
-        // this.createLightsTexture();
-        this.renderToTexture();
-
+        this.setUpPhysicsRendering();
 
         this._uInverseViewProjection = this._program.uniform('u_inverseViewProjection');
         this._camera = new Camera();
@@ -196,7 +184,6 @@ export class MetaballsRenderer extends Renderer {
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.near = 0.1;
         this._camera.far = 4.0;
-
 
         this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
@@ -214,9 +201,44 @@ export class MetaballsRenderer extends Renderer {
         this._defaultFBO.uninitialize();
     }
 
+    protected setUpPhysicsRendering(): void {
+        const gl = this._context.gl;
+        const targetTextureWidth = this.numberOfMetaballs * this.numberOfMetaballAttributes;
+        const targetTextureHeight = 1;
+
+        this._metaballsPhysicsTexture = new Texture2D(this._context, 'metaballsPhysics');
+        this._metaballsPhysicsTexture.initialize(targetTextureWidth, targetTextureHeight,
+            gl.RGBA32F, gl.RGBA, gl.FLOAT);
+        this._metaballsPhysicsTexture.filter(gl.NEAREST, gl.NEAREST);
+
+        this._physicsFBO = new Framebuffer(this._context, 'PhysicsFBO');
+        this._physicsFBO.initialize([[gl.COLOR_ATTACHMENT0, this._metaballsPhysicsTexture]]);
+        this._physicsFBO.resize(targetTextureWidth, targetTextureHeight);
+
+        const vert = new Shader(this._context, gl.VERTEX_SHADER, 'physics.vert');
+        vert.initialize(require('./physics.vert'));
+        const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'physics.frag');
+        frag.initialize(require('./physics.frag'));
+
+        this._physicsProgram = new Program(this._context, 'MetaballsPhysicsProgram');
+        this._physicsProgram.initialize([vert, frag], false);
+        this._physicsProgram.attribute('a_vertex', this._ndcTriangle.vertexLocation);
+
+        this._physicsFBO.bind();
+        gl.viewport(0, 0, targetTextureWidth, targetTextureHeight);
+
+        this._physicsProgram.link();
+        this._physicsProgram.bind();
+
+        gl.uniform1i(this._physicsProgram.uniform('u_metaballsTexture'), 0);
+        // TODO refactor magic number
+        gl.uniform1i(this._physicsProgram.uniform('u_metaballsTextureSize'),
+            this.numberOfMetaballs * this.numberOfMetaballAttributes);
+    }
+
     protected createMetaballsTexture(): void {
-        //const metaballs = new Float32Array(numberOfMetaballs * 4);
-        //metaballs.forEach((val, i, array) => array[i] = Math.random() + 0.5);
+        // const metaballs = new Float32Array(numberOfMetaballs * 4);
+        // metaballs.forEach((val, i, array) => array[i] = Math.random() + 0.5);
         const metaballs = new Float32Array([
             // x,  y,   z,  metaball-energy, velocity x, y, z, placeholder
             -0.3, -0.3, 0.9, 0.7, 0.0, 0.0, 0.0, 0.0,
@@ -227,7 +249,6 @@ export class MetaballsRenderer extends Renderer {
             0.0, 0.5, 0.2, 0.7, 0.0, 0.0, 0.0, 0.0,
             0.2, -0.1, -0.5, 0.5, 0.0, 0.0, 0.0, 0.0,
         ]);
-        //console.log(metaballs);
 
         const metaballColors = new Float32Array(this.numberOfMetaballs * 4);
         for (let i = 0; i < this.numberOfMetaballs; i += 4) {
@@ -266,21 +287,6 @@ export class MetaballsRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_metaballsColorTextureSize'), metaballColors.length / 4);
 
     }
-
-    /*protected createLightsTexture(): void {
-        const lights = new Float32Array([
-            // x,  y,   z,  shininess-factor
-            // 0.0, 0.0, -0.0, 100.0,
-        ]);
-        const numberOfLights = lights.length / 4;
-        const gl = this._context.gl;
-
-        this._lightsTexture = new Texture2D(this._context, 'lightsTexture');
-        this._lightsTexture.initialize(numberOfLights, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
-        this._lightsTexture.data(lights);
-        gl.uniform1i(this._program.uniform('u_lightsTexture'), 2);
-        gl.uniform1i(this._program.uniform('u_lightsTextureSize'), numberOfLights);
-    }*/
 
     protected createCubeMapTexture(): void {
         const gl = this._context.gl;
