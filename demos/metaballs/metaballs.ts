@@ -45,12 +45,14 @@ export class MetaballsRenderer extends Renderer {
     protected _physicsProgram: Program;
     protected _defaultFBO: DefaultFramebuffer;
     protected _physicsFBO: Framebuffer;
+    protected _lastRenderingTime = 0.0;
 
     protected onUpdate(): boolean {
 
         // Update camera navigation (process events)
         this._navigation.update();
-        return this._altered.any || this._camera.altered;
+        //return this._altered.any || this._camera.altered;
+        return true;
     }
 
     protected onDiscarded(): void {
@@ -86,6 +88,13 @@ export class MetaballsRenderer extends Renderer {
 
         this._metaballsTexture.bind(gl.TEXTURE0);
 
+        const newTime = new Date().getTime() / 1000;
+        const deltaTime = newTime - this._lastRenderingTime;
+        gl.uniform1f(this._physicsProgram.uniform('u_deltaTime'), deltaTime);
+
+        this._lastRenderingTime = newTime;
+
+
         // render geometry
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();
@@ -96,8 +105,7 @@ export class MetaballsRenderer extends Renderer {
 
         const data = new Float32Array(targetTextureWidth * targetTextureHeight * 4);
         gl.readPixels(0, 0, targetTextureWidth, targetTextureHeight, gl.RGBA, gl.FLOAT, data);
-        //console.log(data);
-        this._physicsFBO.detachTexture(gl.COLOR_ATTACHMENT0);
+        console.log(data);
         this._physicsFBO.unbind();
     }
 
@@ -179,7 +187,7 @@ export class MetaballsRenderer extends Renderer {
 
         this._uInverseViewProjection = this._program.uniform('u_inverseViewProjection');
         this._camera = new Camera();
-        this._camera.eye = vec3.fromValues(0.0, 0.5, -1.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.5, -2.0);
         this._camera.center = vec3.fromValues(0.0, 0.4, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.near = 0.1;
@@ -187,6 +195,8 @@ export class MetaballsRenderer extends Renderer {
 
         this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
+
+        this._lastRenderingTime = new Date().getTime() / 1000;
 
         return true;
     }
@@ -285,7 +295,6 @@ export class MetaballsRenderer extends Renderer {
         this._metaballColorsTexture.data(metaballColors);
         gl.uniform1i(this._program.uniform('u_metaballColorsTexture'), 1);
         gl.uniform1i(this._program.uniform('u_metaballsColorTextureSize'), metaballColors.length / 4);
-
     }
 
     protected createCubeMapTexture(): void {

@@ -1,7 +1,6 @@
 precision lowp float;
 
 @import ../../source/shaders/facade.frag;
-@import ../../source/shaders/tonemapping;
 
 
 #if __VERSION__ == 100
@@ -30,7 +29,8 @@ varying vec4 v_origin;
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.50
 # define METABALL_TRANSPARENCY 0.8
-# define RAYMARCH_DISTANCE_FACTOR 8.0
+# define RAYMARCH_DISTANCE_FACTOR 4.0
+# define METABALL_BUFFER_SIZE 16
 
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
 # define AMBIENT_ILLUMINATION 0.3
@@ -39,11 +39,8 @@ varying vec4 v_origin;
 # define REFRACTION_INDEX 0.96
 # define REFRACTION_AND_REFLECTION_INTENSITY 0.80
 
-struct MetaBall {
-    vec4 position;
-    vec3 color;
-    float energy;
-};
+vec4 metaballArray[METABALL_BUFFER_SIZE];
+vec3 metaballColorArray[METABALL_BUFFER_SIZE];
 
 struct FragmentValues {
     float energy;
@@ -65,17 +62,6 @@ vec2 calculateAbsoluteTextureCoords(int width, int height, int maxWidth, int max
     );
 }
 
-MetaBall getMetaball(int index) {
-    vec2 texCoords = calculateAbsoluteTextureCoords(index * 2, 0, u_metaballsTextureSize, 1);
-    vec4 positionAndEnergy = texture(u_metaballsTexture, texCoords);
-    MetaBall metaball;
-    metaball.position = vec4(positionAndEnergy.xyz, 1.0);
-    metaball.energy = BASE_ENERGY * positionAndEnergy.w;
-    vec2 colorTexCoords = calculateAbsoluteTextureCoords(index, 0, u_metaballsColorTextureSize, 1);
-    metaball.color = texture(u_metaballColorsTexture, colorTexCoords).xyz;
-    return metaball;
-}
-
 PointLight getPointLight(int index) {
     vec4 texVals = texture(u_lightsTexture, calculateAbsoluteTextureCoords(index, 0, u_lightsTextureSize, 1));
     PointLight pointLight;
@@ -84,8 +70,8 @@ PointLight getPointLight(int index) {
     return pointLight;
 }
 
-float distFunc(MetaBall metaball, vec4 rayPosition) {
-    return metaball.energy / distance(metaball.position, rayPosition);
+float distFunc(vec4 metaball, vec4 rayPosition) {
+    return metaball.w / distance(metaball.xyz, rayPosition.xyz);
 }
 
 float fresnelReflection(vec3 rayDirection, vec3 normal)
@@ -108,10 +94,22 @@ float fresnelReflection(vec3 rayDirection, vec3 normal)
     }
 }
 
+vec4 getMetaballPositionAnEnergy(int index){
+    //return metaballArray[index];
+    vec4 metaball = texelFetch(u_metaballsTexture, ivec2(index * 2, 0), 0);
+    metaball.w *= BASE_ENERGY;
+    return metaball;
+}
+
+vec3 getMetaballColor(int index){
+    //return metaballColorArray[index];
+    return texelFetch(u_metaballColorsTexture, ivec2(index, 0), 0).xyz;
+}
+
 float calculateEnergy(vec4 currentRayPosition) {
     float energy = 0.0;
     for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
-        MetaBall currentMetaball = getMetaball(metaballIndex);
+        vec4 currentMetaball = getMetaballPositionAnEnergy(metaballIndex);
         energy += distFunc(currentMetaball, currentRayPosition);
     }
     return energy;
@@ -122,12 +120,12 @@ void calculateEnergyAndOtherFragmentValues(vec4 currentRayPosition, inout Fragme
     fragmentValues.energy = 0.0;
     for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
 
-        MetaBall currentMetaball = getMetaball(metaballIndex);
+        vec4 currentMetaball = getMetaballPositionAnEnergy(metaballIndex);
         float currentEnergy = distFunc(currentMetaball, currentRayPosition);
         fragmentValues.energy += currentEnergy;
-        vec4 currentNormal = normalize(currentRayPosition - currentMetaball.position);
+        vec4 currentNormal = normalize(currentRayPosition - vec4(currentMetaball.xyz, 1.0));
         fragmentValues.normal += currentNormal * (currentEnergy * 50.0);
-        fragmentValues.color += currentMetaball.color * currentEnergy;
+        fragmentValues.color += getMetaballColor(metaballIndex) * currentEnergy;
     }
     fragmentValues.rayPosition = currentRayPosition;
     fragmentValues.normal = normalize(fragmentValues.normal);
@@ -140,7 +138,7 @@ float calculateEnergyOverDerivative(vec4 rayPosition, vec4 rayDirection, float m
     vec4 currentRayPosition = rayPosition + rayDirection * marchDistance;
     vec4 currentNearerRayPosition = rayPosition + rayDirection * (marchDistance - derivativeDistance);
     for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
-        MetaBall currentMetaball = getMetaball(metaballIndex);
+        vec4 currentMetaball = metaballArray[metaballIndex];
         energy += distFunc(currentMetaball, currentRayPosition);
         nearerEnergy += distFunc(currentMetaball, currentNearerRayPosition);
     }
@@ -210,9 +208,8 @@ float calculateIllumination(FragmentValues fragmentValues) {
     return illumination;
 }
 
-void fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool isInverseMarch, float initialMarchDistance, int numberOfNewtonIterations, bool exitedMetaBall, inout FragmentValues outValues)
+void fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool isInverseMarch, float initialMarchDistance, int numberOfNewtonIterations, bool exitedMetaBall, float stepWidth, inout FragmentValues outValues)
 {
-    float stepWidth = 0.05;
     rayMarchWithFragmentValues(rayPosition, rayDirection, stepWidth, initialMarchDistance, numberOfNewtonIterations, isInverseMarch, exitedMetaBall, outValues);
 
     float illumination = 1.0;
@@ -229,65 +226,35 @@ void fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool 
     outValues.color = outValues.energy > THRESHOLD ? mix(envMap.xyz, (outValues.color * 2.0) * illumination, METABALL_TRANSPARENCY) : envMap.xyz;
 }
 
-/*vec3 getIBLContribution(vec3 n, vec3 v, float perceptualRoughness, vec3 diffuseColor, vec3 specularColor)
+void prepareMetaballsArray()
 {
-    float NdotV = clamp(dot(n, v), 0.0, 1.0);
-
-    float lod = clamp(perceptualRoughness * MIP_COUNT, 0.0, MIP_COUNT);
-    vec3 reflection = normalize(reflect(-v, n));
-
-    vec2 brdfSamplePoint = clamp(vec2(NdotV, perceptualRoughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
-    vec2 brdf = texture(u_brdfLUT, brdfSamplePoint).rg;
-
-    vec4 specularSample = textureLod(u_cubemap, reflection, lod);
-
-    // TODO: use a prefiltered diffuse environment map
-    vec3 diffuseLight = vec3(0.8);
-    vec3 specularLight = SRGBtoLINEAR(specularSample).rgb;
-
-    vec3 diffuse = diffuseLight * diffuseColor;
-    vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
-
-    return diffuse + specular;
-}*/
-
-/*void IBL()
-{
-    vec3 N = normalize(v_normal);
-    vec3 T = normalize(dFdx(v_vertex.xyz));
-    vec3 B = normalize(cross(T, N));
-    mat3 TBN = mat3(T, B, N);
-
-    vec3 view = normalize(u_eye - v_vertex.xyz);
-
-    vec3 albedoColor = texture(u_albedoTexture, v_uv).rgb;
-    albedoColor = pow(albedoColor, vec3(GAMMA));
-
-    vec3 normalSample = texture(u_normalTexture, v_uv).rgb;
-    vec3 normal = normalize(normalSample * 2.0 - 1.0);
-    normal = normalize(TBN * normal);
-
-    float roughness = texture(u_roughnessTexture, v_uv).r;
-    float metallic = texture(u_metallicTexture, v_uv).r;
-
-    const vec3 f0 = vec3(0.04);
-    vec3 diffuseColor = albedoColor * (vec3(1.0) - f0) * (1.0 - metallic);
-    vec3 specularColor = mix(f0, albedoColor, metallic);
-
-    vec3 IBL = getIBLContribution(normal, view, roughness, diffuseColor, specularColor);
-    fragColor = vec4(IBL, 1.0);
-    fragColor.rgb = toneMapUncharted(fragColor.rgb);
-}*/
+    if (u_metaballsColorTextureSize >= METABALL_BUFFER_SIZE)
+    {
+        discard;
+    }
+    for (int metaballIndex = 0; metaballIndex < u_metaballsTextureSize; metaballIndex++) {
+        // Position and Energy
+        // We need to double the index since the texture also includes the velocity per metaball => 2 texels per metaball
+        vec4 metaball = texelFetch(u_metaballsTexture, ivec2(metaballIndex * 2, 0), 0);
+        metaball.w *= BASE_ENERGY;
+        metaballArray[metaballIndex] = metaball;
+        // Color
+        metaballColorArray[metaballIndex] = texelFetch(u_metaballColorsTexture, ivec2(metaballIndex, 0), 0).xyz;
+    }
+}
 
 void main(void)
 {
+    // buffer the metaball texture data in a static array with max size and pass the acutual number of metaballs per uniform.
+    // parameter optimieren und physics shader rein machen, keine IBL, random metaballs / colors.
+    prepareMetaballsArray();
     vec3 ray = normalize(v_ray.xyz);
     //ray = normalize(ray) * 2.0;
     // Compute the color
     vec4 rayPosition = v_origin;
     //vec4 rayPosition = vec4(-4.0 * ray, 1.0);
     FragmentValues fragmentValues;
-    fullRayMarchWithLightCalculation(rayPosition, vec4(ray, 0.0), false, 0.01, 7, true, fragmentValues);
+    fullRayMarchWithLightCalculation(rayPosition, vec4(ray, 0.0), false, 1.5, 7, true, 0.05, fragmentValues);
     vec3 reflectionDir;
     vec3 refractionAndReflectionColor;
     FragmentValues refractionValues;
@@ -296,16 +263,15 @@ void main(void)
     vec3 refractionDir;
     if (fragmentValues.energy > THRESHOLD) {
         reflectionDir = reflect(ray, fragmentValues.normal.xyz);
-        fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(reflectionDir, 0.0), false, 0.05, 7, false, reflectionValues);
+        fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(reflectionDir, 0.0), false, 0.05, 7, false, 0.1, reflectionValues);
 
         refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
         if (refractionDir != vec3(0.0)) {
-            fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(refractionDir, 0.0), true, 0.01, 5, true, refractionValues);
+            fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(refractionDir, 0.0), true, 0.01, 5, true, 0.1, refractionValues);
             reflectionPercentage = fresnelReflection(ray, fragmentValues.normal.xyz);
             refractionAndReflectionColor = mix(refractionValues.color, reflectionValues.color, reflectionPercentage);
         }
-        else
-        {
+        else {
             refractionAndReflectionColor = reflectionValues.color;
         }
     }

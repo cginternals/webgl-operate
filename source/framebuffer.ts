@@ -418,18 +418,6 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         this._texturesByAttachment.set(attachment, texture);
     }
 
-    /**
-     * Access to attached textures, identified by a valid framebuffer attachment.
-     * @param attachment - The attachment to request the texture object of.
-     * @returns - A texture object if one exists for the given attachment, otherwise undefined.
-     */
-    @Initializable.assert_initialized()
-    public detachTexture(attachment: GLenum): void {
-
-        const gl = this.context.gl;
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, undefined, 0);
-        this._texturesByAttachment.delete(attachment);
-    }
 
     /**
      * Forwards a resize to all attachments, renderbuffers and textures.

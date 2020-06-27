@@ -9,19 +9,19 @@ precision lowp float;
     layout(location = 0) out vec4 fragColor;
 #endif
 
+# define TIME_SCALE_FACTOR 0.1
+
 uniform sampler2D u_metaballsTexture;
 uniform int u_metaballsTextureSize;
+uniform float u_deltaTime;
 
-varying vec2 v_uv;
-varying vec4 v_ray;
 
-const int forceVectorFieldDimension = 3;
-const float forceVectorFieldExtension = 2.0;
+// wie viele voxel pro dimension
+# define FORCE_VECTOR_FIELD_DIMENSION_SIZE 3
+// breite une hoehe des cubes in Einheit
+# define FORCE_VECTOR_FIELD_EXTENSION 2.0
 
-// TODO change to uniform and give to shader from typescript
-const float deltaTime = 0.1;
-
-vec3 forceVectorField[forceVectorFieldDimension * forceVectorFieldDimension * forceVectorFieldDimension] = vec3[forceVectorFieldDimension * forceVectorFieldDimension * forceVectorFieldDimension](
+vec3 forceVectorField[FORCE_VECTOR_FIELD_DIMENSION_SIZE * FORCE_VECTOR_FIELD_DIMENSION_SIZE * FORCE_VECTOR_FIELD_DIMENSION_SIZE] = vec3[FORCE_VECTOR_FIELD_DIMENSION_SIZE * FORCE_VECTOR_FIELD_DIMENSION_SIZE * FORCE_VECTOR_FIELD_DIMENSION_SIZE](
     // negative plane: y = -1
     // x = variable, y = -1, z = -1
     vec3(0.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0),
@@ -46,23 +46,23 @@ vec3 forceVectorField[forceVectorFieldDimension * forceVectorFieldDimension * fo
     // x = variable, y = 1, z = -1
     vec3(0.0, -1.0, 0.0), vec3(0.0, -1.0, 0.0), vec3(0.0, -1.0, 0.0));
 
-const vec3 forceVectorFieldOffset = vec3(forceVectorFieldExtension, forceVectorFieldExtension, forceVectorFieldExtension) / 2.0;
-const float forceVectorVoxelSize = forceVectorFieldExtension / float(forceVectorFieldDimension);
+const vec3 forceVectorFieldOffset = vec3(FORCE_VECTOR_FIELD_EXTENSION, FORCE_VECTOR_FIELD_EXTENSION, FORCE_VECTOR_FIELD_EXTENSION) / 2.0;
+const float forceVectorVoxelSize = FORCE_VECTOR_FIELD_EXTENSION / float(FORCE_VECTOR_FIELD_DIMENSION_SIZE);
 
 vec3 fetchForceVector(ivec3 voxel) {
     // if the voxel is not inside the force field return 0 as force vector.
-    if (any(lessThan(ivec3(0), voxel)) || any(greaterThanEqual(ivec3(forceVectorFieldDimension), voxel))) {
+    if (any(lessThan(voxel, ivec3(0))) || any(greaterThanEqual(voxel, ivec3(FORCE_VECTOR_FIELD_DIMENSION_SIZE)))) {
         return vec3(0.0);
     }
-    int index = voxel.x + voxel.z * forceVectorFieldDimension + voxel.y * forceVectorFieldDimension * forceVectorFieldDimension;
+    int index = voxel.x + voxel.z * FORCE_VECTOR_FIELD_DIMENSION_SIZE + voxel.y * FORCE_VECTOR_FIELD_DIMENSION_SIZE * FORCE_VECTOR_FIELD_DIMENSION_SIZE;
     return forceVectorField[index];
 }
 
 vec3 getForceVector(vec3 metaballPosition) {
 
     vec3 positionInForceField = (metaballPosition + forceVectorFieldOffset) * forceVectorVoxelSize;
-    ivec3 positionInForceFieldFloor = ivec3(floor(positionInForceField));
-    ivec3 positionInForceFieldCeil = ivec3(ceil(positionInForceField));
+    ivec3 positionInForceFieldFloor = clamp(ivec3(floor(positionInForceField)), 0, FORCE_VECTOR_FIELD_DIMENSION_SIZE - 1);
+    ivec3 positionInForceFieldCeil = clamp(ivec3(ceil(positionInForceField)), 0, FORCE_VECTOR_FIELD_DIMENSION_SIZE -1);
 
     ivec3 conceringVoxels[8] = ivec3[8](
         ivec3(positionInForceFieldFloor.x, positionInForceFieldFloor.y, positionInForceFieldFloor.z),
@@ -101,11 +101,13 @@ vec3 getForceVector(vec3 metaballPosition) {
     return forceVector / sumOfDistances;
 }
 
-void calculateNewPositionAndVelocity(inout vec4 positionAndMass, inout vec3 velocity) {
+vec3 calculateNewPositionAndVelocity(inout vec4 positionAndMass, inout vec3 velocity) {
     vec3 acceleration = getForceVector(positionAndMass.xyz) / positionAndMass.w;
-    velocity = velocity + acceleration * deltaTime;
-    positionAndMass.xyz = positionAndMass.xyz + velocity * deltaTime;
-    positionAndMass.xyz = clamp(positionAndMass.xyz, vec3(-forceVectorFieldExtension / 2.0), vec3(forceVectorFieldExtension / 2.0));
+    velocity = velocity + acceleration * u_deltaTime * TIME_SCALE_FACTOR;
+    //velocity = /*velocity +*/ acceleration * u_deltaTime * TIME_SCALE_FACTOR;
+    positionAndMass.xyz = positionAndMass.xyz + velocity * u_deltaTime * TIME_SCALE_FACTOR;
+    positionAndMass.xyz = clamp(positionAndMass.xyz, vec3(-FORCE_VECTOR_FIELD_EXTENSION / 2.0), vec3(FORCE_VECTOR_FIELD_EXTENSION / 2.0));
+    return velocity;
 }
 
 vec4 getCurrentVelocity(vec2 texCoords) {
@@ -119,18 +121,14 @@ vec4 getCurrentPosition(vec2 texCoords) {
 
 void main(void)
 {
-    //float metaballsIndex = gl_FragCoord.x - 0.5;
     vec2 texCoords = (gl_PointCoord + 1.0) / 2.0;
     bool isVelocityFragment = bool(mod(gl_FragCoord.x - 0.5, 2.0));
-    texCoords = isVelocityFragment ? texCoords - vec2(1.0 / 14.0, 0.0) : texCoords;
+    texCoords = isVelocityFragment ? texCoords - vec2(1.0 / float(u_metaballsTextureSize), 0.0) : texCoords;
 
-    /*vec3 velocity = getCurrentVelocity(texCoords).xyz;
+    vec3 velocity = getCurrentVelocity(texCoords).xyz;
     vec4 positionAndMass = getCurrentPosition(texCoords);
-    calculateNewPositionAndVelocity(positionAndMass, velocity);
-    fragColor = isVelocityFragment ? positionAndMass : vec4(velocity, 0.0);*/
-
-    //fragColor = vec4(texCoords, vec2(0.0));
-    fragColor = isVelocityFragment ? getCurrentVelocity(texCoords) : getCurrentPosition(texCoords);
+    vec3 acc = calculateNewPositionAndVelocity(positionAndMass, velocity);
+    fragColor = isVelocityFragment ? vec4(velocity, 0.0) : positionAndMass;
 }
 
 // NOTE for compilation errors look at the line number and subtract 7
