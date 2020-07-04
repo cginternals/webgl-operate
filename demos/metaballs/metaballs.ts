@@ -251,7 +251,14 @@ export class MetaballsRenderer extends Renderer {
     protected createMetaballsTexture(): void {
         // const metaballs = new Float32Array(numberOfMetaballs * 4);
         // metaballs.forEach((val, i, array) => array[i] = Math.random() + 0.5);
-        const metaballs = new Float32Array([
+        const metaballs = new Float32Array(this.numberOfMetaballs * this.numberOfMetaballAttributes * 4);
+        for (let i = 0; i < this.numberOfMetaballs * 4 * this.numberOfMetaballAttributes; i += 8) {
+            metaballs[i + 0] = Math.random() * 2.0 - 1.0;
+            metaballs[i + 1] = Math.random() * 2.0 - 1.0;
+            metaballs[i + 2] = Math.random() * 2.0 - 1.0;
+            metaballs[i + 3] = 0.7;
+        }
+        /*const metaballs = new Float32Array([
             // x,  y,   z,  metaball-energy, velocity x, y, z, placeholder
             -0.3, -0.3, 0.9, 0.7, 0.0, 0.0, 0.0, 0.0,
             -0.8, 0.1, 0.4, 0.7, 0.0, 0.0, 0.0, 0.0,
@@ -260,12 +267,10 @@ export class MetaballsRenderer extends Renderer {
             -0.5, 0.5, 0.2, 0.7, 0.0, 0.0, 0.0, 0.0,
             0.0, 0.5, 0.2, 0.7, 0.0, 0.0, 0.0, 0.0,
             0.2, -0.1, -0.5, 0.5, 0.0, 0.0, 0.0, 0.0,
-        ]);
+        ]);*/
 
         const metaballColors = new Float32Array(this.numberOfMetaballs * 4);
-        for (let i = 0; i < this.numberOfMetaballs; i += 4) {
-            let temp = vec3.fromValues(Math.random(), Math.random(), Math.random());
-            vec3.normalize(temp, temp);
+        for (let i = 0; i < this.numberOfMetaballs * 4; i += 4) {
             metaballColors[i + 0] = (Math.random() / 2.0) + 0.5;  //r
             metaballColors[i + 1] = (Math.random() / 2.0) + 0.5;  //g
             metaballColors[i + 2] = (Math.random() / 2.0) + 0.5;  //b
