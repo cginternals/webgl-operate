@@ -49,24 +49,11 @@ struct FragmentValues {
     float marchDistance;
 };
 
-struct PointLight {
-    vec4 position;
-    float shininess;
-};
-
 vec2 calculateAbsoluteTextureCoords(int width, int height, int maxWidth, int maxHeight) {
     return vec2(
         (2.0 * float(width) + 1.0) / (2.0 * float(maxWidth)),
         (2.0 * float(height) + 1.0) / (2.0 * float(maxHeight))
     );
-}
-
-PointLight getPointLight(int index) {
-    vec4 texVals = texture(u_lightsTexture, calculateAbsoluteTextureCoords(index, 0, u_lightsTextureSize, 1));
-    PointLight pointLight;
-    pointLight.position = vec4(texVals.xyz, 1.0);
-    pointLight.shininess = texVals.w;
-    return pointLight;
 }
 
 float distFunc(vec4 metaball, vec4 rayPosition) {
@@ -188,8 +175,8 @@ float calculateIllumination(FragmentValues fragmentValues) {
     // Phong shading
     float illumination = AMBIENT_ILLUMINATION;
     for (int lightIndex = 0; lightIndex < u_lightsTextureSize; lightIndex++) {
-        PointLight pointLight = getPointLight(lightIndex);
-        vec4 lightDirection = pointLight.position - fragmentValues.rayPosition;
+        vec4 pointLightPositionAndShininess = texelFetch(u_lightsTexture, ivec2(lightIndex, 0), 0);
+        vec4 lightDirection = vec4(pointLightPositionAndShininess.xyz, 1.0) - fragmentValues.rayPosition;
         bool hitMetaballBetweenLight = rayMarchHitMetaball(fragmentValues.rayPosition, lightDirection, 0.1, 0.11);
         if (!hitMetaballBetweenLight) {
             vec4 lightDirectionNormalized = normalize(lightDirection);
@@ -198,7 +185,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
             float diffuse = max(dot(fragmentValues.normal, lightDirectionNormalized), 0.0);
 
             float specularAngle = max(dot(reflectDir, fragmentValues.normal), 0.0);
-            float specular = pow(specularAngle, pointLight.shininess);
+            float specular = pow(specularAngle, pointLightPositionAndShininess.w);
 
             illumination += DIFFUSE_ILLUMINATION * diffuse;
             illumination += SPECULAR_ILLUMINATION * specular;

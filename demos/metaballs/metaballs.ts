@@ -304,7 +304,7 @@ export class MetaballsRenderer extends Renderer {
         const lights = new Float32Array([
             // x,  y,   z,  shininess-factor
             -2.5, -2.5, 0.5, 100.0,
-            2.5, -2.5, -0.5, 100.0,
+            0.0, -2.5, -0.5, 100.0,
         ]);
         const numberOfLights = lights.length / 4;
         const gl = this._context.gl;
