@@ -16,8 +16,7 @@ uniform int u_metaballsColorTextureSize;
 
 uniform sampler2D u_lightsTexture;
 uniform mat4 u_inverseViewProjection;
-//uniform int u_lightsTextureSize;
-const int u_lightsTextureSize = 0;
+uniform int u_lightsTextureSize;
 
 uniform samplerCube u_cubemap;
 
@@ -29,11 +28,11 @@ varying vec4 v_origin;
 # define BASE_ENERGY 0.06
 # define THRESHOLD 0.50
 # define METABALL_TRANSPARENCY 0.8
-# define RAYMARCH_DISTANCE_FACTOR 4.0
+# define RAYMARCH_DISTANCE_FACTOR 6.0
 # define METABALL_BUFFER_SIZE 16
 
 // NOTE: the phong shading coeffcients are currently assumed to be the same for all metaballs.
-# define AMBIENT_ILLUMINATION 0.3
+# define AMBIENT_ILLUMINATION 0.5
 # define DIFFUSE_ILLUMINATION 0.7
 # define SPECULAR_ILLUMINATION 0.7
 # define REFRACTION_INDEX 0.96
@@ -191,7 +190,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
     for (int lightIndex = 0; lightIndex < u_lightsTextureSize; lightIndex++) {
         PointLight pointLight = getPointLight(lightIndex);
         vec4 lightDirection = pointLight.position - fragmentValues.rayPosition;
-        bool hitMetaballBetweenLight = rayMarchHitMetaball(fragmentValues.rayPosition, lightDirection, 0.1, 0.011);
+        bool hitMetaballBetweenLight = rayMarchHitMetaball(fragmentValues.rayPosition, lightDirection, 0.1, 0.11);
         if (!hitMetaballBetweenLight) {
             vec4 lightDirectionNormalized = normalize(lightDirection);
             vec4 reflectDir = reflect(-lightDirectionNormalized, fragmentValues.normal);
@@ -208,7 +207,7 @@ float calculateIllumination(FragmentValues fragmentValues) {
     return illumination;
 }
 
-void fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool isInverseMarch, float initialMarchDistance, int numberOfNewtonIterations, bool exitedMetaBall, float stepWidth, inout FragmentValues outValues)
+float fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool isInverseMarch, float initialMarchDistance, int numberOfNewtonIterations, bool exitedMetaBall, float stepWidth, inout FragmentValues outValues)
 {
     rayMarchWithFragmentValues(rayPosition, rayDirection, stepWidth, initialMarchDistance, numberOfNewtonIterations, isInverseMarch, exitedMetaBall, outValues);
 
@@ -224,6 +223,8 @@ void fullRayMarchWithLightCalculation(vec4 rayPosition, vec4 rayDirection, bool 
     vec4 envMap = texture(u_cubemap, texturePositon.xyz);
 
     outValues.color = outValues.energy > THRESHOLD ? mix(envMap.xyz, (outValues.color * 2.0) * illumination, METABALL_TRANSPARENCY) : envMap.xyz;
+    //outValues.color = envMap.xyz;
+    return illumination;
 }
 
 void prepareMetaballsArray()
@@ -252,9 +253,10 @@ void main(void)
     //ray = normalize(ray) * 2.0;
     // Compute the color
     vec4 rayPosition = v_origin;
+    float deleteme = 0.0;
     //vec4 rayPosition = vec4(-4.0 * ray, 1.0);
     FragmentValues fragmentValues;
-    fullRayMarchWithLightCalculation(rayPosition, vec4(ray, 0.0), false, 1.5, 7, true, 0.05, fragmentValues);
+    fullRayMarchWithLightCalculation(rayPosition, vec4(ray, 0.0), false, 2.0, 7, true, 0.05, fragmentValues);
     vec3 reflectionDir;
     vec3 refractionAndReflectionColor;
     FragmentValues refractionValues;
@@ -267,7 +269,7 @@ void main(void)
 
         refractionDir = refract(ray, fragmentValues.normal.xyz, REFRACTION_INDEX);
         if (refractionDir != vec3(0.0)) {
-            fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(refractionDir, 0.0), true, 0.01, 5, true, 0.1, refractionValues);
+            deleteme = fullRayMarchWithLightCalculation(fragmentValues.rayPosition, vec4(refractionDir, 0.0), true, 0.01, 5, true, 0.1, refractionValues);
             reflectionPercentage = fresnelReflection(ray, fragmentValues.normal.xyz);
             refractionAndReflectionColor = mix(refractionValues.color, reflectionValues.color, reflectionPercentage);
         }
@@ -279,12 +281,6 @@ void main(void)
         refractionAndReflectionColor = fragmentValues.color;
     }
     vec4 finalColor = vec4(mix(fragmentValues.color, refractionAndReflectionColor, REFRACTION_AND_REFLECTION_INTENSITY), 1.0);
-    //fragColor = vec4(refractionValues.color, 1.0);
-    //fragColor = vec4(vec3(fresnelReflection(ray, normalize(fragmentValues.normal.xyz))), 1.0);
-    //fragColor = vec4(vec3(reflectionValues.energy), 1.0);
-    //fragColor = vec4(reflectionValues.energy > THRESHOLD ?  vec3(reflectionValues.rayPosition) : vec3(fragmentValues.rayPosition), 1.0);
-    //fragColor = texture(u_cubemap, ray.xyz);
-    //fragColor = vec4(reflectionValues.color, 1.0);
     fragColor = finalColor;
 }
 

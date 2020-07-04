@@ -86,25 +86,28 @@ vec3 getForceVector(vec3 metaballPosition) {
         fetchForceVector(conceringVoxels[7])
     );
 
-    float sumOfDistances = 0.0;
     vec3 forceVector = vec3(0.0);
     for (int i = 0; i < 8; i++)
     {
         vec3 currentVector = conceringForceVectors[i];
         if (currentVector != vec3(0.0))
         {
-            float currentDistance = distance(positionInForceField, vec3(conceringVoxels[i]));
-            sumOfDistances += currentDistance;
-            forceVector += currentVector * currentDistance;
+            forceVector += currentVector * distance(positionInForceField, vec3(conceringVoxels[i]));
         }
     }
-    return forceVector / sumOfDistances;
+
+    // individual force vector
+    int individualId = int(gl_FragCoord.x);
+    float x = float(individualId % 3 - 1) * 2.0;
+    float y = float(individualId % 5 - 2);
+    float z = float(individualId % 3 - 1) * 2.0;
+    vec3 individualVector = normalize(vec3(x, y, z));
+    return normalize(mix(forceVector, individualVector, 0.5));
 }
 
 vec3 calculateNewPositionAndVelocity(inout vec4 positionAndMass, inout vec3 velocity) {
     vec3 acceleration = getForceVector(positionAndMass.xyz) / positionAndMass.w;
     velocity = velocity + acceleration * u_deltaTime * TIME_SCALE_FACTOR;
-    //velocity = /*velocity +*/ acceleration * u_deltaTime * TIME_SCALE_FACTOR;
     positionAndMass.xyz = positionAndMass.xyz + velocity * u_deltaTime * TIME_SCALE_FACTOR;
     positionAndMass.xyz = clamp(positionAndMass.xyz, vec3(-FORCE_VECTOR_FIELD_EXTENSION / 2.0), vec3(FORCE_VECTOR_FIELD_EXTENSION / 2.0));
     return velocity;
@@ -121,14 +124,14 @@ vec4 getCurrentPosition(vec2 texCoords) {
 
 void main(void)
 {
-    vec2 texCoords = (gl_PointCoord + 1.0) / 2.0;
+    ivec2 texCoords = ivec2(gl_FragCoord.xy);
     bool isVelocityFragment = bool(mod(gl_FragCoord.x - 0.5, 2.0));
-    texCoords = isVelocityFragment ? texCoords - vec2(1.0 / float(u_metaballsTextureSize), 0.0) : texCoords;
+    texCoords = isVelocityFragment ? texCoords - ivec2(1,0) : texCoords;
 
-    vec3 velocity = getCurrentVelocity(texCoords).xyz;
-    vec4 positionAndMass = getCurrentPosition(texCoords);
+    vec3 velocity = texelFetch(u_metaballsTexture, texCoords + ivec2(1, 0), 0).xyz;
+    vec4 positionAndMass = texelFetch(u_metaballsTexture, texCoords, 0);
     vec3 acc = calculateNewPositionAndVelocity(positionAndMass, velocity);
-    fragColor = isVelocityFragment ? vec4(velocity, 0.0) : positionAndMass;
+    fragColor = isVelocityFragment ? vec4(velocity, 1.0) : positionAndMass;
 }
 
 // NOTE for compilation errors look at the line number and subtract 7
