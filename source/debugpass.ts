@@ -160,10 +160,11 @@ export class DebugPass extends BlitPass {
 export namespace DebugPass {
 
     export enum Mode {
-        Depth = 0,
-        DepthLinear = 1,
-        DepthPacked = 2,
-        DepthLinearPacked = 3,
+        None = 0,
+        Depth = 1,
+        DepthLinear = 2,
+        DepthPacked = 3,
+        DepthLinearPacked = 4,
     }
 
 }
