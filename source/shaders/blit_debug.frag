@@ -27,17 +27,17 @@ void main(void)
 {
     vec4 source = texture(u_source, v_uv);
 
-    if(u_mode == 1) {           /* Depth */
+    if(u_mode == 0) {           /* Depth */
         source.rgb = vec3(source[0]);
 
-    } else if (u_mode == 2) {   /* DepthLinear */
+    } else if (u_mode == 1) {   /* DepthLinear */
         float zLinear = linearizeDepth(source[0], u_linearize[0], u_linearize[1]);
         source.rgb = vec3(zLinear);
 
-    } else if(u_mode == 3) {    /* DepthPacked */
+    } else if(u_mode == 2) {    /* DepthPacked */
         source.rgb = float24x1_to_uint8x3(source[0]);
 
-    } else if (u_mode == 4) {   /* DepthLinearPacked */
+    } else if (u_mode == 3) {   /* DepthLinearPacked */
         float zLinear = linearizeDepth(source[0], u_linearize[0], u_linearize[1]);
         source.rgb = float24x1_to_uint8x3(zLinear);
     }
