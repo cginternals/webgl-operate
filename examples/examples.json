@@ -126,5 +126,11 @@
         "title": "XToon Shading",
         "object": "XToonExample",
         "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
+        "target": "instanced-rendering-example",
+        "title": "Instanced rendering",
+        "object": "InstancedRenderingExample",
+        "caption": "Example showing instanced rendering of a glTF mesh."
     }
 ]
