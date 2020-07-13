@@ -3,6 +3,7 @@ import { Buffer } from '../buffer';
 import { Context } from '../context';
 import { Geometry } from '../geometry';
 import { Material } from '../scene';
+import { GLTFHelper } from './gltfhelper';
 
 // tslint:disable:max-classes-per-file
 
