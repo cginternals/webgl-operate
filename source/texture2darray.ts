@@ -18,7 +18,7 @@ import { AbstractObject } from './object';
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
  * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
  * ```
- * const texture = new Texture3D(context, 'Texture');
+ * const texture = new Texture2DArray(context, 'Texture');
  * texture.initialize(1, 1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
  * texture.load('/img/webgl-operate-logo.png', true)
  * ```
