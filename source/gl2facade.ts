@@ -14,9 +14,6 @@ export type TexImage2DData = GLintptr | HTMLImageElement | HTMLCanvasElement | H
 export type TexImage3DData = GLintptr | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
     ImageBitmap | ImageData | ArrayBufferView | undefined;
 
-export type TexImage2DArrayData = GLintptr | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
-    ImageBitmap | ImageData | ArrayBufferView | undefined;
-
 /**
  * A WebGL 2 facade, simplifying the access to gl functions that are either not available, exposed via extension or
  * supported directly, e.g., in webgl2. All gl features/interfaces handled by this facade are mandatory.

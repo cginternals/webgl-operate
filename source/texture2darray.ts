@@ -6,7 +6,7 @@ import { byteSizeOfFormat } from './formatbytesizes';
 import { GLsizei3 } from './tuples';
 
 import { Bindable } from './bindable';
-import { TexImage2DArrayData } from './gl2facade';
+import { TexImage2DData } from './gl2facade';
 import { Initializable } from './initializable';
 import { AbstractObject } from './object';
 
@@ -190,7 +190,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    data(data: TexImage2DArrayData, bind: boolean = true, unbind: boolean = true): void {
+    data(data: TexImage2DData, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
         const gl2facade = this._context.gl2facade;
 
