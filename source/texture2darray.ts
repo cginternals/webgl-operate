@@ -204,6 +204,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
         if (unbind) {
             this.unbind();
         }
+        this.reallocate();
     }
 
     /**
