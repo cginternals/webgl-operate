@@ -54,7 +54,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
      * Create a texture object on the GPU.
      * @param width - Initial width of the texture in px.
      * @param height - Initial height of the texture in px.
-     * @param depth - Initial depth of the texture in px.
+     * @param depth - Initial depth (number of slices) of the texture.
      * @param internalFormat - Internal format of the texture object.
      * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
@@ -287,7 +287,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
      * This should be used to implement efficient resize the texture.
      * @param width - Targeted/new width of the texture in px.
      * @param height - Targeted/new height of the texture in px.
-     * @param depth - Targeted/new depth of the texture in px.
+     * @param depth - Targeted/new depth (number of slices) of the texture.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
@@ -355,7 +355,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
     }
 
     /**
-     * The depth of the texture object in px.
+     * The depth (number of slices) of the texture object.
      */
     get depth(): GLsizei {
         this.assertInitialized();
@@ -363,7 +363,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
     }
 
     /**
-     * Convenience getter for the 3-tuple containing width and height.
+     * Convenience getter for the 3-tuple containing width, height and depth.
      * @see {@link width}
      * @see {@link height}
      * @see {@link depth}
