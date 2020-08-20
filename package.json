@@ -102,6 +102,7 @@
         "2d",
         "3d",
         "multiframe",
+        "progressive",
         "path-tracing",
         "ray-tracing",
         "ray-marching",
