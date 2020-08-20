@@ -135,7 +135,7 @@ describe('ColorScale', () => {
     });
 
     it('should return undefined when calling colors on empty ColorScale', () => {
-        let color = emptyColorScale.color(0);
+        const color = emptyColorScale.color(0);
         expect(color).to.be.undefined;
     });
 

@@ -141,7 +141,7 @@ class PerlinNoiseRenderer extends Renderer {
 
         this._program.bind();
 
-        let t = ((new Date()).getTime() % 10000000) * 0.001;
+        const t = ((new Date()).getTime() % 10000000) * 0.001;
         gl.uniform1f(this._program.uniform('u_time'), t);
 
         this._ndcTriangle.bind();

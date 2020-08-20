@@ -1,6 +1,12 @@
 
-interface FramePrepareCallback { (frame: number, framesForWarmup: number, framesPerRun: number, cycle: number): void; }
-interface RunsFinishedCallback { (cycles: number, framesForWarmup: number, framesPerRun: number, results: Array<number>): void; }
+interface FramePrepareCallback {
+    (frame: number, framesForWarmup: number,
+        framesPerRun: number, cycle: number): void;
+}
+interface RunsFinishedCallback {
+    (cycles: number, framesForWarmup: number,
+        framesPerRun: number, results: Array<number>): void;
+}
 
 
 export class Benchmark {
@@ -22,7 +28,7 @@ export class Benchmark {
     initialize(cycles: number, framesForWarmup: number, framesPerRun: number,
         framePrepare: FramePrepareCallback, runsFinished: RunsFinishedCallback): void {
 
-        if(this._running) {
+        if (this._running) {
             console.log('benchmark already in progress');
             return;
         }
@@ -44,14 +50,14 @@ export class Benchmark {
     }
 
     frame(): void {
-        
+
         if (this._running === false) {
             return;
         }
         ++this._frames;
 
         const frames: number = this._frames - this._framesForWarmup;
-        const frame: number =  frames < 0 ? frames : frames % this._framesPerCycle;
+        const frame: number = frames < 0 ? frames : frames % this._framesPerCycle;
 
         const cycle: number = frames >= 0 ? Math.floor(frames / this._framesPerCycle) : -1;
 
@@ -64,7 +70,8 @@ export class Benchmark {
 
         if ((frames % this._framesPerCycle) === 0 && cycle > 0) {
             this._results[cycle - 1] = (performance.now() - this._results[cycle - 1]) / this._framesPerCycle;
-            console.log(' --  cycle: ' + cycle.toString().padStart(2, '0') + ', fps: ' + this._results[cycle - 1].toFixed(4).padStart(9, '0'));
+            console.log(' --  cycle: ' + cycle.toString().padStart(2, '0') +
+                ', fps: ' + this._results[cycle - 1].toFixed(4).padStart(9, '0'));
         }
 
         if ((frames % this._framesPerCycle) === 0 && cycle >= 0 && cycle < this._runs) {
@@ -81,7 +88,7 @@ export class Benchmark {
 
             this._runsFinished!(this._runs, this._framesForWarmup, this._framesPerCycle, this._results);
             this._runsFinished = undefined;
-            
+
         } else {
 
             this._framePrepare!(frame, this._framesForWarmup, this._framesPerCycle, cycle);

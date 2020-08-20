@@ -23,7 +23,7 @@ describe('RamdomSquareKernel', () => {
 
     it('be not be initializable with values <= 0', () => {
         expect(() => {
-            let randomsquarekernel = new RandomSquareKernel(0);
+            const randomsquarekernel = new RandomSquareKernel(0);
             expect(randomsquarekernel).to.be.undefined;
         }).to.throws();
     });
