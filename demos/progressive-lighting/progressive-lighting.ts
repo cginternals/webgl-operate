@@ -1077,7 +1077,7 @@ export class ProgressiveLightingDemo extends Demo {
 
         const multiFrameCount = window.document.getElementById('multiframe-count')! as HTMLInputElement;
         multiFrameCount.onchange = (_) => {
-            this._canvas.controller.multiFrameNumber = parseInt(multiFrameCount.value);
+            this._canvas.controller.multiFrameNumber = parseInt(multiFrameCount.value, 10);
         };
 
         return true;

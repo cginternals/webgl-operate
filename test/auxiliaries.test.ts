@@ -113,8 +113,8 @@ describe('auxiliaries log and logIf', () => {
         const fake = sinon.fake();
         const consoleLogStub = stub(console, 'log').callsFake(fake);
 
-        aux.log(aux.LogLevel.Warning, 'log level 1', {error: 'broke', code: 42});
-        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1', {error: 'broke', code: 42}]);
+        aux.log(aux.LogLevel.Warning, 'log level 1', { error: 'broke', code: 42 });
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1', { error: 'broke', code: 42 }]);
 
         consoleLogStub.restore();
     });
@@ -270,8 +270,6 @@ describe('auxiliaries path', () => {
     });
 
 });
-
-
 
 
 describe('auxiliaries power-of-two', () => {
