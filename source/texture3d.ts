@@ -276,7 +276,7 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
         }
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, wrap_s);
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, wrap_t);
-        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, wrap_r);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, wrap_r);
         if (unbind) {
             this.unbind();
         }
