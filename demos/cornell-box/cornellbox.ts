@@ -382,8 +382,8 @@ export class CornellBoxRenderer extends Renderer {
 
 
     // https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
-    shuffle(deck: Array<vec3>): Array<number> {
-        const randomizedDeck = Array<number>();
+    shuffle(deck: Array<vec3>): Array<vec3> {
+        const randomizedDeck = Array<vec3>();
         const array = deck.slice();
         while (array.length !== 0) {
             const rIndex = Math.floor(array.length * Math.random());
