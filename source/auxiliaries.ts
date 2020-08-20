@@ -69,6 +69,7 @@ namespace auxiliaries {
     /**
      * Allows to specify whether or not assertions should be enabled or disabled/ignored.
      * @param enable - If true, assertions will be evaluated and might throw errors.
+     * @returns whether assertions are enabled
      */
     export function assertions(enable?: boolean): boolean {
         if (enable !== undefined) {
