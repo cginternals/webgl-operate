@@ -53,8 +53,10 @@ export class GLTFLoader {
         this._scenes = new Array<SceneNode>();
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gltf_default.vert');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/gltf_default.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'gltf_default.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require('./shaders/gltf_default.frag'));
         this._pbrProgram = new Program(this._context, 'GLTFPbrProgram');
         this._pbrProgram.initialize([vert, frag]);

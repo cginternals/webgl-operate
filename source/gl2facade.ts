@@ -20,8 +20,6 @@ export type TexImage3DData = GLintptr | HTMLImageElement | HTMLCanvasElement | H
  */
 export class GL2Facade {
 
-    /* tslint:disable:member-ordering variable-name */
-
     /**
      * @param context - Wrapped gl context for function resolution.
      */
@@ -403,22 +401,20 @@ export class GL2Facade {
                 /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
                 if (source instanceof ArrayBuffer) {
                     return gl.texImage2D(target, level, internalformat, width, height, border
-                        /* tslint:disable-next-line:no-null-keyword */
                         , format, type, source === undefined ? null : source, offset);
                 }
                 assert(offset === undefined, `offset expected to be undefined for non ArrayBuffer source`);
                 return gl.texImage2D(target, level, internalformat, width, height, border
-                    /* tslint:disable-next-line:no-null-keyword */
                     , format, type, source === undefined ? null : source);
             };
 
         } else {
             this.texImage2D = (target: GLenum, level: GLint, internalformat: GLenum,
                 width: GLsizei, height: GLsizei, border: GLint,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
 
                 if (source === undefined) {
-                    /* tslint:disable-next-line:no-null-keyword */
                     return gl.texImage2D(target, level, internalformat, width, height, border, format, type, null);
                 }
                 if (source instanceof Int8Array ||
@@ -444,19 +440,19 @@ export class GL2Facade {
                 /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
                 if (source instanceof ArrayBuffer) {
                     return gl.texImage3D(target, level, internalformat, width, height, depth, border
-                        /* tslint:disable-next-line:no-null-keyword */
                         , format, type, source === undefined ? null : source, offset);
                 }
                 assert(offset === undefined, `offset expected to be undefined for non ArrayBuffer source`);
                 return gl.texImage3D(target, level, internalformat, width, height, depth, border
-                    /* tslint:disable-next-line:no-null-keyword */
                     , format, type, source === undefined ? null : source);
             };
         } else {
+            /* eslint-disable @typescript-eslint/no-unused-vars */
             this.texImage3D = (target: GLenum, level: GLint, internalformat: GLenum,
                 width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint,
                 format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) =>
                 assert(false, 'texImage3D not supported on this context');
+            /* eslint-enable @typescript-eslint/no-unused-vars */
         }
     }
 

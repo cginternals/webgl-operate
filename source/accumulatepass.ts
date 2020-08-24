@@ -117,8 +117,10 @@ export class AccumulatePass extends Initializable {
         /* Configure program-based accumulate. */
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (accumulate)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/ndcvertices.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'accumulate.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require('./shaders/accumulate.frag'));
 
         this._program = new Program(this._context, 'AccumulateProgram');

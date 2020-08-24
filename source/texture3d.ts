@@ -164,6 +164,7 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     load(url: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
         assert(false, `not implemented`);
         return new Promise<void>(() => true);
@@ -267,7 +268,6 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    /* tslint:disable-next-line:variable-name */
     wrap(wrap_s: GLenum, wrap_t: GLenum, wrap_r: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
@@ -276,7 +276,7 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
         }
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, wrap_s);
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, wrap_t);
-        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, wrap_r);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, wrap_r);
         if (unbind) {
             this.unbind();
         }

@@ -1,9 +1,7 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-import * as spies from 'chai-spies';
-
+const chai = require('chai'), spies = require('chai-spies');
 chai.use(spies);
 
 const expect = chai.expect;
@@ -12,8 +10,6 @@ import { Camera } from '../source/camera';
 
 /* spellchecker: enable */
 
-
-/* tslint:disable:no-unused-expression */
 
 describe('field of view', () => {
 

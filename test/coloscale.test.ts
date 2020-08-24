@@ -1,8 +1,7 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-import * as sinon from 'sinon';
+const chai = require('chai'), sinon = require('sinon');
 
 const expect = chai.expect;
 const stub = sinon.stub;
@@ -40,54 +39,64 @@ describe('ColorScale', () => {
         consoleLogStub.restore();
     });
 
-    it('should be loadable from present', () => {
+    it('should be loadable from preset', () => {
+        /* eslint-disable-next-line no-unused-expressions */
         ColorScale.fromPreset('../source/data/colorbrewer', 'YlGnBu', 7).
             then((value) => expect(value).to.not.be.undefined);
     });
 
     it('should be creatable from an array', () => {
+        /* eslint-disable-next-line no-unused-expressions */
         expect(defaultColorScale).to.not.be.undefined;
         expect(defaultColorScale instanceof ColorScale).to.be.true;
     });
 
     it('should be creatable from an array with positions', () => {
         const colorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGB, 2, positions);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
     it('should be creatable from an array with positions', () => {
         const colorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGB, 1, positions);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
     it('should be creatable from an array with alpha values', () => {
         const colorScale = ColorScale.fromArray([0.5, 0.5, 0.5, 0.2], ColorScale.ArrayType.RGBA, 1);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
     it('should be creatable from float an array', () => {
         const colorScale = ColorScale.fromArray([0.5, 0.5, 0.5], ColorScale.ArrayType.RGBf, 1);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
     it('should be creatable from float an array', () => {
         const colorScale = ColorScale.fromArray([0.5, 0.5, 0.5], ColorScale.ArrayType.RGBf, 3);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
 
     it('should be creatable from an array with alpha values', () => {
         const colorScale = ColorScale.fromArray([0.5, 0.5, 0.5, 0.2], ColorScale.ArrayType.RGBAf, 1);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
     it('should be creatable from an array with empty arrays', () => {
         const colorScale = ColorScale.fromArray([], ColorScale.ArrayType.RGB, 0);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(colorScale).to.not.be.undefined;
     });
 
     it('should be linear interpolate-able with only one color', () => {
         const interpolatedColor = oneColorScale.lerp(1, Color.Space.RGB);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(interpolatedColor).to.not.be.undefined;
         if (interpolatedColor) {
             expect(interpolatedColor.tuple(Color.Space.RGB, false))
@@ -98,6 +107,7 @@ describe('ColorScale', () => {
 
     it('should be linear interpolate-able', () => {
         const interpolatedColor = defaultColorScale.lerp(-0.1, Color.Space.RGB);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(interpolatedColor).to.not.be.undefined;
         if (interpolatedColor) {
             expect(interpolatedColor.tuple(Color.Space.RGB, false))
@@ -109,6 +119,7 @@ describe('ColorScale', () => {
     it('should be linear interpolate-able with nearest', () => {
         defaultColorScale.hint = ColorScale.InterpolationHint.Nearest;
         const interpolatedColor = defaultColorScale.lerp(-0.1, Color.Space.RGB);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(interpolatedColor).to.not.be.undefined;
         if (interpolatedColor) {
             expect(interpolatedColor.tuple(Color.Space.RGB, false))
@@ -120,30 +131,37 @@ describe('ColorScale', () => {
 
     it('should be undefined when calling lerp on ColorScale without colors', () => {
         const interpolatedColor = emptyColorScale.lerp(1, Color.Space.RGB);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(interpolatedColor).to.be.undefined;
     });
 
     it('should return the colors', () => {
         let color = defaultColorScale.color(0);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(color).not.to.be.undefined;
 
         color = defaultColorScale.color(1);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(color).not.to.be.undefined;
 
         color = defaultColorScale.color(2);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(color).not.to.be.undefined;
     });
 
     it('should return undefined when calling colors on empty ColorScale', () => {
-        let color = emptyColorScale.color(0);
+        const color = emptyColorScale.color(0);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(color).to.be.undefined;
     });
 
     it('should return undefined when calling colors on out of range', () => {
         let color = defaultColorScale.color(defaultColorScale.length + 1);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(color).to.be.undefined;
 
         color = defaultColorScale.color(-1);
+        /* eslint-disable-next-line no-unused-expressions */
         expect(color).to.be.undefined;
     });
 

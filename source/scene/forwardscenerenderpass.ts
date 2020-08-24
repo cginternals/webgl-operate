@@ -171,14 +171,17 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     }
 
     @Initializable.uninitialize()
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     uninitialize(): void { }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     prepare(): void { }
 
     /**
      * @param override - If enabled, everything will be updated, regardless of tracked alterations.
      */
     @Initializable.assert_initialized()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     update(override: boolean = false): void { }
 
     /**

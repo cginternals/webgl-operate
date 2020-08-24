@@ -3,9 +3,9 @@
 /**
  * Provided via the git-revision-webgl-operate and define plugins.
  */
-declare var GIT_REV_VERSION: string;
-declare var GIT_REV_COMMIT: string;
-declare var GIT_REV_BRANCH: string;
+declare let GIT_REV_VERSION: string;
+declare let GIT_REV_COMMIT: string;
+declare let GIT_REV_BRANCH: string;
 
 /**
  * `gloperate.branch` provides the git revision branch at build-time.

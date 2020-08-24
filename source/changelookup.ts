@@ -37,12 +37,14 @@ export class ChangeLookup {
      */
     protected static alter(path: string, property: any): void {
 
+        // eslint-disable-next-line no-prototype-builtins
         assert(property.hasOwnProperty('any'), `expected alterable object to provide 'any' key`);
         property.any = true;
 
         const names = path.split('.');
         const name = names.shift()!;
 
+        // eslint-disable-next-line no-prototype-builtins
         assert(name === '' || property.hasOwnProperty(name),
             `expected object to have key '${name}' in order to capture alterations`);
 

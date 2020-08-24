@@ -1,10 +1,7 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-import * as spies from 'chai-spies';
-import * as sinon from 'sinon';
-
+const chai = require('chai'), spies = require('chai-spies'), sinon = require('sinon');
 chai.use(spies);
 
 const expect = chai.expect;
@@ -15,27 +12,25 @@ import * as aux from '../source/auxiliaries';
 /* spellchecker: enable */
 
 
-/* tslint:disable:no-unused-expression */
-
 describe('auxiliaries assert', () => {
 
     it('should not throw on true expression', () => {
         const message = 'never throw';
-        expect(() => aux.assert(true, message)).to.not.throw();
+        expect(() => aux.assert(true, message)).to.not.throw;
     });
 
     it('should throw on false expression', () => {
         const message = 'always throw';
-        expect(() => aux.assert(false, message)).to.throw();
+        expect(() => aux.assert(false, message)).to.throw;
     });
 
     it('should be allowed to be disabled', () => {
         expect(aux.assertions()).to.be.true;
         aux.assertions(false);
         expect(aux.assertions()).to.be.false;
-        expect(() => aux.assert(false, 'ignore')).to.not.throw();
+        expect(() => aux.assert(false, 'ignore')).to.not.throw;
         aux.assertions(true);
-        expect(() => aux.assert(false, 'ignore')).to.throw();
+        expect(() => aux.assert(false, 'ignore')).to.throw;
     });
 
 });
@@ -113,8 +108,8 @@ describe('auxiliaries log and logIf', () => {
         const fake = sinon.fake();
         const consoleLogStub = stub(console, 'log').callsFake(fake);
 
-        aux.log(aux.LogLevel.Warning, 'log level 1', {error: 'broke', code: 42});
-        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1', {error: 'broke', code: 42}]);
+        aux.log(aux.LogLevel.Warning, 'log level 1', { error: 'broke', code: 42 });
+        expect(fake.lastCall.args).to.deep.equal(['[1]', 'log level 1', { error: 'broke', code: 42 }]);
 
         consoleLogStub.restore();
     });
@@ -270,8 +265,6 @@ describe('auxiliaries path', () => {
     });
 
 });
-
-
 
 
 describe('auxiliaries power-of-two', () => {
