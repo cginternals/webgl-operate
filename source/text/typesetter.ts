@@ -74,10 +74,6 @@ export class Typesetter {
         const padding = label.fontFace!.glyphTexturePadding;
         const fontFace = label.fontFace!;
         switch (label.lineAnchor) {
-            case Label.LineAnchor.Baseline:
-            default:
-                offset = - padding[0];
-                break;
             case Label.LineAnchor.Ascent:
                 offset = fontFace.ascent - padding[0];
                 break;
@@ -92,6 +88,10 @@ export class Typesetter {
                 break;
             case Label.LineAnchor.Bottom:
                 offset = fontFace.ascent - padding[0] + 0.5 * fontFace.lineGap - fontFace.lineHeight;
+                break;
+            case Label.LineAnchor.Baseline:
+            default:
+                offset = - padding[0];
                 break;
         }
         return offset;
@@ -491,6 +491,7 @@ export class Typesetter {
         // Typeset Lines. A line is a 3-tuple of start-index, end-index, and line width. The indices are referencing
         // vertices of the glyph vertices. They cannot be reused for further typesetting. For it a local advance
         // function is defined (easier to maintain without need of so many arguments).
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const advance = (fragments: Array<Fragment>, fragmentWidths: Float32Array, threshold: number = NaN,
             advances: Float32Array = labelAdvances, kernings: Float32Array = labelKernings, offset: number = 0) => {
 

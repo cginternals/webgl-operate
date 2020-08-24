@@ -90,7 +90,6 @@ export class PointerLock {
             return false;
         }
         return (element !== undefined && PointerLock._element() === element) || (element === undefined &&
-            /* tslint:disable-next-line:no-null-keyword */
             PointerLock._element() !== undefined && PointerLock._element() !== null);
     }
 
@@ -99,6 +98,7 @@ export class PointerLock {
      * first. The function considers various platform specific pointer lock interfaces, i.e., native, moz, and webkit.
      * @param element - Element to toggle pointer lock state of.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static request(element: HTMLElement, callback?: () => void): void {
         if (element === undefined) {
             return;

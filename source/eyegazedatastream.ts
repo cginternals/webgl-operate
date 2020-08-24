@@ -145,9 +145,9 @@ export class EyeGazeDataStream {
     }
 
     // Mediation
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject | null,
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject | undefined,
         options?: boolean | AddEventListenerOptions): void {
-        this._eyeGazeEventTarget.addEventListener(type, listener, options);
+        this._eyeGazeEventTarget.addEventListener(type, listener ? listener : null, options);
 
     }
 
@@ -155,9 +155,9 @@ export class EyeGazeDataStream {
         return this._eyeGazeEventTarget.dispatchEvent(event);
     }
 
-    removeEventListener(type: string, callback: EventListenerOrEventListenerObject | null,
+    removeEventListener(type: string, callback: EventListenerOrEventListenerObject | undefined,
         options?: EventListenerOptions | boolean): void {
-        this._eyeGazeEventTarget.removeEventListener(type, callback, options);
+        this._eyeGazeEventTarget.removeEventListener(type, callback ? callback : null, options);
     }
 
     get connectionState(): number {

@@ -48,13 +48,13 @@ export class ColorScale {
      */
     protected static stride(type: ColorScale.ArrayType): number {
         switch (type) {
-            default:
-            case ColorScale.ArrayType.RGB:
-            case ColorScale.ArrayType.RGBf:
-                return 3;
             case ColorScale.ArrayType.RGBA:
             case ColorScale.ArrayType.RGBAf:
                 return 4;
+            case ColorScale.ArrayType.RGB:
+            case ColorScale.ArrayType.RGBf:
+            default:
+                return 3;
         }
     }
 

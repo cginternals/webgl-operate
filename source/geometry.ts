@@ -64,7 +64,7 @@ export abstract class Geometry extends Initializable implements Bindable {
      * @param indices - Binding points that are passed to the inheritors (un)bind buffer methods.
      */
     @Initializable.initialize()
-    initialize(...args: any[]): boolean {
+    initialize(...args: Array<any>): boolean {
         const targets = args[0] as Array<GLenum>;
         const indices = args[1] as Array<GLuint>;
 

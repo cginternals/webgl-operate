@@ -42,8 +42,6 @@ import { GL2Facade } from './gl2facade';
  */
 export class Context {
 
-    /* tslint:disable:member-ordering variable-name */
-
     /**
      * Context creation attribute defaults. The defaults are taken directly from the spec.
      */
@@ -966,10 +964,10 @@ export class Context {
             this.param(context.MAX_VERTEX_UNIFORM_VECTORS)]);
 
         const MAX_VIEWPORT_DIMS = this.param(context.MAX_VIEWPORT_DIMS);
-        // tslint:disable:no-null-keyword
+
         pNamesAndValues.push(['MAX_VIEWPORT_DIMS (WIDTH)', MAX_VIEWPORT_DIMS ? MAX_VIEWPORT_DIMS[0] : null]);
         pNamesAndValues.push(['MAX_VIEWPORT_DIMS (HEIGHT)', MAX_VIEWPORT_DIMS ? MAX_VIEWPORT_DIMS[1] : null]);
-        // tslint:enable:no-null-keyword
+
 
         if (this.isWebGL2) {
             const context = this._context as WebGL2RenderingContext;

@@ -492,7 +492,6 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    /* tslint:disable-next-line:variable-name */
     wrap(wrap_s: GLenum, wrap_t: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
