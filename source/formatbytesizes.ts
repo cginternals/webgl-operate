@@ -28,6 +28,7 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
     switch (format) {
         case undefined: // must be first, in case any other format is not defined
             break;
+        // eslint-disable-next-line default-case-last
         default:
             break;
 
@@ -41,12 +42,9 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
         case gl.FLOAT:
         case gl2facade.HALF_FLOAT:
         case gl.BYTE:
-        case gl.UNSIGNED_SHORT:
         case gl.SHORT:
-        case gl.UNSIGNED_INT:
         case gl.INT:
         case gl.HALF_FLOAT:
-        case gl.FLOAT:
         case gl.UNSIGNED_INT_2_10_10_10_REV:
         case gl.UNSIGNED_INT_10F_11F_11F_REV:
         case gl.UNSIGNED_INT_5_9_9_9_REV:
@@ -67,6 +65,7 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
     switch (format) {
         case undefined: // must be first, in case any other format is not defined
         /* falls through */
+        // eslint-disable-next-line default-case-last, no-fallthrough
         default:
             assert(false, `size of format ${format} is unknown`);
             return 0;
@@ -101,7 +100,6 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
         case gl.SRGB8:
             return 3;
 
-        case gl.DEPTH_STENCIL:
         case gl.DEPTH24_STENCIL8:
         case gl.DEPTH_COMPONENT32F:
         case gl.R11F_G11F_B10F:
@@ -140,7 +138,6 @@ export function byteSizeOfFormat(context: Context, format: GLenum): number {
         case gl.RGBA16UI:
             return 8;
 
-        case gl.RGB32F:
         case gl.RGB32F:
         case RGB32F_EXT:
             return 12;

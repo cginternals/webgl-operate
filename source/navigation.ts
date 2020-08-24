@@ -8,13 +8,12 @@ import { EventHandler } from './eventhandler';
 import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
-import { LogLevel } from './auxiliaries';
+import { log, LogLevel } from './auxiliaries';
 import { FirstPersonModifier } from './firstpersonmodifier';
 import { PanModifier } from './panmodifier';
 import { PinchZoomModifier } from './pinchzoommodifier';
 import { TrackballModifier } from './trackballmodifier';
 import { TurntableModifier } from './turntablemodifier';
-import { auxiliaries } from './webgl-operate.slim';
 import { EventProvider } from './eventhandler'
 import { WheelZoomModifier } from './wheelzoommodifier';
 
@@ -72,17 +71,17 @@ export class Navigation {
     /**
      * Pan camera modifier.
      */
-    protected _pan: PanModifier | undefined;
+    protected _pan: PanModifier;
 
     /**
      * Pinch camera modifier.
      */
-    protected _pinch: PinchZoomModifier | undefined;
+    protected _pinch: PinchZoomModifier;
 
     /**
      * Wheel zoom modifier.
      */
-    protected _wheelZoom: WheelZoomModifier | undefined;
+    protected _wheelZoom: WheelZoomModifier;
 
     /**
      * Even handler used to forward/map events to specific camera modifiers.
@@ -148,7 +147,7 @@ export class Navigation {
         const primaryEvent = this.getPrimaryEvent(events);
 
         if (primaryEvent === undefined) {
-            auxiliaries.log(LogLevel.Warning, 'No primary pointer event detected in Navigation::mode.');
+            log(LogLevel.Warning, 'No primary pointer event detected in Navigation::mode.');
             return;
         }
 
@@ -189,7 +188,7 @@ export class Navigation {
 
     protected resolveMultiTouch(): Navigation.Modes | undefined {
         if (this._activeEvents.size < 2) {
-            auxiliaries.log(LogLevel.Warning,
+            log(LogLevel.Warning,
                 'MultiTouch resolution was canceled because less than two touches were detected.');
             return undefined;
         }
@@ -209,14 +208,13 @@ export class Navigation {
         const panThreshold = 0.2;
         if (cosAngle > panThreshold) {
             return Navigation.Modes.Pan;
-        } else {
-            return Navigation.Modes.Zoom;
         }
+        return Navigation.Modes.Zoom;
     }
 
     protected rotate(start: boolean): void {
         if (this._activeEvents.size !== 1) {
-            auxiliaries.log(LogLevel.Info,
+            log(LogLevel.Info,
                 'Rotate event was canceled because less or more than two pointers were detected.');
             return;
         }
@@ -253,7 +251,7 @@ export class Navigation {
         const event = this.getPrimaryEvent(events);
 
         if (event === undefined) {
-            auxiliaries.log(LogLevel.Warning,
+            log(LogLevel.Warning,
                 'Pan event was canceled because no primary event was detected.');
             return;
         }
@@ -266,7 +264,7 @@ export class Navigation {
 
     protected pinch(start: boolean): void {
         if (this._activeEvents.size !== 2) {
-            auxiliaries.log(LogLevel.Info,
+            log(LogLevel.Info,
                 'Pinch event was canceled because less or more than two pointers were detected.');
             return;
         }
@@ -288,6 +286,7 @@ export class Navigation {
         return undefined;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onPointerDown(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const event of latests) {
             this._activeEvents.set(event.pointerId, event);
@@ -312,26 +311,31 @@ export class Navigation {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onPointerUp(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const pointer of latests) {
             this._activeEvents.delete(pointer.pointerId);
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     protected onPointerEnter(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void { }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onPointerLeave(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const pointer of latests) {
             this._activeEvents.delete(pointer.pointerId);
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onPointerCancel(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
         for (const pointer of latests) {
             this._activeEvents.delete(pointer.pointerId);
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onPointerMove(latests: Array<PointerEvent>, previous: Array<PointerEvent>): void {
 
         for (const event of latests) {
@@ -349,7 +353,7 @@ export class Navigation {
          * Update the mode for every movement when using a mouse. This is necessary since mouse events do not trigger
          * 'pointerup' events, so we need to figure out when the primary button is released manually
          */
-        if (primaryEvent?.pointerType === 'mouse') {
+        if (primaryEvent && primaryEvent.pointerType === 'mouse') {
             this._mode = this.mode();
         }
 
@@ -383,9 +387,10 @@ export class Navigation {
         this._lastInteractionTime = performance.now();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onWheel(latests: Array<WheelEvent>, previous: Array<WheelEvent>): void {
         const event = latests[0];
-        this._wheelZoom?.process(event.deltaY);
+        this._wheelZoom.process(event.deltaY);
     }
 
 

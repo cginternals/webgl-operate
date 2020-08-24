@@ -1,11 +1,10 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-// import * as sinon from 'sinon';
+const chai = require('chai');
+
 
 const expect = chai.expect;
-// const stub = sinon.stub;
 
 import { AllocationRegister } from '../source/allocationregister';
 import { Buffer } from '../source/buffer';

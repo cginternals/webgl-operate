@@ -60,10 +60,12 @@ export class EnvironmentRenderingPass extends Initializable {
          * Compile a program for each projection type.
          */
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'env-projections.vert');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require(`./shaders/env-projections.vert`));
 
         // Cube map program
         const cubemapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         cubemapFrag.initialize(require(`./shaders/env-projections.frag`), false);
         cubemapFrag.replace('PROJECTION_TYPE', 'CUBE_MAP');
         cubemapFrag.compile();
@@ -80,6 +82,7 @@ export class EnvironmentRenderingPass extends Initializable {
 
         // Equi map program
         const equimapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         equimapFrag.initialize(require(`./shaders/env-projections.frag`), false);
         equimapFrag.replace('PROJECTION_TYPE', 'EQUI_MAP');
         equimapFrag.compile();
@@ -93,6 +96,7 @@ export class EnvironmentRenderingPass extends Initializable {
 
         // Sphere map program
         const spheremapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         spheremapFrag.initialize(require(`./shaders/env-projections.frag`), false);
         spheremapFrag.replace('PROJECTION_TYPE', 'SPHERE_MAP');
         spheremapFrag.compile();
@@ -106,6 +110,7 @@ export class EnvironmentRenderingPass extends Initializable {
 
         // Polar map program
         const polarmapFrag = new Shader(this._context, gl.FRAGMENT_SHADER, 'env-projections.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         polarmapFrag.initialize(require(`./shaders/env-projections.frag`), false);
         polarmapFrag.replace('PROJECTION_TYPE', 'POLAR_MAP');
         polarmapFrag.compile();
