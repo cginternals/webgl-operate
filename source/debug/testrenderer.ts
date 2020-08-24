@@ -54,7 +54,6 @@ namespace debug {
 
             if (this._extensions === false && this._context.isWebGL1) {
                 assert(this._context.supportsStandardDerivatives, `expected OES_standard_derivatives support`);
-                /* tslint:disable-next-line:no-unused-expression */
                 this._context.standardDerivatives;
                 this._extensions = true;
             }
@@ -62,8 +61,10 @@ namespace debug {
             /* Create and configure program and geometry. */
 
             const vert = new Shader(this._context, gl.VERTEX_SHADER, 'testrenderer.vert');
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             vert.initialize(require('./testrenderer.vert'));
             const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'testrenderer.frag');
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             frag.initialize(require('./testrenderer.frag'));
 
             this._program = new Program(this._context);

@@ -1,8 +1,8 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-import * as sinon from 'sinon';
+const chai = require('chai'), sinon = require('sinon');
+
 
 const expect = chai.expect;
 const stub = sinon.stub;
@@ -11,8 +11,6 @@ import { Color } from '../source/color';
 
 /* spellchecker: enable */
 
-
-/* tslint:disable:no-unused-expression */
 
 describe('Color', () => {
 

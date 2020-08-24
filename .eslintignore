@@ -1,0 +1,13 @@
+.vscode
+*.js
+
+build
+dist
+lib
+website
+
+examples
+demos
+
+demos/data
+examples/data

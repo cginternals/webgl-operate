@@ -167,8 +167,10 @@ export class LabelRenderPass extends Initializable {
         this._context.enable(['OES_standard_derivatives']);
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'glyph.vert');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require(`./glyph.vert`));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'glyph.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require(`./glyph.frag`));
 
         this._program.initialize([vert, frag], false);

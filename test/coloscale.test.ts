@@ -1,8 +1,8 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-import * as sinon from 'sinon';
+const chai = require('chai'), sinon = require('sinon');
+
 
 const expect = chai.expect;
 const stub = sinon.stub;
@@ -40,7 +40,7 @@ describe('ColorScale', () => {
         consoleLogStub.restore();
     });
 
-    it('should be loadable from present', () => {
+    it('should be loadable from preset', () => {
         /* eslint-disable-next-line no-unused-expressions */
         ColorScale.fromPreset('../source/data/colorbrewer', 'YlGnBu', 7).
             then((value) => expect(value).to.not.be.undefined);

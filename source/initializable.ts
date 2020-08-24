@@ -70,6 +70,7 @@ export abstract class Initializable {
                 assert(this._initialized === false, `re-initialization of initialized object not anticipated`);
 
                 /* Call actual initialization and set initialization status. */
+                // eslint-disable-next-line prefer-rest-params
                 this._initialized = initialize.apply(this, arguments);
 
                 /* Assign assert functions for better performance when initialized. */
@@ -150,6 +151,7 @@ export abstract class Initializable {
             descriptor.value = function (): any {
                 this.assertInitialized();
                 /* call actual initialization and set initialization status */
+                // eslint-disable-next-line prefer-rest-params
                 return initialize.apply(this, arguments);
             };
             return descriptor;
@@ -168,6 +170,7 @@ export abstract class Initializable {
             descriptor.value = function (): void {
                 this.assertUninitialized();
                 /* Call actual initialization and set initialization status. */
+                // eslint-disable-next-line prefer-rest-params
                 initialize.apply(this, arguments);
             };
             return descriptor;
@@ -193,7 +196,7 @@ export abstract class Initializable {
      * @param args - All args are passed to the onInitialize function a subclass must override.
      * @returns - True if initialization was successful.
      */
-    abstract initialize(...args: any[]): boolean;
+    abstract initialize(...args: Array<any>): boolean;
 
     /**
      * Uninitialization event that should be specialized by inheritor and has to be decorated by @uninitialize in order

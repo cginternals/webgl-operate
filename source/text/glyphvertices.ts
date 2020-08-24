@@ -39,7 +39,6 @@ export class GlyphVertices {
         const concatenated = new GlyphVertices(length);
         let offset = 0;
 
-        /* tslint:disable-next-line:prefer-for-of */
         for (let index = 0; index < array.length; ++index) {
             const vertices = array[index];
             if (vertices === undefined || vertices!.length === 0) {

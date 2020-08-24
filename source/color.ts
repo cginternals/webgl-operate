@@ -334,7 +334,7 @@ export class Color {
         }
 
         const result = vec4.create();
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch (space) {
             case Color.Space.CMYK:
                 vec4.lerp(result, x.cmyk, y.cmyk, a);
@@ -529,7 +529,7 @@ export class Color {
      */
     gray(algorithm: Color.GrayscaleAlgorithm = Color.GrayscaleAlgorithm.LinearLuminance): GLclampf {
 
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch (algorithm) {
 
             /* Does not represent shades of grayscale w.r.t. human perception of luminosity. */
@@ -560,7 +560,7 @@ export class Color {
      * @param alpha - Whether or not alpha channel should be provided as well.
      */
     tuple(space: Color.Space, alpha: boolean = true): GLclampf3 | GLclampf4 | GLclampf5 {
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch (space) {
             case Color.Space.RGB:
                 return alpha ? this.rgba : this.rgb;

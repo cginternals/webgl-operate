@@ -83,7 +83,7 @@ export class TouchEventProvider {
 
 
     observable(type: TouchEventProvider.Type): Observable<TouchEvent> {
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch (type) {
             case TouchEventProvider.Type.Start:
                 return this.start$;

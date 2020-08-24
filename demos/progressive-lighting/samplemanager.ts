@@ -60,7 +60,7 @@ export class SampleManager {
         this.generateSampleQueue();
     }
 
-    protected allEmpty(arrays: any[]): boolean {
+    protected allEmpty(arrays: Array<any>): boolean {
         let result = true;
 
         for (const array of arrays) {
@@ -73,7 +73,7 @@ export class SampleManager {
         return result;
     }
 
-    protected mergeArrays(arrays: any[]): Array<Sample> {
+    protected mergeArrays(arrays: Array<any>): Array<Sample> {
         const result = new Array();
 
         while (!this.allEmpty(arrays)) {

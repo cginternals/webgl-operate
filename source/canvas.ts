@@ -280,7 +280,7 @@ export class Canvas extends Resizable {
             event.preventDefault();
             this.onContextLost();
         }, false);
-        this._element.addEventListener('webglcontextrestored', (event) => {
+        this._element.addEventListener('webglcontextrestored', () => {
             this.onContextRestore();
         }, false);
     }
@@ -416,7 +416,7 @@ export class Canvas extends Resizable {
 
 
     /**
-     * The renderer (if not null) will be connected to the controller and navigation. The controller will
+     * The renderer (if not undefined) will be connected to the controller and navigation. The controller will
      * immediately trigger a multi-frame, thereby causing the renderer to render frames.
      *
      * Note that no renderer should be bound to multiple canvases
@@ -509,7 +509,7 @@ export class Canvas extends Resizable {
     }
 
     /**
-     * The currently bound renderer. If no renderer is bound null is returned. If a renderer is bound, it should
+     * The currently bound renderer. If no renderer is bound, undefined is returned. If a renderer is bound, it should
      * always be initialized (renderer initialization handled by the canvas).
      * @returns - The currently bound renderer.
      */
@@ -709,7 +709,7 @@ export class Canvas extends Resizable {
     /**
      * Getter for the created rendering backend (webgl context type).
      * @returns - Backend that was created on construction, either 'webgl' or 'webgl2' based on which one was created
-     * successfully. If no context could be created null is returned.
+     * successfully. If no context could be created undefined is returned.
      */
     get backend(): string {
         return this._context.backendString as string;
