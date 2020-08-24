@@ -1,7 +1,9 @@
 
 /* spellchecker: disable */
 
-const chai = require('chai'), spies = require('chai-spies'), sinon = require('sinon');
+import * as chai from 'chai';
+import * as spies from 'chai-spies';
+import * as sinon from 'sinon';
 chai.use(spies);
 
 const expect = chai.expect;
@@ -216,12 +218,14 @@ describe('TileCameraGenerator should stay valid if reassigning the same values',
     });
 
     it('sourceViewort', () => {
-        tileCameraGenerator.sourceViewport = tileCameraGenerator.sourceViewport;
+        const sourceViewport = tileCameraGenerator.sourceViewport;
+        tileCameraGenerator.sourceViewport = sourceViewport;
         expect(tileCameraGenerator.valid).to.be.true;
     });
 
     it('tileSize', () => {
-        tileCameraGenerator.tileSize = tileCameraGenerator.tileSize;
+        const tileSize = tileCameraGenerator.tileSize;
+        tileCameraGenerator.tileSize = tileSize;
         expect(tileCameraGenerator.valid).to.be.true;
     });
 

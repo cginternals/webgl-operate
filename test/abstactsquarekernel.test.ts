@@ -1,7 +1,8 @@
 
 /* spellchecker: disable */
 
-const chai = require('chai'), spies = require('chai-spies');
+import * as chai from 'chai';
+import * as spies from 'chai-spies';
 chai.use(spies);
 
 const expect = chai.expect;
