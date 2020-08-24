@@ -1,9 +1,7 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
-import * as spies from 'chai-spies';
-import * as sinon from 'sinon';
+const chai = require('chai'), spies = require('chai-spies');
 chai.use(spies);
 
 
