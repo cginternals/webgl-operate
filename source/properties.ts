@@ -10,6 +10,63 @@ import { ChangeLookup } from './changelookup';
 
 /* eslint-disable no-prototype-builtins */
 
+/**
+ *
+ * @param instance - Object to complement default values for.
+ * @param schema - Schema used for validation.
+ */
+function complementProperty(instance: any | undefined, schema: any): void {
+
+    const propertiesSchema = (schema as any)['properties'];
+    const props = Object.getOwnPropertyNames(propertiesSchema);
+
+    for (const key of props) {
+        const propertySchema = propertiesSchema[key];
+        const type: string | undefined = propertySchema['type'];
+
+        const isObject = type === 'object';
+        const isDefined = instance.hasOwnProperty(key);
+
+        const hasProperties = propertySchema.hasOwnProperty('properties');
+        const hasDefault = propertySchema.hasOwnProperty('default');
+
+        assert((hasProperties && isObject) || (!hasProperties && !isObject),
+            `expected property '${key}' to be of type 'object', given '${propertySchema['type']}'`);
+
+        if (isDefined && hasProperties) {
+            /* Invoke recursive defaulting for already defined object with properties. */
+            properties.complement(instance[key], propertySchema);
+
+        } else if (!isDefined && hasDefault) {
+            /* Default value for not yet defined property. */
+            Object.defineProperty(instance, key, {
+                value: propertySchema['default'],
+                writable: true,
+            });
+        }
+        // Don't complement non-existent objects on target tree
+    }
+}
+
+/**
+ *
+ * @param instance - Object to complement default values for.
+ * @param schema - Schema used for validation.
+ */
+function complementArray(instance: any | undefined, schema: any): void {
+
+    const itemsSchema = (schema as any)['items'];
+    if (itemsSchema['type'] !== 'object') {
+        return;
+    }
+    /* Invoke recursive defaulting for array of objects. */
+    for (const name of Object.getOwnPropertyNames(instance)) {
+        if (name === 'length') {
+            continue;
+        }
+        properties.complement(instance[name], itemsSchema);
+    }
+}
 
 namespace properties {
 
@@ -64,49 +121,11 @@ namespace properties {
         switch ((schema as any)['type']) {
 
             case 'object':
-                const propertiesSchema = (schema as any)['properties'];
-                const properties = Object.getOwnPropertyNames(propertiesSchema);
-
-                for (const key of properties) {
-                    const propertySchema = propertiesSchema[key];
-                    const type: string | undefined = propertySchema['type'];
-
-                    const isObject = type === 'object';
-                    const isDefined = instance.hasOwnProperty(key);
-
-                    const hasProperties = propertySchema.hasOwnProperty('properties');
-                    const hasDefault = propertySchema.hasOwnProperty('default');
-
-                    assert((hasProperties && isObject) || (!hasProperties && !isObject),
-                        `expected property '${key}' to be of type 'object', given '${propertySchema['type']}'`);
-
-                    if (isDefined && hasProperties) {
-                        /* Invoke recursive defaulting for already defined object with properties. */
-                        complement(instance[key], propertySchema);
-
-                    } else if (!isDefined && hasDefault) {
-                        /* Default value for not yet defined property. */
-                        Object.defineProperty(instance, key, {
-                            value: propertySchema['default'],
-                            writable: true,
-                        });
-                    }
-                    // Don't complement non-existent objects on target tree
-                }
+                complementProperty(instance, schema);
                 break;
 
             case 'array':
-                const itemsSchema = (schema as any)['items'];
-                if (itemsSchema['type'] !== 'object') {
-                    break;
-                }
-                /* Invoke recursive defaulting for array of objects. */
-                for (const name of Object.getOwnPropertyNames(instance)) {
-                    if (name === 'length') {
-                        continue;
-                    }
-                    complement(instance[name], itemsSchema);
-                }
+                complementArray(instance, schema);
                 break;
         }
     }
