@@ -157,6 +157,73 @@ export class LabelRenderPass extends Initializable {
         this._geometry.update(data.origins, data.tangents, data.ups, data.texCoords);
     }
 
+    protected draw(): void {
+
+        const gl = this._context.gl;
+
+        /* Try to avoid unnecessary binds when texture or color does not change and accumulate draw calls as long as
+        both remain unchanged. */
+
+        const range: GLsizei2 = [0, 0];
+        let currentColor: Color | undefined;
+        let currentFontFace: FontFace | undefined;
+
+        const identity = mat4.create();
+
+        for (let i = 0; i < this._labels.length; ++i) {
+            const label0 = this._labels[i];
+            range[1] = this._ranges[i][1];
+
+            /* Skip labels that have no depictable glyphs. */
+            if (range[0] === range[1] || (i < this._labels.length - 1 && !label0.valid)) {
+                continue;
+            }
+
+            /* If the next/subsequent label has no depictable glyphs or has the same font and color, then increase
+            draw range. */
+            const label1 = i < this._labels.length - 1 ? this._labels[i + 1] : undefined;
+            const bothStatic = label1 && label0.type === Label.Type.Static && label1.type === Label.Type.Static;
+            const sameColor = label1 && label0.color.equals(label1.color);
+            const sameFontFace = label1 && label0.fontFace === label1.fontFace;
+            const sameUnit = label1 && label0.fontSizeUnit === label1.fontSizeUnit;
+
+            if (label1 && (this._ranges[i + 1][0] === this._ranges[i + 1][1]
+                || (bothStatic && sameColor && sameFontFace && sameUnit))) {
+                continue;
+            }
+
+            const dynamic = label0.type === Label.Type.Dynamic;
+            gl.uniform1i(this._uDynamic, dynamic);
+            if (dynamic) {
+                gl.uniformMatrix4fv(this._uTransform, false, label0.dynamicTransform);
+            }
+
+            if (currentColor === undefined || !currentColor.equals(label0.color)) {
+                gl.uniform4fv(this._uColor, label0.color.rgbaF32);
+                currentColor = label0.color;
+            }
+            if (currentFontFace !== label0.fontFace) {
+                label0.fontFace!.glyphTexture.bind(gl.TEXTURE0);
+                currentFontFace = label0.fontFace;
+            }
+
+            switch (label0.fontSizeUnit) {
+                case Label.Unit.Pixel:
+                    gl.uniformMatrix4fv(this._uViewProjection, false, identity);
+                    break;
+
+                case Label.Unit.World:
+                case Label.Unit.Mixed:
+                default:
+                    gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
+            }
+
+            this._geometry.draw(range[0], range[1] - range[0]);
+
+            range[0] = range[1];
+        }
+    }
+
 
     @Initializable.initialize()
     initialize(): boolean {
@@ -292,68 +359,7 @@ export class LabelRenderPass extends Initializable {
         this._target.bind();
 
         this._geometry.bind();
-
-        /* Try to avoid unnecessary binds when texture or color does not change and accumulate draw calls as long as
-        both remain unchanged. */
-
-        const range: GLsizei2 = [0, 0];
-        let currentColor: Color | undefined;
-        let currentFontFace: FontFace | undefined;
-
-        const identity = mat4.create();
-
-        for (let i = 0; i < this._labels.length; ++i) {
-            const label0 = this._labels[i];
-            range[1] = this._ranges[i][1];
-
-            /* Skip labels that have no depictable glyphs. */
-            if (range[0] === range[1] || (i < this._labels.length - 1 && !label0.valid)) {
-                continue;
-            }
-
-            /* If the next/subsequent label has no depictable glyphs or has the same font and color, then increase
-            draw range. */
-            const label1 = i < this._labels.length - 1 ? this._labels[i + 1] : undefined;
-            const bothStatic = label1 && label0.type === Label.Type.Static && label1.type === Label.Type.Static;
-            const sameColor = label1 && label0.color.equals(label1.color);
-            const sameFontFace = label1 && label0.fontFace === label1.fontFace;
-            const sameUnit = label1 && label0.fontSizeUnit === label1.fontSizeUnit;
-
-            if (label1 && (this._ranges[i + 1][0] === this._ranges[i + 1][1]
-                || (bothStatic && sameColor && sameFontFace && sameUnit))) {
-                continue;
-            }
-
-            const dynamic = label0.type === Label.Type.Dynamic;
-            gl.uniform1i(this._uDynamic, dynamic);
-            if (dynamic) {
-                gl.uniformMatrix4fv(this._uTransform, false, label0.dynamicTransform);
-            }
-
-            if (currentColor === undefined || !currentColor.equals(label0.color)) {
-                gl.uniform4fv(this._uColor, label0.color.rgbaF32);
-                currentColor = label0.color;
-            }
-            if (currentFontFace !== label0.fontFace) {
-                label0.fontFace!.glyphTexture.bind(gl.TEXTURE0);
-                currentFontFace = label0.fontFace;
-            }
-
-            switch (label0.fontSizeUnit) {
-                case Label.Unit.Pixel:
-                    gl.uniformMatrix4fv(this._uViewProjection, false, identity);
-                    break;
-
-                case Label.Unit.World:
-                case Label.Unit.Mixed:
-                default:
-                    gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
-            }
-
-            this._geometry.draw(range[0], range[1] - range[0]);
-
-            range[0] = range[1];
-        }
+        this.draw();
 
         /** Every stage is expected to bind its own vao when drawing, unbinding is not necessary. */
         // this._geometry.unbind();
