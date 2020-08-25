@@ -74,11 +74,11 @@ export class InstancedRenderer extends Renderer {
         /* Create and configure camera. */
 
         this._camera = new Camera();
-        this._camera.center = vec3.fromValues(2.0, 2.0, 0.0);
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(2.0, 2.0, 8.0);
-        this._camera.near = 0.2;
-        this._camera.far = 40.0;
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 4.0);
+        this._camera.near = 0.01;
+        this._camera.far = 8.0;
 
         /* Create and configure navigation */
 
@@ -143,6 +143,8 @@ export class InstancedRenderer extends Renderer {
         }
         if (this._altered.clearColor) {
             gl.clearColor(this._clearColor[0], this._clearColor[1], this._clearColor[2], this._clearColor[3]);
+            gl.uniform4f(this._program.uniform('u_clearColor'),
+                this._clearColor[0], this._clearColor[1], this._clearColor[2], this._clearColor[3]);
         }
 
         this._altered.reset();
@@ -195,7 +197,7 @@ export class InstancedRenderer extends Renderer {
         gl.disable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        const instanceCount = 16;
+        const instanceCount = 32 ** 3;
         if (indexBufferInformation === undefined) {
             gl.drawArrays(
                 this._primitive.drawMode,

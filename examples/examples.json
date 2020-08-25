@@ -49,6 +49,12 @@
         "caption": "Image based lighting using prefiltered cube maps"
     },
     {
+        "target": "instanced-rendering-example",
+        "title": "Instanced Rendering",
+        "object": "InstancedRenderingExample",
+        "caption": "Example showing instanced rendering of a glTF mesh."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
@@ -126,11 +132,5 @@
         "title": "XToon Shading",
         "object": "XToonExample",
         "caption": "Minimal example showing XToon shading for simple geometry."
-    },
-    {
-        "target": "instanced-rendering-example",
-        "title": "Instanced rendering",
-        "object": "InstancedRenderingExample",
-        "caption": "Example showing instanced rendering of a glTF mesh."
     }
 ]

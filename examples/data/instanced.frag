@@ -8,11 +8,15 @@ precision highp float;
     layout(location = 0) out vec4 fragColor;
 #endif
 
-varying vec2 v_uv;
-
 uniform sampler2D baseColor;
+uniform vec4 u_clearColor;
+
+varying vec2 v_uv;
+varying float v_attenuation;
+
 
 void main(void)
 {
-    fragColor = texture(baseColor, v_uv);
+    vec4 diffuse = texture(baseColor, v_uv);
+    fragColor = mix(diffuse, u_clearColor, v_attenuation);
 }
