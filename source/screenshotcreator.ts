@@ -27,10 +27,15 @@ export class ScreenshotCreator {
     protected _context: Context;
 
     /**
-     * Downloads the given image as png.
+     * Downloads the given image. The downloaded file will be given the specified name appended by the type specific
+     * file ending. The type defaults to png, if no type is given. Quality can be only set for types using lossy
+     * compression. The quality defaults to 0.92.
      * @param imageData - Image to download.
+     * @param name - Name of the file.
+     * @param type - Optional type of the downloaded image. Defaults to PNG.
+     * @param quality - Optional quality of the downloaded image.
      */
-    static download(imageData: ImageData): void {
+    static downloadImage(imageData: ImageData, name: string, type?: string, quality?: number): void {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d')!;
 
@@ -40,10 +45,10 @@ export class ScreenshotCreator {
         context.putImageData(imageData, 0, 0);
 
         const image = new Image();
-        image.src = canvas.toDataURL();
+        image.src = canvas.toDataURL(type, quality);
 
         const link = document.createElement('a');
-        link.download = 'screenshot.png';
+        link.download = name;
         link.href = image.src;
         link.click();
     }
