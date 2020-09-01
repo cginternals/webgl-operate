@@ -83,7 +83,7 @@ export class CanvasRecorder {
         this._images.length = 0;
 
         this._recorder.ondataavailable = (event: any) => this._images.push(event.data);
-        this._recorder.onstop = () => this._onImagesAvailable?.(this._images);
+        this._recorder.onstop = () => { if (this._onImagesAvailable) this._onImagesAvailable(this._images); }
 
         this._recorder.start();
 
