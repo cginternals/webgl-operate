@@ -140,21 +140,17 @@ ul.features li:last-child:after {
 }
 
 #demos .card:hover img {
-    -webkit-transition: all 0.3s ease-out ; /* Safari and Chrome */
-    -moz-transition: all 0.3s ease-out ; /* Firefox */
-    -o-transition: all 0.3s ease-out ; /* IE 9 */
-    -ms-transition: all 0.3s ease-out ; /* Opera */
+    -webkit-transition: all 0.3s ease-out ;
+    -webkit-transform:scale(1.02);
+    -moz-transition: all 0.3s ease-out ;
+    -moz-transform:scale(1.02);
+    -o-transition: all 0.3s ease-out ;
+    -o-transform:scale(1.02);
+    -ms-transition: all 0.3s ease-out ;
+    -ms-transform:scale(1.02);
     transition: all 0.3s ease-out ;
+    transform:scale(1.02);
 }
-
-#demos .card:hover img {
-    -webkit-transform:scale(1.02); /* Safari and Chrome */
-    -moz-transform:scale(1.02); /* Firefox */
-    -ms-transform:scale(1.02); /* IE 9 */
-    -o-transform:scale(1.02); /* Opera */
-     transform:scale(1.02);
-}
-
 
 #examples ul {
     list-style: none;

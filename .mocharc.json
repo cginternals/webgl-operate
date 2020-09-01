@@ -1,0 +1,19 @@
+{
+    "bail": true,
+    "diff": true,
+    "extension": ["ts"],
+    "package": "../package.json",
+    "require": [
+        "ts-node/register",
+        "source-map-support/register"
+    ],
+    "reporter": "mocha-multi-reporters",
+    "reporter-options": {
+        "configFile": "test/mocha-reporter-options.json"
+    },
+    "recursive": "test/**/*.test.ts",
+    "slow": 75,
+    "timeout": 2000,
+    "ui": "bdd",
+    "watch-ignore": ["lib/vendor"]
+}

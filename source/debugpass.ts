@@ -57,8 +57,10 @@ export class DebugPass extends BlitPass {
         const gl = this._context.gl;
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (debug)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/blit.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit_debug.frag (debug)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require('./shaders/blit_debug.frag'));
 
         this._program = new Program(this._context, 'DebugProgram');
@@ -160,10 +162,11 @@ export class DebugPass extends BlitPass {
 export namespace DebugPass {
 
     export enum Mode {
-        Depth = 0,
-        DepthLinear = 1,
-        DepthPacked = 2,
-        DepthLinearPacked = 3,
+        None = 0,
+        Depth = 1,
+        DepthLinear = 2,
+        DepthPacked = 3,
+        DepthLinearPacked = 4,
     }
 
 }

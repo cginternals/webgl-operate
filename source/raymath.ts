@@ -16,7 +16,6 @@ namespace ray_math {
      * Lots of variables that represent components of other variables or are transformed.
      * For these I (dl) prefer, e.g.,  _component or _transformation notation
      */
-    /* tslint:disable:variable-name */
 
     /**
      * Computes the intersection point of a given ray and a circle at [0.0, 0.0] and a given radius.

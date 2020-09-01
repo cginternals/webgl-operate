@@ -198,8 +198,10 @@ export class BlitPass extends Initializable {
         const gl = this._context.gl;
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (blit)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/blit.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag (blit)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require('./shaders/blit.frag'));
 
         this._program = new Program(this._context, 'BlitProgram');

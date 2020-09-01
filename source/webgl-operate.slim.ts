@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /* spellchecker: disable */
 
@@ -29,6 +30,7 @@ export { Renderer, Invalidate, LoadingStatus } from './renderer';
 export { Shader } from './shader';
 export { Texture2D } from './texture2d';
 export { Texture3D } from './texture3d';
+export { Texture2DArray } from './texture2darray';
 export { TextureCube } from './texturecube';
 export { UnifiedBuffer } from './unifiedbuffer';
 export { VertexArray } from './vertexarray';

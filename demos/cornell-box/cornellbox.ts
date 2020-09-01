@@ -199,7 +199,6 @@ export class CornellBoxRenderer extends Renderer {
         if (this._extensions === false && this._context.isWebGL1) {
             auxiliaries.assert(this._context.supportsStandardDerivatives,
                 `expected OES_standard_derivatives support`);
-            /* tslint:disable-next-line:no-unused-expression */
             this._context.standardDerivatives;
             this._extensions = true;
         }
@@ -382,8 +381,8 @@ export class CornellBoxRenderer extends Renderer {
 
 
     // https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
-    shuffle(deck: Array<vec3>) {
-        const randomizedDeck = [];
+    shuffle(deck: Array<vec3>): Array<vec3> {
+        const randomizedDeck = Array<vec3>();
         const array = deck.slice();
         while (array.length !== 0) {
             const rIndex = Math.floor(array.length * Math.random());

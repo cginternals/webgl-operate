@@ -8,6 +8,8 @@ import { ChangeLookup } from './changelookup';
 
 /* spellchecker: enable */
 
+/* eslint-disable no-prototype-builtins */
+
 
 namespace properties {
 
@@ -18,6 +20,7 @@ namespace properties {
      * @param references - Schema references for types etc.
      * @returns - True iff the provided instance in valid according to the schema.
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     export function validate(instance: any, schema: object, references?: Array<[object, string]>): boolean {
         const validator = new Validator();
         if (references !== undefined) {
@@ -57,7 +60,7 @@ namespace properties {
             (schema.hasOwnProperty('items') && (schema as any)['type'] === 'array'),
             `expected schema to have 'properties' or 'items', given ${schema}`);
 
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch ((schema as any)['type']) {
 
             case 'object':
@@ -121,6 +124,7 @@ namespace properties {
         tracker?: ChangeLookup, path: string = ''): boolean {
 
         const track = tracker !== undefined;
+        // eslint-disable-next-line @typescript-eslint/ban-types
         assert(!track || (tracker as object).hasOwnProperty('any'),
             `expected allocation lookup object to have 'any' key`);
 
