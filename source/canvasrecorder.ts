@@ -7,7 +7,7 @@ import { assert } from './auxiliaries';
 /* spellchecker: enable */
 
 
-declare var MediaRecorder: any;
+declare let MediaRecorder: any;
 
 type CanvasCaptureMediaStream = any;
 type MediaRecorder = any;
@@ -83,7 +83,7 @@ export class CanvasRecorder {
         this._images.length = 0;
 
         this._recorder.ondataavailable = (event: any) => this._images.push(event.data);
-        this._recorder.onstop = (event: any) => this._onImagesAvailable?.(this._images);
+        this._recorder.onstop = () => this._onImagesAvailable?.(this._images);
 
         this._recorder.start();
 
