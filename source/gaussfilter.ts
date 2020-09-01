@@ -140,9 +140,11 @@ export class GaussFilter extends Initializable {
         const gl = this._context.gl;
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'gauss.vert');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/gaussfilter.vert'));
         this._fragmentShader = new Shader(this._context, gl.FRAGMENT_SHADER, 'gauss.frag');
         this._fragmentShader.replace('$KERNEL_HALF_SIZE', `${Math.floor(this.kernelSize / 2)}`);
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         this._fragmentShader.initialize(require('./shaders/gaussfilter.frag'));
         this._program = new Program(this._context);
         this._program.initialize([vert, this._fragmentShader]);

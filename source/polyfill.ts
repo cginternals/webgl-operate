@@ -210,6 +210,7 @@ if (Number.EPSILON === undefined) {
 if (typeof Object.assign === 'undefined') {
     // Must be writable: true, enumerable: false, configurable: true
     Object.defineProperty(Object, 'assign', {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         value(target: any, varArgs: any): void { // .length of function is 2
             if (target === undefined && target === null) { // TypeError if undefined or null
                 throw new TypeError('Cannot convert undefined or null to object');
@@ -218,6 +219,7 @@ if (typeof Object.assign === 'undefined') {
             const to = Object(target);
 
             for (let index = 1; index < arguments.length; index++) {
+                // eslint-disable-next-line prefer-rest-params
                 const nextSource = arguments[index];
 
                 if (nextSource !== undefined && nextSource !== null) { // Skip over if undefined or null

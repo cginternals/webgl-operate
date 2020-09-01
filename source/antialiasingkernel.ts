@@ -26,14 +26,17 @@ export class AntiAliasingKernel extends RandomSquareKernel {
     protected generate(): void {
         switch (this._width) {
             case 8:
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 this.fromJSON(require('./data/goldenset08.json'));
                 break;
 
             case 64:
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 this.fromJSON(require('./data/goldenset64.json'));
                 break;
 
             case 128:
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 this.fromJSON(require('./data/goldenset128.json'));
                 break;
 

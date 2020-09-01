@@ -1,10 +1,9 @@
 {
     "recommendations": [
+        "dbaeumer.vscode-eslint",
         "streetsidesoftware.code-spell-checker",
         "neilding.language-liquid",
         "slevesque.shader",
-        "ms-vscode.vscode-typescript-tslint-plugin",
-        "msjsdiag.debugger-for-chrome",
         "IBM.output-colorizer",
         "searKing.preview-vscode"
     ]

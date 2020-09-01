@@ -199,7 +199,6 @@ export class CornellBoxRenderer extends Renderer {
         if (this._extensions === false && this._context.isWebGL1) {
             auxiliaries.assert(this._context.supportsStandardDerivatives,
                 `expected OES_standard_derivatives support`);
-            /* tslint:disable-next-line:no-unused-expression */
             this._context.standardDerivatives;
             this._extensions = true;
         }

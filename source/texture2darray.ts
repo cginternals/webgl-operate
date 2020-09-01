@@ -1,9 +1,9 @@
 
 /* spellchecker: disable */
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { assert, log, LogLevel } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
-import { GLsizei2 } from './tuples';
+import { GLsizei3 } from './tuples';
 
 import { Bindable } from './bindable';
 import { TexImage2DData } from './gl2facade';
@@ -14,30 +14,31 @@ import { AbstractObject } from './object';
 
 
 /**
- * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
+ * Wrapper for an WebGL 2D texture array providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
  * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
  * ```
- * const texture = new Texture2D(context, 'Texture');
- * texture.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
+ * const texture = new Texture2DArray(context, 'Texture');
+ * texture.initialize(1, 1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
  * texture.load('/img/webgl-operate-logo.png', true)
  * ```
  */
-export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable {
+export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bindable {
 
     /**
      * Default texture, e.g., used for unbind.
      */
     static readonly DEFAULT_TEXTURE = undefined;
 
-    static MAX_ANISOTROPY: GLfloat | undefined = undefined;
-
-
     /** @see {@link width} */
     protected _width: GLsizei = 0;
 
     /** @see {@link height} */
     protected _height: GLsizei = 0;
+
+    /** @see {@link depth} */
+    protected _depth: GLsizei = 0;
+
 
     /** @see {@link internalFormat} */
     protected _internalFormat: GLenum = 0;
@@ -48,28 +49,23 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
     /** @see {@link type} */
     protected _type: GLenum = 0;
 
-    /**
-     * Whether or not to generate mip maps (based on minification settings).
-     * If true, gl.generateMipmap will be called whenever the image data changes.
-     */
-    protected _mipmap = false;
-
-    /** @see {@link anisotropy} */
-    protected _anisotropy: GLfloat | undefined = undefined;
-
 
     /**
      * Create a texture object on the GPU.
      * @param width - Initial width of the texture in px.
      * @param height - Initial height of the texture in px.
+     * @param depth - Initial depth (number of slices) of the texture.
      * @param internalFormat - Internal format of the texture object.
      * @param format - Format of the texture data even though no data is passed.
      * @param type - Data type of the texel data.
      */
-    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum,
+    protected create(width: GLsizei, height: GLsizei, depth: GLsizei, internalFormat: GLenum,
         format: GLenum, type: GLenum): WebGLTexture | undefined {
+        // texImage3D is also used for 2D array textures
+        assert(this._context.supportsTexImage3D, `expected texImage3D to be supported`);
 
-        assert(width > 0 && height > 0, `texture requires valid width and height of greater than zero`);
+        assert(width > 0 && height > 0 && depth > 0,
+            `texture requires valid width, height, and depth of greater than zero`);
         const gl = this._context.gl;
         const gl2facade = this._context.gl2facade;
 
@@ -77,30 +73,22 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
 
         this._width = width;
         this._height = height;
+        this._depth = depth;
         this._internalFormat = internalFormat;
         this._format = format;
         this._type = type;
 
-        gl.bindTexture(gl.TEXTURE_2D, this._object);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._object);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
 
-        /* Query max anisotropy. This is done lazy, that is, only for the first texture created. */
-        if (Texture2D.MAX_ANISOTROPY === undefined) {
-            if (this._context.supportsTextureFilterAnisotropic) {
-                const ext = this._context.textureFilterAnisotropic;
-                Texture2D.MAX_ANISOTROPY = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-            } else {
-                Texture2D.MAX_ANISOTROPY = 0.0;
-            }
-        }
+        gl2facade.texImage3D(gl.TEXTURE_2D_ARRAY, 0, this._internalFormat,
+            this._width, this._height, this._depth, 0, this._format, this._type);
 
-        gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,
-            this._width, this._height, 0, this._format, this._type);
-
-        gl.bindTexture(gl.TEXTURE_2D, Texture2D.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, Texture2DArray.DEFAULT_TEXTURE);
         /* note that gl.isTexture requires the texture to be bound */
         this._valid = gl.isTexture(this._object);
 
@@ -124,13 +112,15 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
 
         this._width = 0;
         this._height = 0;
+        this._depth = 0;
     }
 
     protected reallocate(): void {
         const gl = this.context.gl;
         const gl2facade = this._context.gl2facade;
 
-        let bytes: GLsizei = this._width * this._height * byteSizeOfFormat(this.context, this._internalFormat);
+        let bytes: GLsizei = this._width * this._height * this._depth
+            * byteSizeOfFormat(this.context, this._internalFormat);
         // Fix in case of implicit float and half-float texture generation (e.g., in webgl with half_float support).
         if (this._type === gl2facade.HALF_FLOAT && this._internalFormat !== gl.RGBA16F) {
             bytes *= 2;
@@ -149,7 +139,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.TEXTURE_2D, this._object);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._object);
     }
 
     /**
@@ -161,19 +151,18 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         if (unit) {
             gl.activeTexture(unit);
         }
-        gl.bindTexture(gl.TEXTURE_2D, Texture2D.DEFAULT_TEXTURE);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, Texture2DArray.DEFAULT_TEXTURE);
     }
 
     /**
-     * Asynchronous load of an image via URL or data URI.
-     * @param url - Uniform resource locator string referencing the image that should be loaded (data URI supported).
+     * Asynchronous load of an image comprising a column of slices via URL or data URI.
+     * @param url - Uniform resource locator string referencing image slices that should be loaded (data URI supported).
+     * @param slices - Number of slices (resulting in the array's depth) vertically aligned within the image.
      * @param crossOrigin - Enable cross origin data loading.
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    fetch(url: string, crossOrigin: boolean = false, flipY: boolean = false): Promise<void> {
-        const gl = this.context.gl;
-
+    fetch(url: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onerror = () => {
@@ -182,17 +171,8 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
             };
 
             image.onload = () => {
-                this.resize(image.width, image.height);
-
-                // Flip the image horizontally, since Image has the origin on the top left
-                // while WebGL has it on the bottom left
-                if (!flipY) {
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                }
-
+                this.resize(image.width, image.height / slices, slices);
                 this.data(image);
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-
                 resolve();
             };
 
@@ -218,14 +198,8 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
             this.bind();
         }
 
-        gl2facade.texImage2D(gl.TEXTURE_2D, 0, this._internalFormat,
-            this._width, this._height, 0, this._format, this._type, data);
-
-        if (this._anisotropy !== undefined && this._anisotropy > 0.0) {
-            this.maxAnisotropy(this._anisotropy, false, false);
-        } else if (this._mipmap) {
-            this.generateMipMap(false, false);
-        }
+        gl2facade.texImage3D(gl.TEXTURE_2D_ARRAY, 0, this._internalFormat,
+            this._width, this._height, this._depth, 0, this._format, this._type, data);
 
         if (unbind) {
             this.unbind();
@@ -234,9 +208,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
-     * Sets the texture object's magnification and minification filter. If a mipmap mode is set for minification, will
-     * be generated automatically whenever the image data changes. The MipMap can be generated manually as well by
-     * calling generateMipMap (@see {@link generateMipMap}).
+     * Sets the texture object's magnification and minification filter.
      * @param mag - Value for the TEXTURE_MAG_FILTER parameter.
      * @param min - Value for the TEXTURE_MIN_FILTER parameter.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
@@ -249,38 +221,32 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         if (bind) {
             this.bind();
         }
-        logIf(mag === gl.LINEAR_MIPMAP_LINEAR || mag === gl.LINEAR_MIPMAP_NEAREST, LogLevel.Debug,
-            `magnification does not utilize a MipMap (refer to LINEAR and NEAREST only)`);
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mag);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, min);
-
-        this._mipmap = min === gl.LINEAR_MIPMAP_LINEAR || min === gl.LINEAR_MIPMAP_NEAREST;
-        if (this._mipmap) {
-            gl.generateMipmap(gl.TEXTURE_2D);
-        }
-
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, mag);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, min);
         if (unbind) {
             this.unbind();
         }
     }
 
     /**
-     * Sets the texture object's wrapping function for s and t coordinates.
+     * Sets the texture object's wrapping function for s, t and r coordinates.
      * @param wrap_s - Value for the TEXTURE_WRAP_S parameter, defaulted to CLAMP_TO_EDGE.
      * @param wrap_t - Value for the TEXTURE_WRAP_T parameter, defaulted to CLAMP_TO_EDGE.
+     * @param wrap_r - Value for the TEXTURE_WRAP_R parameter, defaulted to CLAMP_TO_EDGE.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    wrap(wrap_s: GLenum, wrap_t: GLenum, bind: boolean = true, unbind: boolean = true): void {
+    /* tslint:disable-next-line:variable-name */
+    wrap(wrap_s: GLenum, wrap_t: GLenum, wrap_r: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
         if (bind) {
             this.bind();
         }
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap_s);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap_t);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, wrap_s);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, wrap_t);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_R, wrap_r);
         if (unbind) {
             this.unbind();
         }
@@ -321,72 +287,20 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
      * This should be used to implement efficient resize the texture.
      * @param width - Targeted/new width of the texture in px.
      * @param height - Targeted/new height of the texture in px.
+     * @param depth - Targeted/new depth (number of slices) of the texture.
      * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    resize(width: GLsizei, height: GLsizei, bind: boolean = true, unbind: boolean = true): void {
-        if (width === this._width && height === this._height) {
+    resize(width: GLsizei, height: GLsizei, depth: GLsizei, bind: boolean = true, unbind: boolean = true): void {
+        if (width === this._width && height === this._height && depth === this._depth) {
             return;
         }
         this._width = width;
         this._height = height;
+        this._depth = depth;
 
         this.data(undefined, bind, unbind);
-    }
-
-    /**
-     * Generate MipMap for the texture. This is only required when minification filter is set to use
-     * the MipMap. If the mipmap is generated, it will be automatically regenerated whenever the image data changes
-     * via one of this classes' methods. Should be called manually when updated image data from outside though.
-     * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
-     * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
-     */
-    generateMipMap(bind: boolean = true, unbind: boolean = true): void {
-        const gl = this.context.gl;
-
-        if (bind) {
-            this.bind();
-        }
-        gl.generateMipmap(gl.TEXTURE_2D);
-        if (unbind) {
-            this.unbind();
-        }
-        this._mipmap = true;
-    }
-
-    /**
-     * Sets this textures anisotropy value. If anisotropy is not supported a debug message is logged.
-     * If anisotropy is supported, the given value is clamped to the maximum supported anisotropy value and setup.
-     * Note that using as well as changing a texture's anisotropy value requires (re)generating a MipMap and takes only
-     * effect when minification filtering is setup to use MipMapping.
-     * @param max - Targeted maximum anisotropy value (will be clamped to [0.0, MAX_ANISOTROPY]).
-     * @param bind - Allows to skip binding the texture (e.g., when binding is handled outside).
-     * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
-     * @returns - The anisotropy value that was actually set (undefined if anisotropy is not supported).
-     */
-    maxAnisotropy(max: GLfloat | undefined, bind: boolean = true, unbind: boolean = true): GLfloat | undefined {
-        if (this._context.supportsTextureFilterAnisotropic === false) {
-            log(LogLevel.Debug, `setting anisotropy not supported (EXT_texture_filter_anisotropic missing)`);
-            return undefined;
-        }
-
-        const gl = this.context.gl;
-        const ext = this._context.textureFilterAnisotropic;
-
-        this._anisotropy = max === undefined ? undefined : Math.max(0.0, Math.min(Texture2D.MAX_ANISOTROPY!, max));
-        logIf(max !== this._anisotropy, LogLevel.Debug,
-            `value clamped to max supported anisotropy of ${Texture2D.MAX_ANISOTROPY}, given ${max}`);
-
-        if (bind) {
-            this.bind();
-        }
-
-        gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT,
-            this._anisotropy === undefined ? 0.0 : this._anisotropy);
-
-        this.generateMipMap(false, unbind);
-        return this._anisotropy;
     }
 
     /**
@@ -441,13 +355,22 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
-     * Convenience getter for the 2-tuple containing width and height.
+     * The depth (number of slices) of the texture object.
+     */
+    get depth(): GLsizei {
+        this.assertInitialized();
+        return this._depth;
+    }
+
+    /**
+     * Convenience getter for the 3-tuple containing width, height and depth.
      * @see {@link width}
      * @see {@link height}
+     * @see {@link depth}
      */
-    get size(): GLsizei2 {
+    get size(): GLsizei3 {
         this.assertInitialized();
-        return [this._width, this._height];
+        return [this._width, this._height, this._depth];
     }
 
 }

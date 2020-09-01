@@ -56,7 +56,6 @@ export class Wizard {
 
         /* Query type and, if required), enable extension. */
         if (query === Wizard.Precision.half && halfWriteSupport) {
-            /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureHalfFloat;
             type = gl2facade.HALF_FLOAT;
             internalFormatIndex = 1;
@@ -64,7 +63,6 @@ export class Wizard {
         } else if ((query === Wizard.Precision.float || query === Wizard.Precision.half)
             && floatWriteSupport) {
             /* If not explicitly requested, fallback for half_float. */
-            /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureFloat;
             type = gl.FLOAT;
             internalFormatIndex = 0;
