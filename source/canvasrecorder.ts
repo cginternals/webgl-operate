@@ -47,7 +47,7 @@ export class CanvasRecorder {
 
     /**
      * Checks whether the given MIME type is supported.
-     * @param type MIME type to check.
+     * @param type - MIME type to check.
      */
     static isMIMETypeSupported(type: string): boolean {
         return MediaRecorder.isTypeSupported(type);
@@ -55,7 +55,7 @@ export class CanvasRecorder {
 
     /**
      * Creates a CanvasRecorder. Throws, if it is not supported on the used platform.
-     * @param canvas The canvas to record.
+     * @param canvas - The canvas to record.
      */
     constructor(canvas: Canvas) {
         assert(CanvasRecorder.isSupported(), 'Recording the canvas is not supported.');
@@ -70,8 +70,8 @@ export class CanvasRecorder {
      * If the given fps is 0 it won't automatically record. Instead {@link frame} has to be called every time a new
      * frame should get recorded.
      * Must not be called with negative fps, while already recording or with an unsupported MIME type.
-     * @param fps Maximum fps to record in.
-     * @param mimeType The MIME video type.
+     * @param fps - Maximum fps to record in.
+     * @param mimeType - The MIME video type.
      */
     start(fps: number, mimeType = ''): void {
         assert(fps >= 0, 'FPS has to be positive');
@@ -140,9 +140,9 @@ export class CanvasRecorder {
         assert(this._state === CanvasRecorder.State.RECORDING, 'Recorder has to be recording.');
 
         const tracks = this._stream.getTracks();
-        assert(tracks.length === 1, 'CanvasRecorder uses outdated version of MediaStream API.');
+        assert(tracks.length === 1, 'CanvasRecorder uses unknown implementation of MediaStream API.');
         assert(this._stream.requestFrame || tracks[0].requestFrame,
-            'CanvasRecorder uses outdated version of MediaStream API.');
+            'CanvasRecorder uses unknown implementation of MediaStream API.');
 
         // Per MDN captureStream should return a MediaStream, which contains exactly 1 CanvasCaptureMediaStreamTrack.
         // Chrome + new Edge implements it exactly like that. Firefox instead returns CanvasCaptureMediaStream, which
