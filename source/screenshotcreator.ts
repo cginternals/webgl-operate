@@ -12,12 +12,13 @@ import { DefaultFramebuffer } from './defaultframebuffer';
 
 /**
  * Utility for capturing images directly from any framebuffer. This enables taking a screenshot bigger than the used
- * canvas. Supports capturing of only part of the framebuffer. The resulting image can be downloaded as png.
+ * canvas. Supports capturing of only part of the framebuffer. The resulting image can be transformed to a data URL.
+ * The data URL can then be used to embed the image inline in documents or to download it.
  *
  * ```
  * const screenshotCreator = new ScreenshotCreator(context);
  * const image = screenshotCreator.capture(accumulateFramebuffer, gl.COLOR_ATTACHMENT0);
- * ScreenshotCreator.download(image);
+ * const dataURL = ScreenshotCreator.createDataURL(image);
  * ```
  */
 export class ScreenshotCreator {
@@ -27,15 +28,13 @@ export class ScreenshotCreator {
     protected _context: Context;
 
     /**
-     * Downloads the given image. The downloaded file will be given the specified name appended by the type specific
-     * file ending. The type defaults to png, if no type is given. Quality can be only set for types using lossy
-     * compression. The quality defaults to 0.92.
-     * @param imageData - Image to download.
-     * @param name - Name of the file.
-     * @param type - Optional type of the downloaded image. Defaults to PNG.
-     * @param quality - Optional quality of the downloaded image.
+     * Creates a data URL for the given image. The data will be encoded according to type. The type defaults to png,
+     * if no type is given. Quality can be only set for types using lossy compression. The default quality is 0.92.
+     * @param imageData - Image to create the data URL for.
+     * @param type - Optional format used for encoding.
+     * @param quality - Optional quality used for lossy compression.
      */
-    static downloadImage(imageData: ImageData, name: string, type?: string, quality?: number): void {
+    static createDataURL(imageData: ImageData, type?: string, quality?: number): void {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d')!;
 
@@ -46,11 +45,6 @@ export class ScreenshotCreator {
 
         const image = new Image();
         image.src = canvas.toDataURL(type, quality);
-
-        const link = document.createElement('a');
-        link.download = name;
-        link.href = image.src;
-        link.click();
     }
 
     constructor(context: Context) {
