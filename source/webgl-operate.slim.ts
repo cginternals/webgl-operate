@@ -70,6 +70,8 @@ export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
 export { EyeGazeEventProvider } from './eyegazeeventprovider';
 export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
 
+export { FrameCapture } from './framecapture';
+
 
 export * from './core/index';
 export * from './scene/index';
