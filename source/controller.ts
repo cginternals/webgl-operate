@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 
 import { assert, log, logIf, LogLevel, logVerbosity } from './auxiliaries';
 import { clamp } from './gl-matrix-extensions';
@@ -103,6 +103,13 @@ export class Controller {
     /** @see {@link multiFrameDelay} */
     protected _multiFrameDelay = 0;
     // protected _delayedRequestTimeout: number | undefined;
+
+
+    /** Observable event that is triggered after frame invocation (renderer). */
+    protected _postFrameEventSubject = new Subject<number>();
+
+    /** Observable event that is triggered after swap invocation (renderer). */
+    protected _postSwapEventSubject = new Subject<number>();
 
 
     /**
@@ -281,12 +288,17 @@ export class Controller {
 
         for (; this._frameNumber < batchEnd; ++this._frameNumber) {
             logIf(Controller._debug, LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
+
             (this._controllable as Controllable).frame(this._frameNumber);
+            this._postFrameEventSubject.next(this._frameNumber);
+
             ++this._intermediateFrameCount;
         }
         logIf(Controller._debug, LogLevel.Debug, `c -> swap           |`);
 
         (this._controllable as Controllable).swap();
+        this._postSwapEventSubject.next(this._frameNumber);
+
         this._multiTime[1] = performance.now();
 
         /* Note: critical call sequence; be careful when changing the following lines. */
@@ -611,6 +623,21 @@ export class Controller {
      */
     get framesPerSecond(): number {
         return this._frameNumber === 0 ? 0.0 : 1000.0 / (this.multiFrameTime / this._frameNumber);
+    }
+
+
+    /**
+     * Observable that can be used to subscribe to post frame events.
+     */
+    get postFrameEvent$(): Observable<number> {
+        return this._postFrameEventSubject.asObservable();
+    }
+
+    /**
+     * Observable that can be used to subscribe to post swap events.
+     */
+    get postSwapEvent$(): Observable<number> {
+        return this._postSwapEventSubject.asObservable();
     }
 
 }

@@ -3,7 +3,6 @@
 
 import { assert } from './auxiliaries';
 
-import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { DefaultFramebuffer } from './defaultframebuffer';
 
@@ -16,16 +15,14 @@ import { DefaultFramebuffer } from './defaultframebuffer';
  * The data URL can then be used to embed the image inline in documents or to download it.
  *
  * ```
- * const screenshotCreator = new ScreenshotCreator(context);
- * const image = screenshotCreator.capture(accumulateFramebuffer, gl.COLOR_ATTACHMENT0);
- * const dataURL = ScreenshotCreator.createDataURL(image);
+ * controller.postFrameEvent$.pipe(rxjs.operators.first()).subscribe(() => {
+ *     const img = gloperate.FrameCapture.capture(renderer._defaultFBO);
+ *     const data = gloperate.FrameCapture.createDataURL(img, 'image/png');
+ *     console.log(data);
+ * })
  * ```
  */
-export class ScreenshotCreator {
-    /**
-     * Read-only access to the objects context, used to get WebGL API access.
-     */
-    protected _context: Context;
+export class FrameCapture {
 
     /**
      * Creates a data URL for the given image. The data will be encoded according to type. The type defaults to png,
@@ -34,7 +31,7 @@ export class ScreenshotCreator {
      * @param type - Optional format used for encoding.
      * @param quality - Optional quality used for lossy compression.
      */
-    static createDataURL(imageData: ImageData, type?: string, quality?: number): void {
+    static createDataURL(imageData: ImageData, type?: string, quality?: number): string {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d')!;
 
@@ -43,12 +40,7 @@ export class ScreenshotCreator {
 
         context.putImageData(imageData, 0, 0);
 
-        const image = new Image();
-        image.src = canvas.toDataURL(type, quality);
-    }
-
-    constructor(context: Context) {
-        this._context = context;
+        return canvas.toDataURL(type, quality);
     }
 
     /**
@@ -57,11 +49,12 @@ export class ScreenshotCreator {
      * @param rect - Part of the framebuffer to capture.
      * @param buffer - Buffer to write the data into.
      */
-    protected captureDefaultFramebufferIntoBuffer(rect: ScreenshotCreator.Rect, buffer: Uint8Array): void {
-        const gl = this._context.gl;
+    protected static captureDefaultFramebuffer(framebuffer: Framebuffer, rect: FrameCapture.Rect, buffer: Uint8Array): void {
+        const gl = framebuffer.context.gl;
 
-        gl.readBuffer(gl.BACK);
+        framebuffer.bind();
         gl.readPixels(rect.x, rect.y, rect.width, rect.height, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+        framebuffer.unbind();
     }
 
     /**
@@ -71,9 +64,9 @@ export class ScreenshotCreator {
      * @param rect - Part of the framebuffer to capture.
      * @param buffer - Buffer to write the data into.
      */
-    protected captureFramebufferIntoBuffer(framebuffer: Framebuffer, attachment: GLenum,
-        rect: ScreenshotCreator.Rect, buffer: Uint8Array): void {
-        const gl = this._context.gl;
+    protected static captureFramebuffer(framebuffer: Framebuffer, attachment: GLenum,
+        rect: FrameCapture.Rect, buffer: Uint8Array): void {
+        const gl = framebuffer.context.gl;
 
         const texture = framebuffer.texture(attachment);
         assert(texture !== undefined, `Framebuffer does not have given attachment ${attachment}.`);
@@ -96,23 +89,19 @@ export class ScreenshotCreator {
     }
 
     /**
-     * Flips the given image vertically.
-     * @param imageData - Image to flip.
+     * Flips the given image data vertically.
+     * @param imageData - Image data to flip.
      */
-    protected flipImageDataVertically(imageData: ImageData): void {
-        const buffer = new Uint32Array(imageData.data.buffer);
-        const width = imageData.width;
-        const height = imageData.height;
+    static flipImageDataVertically(imageData: ImageData): void {
+        const rows = imageData.height;
+        const elementsPerRow = imageData.data.length / rows;
 
-        for (let y = 0; y < Math.floor(height / 2); y++) {
-            for (let x = 0; x < width; x++) {
-                const top = x + y * width;
-                const bot = x + (height - y) * width;
+        const rEnd = Math.floor(rows / 2.0);
+        for (let r = 0; r < rEnd; ++r) {
 
-                const temp = buffer[top];
-                buffer[top] = buffer[bot];
-                buffer[bot] = temp;
-            }
+            const temp = imageData.data.slice(r * elementsPerRow, (r + 1) * elementsPerRow);
+            imageData.data.copyWithin(r * elementsPerRow, (rows - r - 1) * elementsPerRow, (rows - r) * elementsPerRow);
+            imageData.data.set(temp, (rows - r - 1) * elementsPerRow);
         }
     }
 
@@ -124,9 +113,9 @@ export class ScreenshotCreator {
      * @param rect - Optional part of the framebuffer to capture.
      * @returns - The captured image.
      */
-    capture(framebuffer: Framebuffer | DefaultFramebuffer, attachment?: GLenum,
-        rect?: ScreenshotCreator.Rect): ImageData {
-        const gl = this._context.gl;
+    static capture(framebuffer: Framebuffer | DefaultFramebuffer, attachment?: GLenum,
+        rect?: FrameCapture.Rect): ImageData {
+        const gl = framebuffer.context.gl;
 
         const framebufferSize = framebuffer.size;
         if (rect === undefined) {
@@ -143,24 +132,26 @@ export class ScreenshotCreator {
         framebuffer.bind(gl.READ_FRAMEBUFFER);
 
         if (framebuffer instanceof DefaultFramebuffer) {
-            this.captureDefaultFramebufferIntoBuffer(rect, buffer);
+            FrameCapture.captureDefaultFramebuffer(framebuffer, rect, buffer);
         } else if (framebuffer instanceof Framebuffer) {
-            this.captureFramebufferIntoBuffer(framebuffer, attachment, rect, buffer);
+            FrameCapture.captureFramebuffer(framebuffer, attachment, rect, buffer);
         }
 
         framebuffer.unbind(gl.READ_FRAMEBUFFER);
 
-        this.flipImageDataVertically(imageData);
-
+        FrameCapture.flipImageDataVertically(imageData);
         return imageData;
     }
 }
 
-export namespace ScreenshotCreator {
+
+export namespace FrameCapture {
+
     export interface Rect {
         x: number,
         y: number,
         width: number,
         height: number
     }
+
 }

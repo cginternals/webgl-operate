@@ -70,7 +70,7 @@ export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
 export { EyeGazeEventProvider } from './eyegazeeventprovider';
 export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
 
-export { ScreenshotCreator } from './screenshotcreator';
+export { FrameCapture } from './framecapture';
 
 
 export * from './core/index';

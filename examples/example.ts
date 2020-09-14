@@ -30,6 +30,15 @@ export abstract class Example extends Initializable {
         (spinnerElement as HTMLElement).style.display = 'none';
     }
 
+    protected expose(): void {
+
+        (window as any)['canvas'] = this.canvas;
+        (window as any)['context'] = this.canvas.context;
+        (window as any)['controller'] = this.canvas.controller;
+
+        (window as any)['renderer'] = this.renderer;
+    }
+
     initialize(element: HTMLCanvasElement | string): boolean {
         const result = this.onInitialize(element);
 
@@ -40,6 +49,8 @@ export abstract class Example extends Initializable {
                 this.showSpinner();
             }
         });
+
+        this.expose();
 
         return result;
     }
