@@ -29,6 +29,7 @@ type ImagesAvailableCallback = (images: Array<Blob>) => void;
  * ```
  */
 export class CanvasRecorder {
+
     protected _canvas: Canvas;
 
     protected _stream: CanvasCaptureMediaStream;
@@ -36,6 +37,7 @@ export class CanvasRecorder {
     protected _state: CanvasRecorder.State;
 
     protected _images: Array<Blob>;
+    protected _mimeType: string;
     protected _onImagesAvailable: ImagesAvailableCallback | undefined;
 
     /**
@@ -66,21 +68,23 @@ export class CanvasRecorder {
     }
 
     /**
-     * Starts recording the the canvas.
-     * If the given fps is 0 it won't automatically record. Instead {@link frame} has to be called every time a new
-     * frame should get recorded.
-     * Must not be called with negative fps, while already recording or with an unsupported MIME type.
+     * Starts recording the the canvas. If the given fps is 0 it won't automatically record. Instead {@link frame} has
+     * to be called every time a new frame should get recorded. Must not be called with negative fps, while already
+     * recording or with an unsupported MIME type.
      * @param fps - Maximum fps to record in.
      * @param mimeType - The MIME video type.
      */
-    start(fps: number, mimeType = ''): void {
+    start(fps: number, mimeType: string = 'video/webm', bitsPerSecond: number = 4 * 2 ** 20): void {
+
         assert(fps >= 0, 'FPS has to be positive');
         assert(this._state === CanvasRecorder.State.INACTIVE, 'Recorder has to be inactive.');
         assert(CanvasRecorder.isMIMETypeSupported(mimeType), `MIME type: ${mimeType} is not supported.`);
 
         this._stream = (this._canvas.element as any).captureStream(fps);
-        this._recorder = new MediaRecorder(this._stream, { mimeType });
+        this._recorder = new MediaRecorder(this._stream, { mimeType, bitsPerSecond });
         this._images.length = 0;
+        this._mimeType = mimeType;
+
 
         this._recorder.ondataavailable = (event: any) => this._images.push(event.data);
         this._recorder.onstop = () => { if (this._onImagesAvailable) this._onImagesAvailable(this._images); }
@@ -91,8 +95,7 @@ export class CanvasRecorder {
     }
 
     /**
-     * Stops recording the canvas.
-     * Must not be called while not already recording.
+     * Stops recording the canvas. Must not be called while not already recording.
      */
     stop(): void {
         assert(this._state !== CanvasRecorder.State.INACTIVE, 'Recorder must not be inactive.');
@@ -156,6 +159,28 @@ export class CanvasRecorder {
     }
 
     /**
+     * Creates a temporary hyperlink element and triggers a download of the blob with the given file name. Both, the
+     * hyperlink element and the blob url are removed automatically shortly after the hyperlink click was triggered.
+     */
+    download(fileName: string): void {
+
+        const url = URL.createObjectURL(this.blob);
+        const element: HTMLElement = document.createElement('a');
+
+        element.style.display = 'none';
+        element.setAttribute('href', url);
+        element.setAttribute('download', fileName);
+
+        document.body.appendChild(element);
+        element.click();
+
+        setTimeout(() => {
+            document.body.removeChild(element);
+            window.URL.revokeObjectURL(url);
+        }, 256);
+    }
+
+    /**
      * Returns the recorded images. Note: Images are not necessarily immediately available after stopping.
      */
     get images(): Array<Blob> {
@@ -167,6 +192,13 @@ export class CanvasRecorder {
      */
     get state(): CanvasRecorder.State {
         return this._state;
+    }
+
+    /**
+     * Returns a new blob of all recorded, available images.
+     */
+    get blob(): Blob {
+        return new Blob(this._images, { type: this._mimeType });
     }
 
     /**
