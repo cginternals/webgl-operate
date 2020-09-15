@@ -47,6 +47,7 @@ export { TrackballModifier } from './trackballmodifier';
 export { TurntableModifier } from './turntablemodifier';
 export { PinchZoomModifier } from './pinchzoommodifier';
 export { WheelZoomModifier } from './wheelzoommodifier';
+export { CanvasRecorder } from './canvasrecorder';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';
