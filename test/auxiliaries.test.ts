@@ -237,11 +237,11 @@ describe('auxiliaries RAD2DEG and DEG2RAD', () => {
 
 describe('auxiliaries GETparameter', () => {
 
-    // it('should return value of present parameters', () => {
-    //     global.window = { location: { search: '?test=true' } };
-    //     expect(aux.GETsearch()).to.equal('?test=true');
-    //     expect(aux.GETparameter('test')).to.equal('true');
-    // });
+    it('should return value of present parameters', () => {
+        (global.window as any) = { location: { search: '?test=true' } };
+        expect(aux.GETsearch()).to.equal('?test=true');
+        expect(aux.GETparameter('test')).to.equal('true');
+    });
 
 });
 
