@@ -235,12 +235,42 @@ describe('auxiliaries RAD2DEG and DEG2RAD', () => {
 });
 
 
-describe('auxiliaries GETparameter', () => {
+describe('auxiliaries GETsearch, GETparameter', () => {
 
     it('should return value of present parameters', () => {
         (global.window as any) = { location: { search: '?test=true' } };
         expect(aux.GETsearch()).to.equal('?test=true');
         expect(aux.GETparameter('test')).to.equal('true');
+    });
+
+    it('should return the value of the top frame if the current frame does not have any', () => {
+        (global.window as any) = {
+            location: {
+                search: ''
+            },
+            top: {
+                location: {
+                    search: '?test=true'
+                }
+            }
+        };
+        expect(aux.GETsearch()).to.equal('?test=true');
+        expect(aux.GETparameter('test')).to.equal('true');
+    });
+
+    it('should return the value of the current frame, if it has one -- independent of its top frame', () => {
+        (global.window as any) = {
+            location: {
+                search: '?currentFrame=1'
+            },
+            top: {
+                location: {
+                    search: '?test=true'
+                }
+            }
+        };
+        expect(aux.GETsearch()).to.equal('?currentFrame=1');
+        expect(aux.GETparameter('currentFrame')).to.equal('1');
     });
 
 });
