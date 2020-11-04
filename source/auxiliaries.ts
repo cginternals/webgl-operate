@@ -300,10 +300,14 @@ namespace auxiliaries {
     export const DEG2RAD = 0.017453292519943295;
 
     /**
-     * Queries window.location.search.
+     * Queries window.location.search, or, if not present, window.location.search of the window's top frame.
      */
     export function GETsearch(): string {
-        return window.location.search;
+        let search = window.location.search;
+        if (!search) {
+            search = window.top.location.search;
+        }
+        return search;
     }
 
     /**
