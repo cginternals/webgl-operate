@@ -312,7 +312,11 @@ namespace auxiliaries {
      */
     export function GETparameter(parameter: string): string | undefined {
         const re = new RegExp(`${parameter}=([^&]+)`);
-        const match = window.location.search.match(re);
+        let match = window.location.search.match(re);
+        if (!match) {
+            // For iframe contents (i. e., the embedded /examples/ files), look within the top frame's search params
+            match = window.top.location.search.match(re);
+        }
         if (!match) {
             return undefined;
         }
