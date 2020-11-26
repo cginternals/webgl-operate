@@ -389,7 +389,7 @@ export class GL2Facade {
      * @link https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/texImage3D
      */
     texImage3D: (target: GLenum, level: GLint, internalformat: GLenum, width: GLsizei, height: GLsizei, depth: GLsizei,
-        border: GLint, format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => void;
+        border: GLint, format: GLenum, type: GLenum, source?: TexImage3DData, offset?: GLintptr) => void;
 
     protected queryTexImageInterface(context: Context): void {
         const gl = context.gl;
@@ -436,7 +436,7 @@ export class GL2Facade {
         if (context.supportsTexImage3D) {
             this.texImage3D = (target: GLenum, level: GLint, internalformat: GLenum,
                 width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint,
-                format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) => {
+                format: GLenum, type: GLenum, source?: TexImage3DData, offset?: GLintptr) => {
                 /* Please note that source must be 'null', not '0' nor 'undefined' for ie and edge to work. */
                 if (source instanceof ArrayBuffer) {
                     return gl.texImage3D(target, level, internalformat, width, height, depth, border
@@ -450,7 +450,7 @@ export class GL2Facade {
             /* eslint-disable @typescript-eslint/no-unused-vars */
             this.texImage3D = (target: GLenum, level: GLint, internalformat: GLenum,
                 width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint,
-                format: GLenum, type: GLenum, source?: TexImage2DData, offset?: GLintptr) =>
+                format: GLenum, type: GLenum, source?: TexImage3DData, offset?: GLintptr) =>
                 assert(false, 'texImage3D not supported on this context');
             /* eslint-enable @typescript-eslint/no-unused-vars */
         }
