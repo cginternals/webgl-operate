@@ -154,13 +154,13 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
-     * Asynchronous load of an image comprising a column of slices via URL or data URI. Please note that due to the lack
+     * Asynchronous load of an image comprising a column/row of slices via URL or data URI. Please note that due to the lack
      * of sub-data access on images, the slices are loaded using a auxiliary canvas and context (temporarily). The sub
      * images (slices) are drawn using the canvas and the image data is then captured.
-     * @param url - Uniform resource locator string referencing image slices that should be loaded (data URI supported).
+     * @param uri - Uniform resource locator string referencing image slices that should be loaded (data URI supported).
      * @param slices - Number of slices (resulting in the 3D texture's depth) vertically aligned within the image.
      * @param crossOrigin - Enable cross origin data loading.
-     * @param useHorizontalSlicing - Optional: Whether or not to use horizontal instead of vertical slice alignment.
+     * @param useHorizontalSlicing - Optional: Whether or not to use horizontal (rows) instead of vertical (columns) slice alignment.
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
@@ -235,6 +235,95 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
                 image.crossOrigin = 'anonymous';
             }
             image.src = uri;
+        });
+    }
+
+    /**
+     * Asynchronous load of multiple images, each containing a column/row of slices, via URL or data URI.
+     * This can be used, e. g., for a dynamically sized array of 3D textures.
+     * Note that all the images must have the exact same dimensions.
+     * Each image is loaded and drawn into a large, multi-row/-column image. This image is then used as a base64 encoded
+     * PNG for subsequent usage in the regular @see {load} function.
+     * @param uris - Uniform resource locator strings referencing a set of equally-sized images that should be loaded (data URI supported).
+     * @param slices - Number of slices (resulting in the 3D texture's depth) vertically aligned within each image.
+     * @param crossOrigin - Enable cross origin data loading.
+     * @param useHorizontalSlicing - Optional: Whether or not to use horizontal (rows) instead of vertical (columns) slice alignment.
+     * @returns - Promise for handling image load status.
+     */
+    @Initializable.assert_initialized()
+    loadFromSingleImages(uris: string[], slices: GLsizei, crossOrigin: boolean = false, useHorizontalSlicing: boolean = false) : Promise<void> {
+        return new Promise((resolve, reject) => {
+            const auxiliaryCanvas = document.createElement('canvas');
+            const auxiliaryContext = auxiliaryCanvas.getContext('2d');
+
+            const drawingPromises = [];
+
+            let mergedImageWidth: number;
+            let mergedImageHeight: number;
+
+            for (let imageIndex = 0; imageIndex < uris.length; imageIndex++) {
+                const singleImage = new Image();
+                singleImage.onerror = () => reject();
+
+                const drawingPromise: Promise<void> = new Promise((resolve, reject) => {
+                    try {
+                        singleImage.onload = () => {
+                            const singleImageWidth = singleImage.width;
+                            const singleImageHeight = singleImage.height;
+
+                            if (useHorizontalSlicing === false) {
+                                if (mergedImageWidth === undefined) {
+                                    mergedImageWidth = singleImageWidth * uris.length;
+                                    auxiliaryCanvas.width = mergedImageWidth;
+                                } else {
+                                    assert(singleImageWidth * uris.length === mergedImageWidth, "The single images do not have the same width");
+                                }
+                                if (mergedImageHeight === undefined) {
+                                    mergedImageHeight = singleImageHeight;
+                                    auxiliaryCanvas.height = mergedImageHeight;
+                                } else {
+                                    assert(singleImageHeight === mergedImageHeight, "The single images do not have the same height");
+                                }
+
+                                auxiliaryContext!.drawImage(singleImage, singleImageWidth * imageIndex, 0);
+                            } else {
+                                if (mergedImageWidth === undefined) {
+                                    mergedImageWidth = singleImageWidth;
+                                    auxiliaryCanvas.width = mergedImageWidth;
+                                } else {
+                                    assert(singleImageWidth === mergedImageWidth, "The single images do not have the same width");
+                                }
+                                if (mergedImageHeight === undefined) {
+                                    mergedImageHeight = singleImageHeight * uris.length;
+                                    auxiliaryCanvas.height = mergedImageHeight;
+                                } else {
+                                    assert(singleImageHeight * uris.length === mergedImageHeight, "The single images do not have the same height");
+                                }
+
+                                auxiliaryContext!.drawImage(singleImage, 0, singleImageHeight * imageIndex);
+                            }
+
+                            resolve();
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+
+                drawingPromises.push(drawingPromise);
+
+                if (crossOrigin) {
+                    singleImage.crossOrigin = 'anonymous';
+                }
+                singleImage.src = uris[imageIndex];
+            }
+
+            Promise.all(drawingPromises).then(() => {
+                const mergedImageDataUri = auxiliaryCanvas.toDataURL('image/png', 1.0);
+                return this.load(mergedImageDataUri, slices, crossOrigin, useHorizontalSlicing).then(() => {
+                    resolve();
+                });
+            })
         });
     }
 
