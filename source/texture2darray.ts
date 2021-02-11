@@ -16,11 +16,11 @@ import { AbstractObject } from './object';
 /**
  * Wrapper for an WebGL 2D texture array providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
- * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
+ * After being initialized, the texture can be resized, reformated, and data can set directly or via fetch:
  * ```
  * const texture = new Texture2DArray(context, 'Texture');
  * texture.initialize(1, 1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
- * texture.load('/img/webgl-operate-logo.png', true)
+ * texture.fetch('/img/webgl-operate-logo.png', true);
  * ```
  */
 export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bindable {
