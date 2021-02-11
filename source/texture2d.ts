@@ -16,7 +16,7 @@ import { AbstractObject } from './object';
 /**
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
- * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
+ * After being initialized, the texture can be resized, reformated, and data can set directly or via fetch:
  * ```
  * const texture = new Texture2D(context, 'Texture');
  * texture.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
