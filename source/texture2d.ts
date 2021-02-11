@@ -20,7 +20,7 @@ import { AbstractObject } from './object';
  * ```
  * const texture = new Texture2D(context, 'Texture');
  * texture.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
- * texture.load('/img/webgl-operate-logo.png', true)
+ * texture.fetch('/img/webgl-operate-logo.png', true);
  * ```
  */
 export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable {
