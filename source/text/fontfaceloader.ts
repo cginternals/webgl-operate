@@ -103,7 +103,7 @@ export class FontFaceLoader {
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
         // Texture is flipped due to shader math
-        return fontFace.glyphTexture.fetch(`${path}/${page}`, false, true)
+        return fontFace.glyphTexture.fetch(`${path}/${page}`, true, true)
             .catch(() => Promise.reject(`page '${page}' referenced in font file '${url}' was not found`));
     }
 
