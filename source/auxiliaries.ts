@@ -300,10 +300,14 @@ namespace auxiliaries {
     export const DEG2RAD = 0.017453292519943295;
 
     /**
-     * Queries window.location.search.
+     * Queries window.location.search, or, if not present, window.location.search of the window's top frame.
      */
     export function GETsearch(): string {
-        return window.location.search;
+        let search = window.location.search;
+        if (!search) {
+            search = window.top.location.search;
+        }
+        return search;
     }
 
     /**
@@ -312,7 +316,11 @@ namespace auxiliaries {
      */
     export function GETparameter(parameter: string): string | undefined {
         const re = new RegExp(`${parameter}=([^&]+)`);
-        const match = window.location.search.match(re);
+        let match = window.location.search.match(re);
+        if (!match) {
+            // For iframe contents (i. e., the embedded /examples/ files), look within the top frame's search params
+            match = window.top.location.search.match(re);
+        }
         if (!match) {
             return undefined;
         }

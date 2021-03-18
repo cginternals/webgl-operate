@@ -15,11 +15,11 @@ import { AbstractObject } from './object';
 /**
  * Wrapper for an WebGL cube texture providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture cube object is created on initialization and deleted on uninitialization.
- * After being initialized, the texture cube can be resized, reformated, and data can set directly or via load:
+ * After being initialized, the texture cube can be resized, reformated, and data can set directly or via fetch:
  * ```
  * const cubeMap = new TextureCube(context, 'CubeMap');
  * cubeMap.initialize(512, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
- * cubeMap.load({
+ * cubeMap.fetch({
  *     positiveX: 'data/cubemap.px.png', negativeX: 'data/cubemap.nx.png',
  *     positiveY: 'data/cubemap.py.png', negativeY: 'data/cubemap.ny.png',
  *     positiveZ: 'data/cubemap.pz.png', negativeZ: 'data/cubemap.nz.png',
