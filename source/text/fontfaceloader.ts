@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { dirname, log, logIf, LogLevel } from '../auxiliaries';
+import { assert, dirname, log, logIf, LogLevel } from '../auxiliaries';
 import { GLfloat2, GLfloat4 } from '../tuples';
 
 import { FontFace } from './fontface';
@@ -105,6 +105,32 @@ export class FontFaceLoader {
         // Texture is flipped due to shader math
         return fontFace.glyphTexture.fetch(`${path}/${page}`, true, true)
             .catch(() => Promise.reject(`page '${page}' referenced in font file '${url}' was not found`));
+    }
+
+    /**
+     * Fetches a single page (e.g., a png-file) for the glyph atlas of a font face.
+     * @param fontFace - The font face in which the loaded glyph texture should be stored.
+     * @param pageFileUrlsByPageID - Page urls mapped to page IDs.
+     * @returns - Promise for handling image load status.
+     */
+    protected static processPages(fontFace: FontFace,
+        pageFileUrlsByPageID: Map<number, string>): Promise<void> | undefined {
+
+        logIf(pageFileUrlsByPageID.size !== 1, LogLevel.Warning,
+            'glyph atlas supports a single page only (impl. for multiple pages pending)');
+
+        assert(pageFileUrlsByPageID.has(0),
+            'page with page ID 0 expected for glyph atlas (impl. for multiple pages pending)');
+
+        const page = 0;
+        const url = pageFileUrlsByPageID.get(page);
+        if (!url) {
+            return undefined;
+        }
+
+        // Texture is flipped due to shader math
+        return fontFace.glyphTexture.fetch(`${url}`, true, true)
+            .catch(() => Promise.reject(`fetching page '${page}' from '${url}' failed`));
     }
 
     /**
@@ -252,19 +278,28 @@ export class FontFaceLoader {
     }
 
     /**
-     * Asynchronously loads a fnt-file and referenced pages to create a font face from them.
+     * Asynchronously loads a fnt-file and provided/referenced pages to create a font face from them.
      * @param fontFace - Font face object to transform data into.
      * @param data - Font face data, probably fetched from an URL.
      * @param url - Uniform resource locator string referencing the fnt-file that was loaded.
      * @param headless - Whether or not to enable headless mode. If enabled, pages are not loaded.
      */
-    static process(fontFace: FontFace, data: string, url: string, headless: boolean = false):
+    static process(fontFace: FontFace, data: string, fontFileUrl: string,
+        pageFileUrlsByPageID: undefined | Map<number, string>, headless: boolean = false):
         Promise<FontFace | undefined> {
 
         const lines = data.split('\n');
 
         const promises = new Array<Promise<void>>();
         let status = true;
+
+        if (!headless && pageFileUrlsByPageID) {
+            const promise: Promise<void> | undefined = this.processPages(fontFace, pageFileUrlsByPageID);
+            if (promise !== undefined) {
+                promises.push(promise);
+            }
+        }
+
         for (const line of lines) {
             let attributes = line.split(' ');
             const identifier = attributes[0];
@@ -280,10 +315,10 @@ export class FontFaceLoader {
                     break;
 
                 case 'page':
-                    if (headless) {
+                    if (headless || pageFileUrlsByPageID) {
                         break;
                     }
-                    const promise: Promise<void> | undefined = this.processPage(attributes, fontFace, url);
+                    const promise: Promise<void> | undefined = this.processPage(attributes, fontFace, fontFileUrl);
                     if (promise !== undefined) {
                         promises.push(promise);
                     }
