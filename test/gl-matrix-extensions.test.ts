@@ -257,6 +257,19 @@ describe('gl-matrix extensions (un)packing', () => {
         expect(uint32).to.equal(250285);
     });
 
+    it('should pack the maximum uint32 into a uint8x4', () => {
+        const uint32 = 4294967295; // FFFFFFFF > FF, FF, FF, FF
+        const uint8x4: vec4 = vec4.create();
+        encode_uint32_to_rgba8(uint8x4, uint32);
+        expect(vec4.equals(uint8x4, vec4.fromValues(0xFF, 0xFF, 0xFF, 0xFF))).to.be.true;
+    });
+
+    it('should unpack a uint32 from the maximum uint8x4', () => {
+        const uint8x4: vec4 = vec4.fromValues(0xFF, 0xFF, 0xFF, 0xFF);
+        const uint32: number = decode_uint32_from_rgba8(uint8x4);
+        expect(uint32).to.equal(4294967295);
+    });
+
     it('should pack a float24 into a uint8x3', () => {
         const float24 = 0.12345678;
         const uint8x3: vec3 = vec3.create();

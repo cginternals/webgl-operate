@@ -169,9 +169,9 @@ namespace gl_matrix_extensions {
      * @returns - Three component byte vector with x packed.
      */
     export function encode_uint24_to_rgb8(out: vec3, x: number): vec3 {
-        out[0] = (x >> 0) & 0xFF;
-        out[1] = (x >> 8) & 0xFF;
-        out[2] = (x >> 16) & 0xFF;
+        out[0] = (x >>> 0) & 0xFF;
+        out[1] = (x >>> 8) & 0xFF;
+        out[2] = (x >>> 16) & 0xFF;
         return out;
     }
 
@@ -186,10 +186,10 @@ namespace gl_matrix_extensions {
      * @returns - Three component byte vector with x packed.
      */
     export function encode_uint32_to_rgba8(out: vec4, x: number): vec4 {
-        out[0] = (x >> 0) & 0xFF;
-        out[1] = (x >> 8) & 0xFF;
-        out[2] = (x >> 16) & 0xFF;
-        out[3] = (x >> 24) & 0xFF;
+        out[0] = (x >>> 0) & 0xFF;
+        out[1] = (x >>> 8) & 0xFF;
+        out[2] = (x >>> 16) & 0xFF;
+        out[3] = (x >>> 24) & 0xFF;
 
         return out;
     }
@@ -217,7 +217,7 @@ namespace gl_matrix_extensions {
      * @returns - Unpacked 32bit unsigned int.
      */
     export function decode_uint32_from_rgba8(x: vec4): number {
-        return x[0] + (x[1] << 8) + (x[2] << 16) + (x[3] << 24);
+        return x[0] + (x[1] << 8) + (x[2] << 16) + (x[3] << 24) >>> 0;
     }
 
     /**
