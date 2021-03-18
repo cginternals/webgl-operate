@@ -22,19 +22,9 @@
         "esModuleInterop": true
     },
     "typedocOptions": {
-        "mode": "file",
         "out": "build/doc",
-        "ignoreCompilerErrors": false,
         "excludePrivate": false,
-        "excludeNotExported": false,
-        "target": "ES2020",
-        "moduleResolution": "node",
-        "preserveConstEnums": true,
-        "stripInternal": true,
-        "suppressExcessPropertyErrors": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "hideGenerator": true,
-        "module": "umd"
+        "hideGenerator": true
     },
     "include": [
         "source"
