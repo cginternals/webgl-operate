@@ -38,12 +38,17 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     protected _internalFormat: GLenum | undefined = undefined;
 
     /**
+     * Cached sample count for multisampling.
+     */
+    protected _samples: GLsizei;
+
+    /**
      * Create a renderbuffer object on the GPU.
      * @param width - Initial width of the renderbuffer.
      * @param height - Initial height of the renderbuffer.
      * @param internalFormat - Internal format of the renderbuffer data.
      */
-    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum): WebGLRenderbuffer | undefined {
+    protected create(width: GLsizei, height: GLsizei, internalFormat: GLenum, samples = 1): WebGLRenderbuffer | undefined {
         assert(width > 0 && height > 0, `renderbuffer object requires valid width and height greater than zero`);
         const gl = this.context.gl;
 
@@ -52,9 +57,14 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         this._width = width;
         this._height = height;
         this._internalFormat = internalFormat;
+        this._samples = samples;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, this._object);
-        gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
+        if(this._samples > 1) {
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, this._samples, internalFormat, width, height);
+        } else {
+            gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
+        }
         /* note that gl.isRenderbuffer requires the renderbuffer to be bound */
         this._valid = gl.isRenderbuffer(this._object);
         gl.bindRenderbuffer(gl.RENDERBUFFER, Renderbuffer.DEFAULT_RENDER_BUFFER);
@@ -118,7 +128,11 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         if (bind) {
             this.bind();
         }
-        gl.renderbufferStorage(gl.RENDERBUFFER, this._internalFormat, width, height);
+        if(this._samples > 1) {
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, this._samples, this._internalFormat, width, height);
+        } else {
+            gl.renderbufferStorage(gl.RENDERBUFFER, this._internalFormat, width, height);
+        }
         if (unbind) {
             this.unbind();
         }
@@ -158,6 +172,22 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
     get height(): GLsizei {
         this.assertInitialized();
         return this._height;
+    }
+
+    /**
+     * Convenience accessor: sample count for multisampling.
+     */
+    get samples(): GLsizei {
+        this.assertInitialized();
+        return this._samples;
+    }
+
+    /**
+     * Convenience accessor: if multisampling is enabled.
+     */
+    get multisampling(): boolean {
+        this.assertInitialized();
+        return this._samples > 1;
     }
 
     /**
