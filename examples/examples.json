@@ -138,5 +138,17 @@
         "title": "XToon Shading",
         "object": "XToonExample",
         "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
+        "target": "vector-example",
+        "title": "Labeled Vectors and Points",
+        "object": "VectorExample",
+        "caption": "Displaying labeled vectors and points for educational examples."
+    },
+    {
+        "target": "default-scene-example",
+        "title": "Default Scene for CG1",
+        "object": "DefaultSceneExample",
+        "caption": "The base scene for the CG1 lecture interactive examples."
     }
 ]
