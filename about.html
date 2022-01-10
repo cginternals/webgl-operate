@@ -1,0 +1,7 @@
+<head><title>WebGL About</title><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png"/><script src="js/jquery-3.3.1.slim.min.js"></script><script src="js/bootstrap-4.3.1.min.js"></script><script src="js/clipboard.min.js"></script><script src="js/rxjs.umd.min.js"></script></head><canvas id="about-canvas"></canvas><script src="js/webgl-operate.js"></script><script>window.onload = function () {
+    let canvas = new gloperate.Canvas('about-canvas');
+    let title = document.title;
+    document.write(`<pre>${canvas.context.aboutString()}</pre>`);
+    document.title = title;
+}
+</script>
