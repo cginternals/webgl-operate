@@ -273,6 +273,17 @@ describe('auxiliaries GETsearch, GETparameter', () => {
         expect(aux.GETparameter('currentFrame')).to.equal('1');
     });
 
+    it ('should not throw an error if the top frame disallows access to the GET parameters', () => {
+        (global.window as any) = {
+            location: {
+                search: ''
+            },
+            top: new Error('')
+        };
+        expect(aux.GETsearch()).to.equal('');
+        expect(aux.GETparameter('test')).to.equal(undefined);
+    })
+
 });
 
 

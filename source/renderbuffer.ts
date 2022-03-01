@@ -60,7 +60,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         this._samples = samples;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, this._object);
-        if(this._samples > 1) {
+        if (this._samples > 1) {
             gl.renderbufferStorageMultisample(gl.RENDERBUFFER, this._samples, internalFormat, width, height);
         } else {
             gl.renderbufferStorage(gl.RENDERBUFFER, internalFormat, width, height);
@@ -128,7 +128,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
         if (bind) {
             this.bind();
         }
-        if(this._samples > 1) {
+        if (this._samples > 1) {
             gl.renderbufferStorageMultisample(gl.RENDERBUFFER, this._samples, this._internalFormat, width, height);
         } else {
             gl.renderbufferStorage(gl.RENDERBUFFER, this._internalFormat, width, height);

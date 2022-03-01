@@ -1,6 +1,6 @@
 {
     "name": "webgl-operate",
-    "version": "0.7.5",
+    "version": "0.8.0",
     "license": "MIT",
     "description": "A TypeScript based WebGL rendering framework.",
     "author": "CG Internals",
@@ -91,7 +91,7 @@
         "ci": "run-p build-dist build-lib lint test-nyc website",
         "pack": "run-p build-dist build-lib",
         "analyze": "cross-env ANALYZE=true webpack-cli --mode production --config webpack.config.js",
-        "website": "run-s build-dist demos examples doc pug",
+        "website": "run-s build-dist demos examples pug",
         "postversion": "git push && git push --tags",
         "prepack": "npm run preversion",
         "preversion": "npm install && npm run build-dist && npm run build-lib"

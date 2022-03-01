@@ -305,7 +305,7 @@ namespace auxiliaries {
     export function GETsearch(): string {
         let search = window.location.search;
         if (!search) {
-            search = window.top.location.search;
+            search = window.top?.location?.search || '';
         }
         return search;
     }
@@ -319,7 +319,7 @@ namespace auxiliaries {
         let match = window.location.search.match(re);
         if (!match) {
             // For iframe contents (i. e., the embedded /examples/ files), look within the top frame's search params
-            match = window.top.location.search.match(re);
+            match = window.top?.location?.search.match(re) || null;
         }
         if (!match) {
             return undefined;

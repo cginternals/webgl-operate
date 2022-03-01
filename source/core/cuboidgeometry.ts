@@ -167,4 +167,11 @@ export class CuboidGeometry extends Geometry {
     get extent(): vec3 {
         return this._extent;
     }
+
+    /**
+     * The cuboid's index buffer length.
+     */
+    get count(): GLsizei {
+        return this._count;
+    }
 }
