@@ -43,7 +43,7 @@ class CubescapeRenderer extends Renderer {
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
     protected _aVertex: GLuint;
-    protected _numCubes = 16;
+    protected _numCubes = 128;
 
     protected _patches: Texture2D;
     protected _terrain: Texture2D;
@@ -80,9 +80,9 @@ class CubescapeRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        // gl.enable(gl.CULL_FACE);
-        // gl.cullFace(gl.BACK);
-        // gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.enable(gl.DEPTH_TEST);
 
         this._program.bind();
         gl.uniformMatrix4fv(this._uViewProjection, false, this._camera.viewProjection);
@@ -99,8 +99,8 @@ class CubescapeRenderer extends Renderer {
 
         this._program.unbind();
 
-        // gl.cullFace(gl.BACK);
-        // gl.disable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.disable(gl.CULL_FACE);
     }
 
     protected onSwap(): void {

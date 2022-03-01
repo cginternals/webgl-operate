@@ -11,7 +11,7 @@ import { CameraModifier } from './cameramodifier';
 
 export class WheelZoomModifier extends CameraModifier {
 
-    protected static readonly DEFAULT_SENSITIVITY = 0.01;
+    protected static readonly DEFAULT_SENSITIVITY = 0.002;
 
     protected _sensitivity: number = WheelZoomModifier.DEFAULT_SENSITIVITY;
 
