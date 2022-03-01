@@ -16,11 +16,11 @@ import { AbstractObject } from './object';
 /**
  * Wrapper for an WebGL 2D texture providing size accessors and requiring for bind, unbind, resize, validity, and
  * initialization implementations. The texture object is created on initialization and deleted on uninitialization.
- * After being initialized, the texture can be resized, reformated, and data can set directly or via load:
+ * After being initialized, the texture can be resized, reformated, and data can set directly or via fetch:
  * ```
  * const texture = new Texture2D(context, 'Texture');
  * texture.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
- * texture.load('/img/webgl-operate-logo.png', true)
+ * texture.fetch('/img/webgl-operate-logo.png', true);
  * ```
  */
 export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable {
@@ -273,7 +273,6 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
      * @param unbind - Allows to skip unbinding the texture (e.g., when binding is handled outside).
      */
     @Initializable.assert_initialized()
-    /* tslint:disable-next-line:variable-name */
     wrap(wrap_s: GLenum, wrap_t: GLenum, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 

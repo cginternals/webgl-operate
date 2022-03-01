@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 // Create named entries for each example.
 let entries = {};
-for (const entry of glob.sync('\./examples/*[!example]*.ts')) {
+for (const entry of glob.sync('./examples/*[!example]*.ts')) {
     entries[path.parse(entry).name] = entry.replace('./examples/', './');
 }
 

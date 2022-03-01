@@ -27,6 +27,8 @@ void main(void)
 {
     vec4 source = texture(u_source, v_uv);
 
+    /* u_mode == 0                 None */
+
     if(u_mode == 1) {           /* Depth */
         source.rgb = vec3(source[0]);
 

@@ -145,7 +145,6 @@ namespace viewer {
          * Returns whether or not a fullscreen element exists, indicating if fullscreen is active or not.
          */
         static active(): boolean {
-            /* tslint:disable-next-line:no-null-keyword */
             return Fullscreen._element() !== undefined && Fullscreen._element() !== null;
         }
 

@@ -9,12 +9,12 @@ import { clamp } from './gl-matrix-extensions';
 /**
  * If true, assertions immediately return on invocation (variable can be set via webpack define plugin).
  */
-declare var DISABLE_ASSERTIONS: boolean;
+declare let DISABLE_ASSERTIONS: boolean;
 
 /**
  * If defined, logs of equal or higher verbosity level are skipped (variable can be set via webpack define plugin).
  */
-declare var LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
+declare let LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 
 
 /** Namespace that comprises various utils (also cleans up documentation). */
@@ -58,6 +58,7 @@ namespace auxiliaries {
         /* The parameters are intentionally not forwarded to console.assert since it does not interrupt execution. */
         throw new EvalError(message);
     };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     const assertEmpty = (statement: boolean, message: string): void => { };
 
     export let assert = assertImpl;
@@ -69,6 +70,7 @@ namespace auxiliaries {
     /**
      * Allows to specify whether or not assertions should be enabled or disabled/ignored.
      * @param enable - If true, assertions will be evaluated and might throw errors.
+     * @returns whether assertions are enabled
      */
     export function assertions(enable?: boolean): boolean {
         if (enable !== undefined) {
@@ -86,7 +88,7 @@ namespace auxiliaries {
      * @param verbosity - Verbosity of log level: user, developer, or module developer.
      * @param message - Message to be passed to the log (if verbosity high enough).
      */
-    export function log(verbosity: LogLevel, ...message: any[]): void {
+    export function log(verbosity: LogLevel, ...message: Array<any>): void {
         if (verbosity > logVerbosityThreshold) {
             return;
         }
@@ -102,7 +104,7 @@ namespace auxiliaries {
      * @param verbosity - Verbosity of log level: debug, info, warning, or error.
      * @param message - Message to be passed to the log (if thrown and verbosity high enough).
      */
-    export function logIf(statement: boolean, verbosity: LogLevel, ...message: any[]): void {
+    export function logIf(statement: boolean, verbosity: LogLevel, ...message: Array<any>): void {
         if (!statement) {
             return;
         }
@@ -298,10 +300,14 @@ namespace auxiliaries {
     export const DEG2RAD = 0.017453292519943295;
 
     /**
-     * Queries window.location.search.
+     * Queries window.location.search, or, if not present, window.location.search of the window's top frame.
      */
     export function GETsearch(): string {
-        return window.location.search;
+        let search = window.location.search;
+        if (!search) {
+            search = window.top?.location?.search || '';
+        }
+        return search;
     }
 
     /**
@@ -310,7 +316,11 @@ namespace auxiliaries {
      */
     export function GETparameter(parameter: string): string | undefined {
         const re = new RegExp(`${parameter}=([^&]+)`);
-        const match = window.location.search.match(re);
+        let match = window.location.search.match(re);
+        if (!match) {
+            // For iframe contents (i. e., the embedded /examples/ files), look within the top frame's search params
+            match = window.top?.location?.search.match(re) || null;
+        }
         if (!match) {
             return undefined;
         }

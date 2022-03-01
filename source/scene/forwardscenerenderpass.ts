@@ -171,14 +171,17 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     }
 
     @Initializable.uninitialize()
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     uninitialize(): void { }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     prepare(): void { }
 
     /**
      * @param override - If enabled, everything will be updated, regardless of tracked alterations.
      */
     @Initializable.assert_initialized()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     update(override: boolean = false): void { }
 
     /**
@@ -203,8 +206,8 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         const gl = this._context.gl;
 
-        gl.disable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
+        // gl.disable(gl.CULL_FACE);
+        // gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
         const size = this._target.size;
@@ -227,8 +230,8 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
 
         this._program.unbind();
 
-        gl.cullFace(gl.BACK);
-        gl.disable(gl.CULL_FACE);
+        // gl.cullFace(gl.BACK);
+        // gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
     }
 

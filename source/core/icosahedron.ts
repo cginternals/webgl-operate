@@ -21,8 +21,8 @@ export class Icosahedron {
     /**
      * Object constructor.
      */
-    constructor() {
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    constructor() { }
 
     /**
      * Returns the base vertices for the icosahedron.

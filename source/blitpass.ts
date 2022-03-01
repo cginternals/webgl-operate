@@ -114,7 +114,17 @@ export class BlitPass extends Initializable {
         this._target.bind(gl.DRAW_FRAMEBUFFER);
         this._framebuffer.bind(gl.READ_FRAMEBUFFER);
         gl.readBuffer(this._readBuffer);
-        gl.drawBuffers([this._drawBuffer]);
+        if (
+            this._drawBuffer >= gl.COLOR_ATTACHMENT1 &&
+            this._drawBuffer <= gl.COLOR_ATTACHMENT15
+        ) {
+            const offset = this._drawBuffer - gl.COLOR_ATTACHMENT0;
+            const drawBuffers = new Array(offset + 1).fill(gl.NONE);
+            drawBuffers[offset] = this._drawBuffer;
+            gl.drawBuffers(drawBuffers);
+        } else {
+            gl.drawBuffers([this._drawBuffer]);
+        }
 
         /**
          * The glClear is somehow required to make the blit work. Reducing the clear area to zero is intended to reduce
@@ -198,8 +208,10 @@ export class BlitPass extends Initializable {
         const gl = this._context.gl;
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (blit)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/blit.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'blit.frag (blit)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require('./shaders/blit.frag'));
 
         this._program = new Program(this._context, 'BlitProgram');

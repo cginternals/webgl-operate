@@ -30,6 +30,9 @@ const p = Math.sin(Math.PI / 3.0) * 0.5;
 
 export class TriangleRenderer extends Renderer {
 
+    private _rotationInterval: number | undefined;
+
+
     protected _camera: Camera;
     protected _navigation: Navigation;
 
@@ -47,8 +50,6 @@ export class TriangleRenderer extends Renderer {
     protected _uViewProjection: WebGLUniformLocation;
 
     protected _defaultFBO: DefaultFramebuffer;
-
-    private _rotationInterval: number | undefined;
 
 
     /**

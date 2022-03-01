@@ -1,9 +1,7 @@
+
 /* spellchecker: disable */
 
-
-import * as chai from 'chai';
-import * as spies from 'chai-spies';
-
+const chai = require('chai'), spies = require('chai-spies');
 chai.use(spies);
 
 const expect = chai.expect;
@@ -23,7 +21,7 @@ describe('RamdomSquareKernel', () => {
 
     it('be not be initializable with values <= 0', () => {
         expect(() => {
-            let randomsquarekernel = new RandomSquareKernel(0);
+            const randomsquarekernel = new RandomSquareKernel(0);
             expect(randomsquarekernel).to.be.undefined;
         }).to.throws();
     });

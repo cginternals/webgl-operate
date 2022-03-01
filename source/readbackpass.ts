@@ -247,8 +247,10 @@ export class ReadbackPass extends Initializable {
 
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'ndcvertices.vert (readback)');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         vert.initialize(require('./shaders/ndcvertices.vert'));
         const frag = new Shader(this._context, gl.FRAGMENT_SHADER, 'readbackdepth.frag');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         frag.initialize(require('./shaders/readbackdepth.frag'));
 
         this._program = new Program(this._context, 'ReadbackDepthProgram');

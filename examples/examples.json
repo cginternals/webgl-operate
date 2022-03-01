@@ -31,6 +31,12 @@
         "caption": "Very basic scene handling context losses repeatedly."
     },
     {
+        "target": "dfdx-dfdy-example",
+        "title": "dFdx-dFdy Example",
+        "object": "DfdxDfdyExample",
+        "caption": "An example to showcase the dFdx and dFdy usage pattern."
+    },
+    {
         "target": "envprojections-example",
         "title": "Environment Mapping",
         "object": "EnvironmentProjectionExample",
@@ -47,6 +53,18 @@
         "title": "Image Based Lighting",
         "object": "ImageBasedLightingExample",
         "caption": "Image based lighting using prefiltered cube maps"
+    },
+    {
+        "target": "instanced-rendering-example",
+        "title": "Instanced Rendering",
+        "object": "InstancedRenderingExample",
+        "caption": "Example showing instanced rendering of a glTF mesh."
+    },
+    {
+        "target": "instanced-zprepass-example",
+        "title": "Instanced Rendering w. Z-Prepass",
+        "object": "InstancedZPrepassExample",
+        "caption": "Example showing instanced rendering and a z-prepass."
     },
     {
         "target": "label2d-example",
@@ -72,6 +90,18 @@
         "title": "Label Elide",
         "object": "LabelElideExample",
         "caption": "Shrinking labels to custom line widths putting customizable ellipses left, middle, or right."
+    },
+    {
+        "target": "glyph-ext-example",
+        "title": "Glyph Rendering (External)",
+        "object": "GlyphExtExample",
+        "caption": "Loading one (or more) external pages to a glyph atlas."
+    },
+    {
+        "target": "perlinnoise-example",
+        "title": "Perlin Noise",
+        "object": "PerlinNoiseExample",
+        "caption": "Value Noise, Gradient Noise, and Simplex Noise implementation."
     },
     {
         "target": "scene-example",
@@ -120,5 +150,17 @@
         "title": "XToon Shading",
         "object": "XToonExample",
         "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
+        "target": "vector-example",
+        "title": "Labeled Vectors and Points",
+        "object": "VectorExample",
+        "caption": "Displaying labeled vectors and points for educational examples."
+    },
+    {
+        "target": "default-scene-example",
+        "title": "Default Scene for CG1",
+        "object": "DefaultSceneExample",
+        "caption": "The base scene for the CG1 lecture interactive examples."
     }
 ]

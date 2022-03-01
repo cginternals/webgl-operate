@@ -52,7 +52,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * Object creation which is invoked on initialization.
      * @returns - The created WebGL object handle.
      */
-    protected abstract create(...args: any[]): T | undefined;
+    protected abstract create(...args: Array<any>): T | undefined;
 
     /**
      * Object deletion which is invoked on uninitialization.
@@ -68,9 +68,9 @@ export abstract class AbstractObject<T> extends Initializable {
      * object creation the valid property is expected to be set accordingly.
      */
     @Initializable.initialize()
-    initialize(...args: any[]): boolean {
+    initialize(...args: Array<any>): boolean {
         this._identifier = this._context.allocationRegister.createUniqueIdentifier(this._identifier);
-        this.create.apply(this, args);
+        this.create(...args);
 
         if (!this._valid) {
             this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
