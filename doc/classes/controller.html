@@ -1,0 +1,1733 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Controller | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="controller.html">Controller</a>
+				</li>
+			</ul>
+			<h1>Class Controller</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>This class controls the rendering flow by means of triggering rendering of a well defined amount of frames
+							(multi-frame number) for frame accumulation. Single frame rendering is handled with a multi-frame number of 1. If a
+							full multi-frame is accumulated, rendering halts. The rendering is not intended to be controlled by owning objects,
+							but via invalidation from within the renderer instead. However, an explicit redraw of a full single or multi-frame
+							can be invoked by calling <code>update()</code>. Furthermore, when using multi-frame rendering, the renderer can be halted at a
+						specific frame by setting a debug-frame number.</p>
+					</div>
+					<p>Terminology: a multi-frame is the final result after accumulating a number of intermediate frames (frame). The
+						number of intermediate frames is defined by the multi-frame number. For a multi-frame, the controller invokes the
+						<code>prepare</code> on a controllable first, followed by multiple <code>frame</code> and <code>swap</code> calls. Please note that the
+					adaptive batch mode is yet experimental (can be enabled using <code>batchSize</code>).</p>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Controller</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="controller.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_animationframeid" class="tsd-kind-icon">_animation<wbr>FrameID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_batchsize" class="tsd-kind-icon">_batch<wbr>Size</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_block" class="tsd-kind-icon">_block</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_blockedupdates" class="tsd-kind-icon">_blocked<wbr>Updates</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_controllable" class="tsd-kind-icon">_controllable</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_debugframenumber" class="tsd-kind-icon">_debug<wbr>Frame<wbr>Number</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_debugframenumbersubject" class="tsd-kind-icon">_debug<wbr>Frame<wbr>Number<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_force" class="tsd-kind-icon">_force</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_framenumber" class="tsd-kind-icon">_frame<wbr>Number</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_framenumbersubject" class="tsd-kind-icon">_frame<wbr>Number<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_intermediateframecount" class="tsd-kind-icon">_intermediate<wbr>Frame<wbr>Count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_intermediateframetimes" class="tsd-kind-icon">_intermediate<wbr>Frame<wbr>Times</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_invalidated" class="tsd-kind-icon">_invalidated</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_multiframecount" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_multiframedelay" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Delay</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_multiframenumber" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Number</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_multiframenumbersubject" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Number<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_multiframetime" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_multitime" class="tsd-kind-icon">_multi<wbr>Time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_postframeeventsubject" class="tsd-kind-icon">_post<wbr>Frame<wbr>Event<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_postswapeventsubject" class="tsd-kind-icon">_post<wbr>Swap<wbr>Event<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_timeoutid" class="tsd-kind-icon">_timeoutID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="controller.html#_updateframetime" class="tsd-kind-icon">_update<wbr>Frame<wbr>Time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="controller.html#_debug" class="tsd-kind-icon">_debug</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#averageframetime" class="tsd-kind-icon">average<wbr>Frame<wbr>Time</a></li>
+								<li class="tsd-kind-set-signature tsd-parent-kind-class"><a href="controller.html#batch" class="tsd-kind-icon">batch</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#blocked" class="tsd-kind-icon">blocked</a></li>
+								<li class="tsd-kind-set-signature tsd-parent-kind-class"><a href="controller.html#controllable" class="tsd-kind-icon">controllable</a></li>
+								<li class="tsd-kind-set-signature tsd-parent-kind-class"><a href="controller.html#debug" class="tsd-kind-icon">debug</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="controller.html#debugframenumber" class="tsd-kind-icon">debug<wbr>Frame<wbr>Number</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#debugframenumber_" class="tsd-kind-icon">debug<wbr>Frame<wbr>Number$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#framenumber" class="tsd-kind-icon">frame<wbr>Number</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#framenumber_" class="tsd-kind-icon">frame<wbr>Number$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#framespersecond" class="tsd-kind-icon">frames<wbr>Per<wbr>Second</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#intermediateframecount" class="tsd-kind-icon">intermediate<wbr>Frame<wbr>Count</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#maximumframetime" class="tsd-kind-icon">maximum<wbr>Frame<wbr>Time</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#minimumframetime" class="tsd-kind-icon">minimum<wbr>Frame<wbr>Time</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#multiframecount" class="tsd-kind-icon">multi<wbr>Frame<wbr>Count</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="controller.html#multiframedelay" class="tsd-kind-icon">multi<wbr>Frame<wbr>Delay</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="controller.html#multiframenumber" class="tsd-kind-icon">multi<wbr>Frame<wbr>Number</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#multiframenumber_" class="tsd-kind-icon">multi<wbr>Frame<wbr>Number$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#multiframetime" class="tsd-kind-icon">multi<wbr>Frame<wbr>Time</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#postframeevent_" class="tsd-kind-icon">post<wbr>Frame<wbr>Event$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#postswapevent_" class="tsd-kind-icon">post<wbr>Swap<wbr>Event$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="controller.html#updateframetime" class="tsd-kind-icon">update<wbr>Frame<wbr>Time</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="controller.html#block" class="tsd-kind-icon">block</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="controller.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#cancelwaitmultiframe" class="tsd-kind-icon">cancel<wbr>Wait<wbr>Multi<wbr>Frame</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#debugframenumbernext" class="tsd-kind-icon">debug<wbr>Frame<wbr>Number<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#framenumbernext" class="tsd-kind-icon">frame<wbr>Number<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#invoke" class="tsd-kind-icon">invoke</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#invokeframeandswap" class="tsd-kind-icon">invoke<wbr>Frame<wbr>And<wbr>Swap</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#invokeprepare" class="tsd-kind-icon">invoke<wbr>Prepare</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#invokeupdate" class="tsd-kind-icon">invoke<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#ismultiframefinished" class="tsd-kind-icon">is<wbr>Multi<wbr>Frame<wbr>Finished</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#multiframenumbernext" class="tsd-kind-icon">multi<wbr>Frame<wbr>Number<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#request" class="tsd-kind-icon">request</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="controller.html#startwaitmultiframe" class="tsd-kind-icon">start<wbr>Wait<wbr>Multi<wbr>Frame</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="controller.html#unblock" class="tsd-kind-icon">unblock</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="controller.html#update" class="tsd-kind-icon">update</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Controller<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="controller.html" class="tsd-signature-type" data-tsd-kind="Class">Controller</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="controller.html" class="tsd-signature-type" data-tsd-kind="Class">Controller</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_animationframeid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _animation<wbr>FrameID</h3>
+					<div class="tsd-signature tsd-kind-icon">_animation<wbr>FrameID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L125">source/controller.ts:125</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Holds the handle of the pending / executed animate frame request, if requested. Throughout the controller, only a
+							single request at a time is allowed.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_batchsize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _batch<wbr>Size</h3>
+					<div class="tsd-signature tsd-kind-icon">_batch<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L74">source/controller.ts:74</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Number of intermediate frames that are rendered during one browser frame</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_block" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _block</h3>
+					<div class="tsd-signature tsd-kind-icon">_block<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L136">source/controller.ts:136</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Blocking updates can be used to re-configure the controller without triggering</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_blockedupdates" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _blocked<wbr>Updates</h3>
+					<div class="tsd-signature tsd-kind-icon">_blocked<wbr>Updates<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L142">source/controller.ts:142</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Number of update requested while being in blocked mode. If there is one or more blocked requests, an update will
+							be triggered when unblocked.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_controllable" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _controllable</h3>
+					<div class="tsd-signature tsd-kind-icon">_controllable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Controllable</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L118">source/controller.ts:118</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Controllable, e.g., an instance of a Renderer.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_debugframenumber" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _debug<wbr>Frame<wbr>Number</h3>
+					<div class="tsd-signature tsd-kind-icon">_debug<wbr>Frame<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L92">source/controller.ts:92</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="controller.html#debugframenumber">debugFrameNumber</a>
+								This property can be observed, e.g., <code>aController.debugFrameNumberObservable.subscribe()</code>.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_debugframenumbersubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _debug<wbr>Frame<wbr>Number<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_debug<wbr>Frame<wbr>Number<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L93">source/controller.ts:93</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_force" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _force</h3>
+					<div class="tsd-signature tsd-kind-icon">_force<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L182">source/controller.ts:182</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_framenumber" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Number</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L99">source/controller.ts:99</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="controller.html#framenumber">frameNumber</a>
+								This property can be observed, e.g., <code>aController.frameNumberObservable.subscribe()</code>.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_framenumbersubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Number<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Number<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L100">source/controller.ts:100</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_intermediateframecount" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _intermediate<wbr>Frame<wbr>Count</h3>
+					<div class="tsd-signature tsd-kind-icon">_intermediate<wbr>Frame<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L150">source/controller.ts:150</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Total number of rendered intermediate frames.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_intermediateframetimes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _intermediate<wbr>Frame<wbr>Times</h3>
+					<div class="tsd-signature tsd-kind-icon">_intermediate<wbr>Frame<wbr>Times<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L160">source/controller.ts:160</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Time tracker used to the minimum and maximum frame time of an intermediate frame (per multi-frame).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_invalidated" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _invalidated</h3>
+					<div class="tsd-signature tsd-kind-icon">_invalidated<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L181">source/controller.ts:181</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_multiframecount" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _multi<wbr>Frame<wbr>Count</h3>
+					<div class="tsd-signature tsd-kind-icon">_multi<wbr>Frame<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L155">source/controller.ts:155</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Total number of completed multi-frames.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_multiframedelay" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _multi<wbr>Frame<wbr>Delay</h3>
+					<div class="tsd-signature tsd-kind-icon">_multi<wbr>Frame<wbr>Delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L104">source/controller.ts:104</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="controller.html#multiframedelay">multiFrameDelay</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_multiframenumber" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _multi<wbr>Frame<wbr>Number</h3>
+					<div class="tsd-signature tsd-kind-icon">_multi<wbr>Frame<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L85">source/controller.ts:85</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="controller.html#multiframenumber">multiFrameNumber</a>
+								This property can be observed, e.g., <code>aController.multiFrameNumberObservable.subscribe()</code>.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_multiframenumbersubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _multi<wbr>Frame<wbr>Number<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_multi<wbr>Frame<wbr>Number<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L86">source/controller.ts:86</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_multiframetime" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _multi<wbr>Frame<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">_multi<wbr>Frame<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L165">source/controller.ts:165</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Time tracker used to accumulate all durations of executed frame and swap callbacks per multi-frame. This is the
+							net rendering time and is used to derive the average frame time.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_multitime" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _multi<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">_multi<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L178">source/controller.ts:178</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Used to measure the gross rendering time of a multi-frame. The first point in time denotes the start of the
+							rendering, the second, the point in time the last frame was rendered.</p>
+						</div>
+						<p>Note: point in times might be shifted due to (un)pausing. Their intent is to allow measuring the rendering
+						duration, nothing else.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_postframeeventsubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _post<wbr>Frame<wbr>Event<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_post<wbr>Frame<wbr>Event<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Subject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L109">source/controller.ts:109</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Observable event that is triggered after frame invocation (renderer).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_postswapeventsubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _post<wbr>Swap<wbr>Event<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_post<wbr>Swap<wbr>Event<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Subject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L112">source/controller.ts:112</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Observable event that is triggered after swap invocation (renderer).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_timeoutid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _timeoutID</h3>
+					<div class="tsd-signature tsd-kind-icon">_timeoutID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L131">source/controller.ts:131</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Holds the handle of the running timeout to execute a new multi frame. Undefined if we currently do not wait for
+							a new multi frame.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_updateframetime" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _update<wbr>Frame<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">_update<wbr>Frame<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L169">source/controller.ts:169</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Time tracker used to capture the time the update callback took.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="_debug" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> _debug</h3>
+					<div class="tsd-signature tsd-kind-icon">_debug<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L61">source/controller.ts:61</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Toggle for debug outputs; if true control flow will be logged.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="averageframetime" class="tsd-anchor"></a>
+					<h3>average<wbr>Frame<wbr>Time</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> averageFrameTime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L579">source/controller.ts:579</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provides the average time it takes to render an intermediate frame within the current displayed multi-frame (if
+									a new multi-frame is triggered, the average frame time is reset).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Average frame time (intermediate frame rendering) in ms</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class">
+					<a name="batch" class="tsd-anchor"></a>
+					<h3>batch</h3>
+					<ul class="tsd-signatures tsd-kind-set-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> batch<span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L75">source/controller.ts:75</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>size: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="blocked" class="tsd-anchor"></a>
+					<h3>blocked</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> blocked<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L412">source/controller.ts:412</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether or not the control is blocking updates.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<ul>
+								<li>True if blocked, else false.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class">
+					<a name="controllable" class="tsd-anchor"></a>
+					<h3>controllable</h3>
+					<ul class="tsd-signatures tsd-kind-set-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> controllable<span class="tsd-signature-symbol">(</span>controllable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Controllable</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L423">source/controller.ts:423</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the controllable, for which updates, frames, and swaps are invoked whenever rendering is
+										invalidated and an updated multi-frame is required. Swap is detached from frame since rendering an intermediate
+									frame is usually done offscreen and explicit swap control can be useful.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>controllable: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Controllable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Controllable for update, frame, and swap invocation.</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class">
+					<a name="debug" class="tsd-anchor"></a>
+					<h3>debug</h3>
+					<ul class="tsd-signatures tsd-kind-set-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> debug<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L62">source/controller.ts:62</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="debugframenumber" class="tsd-anchor"></a>
+					<h3>debug<wbr>Frame<wbr>Number</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> debugFrameNumber<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> debugFrameNumber<span class="tsd-signature-symbol">(</span>debugFrameNumber<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L477">source/controller.ts:477</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the debug-frame number greater than or equal to zero.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Debug-frame number.</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L495">source/controller.ts:495</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the debug.-frame number (debug number) that, if greater than zero, causes the rendering to halt when the
+										current frame number (frame number) equals the debug number. Debugging can be disabled by setting the debug
+									number to zero.</p>
+								</div>
+								<p>If the debug number is greater than the frame number rendering is restarted by means of an update(). If the
+									debug number is less than the frame number the rendering continues and halts accordingly. If the debug number
+									equals the current debug number set, nothing happens. If the debug number is greater than the multi-frame
+								number, it is reduced to the multi-frame number.</p>
+								<p>Note: in contrast to setting the multi-frame number, setting the debug-frame number unpauses the controller.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>debugFrameNumber: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Debug-frame number.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>Debug-frame number.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="debugframenumber_" class="tsd-anchor"></a>
+					<h3>debug<wbr>Frame<wbr>Number$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> debugFrameNumber$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L513">source/controller.ts:513</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to debug-frame number changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="framenumber" class="tsd-anchor"></a>
+					<h3>frame<wbr>Number</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameNumber<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L546">source/controller.ts:546</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The current multi-frame number; it is less than or equal to the multi-frame number and enumerates the last
+										rendered frame. Note that this does not denote the number of &#39;completed&#39; multi-frames rendered (not a continuous
+									frame count).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The current (intermediate) frame number.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="framenumber_" class="tsd-anchor"></a>
+					<h3>frame<wbr>Number$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameNumber$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L553">source/controller.ts:553</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to frame number changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="framespersecond" class="tsd-anchor"></a>
+					<h3>frames<wbr>Per<wbr>Second</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> framesPerSecond<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L624">source/controller.ts:624</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The frames per second is based on the average number of a full intermediate frame request up to the current
+									frame number.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Number of frames per second based on the current multi-frame</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="intermediateframecount" class="tsd-anchor"></a>
+					<h3>intermediate<wbr>Frame<wbr>Count</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> intermediateFrameCount<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L562">source/controller.ts:562</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the total number of rendered (requested and probably completed) intermediate frames.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The total number of intermediate frames rendered.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="maximumframetime" class="tsd-anchor"></a>
+					<h3>maximum<wbr>Frame<wbr>Time</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> maximumFrameTime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L605">source/controller.ts:605</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provides the maximum rendering time tracked over all intermediate frames of the current multi-frame. Note that
+										the maximum frame time is most often caused by the first intermediate frame within a multi-frame due to lazy
+									stage initialization or reconfiguration.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Maximum intermediate frame time in ms</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="minimumframetime" class="tsd-anchor"></a>
+					<h3>minimum<wbr>Frame<wbr>Time</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> minimumFrameTime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L595">source/controller.ts:595</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provides the minimum rendering time tracked over all intermediate frames of the current multi-frame.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Minimum intermediate frame time in ms</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="multiframecount" class="tsd-anchor"></a>
+					<h3>multi<wbr>Frame<wbr>Count</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> multiFrameCount<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L570">source/controller.ts:570</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the total number of completed multi-frames.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The total number of multi-frames completed.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="multiframedelay" class="tsd-anchor"></a>
+					<h3>multi<wbr>Frame<wbr>Delay</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> multiFrameDelay<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> multiFrameDelay<span class="tsd-signature-symbol">(</span>multiFrameDelay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L535">source/controller.ts:535</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Time in milliseconds used to delay rendering of subsequent intermediate frames after an update.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The current multi-frame delay in milliseconds.</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L523">source/controller.ts:523</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the multi-frame delay in milliseconds. This is used to delay rendering of subsequent intermediate frames
+									after an update.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>multiFrameDelay: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>A multi-frame delay in milliseconds.</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="multiframenumber" class="tsd-anchor"></a>
+					<h3>multi<wbr>Frame<wbr>Number</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> multiFrameNumber<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> multiFrameNumber<span class="tsd-signature-symbol">(</span>multiFrameNumber<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L437">source/controller.ts:437</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the multi-frame number. The number is greater than or equal to zero. Multi-frame number is implemented
+									as a property and allows for change callback.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Multi-frame number.</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L446">source/controller.ts:446</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Changes the multi-frame number. If the provided value equals the current number set, nothing happens. If the
+									provided value is negative, the multi-frame number is set to 1.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>multiFrameNumber: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The multi-frame number targeted for rendering.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>Multi-frame number.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="multiframenumber_" class="tsd-anchor"></a>
+					<h3>multi<wbr>Frame<wbr>Number$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> multiFrameNumber$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L468">source/controller.ts:468</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to multi-frame number changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="multiframetime" class="tsd-anchor"></a>
+					<h3>multi<wbr>Frame<wbr>Time</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> multiFrameTime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L616">source/controller.ts:616</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The time in milliseconds that passed since the current multi-frame (up to the current frame number) was
+										requested. This time excludes time spent paused (e.g., caused by halting rendering at debug-frame number).
+										Note that this is not a measure of frame rendering performance. The number of frame requests per second might be
+									limited to 60Hz even though the rendering of an intermediate frame takes only a few milliseconds.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Time passed for current multi-frame in milliseconds.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="postframeevent_" class="tsd-anchor"></a>
+					<h3>post<wbr>Frame<wbr>Event$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> postFrameEvent$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L632">source/controller.ts:632</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to post frame events.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="postswapevent_" class="tsd-anchor"></a>
+					<h3>post<wbr>Swap<wbr>Event$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> postSwapEvent$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L639">source/controller.ts:639</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to post swap events.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="updateframetime" class="tsd-anchor"></a>
+					<h3>update<wbr>Frame<wbr>Time</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> updateFrameTime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L587">source/controller.ts:587</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provides the update time tracked for the current multi-frame.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Time of the multi-frame update (before first intermediate frame is rendered) in ms</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="block" class="tsd-anchor"></a>
+					<h3>block</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">block<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L375">source/controller.ts:375</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Block implicit updates, e.g., caused by various setters. This can be used to reconfigure the controller without
+									triggering to multiple intermediate updates. The block updates mode can be exited using <code>unblock</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cancel" class="tsd-anchor"></a>
+					<h3>cancel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L398">source/controller.ts:398</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="cancelwaitmultiframe" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> cancel<wbr>Wait<wbr>Multi<wbr>Frame</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">cancel<wbr>Wait<wbr>Multi<wbr>Frame<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L325">source/controller.ts:325</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="debugframenumbernext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> debug<wbr>Frame<wbr>Number<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">debug<wbr>Frame<wbr>Number<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L350">source/controller.ts:350</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._debugFrameNumber changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="framenumbernext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> frame<wbr>Number<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">frame<wbr>Number<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L357">source/controller.ts:357</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._frameNumber changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="invoke" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> invoke</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">invoke<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../enums/controller.requesttype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">RequestType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L196">source/controller.ts:196</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>source: <a href="../enums/controller.requesttype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">RequestType</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="invokeframeandswap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> invoke<wbr>Frame<wbr>And<wbr>Swap</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">invoke<wbr>Frame<wbr>And<wbr>Swap<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L272">source/controller.ts:272</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Invokes rendering of an intermediate frame, increments the frame counter, and requests rendering of the next
+										frame. The rendering is invoked by means of a callback to the canvas renderer. This function implements various
+									asserts to assure correct control logic and absolutely prevent unnecessary frame requests.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="invokeprepare" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> invoke<wbr>Prepare</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">invoke<wbr>Prepare<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L250">source/controller.ts:250</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Actual invocation of the controllable&#39;s prepare method.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="invokeupdate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> invoke<wbr>Update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">invoke<wbr>Update<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L239">source/controller.ts:239</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Actual invocation of the controllable&#39;s update method. Returns true if multi frame rendering should be restarted,
+									false otherwise.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="ismultiframefinished" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> is<wbr>Multi<wbr>Frame<wbr>Finished</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Multi<wbr>Frame<wbr>Finished<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L332">source/controller.ts:332</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="multiframenumbernext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> multi<wbr>Frame<wbr>Number<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">multi<wbr>Frame<wbr>Number<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L343">source/controller.ts:343</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._multiFrameNumber changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="request" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> request</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">request<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">?: </span><a href="../enums/controller.requesttype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">RequestType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L185">source/controller.ts:185</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>source: <a href="../enums/controller.requesttype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">RequestType</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="startwaitmultiframe" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> start<wbr>Wait<wbr>Multi<wbr>Frame</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Wait<wbr>Multi<wbr>Frame<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L317">source/controller.ts:317</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="unblock" class="tsd-anchor"></a>
+					<h3>unblock</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">unblock<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L384">source/controller.ts:384</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unblock updates. If there was at least one blocked update request, an immediate update is invoked.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="update" class="tsd-anchor"></a>
+					<h3>update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>force<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/controller.ts#L361">source/controller.ts:361</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>force: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="controller.html" class="tsd-kind-icon">Controller</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="controller.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_animationframeid" class="tsd-kind-icon">_animation<wbr>FrameID</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_batchsize" class="tsd-kind-icon">_batch<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_block" class="tsd-kind-icon">_block</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_blockedupdates" class="tsd-kind-icon">_blocked<wbr>Updates</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_controllable" class="tsd-kind-icon">_controllable</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_debugframenumber" class="tsd-kind-icon">_debug<wbr>Frame<wbr>Number</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_debugframenumbersubject" class="tsd-kind-icon">_debug<wbr>Frame<wbr>Number<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_force" class="tsd-kind-icon">_force</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_framenumber" class="tsd-kind-icon">_frame<wbr>Number</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_framenumbersubject" class="tsd-kind-icon">_frame<wbr>Number<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_intermediateframecount" class="tsd-kind-icon">_intermediate<wbr>Frame<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_intermediateframetimes" class="tsd-kind-icon">_intermediate<wbr>Frame<wbr>Times</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_invalidated" class="tsd-kind-icon">_invalidated</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_multiframecount" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_multiframedelay" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Delay</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_multiframenumber" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Number</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_multiframenumbersubject" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Number<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_multiframetime" class="tsd-kind-icon">_multi<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_multitime" class="tsd-kind-icon">_multi<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_postframeeventsubject" class="tsd-kind-icon">_post<wbr>Frame<wbr>Event<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_postswapeventsubject" class="tsd-kind-icon">_post<wbr>Swap<wbr>Event<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_timeoutid" class="tsd-kind-icon">_timeoutID</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#_updateframetime" class="tsd-kind-icon">_update<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="controller.html#_debug" class="tsd-kind-icon">_debug</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#averageframetime" class="tsd-kind-icon">average<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-set-signature tsd-parent-kind-class">
+								<a href="controller.html#batch" class="tsd-kind-icon">batch</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#blocked" class="tsd-kind-icon">blocked</a>
+							</li>
+							<li class=" tsd-kind-set-signature tsd-parent-kind-class">
+								<a href="controller.html#controllable" class="tsd-kind-icon">controllable</a>
+							</li>
+							<li class=" tsd-kind-set-signature tsd-parent-kind-class">
+								<a href="controller.html#debug" class="tsd-kind-icon">debug</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="controller.html#debugframenumber" class="tsd-kind-icon">debug<wbr>Frame<wbr>Number</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#debugframenumber_" class="tsd-kind-icon">debug<wbr>Frame<wbr>Number$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#framenumber" class="tsd-kind-icon">frame<wbr>Number</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#framenumber_" class="tsd-kind-icon">frame<wbr>Number$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#framespersecond" class="tsd-kind-icon">frames<wbr>Per<wbr>Second</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#intermediateframecount" class="tsd-kind-icon">intermediate<wbr>Frame<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#maximumframetime" class="tsd-kind-icon">maximum<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#minimumframetime" class="tsd-kind-icon">minimum<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#multiframecount" class="tsd-kind-icon">multi<wbr>Frame<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="controller.html#multiframedelay" class="tsd-kind-icon">multi<wbr>Frame<wbr>Delay</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="controller.html#multiframenumber" class="tsd-kind-icon">multi<wbr>Frame<wbr>Number</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#multiframenumber_" class="tsd-kind-icon">multi<wbr>Frame<wbr>Number$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#multiframetime" class="tsd-kind-icon">multi<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#postframeevent_" class="tsd-kind-icon">post<wbr>Frame<wbr>Event$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#postswapevent_" class="tsd-kind-icon">post<wbr>Swap<wbr>Event$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="controller.html#updateframetime" class="tsd-kind-icon">update<wbr>Frame<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="controller.html#block" class="tsd-kind-icon">block</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="controller.html#cancel" class="tsd-kind-icon">cancel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#cancelwaitmultiframe" class="tsd-kind-icon">cancel<wbr>Wait<wbr>Multi<wbr>Frame</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#debugframenumbernext" class="tsd-kind-icon">debug<wbr>Frame<wbr>Number<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#framenumbernext" class="tsd-kind-icon">frame<wbr>Number<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#invoke" class="tsd-kind-icon">invoke</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#invokeframeandswap" class="tsd-kind-icon">invoke<wbr>Frame<wbr>And<wbr>Swap</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#invokeprepare" class="tsd-kind-icon">invoke<wbr>Prepare</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#invokeupdate" class="tsd-kind-icon">invoke<wbr>Update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#ismultiframefinished" class="tsd-kind-icon">is<wbr>Multi<wbr>Frame<wbr>Finished</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#multiframenumbernext" class="tsd-kind-icon">multi<wbr>Frame<wbr>Number<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#request" class="tsd-kind-icon">request</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="controller.html#startwaitmultiframe" class="tsd-kind-icon">start<wbr>Wait<wbr>Multi<wbr>Frame</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="controller.html#unblock" class="tsd-kind-icon">unblock</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="controller.html#update" class="tsd-kind-icon">update</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

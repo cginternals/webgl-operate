@@ -1,0 +1,726 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>webgl-operate</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p><br><a href="https://webgl-operate.org/"><img src="https://raw.githubusercontent.com/cginternals/webgl-operate/master/website/img/webgl-operate-logo.svg?sanitize=true" width="50%"></a></p>
+				<p><em>webgl-operate</em> (or <em><a href="https://github.com/cginternals/gloperate">gloperate</a> for WebGL</em>) is a TypeScript based WebGL rendering framework.</p>
+				<p><a href="https://www.npmjs.com/package/webgl-operate"><img src="https://img.shields.io/npm/v/webgl-operate.svg?style=flat" alt="npm Version"></a>
+					<a href="https://www.webgl-operate.org"><img src="https://img.shields.io/badge/examples-online-blue.svg?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMC41IDEzLjciPjxwYXRoIGQ9Ik0xMS41IDYuOGwtMy43IDYuNEwuNS41aDE0LjdsLTEuMyAyLjFINC4yTDcuOCA5bDIuNS00LjN6bTcuMyA0LjNsMS4yIDIuMWgtOS43TDE3LjYuNWwxLjIgMi4xLTQuOSA4LjV6IiBmaWxsPSIjZmZmIi8%2BPC9zdmc%2B" alt="Examples"></a>
+					<a href="https://www.webgl-operate.org/doc"><img src="https://img.shields.io/badge/documentation-online-blue.svg?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMC41IDEzLjciPjxwYXRoIGQ9Ik0xMS41IDYuOGwtMy43IDYuNEwuNS41aDE0LjdsLTEuMyAyLjFINC4yTDcuOCA5bDIuNS00LjN6bTcuMyA0LjNsMS4yIDIuMWgtOS43TDE3LjYuNWwxLjIgMi4xLTQuOSA4LjV6IiBmaWxsPSIjZmZmIi8%2BPC9zdmc%2B" alt="Documentation"></a>
+					<a href="https://travis-ci.com/cginternals/webgl-operate"><img src="https://img.shields.io/travis/com/cginternals/webgl-operate/master.svg?style=flat&logo=travis" alt="Travis"></a>
+				<a href="https://www.codefactor.io/repository/github/cginternals/webgl-operate/"><img src="https://img.shields.io/codefactor/grade/github/cginternals/webgl-operate/master.svg?style=flat&logo=codefactor" alt="CodeFactor"></a></p>
+				<!-- numbers are wrong [![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate)](https://github.com/Aaronepower/tokei)-->
+				<!-- numbers are wrong [![Tokei](https://tokei.rs/b1/github/cginternals/webgl-operate?category=comments)](https://github.com/Aaronepower/tokei)-->
+				<p><em>webgl-operate</em> encapsulates WebGL and provides various rendering capabilities such as common rendering controllers for single-frame and multi-frame rendering, raycasting, or progressive path-tracing as well as a multitude of common rendering processes and shaders.
+					In contrast to most other rendering engines, neither a specific rendering approach/pipeline or style is favored nor a specific use-case is assumed.
+					Instead, it features a basis for arbitrary rendering implementations and facilitates common rendering processes in an atomic manner.
+				It can be used for, e.g., complex charting, volume rendering, point-cloud rendering, product visualization, learning webgl, raymarching or pathtracing, rendering implicit or procedural geometry, as well as modern rendering of 3D models and complex scenes.</p>
+				<a href="#how-to-install" id="how-to-install" style="color: inherit; text-decoration: none;">
+					<h1>How to Install</h1>
+				</a>
+				<p><em>webgl-operate</em> can be used as JavaScript or TypeScript library (types included) via npm:</p>
+				<pre><code class="language-sh"><span style="color: #000000">npm install --save-dev webgl-operate</span>
+</code></pre>
+				<p>Alternatively, <em>webgl-operate</em> can be integrated as bundled JavaScript in your HTML:</p>
+				<pre><code><span style="color: #000000">&lt;</span><span style="color: #001080">script</span><span style="color: #000000"> </span><span style="color: #001080">src</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;https://cdn.jsdelivr.net/npm/webgl-operate@latest/dist/webgl-operate.min.js&quot;</span><span style="color: #000000">&gt;&lt;/</span><span style="color: #267F99">script</span><span style="color: #000000">&gt;</span>
+</code></pre>
+				<a href="#features" id="features" style="color: inherit; text-decoration: none;">
+					<h1>Features</h1>
+				</a>
+				<a href="#implemented" id="implemented" style="color: inherit; text-decoration: none;">
+					<h5>Implemented</h5>
+				</a>
+				<p>Cross-browser Compatible, Desktop and Mobile, Object-oriented WebGL2 Facade, WebGL and WebGL2 Backend, Extension Querying and Masquerade, Progressive Rendering Controller, Programs and Shaders with Includes and Replacements, GPU Allocation Registry, Dynamic Resolution, Frame Buffers,  Vertex Buffers, Vertex Arrays, 2D and 3D Textures, Drawables, Camera and Camera Modifiers, Text Rendering, ..., and, finally, Professional Customer Support and Integration Service</p>
+				<a href="#in-progress" id="in-progress" style="color: inherit; text-decoration: none;">
+					<h5>In Progress</h5>
+				</a>
+				<p>glTF Support, PBR Rendering, XR Rendering Controller, Rendering Controller (single frame + continuous capable), Post-processing Library, ...</p>
+				<a href="#planned" id="planned" style="color: inherit; text-decoration: none;">
+					<h5>Planned</h5>
+				</a>
+				<p>Observable Rendering Stats, Default Viewer UI/Overlay, Volume Rendering Basics, LUT Color Grading, Ray Tracing Utils, Progressive Path Tracing Utils, ...</p>
+				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+					<h1>Getting Started</h1>
+				</a>
+				<p>The canvas can be integrated into HTML5 as follows:</p>
+				<pre><code><span style="color: #000000">&lt;</span><span style="color: #001080">canvas</span><span style="color: #000000"> </span><span style="color: #001080">id</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;multiframe&quot;</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">    &lt;!-- </span><span style="color: #001080">fallback</span><span style="color: #000000"> --&gt;</span>
+<span style="color: #000000">    </span><span style="color: #001080">Your</span><span style="color: #000000"> </span><span style="color: #001080">browser</span><span style="color: #000000"> </span><span style="color: #001080">does</span><span style="color: #000000"> &lt;</span><span style="color: #001080">strong</span><span style="color: #000000">&gt;</span><span style="color: #001080">not</span><span style="color: #000000"> </span><span style="color: #001080">support</span><span style="color: #000000">&lt;/</span><span style="color: #001080">strong</span><span style="color: #000000">&gt; </span><span style="color: #001080">the</span><span style="color: #000000"> &lt;</span><span style="color: #001080">code</span><span style="color: #000000">&gt;&amp;</span><span style="color: #001080">lt</span><span style="color: #000000">;</span><span style="color: #001080">canvas</span><span style="color: #000000">&amp;</span><span style="color: #001080">gt</span><span style="color: #000000">;&lt;/</span><span style="color: #001080">code</span><span style="color: #000000">&gt; </span><span style="color: #001080">element</span><span style="color: #000000">.</span>
+<span style="color: #000000">&lt;/</span><span style="color: #001080">canvas</span><span style="color: #000000">&gt;</span>
+</code></pre>
+				<p>This canvas can then be setup by associating the canvas element with a single-frame or multi-frame controller and attaching a renderer using JavaScript as follows:</p>
+				<pre><code><span style="color: #001080">ToDo</span>
+</code></pre>
+				<a href="#source-structure" id="source-structure" style="color: inherit; text-decoration: none;">
+					<h1>Source Structure</h1>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>directory</th>
+							<th>description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><code>source</code></td>
+							<td>most of webgl-operate&#39;s rendering and operational logic</td>
+						</tr>
+						<tr>
+							<td><code>source/data</code></td>
+							<td>contains, e.g., pre-built sampling patterns or other data</td>
+						</tr>
+						<tr>
+							<td><code>source/shaders</code></td>
+							<td>on build, shaders are packed into the dist as well (and includes are resolved)</td>
+						</tr>
+						<tr>
+							<td><code>source/debug</code></td>
+							<td>optional: various tools for run-time debugging</td>
+						</tr>
+						<tr>
+							<td><code>source/viewer</code></td>
+							<td>optional: generic viewer overlay and controller for webgl-operate based rendering</td>
+						</tr>
+						<tr>
+							<td><code>website</code></td>
+							<td>website demonstrating webgl-operate features (referencing examples)</td>
+						</tr>
+						<tr>
+							<td><code>test</code></td>
+							<td>tests of sources located in <code>source</code></td>
+						</tr>
+				</tbody></table>
+				<a href="#npm-configuration-and-project-setup" id="npm-configuration-and-project-setup" style="color: inherit; text-decoration: none;">
+					<h1>NPM Configuration and Project Setup</h1>
+				</a>
+				<p><code>package.json</code> specifies the following scripts that can be run by <code>npm run-script &lt;command&gt;</code>.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>command</th>
+							<th>description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><code>build</code></td>
+							<td>build for local development to <code>./build</code>, creates a bundle with all facilities and a test website</td>
+						</tr>
+						<tr>
+							<td><code>start</code></td>
+							<td>starts a local start on port 4000 on the <code>./build</code> directory</td>
+						</tr>
+						<tr>
+							<td><code>start-watch</code></td>
+							<td>runs <code>build</code> tasks concurrently in watch mode and starts <code>start</code></td>
+						</tr>
+						<tr>
+							<td><code>build-dist</code></td>
+							<td>transpile sources and declarations to <code>./dist</code> for distribution via, e.g., CDN</td>
+						</tr>
+						<tr>
+							<td><code>build-lib</code></td>
+							<td>transpile sources and declarations to <code>./lib/</code> for distribution via npm</td>
+						</tr>
+						<tr>
+							<td><code>cleanup</code></td>
+							<td>removes all build directories, i.e., <code>./build</code>, <code>./dist</code>, and <code>./lib</code></td>
+						</tr>
+						<tr>
+							<td><code>lint</code></td>
+							<td>code quality lint <a href="https://palantir.github.io/tslint/rules/">TSLint Rules</a>: <code>tslint.json</code></td>
+						</tr>
+						<tr>
+							<td><code>doc</code></td>
+							<td>build html documentation in <code>dist/docs</code> using <a href="https://github.com/TypeStrong/typedoc">TypeDoc</a></td>
+						</tr>
+						<tr>
+							<td><code>test</code></td>
+							<td>run unit tests using <a href="https://github.com/mochajs/mocha">mocha</a> and <a href="https://github.com/chaijs/chai">chai</a></td>
+						</tr>
+				</tbody></table>
+				<p>The above commands can be triggered directly from within a console (e.g., from within the Visual Studio Code terminal) or by using visual studio tasks. When first working on webgl-operate, use <code>npm install</code> to install dependencies.
+				For development use <code>npm run-script build</code> and, e.g., <code>npm run-script start</code> to access the test website locally.</p>
+				<ul>
+					<li>For <strong>deployment</strong> <code>npm update</code> and subsequent <code>npm run-script prepack</code> should be run.</li>
+					<li>For <strong>publishing</strong> the package to npm login to npm via <code>npm login</code>, then update the package version using <code>npm version {major,minor,patch}</code>, and, finally, run <code>npm publish</code>.</li>
+				</ul>
+				<p>Please note that deployment of documentation and examples is managed by CG Internals manually for now.</p>
+				<a href="#visual-studio-code-configuration" id="visual-studio-code-configuration" style="color: inherit; text-decoration: none;">
+					<h1>Visual Studio Code configuration</h1>
+				</a>
+				<p>Please not that the workspace configuration <code>.vscode/settings.json</code> has automatic format on save enabled.</p>
+				<p>All the above scripts, namely <code>build, build-lib, build-dist, lint, cleanup, start, start-watch, doc</code>, as well as <code>test</code> can be triggered from within Visual Studio Code.
+					The intended workflow is to bind a key (e.g., ctrl+alt+t) to open the task selection and trigger the desired task.
+				The tasks are configured in <code>.vscode/tasks.json</code>.</p>
+				<a href="#related-work" id="related-work" style="color: inherit; text-decoration: none;">
+					<h1>Related Work</h1>
+				</a>
+				<ul>
+					<li><a href="http://www.ecma-international.org/ecma-262/6.0/">ES6 Specification</a></li>
+					<li><a href="http://www.2ality.com/2014/09/es6-modules-final.html">ES6 Modules</a></li>
+					<li><a href="http://webglstats.com/">WebGL Stats</a></li>
+					<li><a href="https://webpack.js.org/configuration/">Webpack</a></li>
+					<li><a href="https://www.typescriptlang.org/docs/tutorial.html">TypeScript</a></li>
+					<li><a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript Coding Guidelines</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Internals</span>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/abstractkernel.html">Abstract<wbr>Kernel</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/canvasrecorder.html">Canvas<wbr>Recorder</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/color.html">Color</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/colorscale.html">Color<wbr>Scale</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/context.html">Context</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/contextmasquerade.html">Context<wbr>Masquerade</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/controller.html">Controller</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/debugpass.html">Debug<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/eyegazeeventprovider.html">Eye<wbr>Gaze<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/framecapture.html">Frame<wbr>Capture</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/gaussfilter.html">Gauss<wbr>Filter</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/label.html">Label</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/labelrenderpass.html">Label<wbr>Render<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/mouseeventprovider.html">Mouse<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/navigation.html">Navigation</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/pointereventprovider.html">Pointer<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/scenenode.html">Scene<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/shadowpass.html">Shadow<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/texturecube.html">Texture<wbr>Cube</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/tilecameragenerator.html">Tile<wbr>Camera<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/toucheventprovider.html">Touch<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/typesetter.html">Typesetter</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/wizard.html">Wizard</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/auxiliaries.html">auxiliaries</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/debug.html">debug</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/fetch.html">fetch</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/gl_matrix_extensions.html">gl_<wbr>matrix_<wbr>extensions</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/properties.html">properties</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/ray_math.html">ray_<wbr>math</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/tuples.html">tuples</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/viewer.html">viewer</a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Externals</span>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/mat2.html">mat2</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/mat2d.html">mat2d</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/mat3.html">mat3</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/mat4.html">mat4</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/quat.html">quat</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/vec2.html">vec2</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/vec3.html">vec3</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/vec4.html">vec4</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/environmenttexturetype.html" class="tsd-kind-icon">Environment<wbr>Texture<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/gltfalphamode.html" class="tsd-kind-icon">GLTFAlpha<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/gltfshaderflags.html" class="tsd-kind-icon">GLTFShader<wbr>Flags</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/loadingstatus.html" class="tsd-kind-icon">Loading<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/abstractkernel.html" class="tsd-kind-icon">Abstract<wbr>Kernel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/accumulatepass.html" class="tsd-kind-icon">Accumulate<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/antialiasingkernel.html" class="tsd-kind-icon">Anti<wbr>Aliasing<wbr>Kernel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/benchmark.html" class="tsd-kind-icon">Benchmark</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/blitpass.html" class="tsd-kind-icon">Blit<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/buffer.html" class="tsd-kind-icon">Buffer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/camera.html" class="tsd-kind-icon">Camera</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/cameramodifier.html" class="tsd-kind-icon">Camera<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/canvas.html" class="tsd-kind-icon">Canvas</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/canvasrecorder.html" class="tsd-kind-icon">Canvas<wbr>Recorder</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/changelookup.html" class="tsd-kind-icon">Change<wbr>Lookup</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/color.html" class="tsd-kind-icon">Color</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/colorscale.html" class="tsd-kind-icon">Color<wbr>Scale</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/context.html" class="tsd-kind-icon">Context</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/contextmasquerade.html" class="tsd-kind-icon">Context<wbr>Masquerade</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/controller.html" class="tsd-kind-icon">Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/cuboidgeometry.html" class="tsd-kind-icon">Cuboid<wbr>Geometry</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/debugpass.html" class="tsd-kind-icon">Debug<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/defaultframebuffer.html" class="tsd-kind-icon">Default<wbr>Framebuffer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/environmentrenderingpass.html" class="tsd-kind-icon">Environment<wbr>Rendering<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eventhandler.html" class="tsd-kind-icon">Event<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/extensionshash.html" class="tsd-kind-icon">Extensions<wbr>Hash</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eyegazedata.html" class="tsd-kind-icon">Eye<wbr>Gaze<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eyegazedatastream.html" class="tsd-kind-icon">Eye<wbr>Gaze<wbr>Data<wbr>Stream</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eyegazedatastreams.html" class="tsd-kind-icon">Eye<wbr>Gaze<wbr>Data<wbr>Streams</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eyegazeeventprovider.html" class="tsd-kind-icon">Eye<wbr>Gaze<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/firstpersonmodifier.html" class="tsd-kind-icon">First<wbr>Person<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/fontface.html" class="tsd-kind-icon">Font<wbr>Face</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/forwardscenerenderpass.html" class="tsd-kind-icon">Forward<wbr>Scene<wbr>Render<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/framecapture.html" class="tsd-kind-icon">Frame<wbr>Capture</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/framebuffer.html" class="tsd-kind-icon">Framebuffer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gltfloader.html" class="tsd-kind-icon">GLTFLoader</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gltfmesh.html" class="tsd-kind-icon">GLTFMesh</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gltfpbrmaterial.html" class="tsd-kind-icon">GLTFPbr<wbr>Material</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gltfprimitive.html" class="tsd-kind-icon">GLTFPrimitive</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gaussfilter.html" class="tsd-kind-icon">Gauss<wbr>Filter</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/geometry.html" class="tsd-kind-icon">Geometry</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/geometrycomponent.html" class="tsd-kind-icon">Geometry<wbr>Component</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/geospheregeometry.html" class="tsd-kind-icon">Geosphere<wbr>Geometry</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/glyphvertices.html" class="tsd-kind-icon">Glyph<wbr>Vertices</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/icosahedron.html" class="tsd-kind-icon">Icosahedron</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/initializable.html" class="tsd-kind-icon">Initializable</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/kernelf32.html" class="tsd-kind-icon">Kernel<wbr>F32</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/kerneli32.html" class="tsd-kind-icon">Kernel<wbr>I32</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/kerneli8.html" class="tsd-kind-icon">Kernel<wbr>I8</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/kernelui32.html" class="tsd-kind-icon">KernelUI32</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/kernelui8.html" class="tsd-kind-icon">KernelUI8</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/label.html" class="tsd-kind-icon">Label</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/labelgeometry.html" class="tsd-kind-icon">Label<wbr>Geometry</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/labelrenderpass.html" class="tsd-kind-icon">Label<wbr>Render<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/material.html" class="tsd-kind-icon">Material</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/mouseeventprovider.html" class="tsd-kind-icon">Mouse<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/navigation.html" class="tsd-kind-icon">Navigation</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/ndcfillingrectangle.html" class="tsd-kind-icon">Ndc<wbr>Filling<wbr>Rectangle</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/ndcfillingtriangle.html" class="tsd-kind-icon">Ndc<wbr>Filling<wbr>Triangle</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/panmodifier.html" class="tsd-kind-icon">Pan<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pinchzoommodifier.html" class="tsd-kind-icon">Pinch<wbr>Zoom<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/planegeometry.html" class="tsd-kind-icon">Plane<wbr>Geometry</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pointereventprovider.html" class="tsd-kind-icon">Pointer<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pointerlock.html" class="tsd-kind-icon">Pointer<wbr>Lock</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/position2dlabel.html" class="tsd-kind-icon">Position2DLabel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/position3dlabel.html" class="tsd-kind-icon">Position3DLabel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/program.html" class="tsd-kind-icon">Program</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/projected3dlabel.html" class="tsd-kind-icon">Projected3DLabel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/randomsquarekernel.html" class="tsd-kind-icon">Random<wbr>Square<wbr>Kernel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/readbackpass.html" class="tsd-kind-icon">Readback<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/renderbuffer.html" class="tsd-kind-icon">Renderbuffer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/renderer.html" class="tsd-kind-icon">Renderer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/resourcemanager.html" class="tsd-kind-icon">Resource<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scenenode.html" class="tsd-kind-icon">Scene<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scenenodecomponent.html" class="tsd-kind-icon">Scene<wbr>Node<wbr>Component</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scenerenderpass.html" class="tsd-kind-icon">Scene<wbr>Render<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/shader.html" class="tsd-kind-icon">Shader</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/shadowpass.html" class="tsd-kind-icon">Shadow<wbr>Pass</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/text.html" class="tsd-kind-icon">Text</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/texture2d.html" class="tsd-kind-icon">Texture2D</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/texture2darray.html" class="tsd-kind-icon">Texture2DArray</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/texture3d.html" class="tsd-kind-icon">Texture3D</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/texturecube.html" class="tsd-kind-icon">Texture<wbr>Cube</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/tilecameragenerator.html" class="tsd-kind-icon">Tile<wbr>Camera<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/toucheventprovider.html" class="tsd-kind-icon">Touch<wbr>Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/trackballmodifier.html" class="tsd-kind-icon">Trackball<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/transformcomponent.html" class="tsd-kind-icon">Transform<wbr>Component</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/turntablemodifier.html" class="tsd-kind-icon">Turntable<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/typesetter.html" class="tsd-kind-icon">Typesetter</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/unifiedbuffer.html" class="tsd-kind-icon">Unified<wbr>Buffer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/vertexarray.html" class="tsd-kind-icon">Vertex<wbr>Array</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/wheelzoommodifier.html" class="tsd-kind-icon">Wheel<wbr>Zoom<wbr>Modifier</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/wizard.html" class="tsd-kind-icon">Wizard</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/eventprovider.html" class="tsd-kind-icon">Event<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/framepreparecallback.html" class="tsd-kind-icon">Frame<wbr>Prepare<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/invalidate.html" class="tsd-kind-icon">Invalidate</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/runsfinishedcallback.html" class="tsd-kind-icon">Runs<wbr>Finished<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#eyegazeevent" class="tsd-kind-icon">Eye<wbr>Gaze<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#mat2" class="tsd-kind-icon">mat2</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#mat2d" class="tsd-kind-icon">mat2d</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#mat3" class="tsd-kind-icon">mat3</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#mat4" class="tsd-kind-icon">mat4</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#quat" class="tsd-kind-icon">quat</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#vec2" class="tsd-kind-icon">vec2</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#vec3" class="tsd-kind-icon">vec3</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#vec4" class="tsd-kind-icon">vec4</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#branch" class="tsd-kind-icon">branch</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#commit" class="tsd-kind-icon">commit</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#version" class="tsd-kind-icon">version</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

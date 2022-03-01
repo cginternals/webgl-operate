@@ -1,0 +1,426 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>FrameCapture | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="framecapture.html">FrameCapture</a>
+				</li>
+			</ul>
+			<h1>Class FrameCapture</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Utility for capturing images directly from any framebuffer. This enables taking a screenshot bigger than the used
+							canvas. Supports capturing of only part of the framebuffer. The resulting image can be transformed to a data URL.
+						The data URL can then be used to embed the image inline in documents or to download it.</p>
+					</div>
+					<pre><code><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #001080">postFrameEvent$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span><span style="color: #001080">rxjs</span><span style="color: #000000">.</span><span style="color: #001080">operators</span><span style="color: #000000">.</span><span style="color: #795E26">first</span><span style="color: #000000">()).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">img</span><span style="color: #000000"> = </span><span style="color: #001080">gloperate</span><span style="color: #000000">.</span><span style="color: #001080">FrameCapture</span><span style="color: #000000">.</span><span style="color: #795E26">capture</span><span style="color: #000000">(</span><span style="color: #001080">renderer</span><span style="color: #000000">.</span><span style="color: #001080">_defaultFBO</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">data</span><span style="color: #000000"> = </span><span style="color: #001080">gloperate</span><span style="color: #000000">.</span><span style="color: #001080">FrameCapture</span><span style="color: #000000">.</span><span style="color: #795E26">createDataURL</span><span style="color: #000000">(</span><span style="color: #001080">img</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;image/png&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">data</span><span style="color: #000000">);</span>
+<span style="color: #000000">})</span>
+</code></pre>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">FrameCapture</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="framecapture.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="framecapture.html#capture" class="tsd-kind-icon">capture</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="framecapture.html#capturedefaultframebuffer" class="tsd-kind-icon">capture<wbr>Default<wbr>Framebuffer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="framecapture.html#captureframebuffer" class="tsd-kind-icon">capture<wbr>Framebuffer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="framecapture.html#createdataurl" class="tsd-kind-icon">create<wbr>DataURL</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="framecapture.html#flipimagedatavertically" class="tsd-kind-icon">flip<wbr>Image<wbr>Data<wbr>Vertically</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Frame<wbr>Capture<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="framecapture.html" class="tsd-signature-type" data-tsd-kind="Class">FrameCapture</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="framecapture.html" class="tsd-signature-type" data-tsd-kind="Class">FrameCapture</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="capture" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> capture</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">capture<span class="tsd-signature-symbol">(</span>framebuffer<span class="tsd-signature-symbol">: </span><a href="defaultframebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultFramebuffer</a><span class="tsd-signature-symbol"> | </span><a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a>, attachment<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, rect<span class="tsd-signature-symbol">?: </span><a href="../interfaces/framecapture.rect.html" class="tsd-signature-type" data-tsd-kind="Interface">Rect</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framecapture.ts#L116">source/framecapture.ts:116</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Captures (part of) the given attachment of a framebuffer. The format of the underlying texture has to be gl.RGBA
+									and the type has to be either gl.UNSIGNED_BYTE, gl.HALF_FLOAT or gl.FLOAT.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>framebuffer: <a href="defaultframebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultFramebuffer</a><span class="tsd-signature-symbol"> | </span><a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Framebuffer to capture.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> attachment: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional attachment to capture from. Is ignored for the default framebuffer.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> rect: <a href="../interfaces/framecapture.rect.html" class="tsd-signature-type" data-tsd-kind="Interface">Rect</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional part of the framebuffer to capture.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span></h4>
+							<ul>
+								<li>The captured image.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="capturedefaultframebuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> capture<wbr>Default<wbr>Framebuffer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">capture<wbr>Default<wbr>Framebuffer<span class="tsd-signature-symbol">(</span>framebuffer<span class="tsd-signature-symbol">: </span><a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a>, rect<span class="tsd-signature-symbol">: </span><a href="../interfaces/framecapture.rect.html" class="tsd-signature-type" data-tsd-kind="Interface">Rect</a>, buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framecapture.ts#L52">source/framecapture.ts:52</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Captures the gl.BACK buffer of the default framebuffer and writes it into the given framebuffer. Sets the color
+									buffer source for the default framebuffer to gl.BACK.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>framebuffer: <a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a></h5>
+								</li>
+								<li>
+									<h5>rect: <a href="../interfaces/framecapture.rect.html" class="tsd-signature-type" data-tsd-kind="Interface">Rect</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Part of the framebuffer to capture.</p>
+									</div>
+								</li>
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Uint8Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Buffer to write the data into.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="captureframebuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> capture<wbr>Framebuffer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">capture<wbr>Framebuffer<span class="tsd-signature-symbol">(</span>framebuffer<span class="tsd-signature-symbol">: </span><a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a>, attachment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, rect<span class="tsd-signature-symbol">: </span><a href="../interfaces/framecapture.rect.html" class="tsd-signature-type" data-tsd-kind="Interface">Rect</a>, buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framecapture.ts#L67">source/framecapture.ts:67</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Captures the given attachment of the given framebuffer. Sets the color buffer source to the given attachment.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>framebuffer: <a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Framebuffer to capture.</p>
+									</div>
+								</li>
+								<li>
+									<h5>attachment: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Attachment to capture.</p>
+									</div>
+								</li>
+								<li>
+									<h5>rect: <a href="../interfaces/framecapture.rect.html" class="tsd-signature-type" data-tsd-kind="Interface">Rect</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Part of the framebuffer to capture.</p>
+									</div>
+								</li>
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Uint8Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Buffer to write the data into.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="createdataurl" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>DataURL</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>DataURL<span class="tsd-signature-symbol">(</span>imageData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span>, type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, quality<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framecapture.ts#L34">source/framecapture.ts:34</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a data URL for the given image. The data will be encoded according to type. The type defaults to png,
+									if no type is given. Quality can be only set for types using lossy compression. The default quality is 0.92.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>imageData: <span class="tsd-signature-type">ImageData</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Image to create the data URL for.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> type: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional format used for encoding.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> quality: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional quality used for lossy compression.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="flipimagedatavertically" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> flip<wbr>Image<wbr>Data<wbr>Vertically</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">flip<wbr>Image<wbr>Data<wbr>Vertically<span class="tsd-signature-symbol">(</span>imageData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framecapture.ts#L95">source/framecapture.ts:95</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Flips the given image data vertically.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>imageData: <span class="tsd-signature-type">ImageData</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Image data to flip.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="framecapture.html" class="tsd-kind-icon">Frame<wbr>Capture</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="framecapture.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="framecapture.html#capture" class="tsd-kind-icon">capture</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="framecapture.html#capturedefaultframebuffer" class="tsd-kind-icon">capture<wbr>Default<wbr>Framebuffer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="framecapture.html#captureframebuffer" class="tsd-kind-icon">capture<wbr>Framebuffer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="framecapture.html#createdataurl" class="tsd-kind-icon">create<wbr>DataURL</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="framecapture.html#flipimagedatavertically" class="tsd-kind-icon">flip<wbr>Image<wbr>Data<wbr>Vertically</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

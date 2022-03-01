@@ -1,0 +1,1766 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Framebuffer | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="framebuffer.html">Framebuffer</a>
+				</li>
+			</ul>
+			<h1>Class Framebuffer</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>WebGL Framebuffer base implementation providing size accessors and requiring for bind, unbind, resize, validity,
+						and initialization implementations.</p>
+						<pre><code><span style="color: #000000">@</span><span style="color: #001080">todo</span><span style="color: #000000"> </span><span style="color: #001080">add</span><span style="color: #000000"> </span><span style="color: #001080">usage</span><span style="color: #000000"> </span><span style="color: #001080">example</span>
+</code></pre>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="tsd-signature-type">AbstractObject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">WebGLFramebuffer</span><span class="tsd-signature-symbol">&gt;</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">Framebuffer</span>
+								<ul class="tsd-hierarchy">
+									<li>
+										<a href="defaultframebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultFramebuffer</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><span class="tsd-signature-type">Bindable</span></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-inherited">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="framebuffer.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_buffersbyattachment" class="tsd-kind-icon">_buffers<wbr>ByAttachment</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_clearcolors" class="tsd-kind-icon">_clear<wbr>Colors</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_cleardepth" class="tsd-kind-icon">_clear<wbr>Depth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_clearstencil" class="tsd-kind-icon">_clear<wbr>Stencil</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_colorclearqueue" class="tsd-kind-icon">_color<wbr>Clear<wbr>Queue</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#_context" class="tsd-kind-icon">_context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_drawbuffers" class="tsd-kind-icon">_draw<wbr>Buffers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_drawbufferschanged" class="tsd-kind-icon">_draw<wbr>Buffers<wbr>Changed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#_identifier" class="tsd-kind-icon">_identifier</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#_object" class="tsd-kind-icon">_object</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#_referencecount" class="tsd-kind-icon">_reference<wbr>Count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#_texturesbyattachment" class="tsd-kind-icon">_textures<wbr>ByAttachment</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#_valid" class="tsd-kind-icon">_valid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#assertinitialized" class="tsd-kind-icon">assert<wbr>Initialized</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="framebuffer.html#assertuninitialized" class="tsd-kind-icon">assert<wbr>Uninitialized</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="framebuffer.html#clear" class="tsd-kind-icon">clear</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="framebuffer.html#default_framebuffer" class="tsd-kind-icon">DEFAULT_<wbr>FRAMEBUFFER</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="framebuffer.html#drawbuffers" class="tsd-kind-icon">draw<wbr>Buffers</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#height" class="tsd-kind-icon">height</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#identifier" class="tsd-kind-icon">identifier</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#initialized" class="tsd-kind-icon">initialized</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#object" class="tsd-kind-icon">object</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#size" class="tsd-kind-icon">size</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#valid" class="tsd-kind-icon">valid</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="framebuffer.html#width" class="tsd-kind-icon">width</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#bind" class="tsd-kind-icon">bind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#clearcolor" class="tsd-kind-icon">clear<wbr>Color</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#cleardepth" class="tsd-kind-icon">clear<wbr>Depth</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#clearstencil" class="tsd-kind-icon">clear<wbr>Stencil</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="framebuffer.html#create" class="tsd-kind-icon">create</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="framebuffer.html#delete" class="tsd-kind-icon">delete</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#es2clear" class="tsd-kind-icon">es2<wbr>Clear</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#es3clear" class="tsd-kind-icon">es3<wbr>Clear</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="framebuffer.html#hasattachment" class="tsd-kind-icon">has<wbr>Attachment</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="framebuffer.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="framebuffer.html#ref" class="tsd-kind-icon">ref</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#resize" class="tsd-kind-icon">resize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#texture" class="tsd-kind-icon">texture</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="framebuffer.html#unbind" class="tsd-kind-icon">unbind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="framebuffer.html#uninitialize" class="tsd-kind-icon">uninitialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="framebuffer.html#unref" class="tsd-kind-icon">unref</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="framebuffer.html#assertinitializedfalse" class="tsd-kind-icon">assert<wbr>Initialized<wbr>False</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="framebuffer.html#assertuninitializedfalse" class="tsd-kind-icon">assert<wbr>Uninitialized<wbr>False</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="framebuffer.html#assert_initialized" class="tsd-kind-icon">assert_<wbr>initialized</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="framebuffer.html#assert_uninitialized" class="tsd-kind-icon">assert_<wbr>uninitialized</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="framebuffer.html#discard" class="tsd-kind-icon">discard</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="framebuffer.html#initialize-1" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="framebuffer.html#statusstring" class="tsd-kind-icon">status<wbr>String</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="framebuffer.html#uninitialize-1" class="tsd-kind-icon">uninitialize</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Framebuffer<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a>, identifier<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject&lt;WebGLFramebuffer&gt;.constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L37">source/object.ts:37</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Object constructor, requires a context and a valid identifier.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>context: <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Valid context to create the object for.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> identifier: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Meaningful name for identification of this instance.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="framebuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Framebuffer</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_buffersbyattachment" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _buffers<wbr>ByAttachment</h3>
+					<div class="tsd-signature tsd-kind-icon">_buffers<wbr>ByAttachment<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="renderbuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderbuffer</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L35">source/framebuffer.ts:35</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Access to all attached renderbuffer objects.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_clearcolors" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _clear<wbr>Colors</h3>
+					<div class="tsd-signature tsd-kind-icon">_clear<wbr>Colors<span class="tsd-signature-symbol">:</span> <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L48">source/framebuffer.ts:48</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_cleardepth" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _clear<wbr>Depth</h3>
+					<div class="tsd-signature tsd-kind-icon">_clear<wbr>Depth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L46">source/framebuffer.ts:46</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>RGBA color, depth value, or stencil value used for clearing the
+							associated buffer.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_clearstencil" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _clear<wbr>Stencil</h3>
+					<div class="tsd-signature tsd-kind-icon">_clear<wbr>Stencil<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L47">source/framebuffer.ts:47</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_colorclearqueue" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _color<wbr>Clear<wbr>Queue</h3>
+					<div class="tsd-signature tsd-kind-icon">_color<wbr>Clear<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L52">source/framebuffer.ts:52</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Queue of all draw buffers that are to be cleared on <code>clear</code>.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_context" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _context</h3>
+					<div class="tsd-signature tsd-kind-icon">_context<span class="tsd-signature-symbol">:</span> <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject._context</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L21">source/object.ts:21</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="framebuffer.html#context">context</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_drawbuffers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _draw<wbr>Buffers</h3>
+					<div class="tsd-signature tsd-kind-icon">_draw<wbr>Buffers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L55">source/framebuffer.ts:55</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="framebuffer.html#drawbuffers">drawBuffers</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_drawbufferschanged" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _draw<wbr>Buffers<wbr>Changed</h3>
+					<div class="tsd-signature tsd-kind-icon">_draw<wbr>Buffers<wbr>Changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L56">source/framebuffer.ts:56</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_identifier" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _identifier</h3>
+					<div class="tsd-signature tsd-kind-icon">_identifier<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject._identifier</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L24">source/object.ts:24</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="framebuffer.html#identifier">identifier</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_object" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _object</h3>
+					<div class="tsd-signature tsd-kind-icon">_object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">WebGLFramebuffer</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject._object</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L27">source/object.ts:27</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="framebuffer.html#object">object</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_referencecount" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _reference<wbr>Count</h3>
+					<div class="tsd-signature tsd-kind-icon">_reference<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject._referenceCount</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L37">source/object.ts:37</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Number of references to this object. If at least a single reference was counted, this object can neither be
+								initialized (and thus created) nor uninitialized (and thus deleted). The reference count is controlled via
+							ref() and unref() functions.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_texturesbyattachment" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _textures<wbr>ByAttachment</h3>
+					<div class="tsd-signature tsd-kind-icon">_textures<wbr>ByAttachment<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="texture2d.html" class="tsd-signature-type" data-tsd-kind="Class">Texture2D</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L40">source/framebuffer.ts:40</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Access to all attached texture objects.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_valid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _valid</h3>
+					<div class="tsd-signature tsd-kind-icon">_valid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject._valid</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L30">source/object.ts:30</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="framebuffer.html#valid">valid</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="assertinitialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> assert<wbr>Initialized</h3>
+					<div class="tsd-signature tsd-kind-icon">assert<wbr>Initialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject.assertInitialized</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L185">source/initializable.ts:185</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Asserts the objects initialization status to be true. Note that the implementation is cached and forwarded to
+							either an empty function when initialized and to an acutal assert(false) otherwise.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="assertuninitialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> assert<wbr>Uninitialized</h3>
+					<div class="tsd-signature tsd-kind-icon">assert<wbr>Uninitialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from AbstractObject.assertUninitialized</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L191">source/initializable.ts:191</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Asserts the objects initialization status to be false. Note that the implementation is cached and forwarded to
+							either an empty function when uninitialized and to an acutal assert(false) otherwise.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="clear" class="tsd-anchor"></a>
+					<h3>clear</h3>
+					<div class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>mask<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, colorClearQueue<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L68">source/framebuffer.ts:68</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Depending on the webgl version and provided bitmask, clears attachments of the framebuffer. Note that this
+							function is set/unset to es2Clear or es3Clear on initialization/uninitialization.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>Bitmask specifying which bits are to be cleared (and thereby which attachments).</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>Allows to skip binding the framebuffer (e.g., when binding is handled outside).</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>Allows to skip unbinding the framebuffer (e.g., when binding is handled outside).</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>allows to specify a specific queue of color attachments to be cleared. The webgl1
+									implementation ignores this parameter. If no parameter is given, the webgl2 implementation clears all color
+								attachments.</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>mask<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, colorClearQueue<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>mask: <span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> bind: <span class="tsd-signature-type">boolean</span></h5>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> unbind: <span class="tsd-signature-type">boolean</span></h5>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> colorClearQueue: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+					<a name="default_framebuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>FRAMEBUFFER</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>FRAMEBUFFER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L29">source/framebuffer.ts:29</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Default framebuffer, e.g., used for unbind.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="context" class="tsd-anchor"></a>
+					<h3>context</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L102">source/object.ts:102</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read-only access to the objects context, used to get context information and WebGL API access.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="drawbuffers" class="tsd-anchor"></a>
+					<h3>draw<wbr>Buffers</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> drawBuffers<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> drawBuffers<span class="tsd-signature-symbol">(</span>attachments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L502">source/framebuffer.ts:502</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Used to remember which attachments are available as potential draw buffers.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L482">source/framebuffer.ts:482</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set one or multiple draw buffers.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attachments: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Array of attachment identifier (e.g., gl.COLOR_ATTACHMENT0).</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="height" class="tsd-anchor"></a>
+					<h3>height</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> height<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L451">source/framebuffer.ts:451</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Readonly access to the framebuffer height in pixel. If the height of the attachments are not all identical,
+									the minimal height as the renderable height of this framebuffer is returned.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The minimal height of the renderable height over all attachments.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="identifier" class="tsd-anchor"></a>
+					<h3>identifier</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> identifier<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L112">source/object.ts:112</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Every GPU asset that allocates memory should provide a human readable identifier for GPU allocation tracking and
+										debugging purposes. Please note that the identifier might changed on initialization due to the generation and
+									assignment of a unique identifier.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<ul>
+								<li>This assets identifier used for gpu allocation tracking and debugging.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="initialized" class="tsd-anchor"></a>
+					<h3>initialized</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> initialized<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L210">source/initializable.ts:210</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Property getter for readonly access to the initialization status of an initializable instance.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="object" class="tsd-anchor"></a>
+					<h3>object</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> object<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L119">source/object.ts:119</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read-only access to the WebGL object handle.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="size" class="tsd-anchor"></a>
+					<h3>size</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> size<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L473">source/framebuffer.ts:473</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Convenience getter for the 2-tuple containing the texture&#39;s width and height.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="framebuffer.html#width">width</a></p>
+									</dd>
+									<dt>see</dt>
+									<dd><p>{@link heigth}</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="valid" class="tsd-anchor"></a>
+					<h3>valid</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> valid<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L128">source/object.ts:128</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Cached object status used to derive validity when initialized.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<ul>
+								<li>True if the object status is complete, false otherwise.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="width" class="tsd-anchor"></a>
+					<h3>width</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> width<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L429">source/framebuffer.ts:429</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Readonly access to the framebuffer width in pixel. If the width of the attachments are not all identical,
+									the minimal width as the renderable width of this framebuffer is returned.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The minimal width of the renderable width over all attachments.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bind" class="tsd-anchor"></a>
+					<h3>bind</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of Bindable.bind</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L333">source/framebuffer.ts:333</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the framebuffer object as framebuffer to the provided target.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Specifying the binding point (target).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="clearcolor" class="tsd-anchor"></a>
+					<h3>clear<wbr>Color</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">clear<wbr>Color<span class="tsd-signature-symbol">(</span>color<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a>, drawBuffer<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L360">source/framebuffer.ts:360</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the clear color used for clearing a draw buffer. In order to have transparency working, the canvas needs
+										to have the alpha attribute enabled. This stage also supports premultiplied alpha, which is applied
+									automatically when the context&#39;s <code>premultipliedAlpha</code> attribute is set.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>color: <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>RGBA clear color.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> drawBuffer: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The draw buffer index. If no index is provided, the color will be applied to all buffers.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cleardepth" class="tsd-anchor"></a>
+					<h3>clear<wbr>Depth</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">clear<wbr>Depth<span class="tsd-signature-symbol">(</span>depth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L387">source/framebuffer.ts:387</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>depth: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="clearstencil" class="tsd-anchor"></a>
+					<h3>clear<wbr>Stencil</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">clear<wbr>Stencil<span class="tsd-signature-symbol">(</span>stencil<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L392">source/framebuffer.ts:392</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stencil: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<a name="create" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> create</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>attachments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="renderbuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderbuffer</a><span class="tsd-signature-symbol"> | </span><a href="texture2d.html" class="tsd-signature-type" data-tsd-kind="Class">Texture2D</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">WebGLFramebuffer</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides AbstractObject.create</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L112">source/framebuffer.ts:112</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a framebuffer object on the GPU and attaches all given renderable objects (either renderbuffer or
+									texture) to the framebuffer object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attachments: <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="renderbuffer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderbuffer</a><span class="tsd-signature-symbol"> | </span><a href="texture2d.html" class="tsd-signature-type" data-tsd-kind="Class">Texture2D</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>tuples that associate an attachment to its actual render object, either a renderbuffer or
+										texture, e.g., <code>[ gl.COLOR_ATTACHMENT0, someTexture ]</code>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">WebGLFramebuffer</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<a name="delete" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> delete</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides AbstractObject.delete</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L185">source/framebuffer.ts:185</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Delete the framebuffer object on the GPU. This should have the reverse effect of <code>create</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="es2clear" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> es2<wbr>Clear</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">es2<wbr>Clear<span class="tsd-signature-symbol">(</span>mask<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L201">source/framebuffer.ts:201</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>WebGL1 implementation for clearing framebuffer attachments.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mask: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A GLbitfield bitwise OR mask that indicates the buffers to be cleared.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip binding the framebuffer (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5>unbind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip unbinding the framebuffer (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="es3clear" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> es3<wbr>Clear</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">es3<wbr>Clear<span class="tsd-signature-symbol">(</span>mask<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, colorClearQueue<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L243">source/framebuffer.ts:243</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>WebGL2 implementation for clearing framebuffer attachments.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mask: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A GLbitfield bitwise OR mask that indicates the buffers to be cleared.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip binding the framebuffer (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5>unbind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip unbinding the framebuffer (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> colorClearQueue: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to specify a specific queue of color attachments to be cleared. If no
+										parameter is given, the webgl2 implementation clears all color attachments.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="hasattachment" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> has<wbr>Attachment</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Attachment<span class="tsd-signature-symbol">(</span>attachment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L323">source/framebuffer.ts:323</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attachment: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>-</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="initialize" class="tsd-anchor"></a>
+					<h3>initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.initialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L71">source/object.ts:71</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>override</dt>
+									<dd><p>Ensure that an object handle is created at the point of initialization. When overriding this function
+											super.initialize() has to be invoked immediately/first. Please note that initialization of invalid
+											object raises an assertion in order to prevent further actions without a valid WebGL object. After
+										object creation the valid property is expected to be set accordingly.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="ref" class="tsd-anchor"></a>
+					<h3>ref</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">ref<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.ref</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L135">source/object.ts:135</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Increment the reference count of this object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="resize" class="tsd-anchor"></a>
+					<h3>resize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">resize<span class="tsd-signature-symbol">(</span>width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, height<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L415">source/framebuffer.ts:415</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Forwards a resize to all attachments, renderbuffers and textures.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>width: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Targeted/new width for all attachments in px.</p>
+									</div>
+								</li>
+								<li>
+									<h5>height: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Targeted/new height for all attachments in px.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip binding the specific attachment (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5>unbind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip unbinding the specific attachment (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="texture" class="tsd-anchor"></a>
+					<h3>texture</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">texture<span class="tsd-signature-symbol">(</span>attachment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="texture2d.html" class="tsd-signature-type" data-tsd-kind="Class">Texture2D</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L403">source/framebuffer.ts:403</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Access to attached textures, identified by a valid framebuffer attachment.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attachment: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The attachment to request the texture object of.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="texture2d.html" class="tsd-signature-type" data-tsd-kind="Class">Texture2D</a></h4>
+							<ul>
+								<li>A texture object if one exists for the given attachment, otherwise undefined.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="unbind" class="tsd-anchor"></a>
+					<h3>unbind</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">unbind<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of Bindable.unbind</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L347">source/framebuffer.ts:347</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the default back buffer as framebuffer to the provided target.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Specifying the binding point (target).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="uninitialize" class="tsd-anchor"></a>
+					<h3>uninitialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">uninitialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.uninitialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L89">source/object.ts:89</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>override</dt>
+									<dd><p>Ensure that an object handle is deleted, invalidated, and its allocated GPU resources are set to zero.
+											When overriding this function super.uninitialize() has to be invoked last/at the end.
+										Note that an object cannot be uninitialized if it is referenced (reference count &gt; 0).</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="unref" class="tsd-anchor"></a>
+					<h3>unref</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">unref<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.unref</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/object.ts#L143">source/object.ts:143</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decrement the reference count of this object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<a name="assertinitializedfalse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> assert<wbr>Initialized<wbr>False</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>Initialized<wbr>False<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.assertInitializedFalse</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L50">source/initializable.ts:50</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>object: <a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<a name="assertuninitializedfalse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> assert<wbr>Uninitialized<wbr>False</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>Uninitialized<wbr>False<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.assertUninitializedFalse</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L53">source/initializable.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>object: <a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="assert_initialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> assert_<wbr>initialized</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert_<wbr>initialized<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.assert_initialized</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L146">source/initializable.ts:146</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for asserting the initialization status of an initializable to be true.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="framebuffer.html#assertinitialized">assertInitialized</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="assert_uninitialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> assert_<wbr>uninitialized</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert_<wbr>uninitialized<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.assert_uninitialized</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L165">source/initializable.ts:165</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for asserting the initialization status of an initializable to be false.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="framebuffer.html#assertuninitialized">assertUninitialized</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="discard" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> discard</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">discard<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.discard</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L122">source/initializable.ts:122</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for discarding of Initializable inheritors. This decorator asserts the initialization
+										status of the instance that is to be discarded, invokes its uninitialization, and falsifies the
+										initialization status. In order to encourage the use of <code>assertInitialized</code> and <code>assertUninitialized</code> they are
+									dynamically bound to a static, always-failing assert and an empty/undefined function respectively.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="initialize-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.initialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L64">source/initializable.ts:64</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for initialization of Initializable inheritors. This decorator asserts the initialization status
+										of the instance that is to be initialized, invokes its initialization with arbitrary number of parameters,
+										and sets the initialization status to the initialization success (either false or true).
+										In order to encourage the use of <code>assertInitialized</code> and <code>assertUninitialized</code> they are dynamically
+									bound to either a static, always-failing assert or an empty/undefined function.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="statusstring" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> status<wbr>String</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">status<wbr>String<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a>, status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/framebuffer.ts#L75">source/framebuffer.ts:75</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a string describing the given status of a framebuffer object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>context: <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Context for valid GLenums.</p>
+									</div>
+								</li>
+								<li>
+									<h5>status: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A framebuffer&#39;s status.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="uninitialize-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> uninitialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">uninitialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from AbstractObject.uninitialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L96">source/initializable.ts:96</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for uninitialization of Initializable inheritors. This decorator asserts the initialization
+										status of the instance that is to be uninitialized, invokes its uninitialization, and falsifies the
+										initialization status. In order to encourage the use of <code>assertInitialized</code> and <code>assertUninitialized</code> they are
+									dynamically bound to a static, always-failing assert and an empty/undefined function respectively.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="framebuffer.html" class="tsd-kind-icon">Framebuffer</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+								<a href="framebuffer.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_buffersbyattachment" class="tsd-kind-icon">_buffers<wbr>ByAttachment</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_clearcolors" class="tsd-kind-icon">_clear<wbr>Colors</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_cleardepth" class="tsd-kind-icon">_clear<wbr>Depth</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_clearstencil" class="tsd-kind-icon">_clear<wbr>Stencil</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_colorclearqueue" class="tsd-kind-icon">_color<wbr>Clear<wbr>Queue</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#_context" class="tsd-kind-icon">_context</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_drawbuffers" class="tsd-kind-icon">_draw<wbr>Buffers</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_drawbufferschanged" class="tsd-kind-icon">_draw<wbr>Buffers<wbr>Changed</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#_identifier" class="tsd-kind-icon">_identifier</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#_object" class="tsd-kind-icon">_object</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#_referencecount" class="tsd-kind-icon">_reference<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#_texturesbyattachment" class="tsd-kind-icon">_textures<wbr>ByAttachment</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#_valid" class="tsd-kind-icon">_valid</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#assertinitialized" class="tsd-kind-icon">assert<wbr>Initialized</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="framebuffer.html#assertuninitialized" class="tsd-kind-icon">assert<wbr>Uninitialized</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="framebuffer.html#clear" class="tsd-kind-icon">clear</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+								<a href="framebuffer.html#default_framebuffer" class="tsd-kind-icon">DEFAULT_<wbr>FRAMEBUFFER</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#context" class="tsd-kind-icon">context</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="framebuffer.html#drawbuffers" class="tsd-kind-icon">draw<wbr>Buffers</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#height" class="tsd-kind-icon">height</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#identifier" class="tsd-kind-icon">identifier</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#initialized" class="tsd-kind-icon">initialized</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#object" class="tsd-kind-icon">object</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#size" class="tsd-kind-icon">size</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#valid" class="tsd-kind-icon">valid</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="framebuffer.html#width" class="tsd-kind-icon">width</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#bind" class="tsd-kind-icon">bind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#clearcolor" class="tsd-kind-icon">clear<wbr>Color</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#cleardepth" class="tsd-kind-icon">clear<wbr>Depth</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#clearstencil" class="tsd-kind-icon">clear<wbr>Stencil</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+								<a href="framebuffer.html#create" class="tsd-kind-icon">create</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+								<a href="framebuffer.html#delete" class="tsd-kind-icon">delete</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#es2clear" class="tsd-kind-icon">es2<wbr>Clear</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#es3clear" class="tsd-kind-icon">es3<wbr>Clear</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="framebuffer.html#hasattachment" class="tsd-kind-icon">has<wbr>Attachment</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="framebuffer.html#initialize" class="tsd-kind-icon">initialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="framebuffer.html#ref" class="tsd-kind-icon">ref</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#resize" class="tsd-kind-icon">resize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#texture" class="tsd-kind-icon">texture</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="framebuffer.html#unbind" class="tsd-kind-icon">unbind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="framebuffer.html#uninitialize" class="tsd-kind-icon">uninitialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="framebuffer.html#unref" class="tsd-kind-icon">unref</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+								<a href="framebuffer.html#assertinitializedfalse" class="tsd-kind-icon">assert<wbr>Initialized<wbr>False</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+								<a href="framebuffer.html#assertuninitializedfalse" class="tsd-kind-icon">assert<wbr>Uninitialized<wbr>False</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="framebuffer.html#assert_initialized" class="tsd-kind-icon">assert_<wbr>initialized</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="framebuffer.html#assert_uninitialized" class="tsd-kind-icon">assert_<wbr>uninitialized</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="framebuffer.html#discard" class="tsd-kind-icon">discard</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="framebuffer.html#initialize-1" class="tsd-kind-icon">initialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="framebuffer.html#statusstring" class="tsd-kind-icon">status<wbr>String</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="framebuffer.html#uninitialize-1" class="tsd-kind-icon">uninitialize</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

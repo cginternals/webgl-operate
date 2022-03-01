@@ -1,0 +1,2092 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Canvas | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="canvas.html">Canvas</a>
+				</li>
+			</ul>
+			<h1>Class Canvas</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>A canvas is associated to a single canvas element (DOM) and integrates or delegates event handling as well as
+							control over the rendering loop and the attached renderer respectively. Furthermore, the canvas can bind a single
+							renderer (non owning) and sets up communication between controller, renderer, and navigation. The controller invokes
+							the renderer&#39;s update, frame, and swap methods. The navigation manipulates the renderer&#39;s camera. The renderer can
+						invalidate itself which causes a controller update.</p>
+					</div>
+					<p>Note: Since only the multi-frame number is used by the renderer and the controller, the canvas provides getter,
+					setter, and change callback setter. Debug-frame and frame number are managed exclusively by the controller.</p>
+					<p>Note: the canvas should hold any properties that are required to be passed onto a newly bound renderer (in the case
+					multiple renderer are used with a canvas). The clear color is one example of such a property.</p>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="tsd-signature-type">Resizable</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">Canvas</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="canvas.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_clearcolor" class="tsd-kind-icon">_clear<wbr>Color</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_context" class="tsd-kind-icon">_context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_controller" class="tsd-kind-icon">_controller</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_element" class="tsd-kind-icon">_element</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_eyegazeeventprovider" class="tsd-kind-icon">_eye<wbr>Gaze<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_favorsizeoverscale" class="tsd-kind-icon">_favor<wbr>Size<wbr>Over<wbr>Scale</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_frameprecision" class="tsd-kind-icon">_frame<wbr>Precision</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_frameprecisionsubject" class="tsd-kind-icon">_frame<wbr>Precision<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_framescale" class="tsd-kind-icon">_frame<wbr>Scale</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_framescalesubject" class="tsd-kind-icon">_frame<wbr>Scale<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_framesize" class="tsd-kind-icon">_frame<wbr>Size</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_framesizesubject" class="tsd-kind-icon">_frame<wbr>Size<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_keyboardeventprovider" class="tsd-kind-icon">_keyboard<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_lostcontextextension" class="tsd-kind-icon">_lost<wbr>Context<wbr>Extension</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_mouseeventprovider" class="tsd-kind-icon">_mouse<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_pointereventprovider" class="tsd-kind-icon">_pointer<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_renderer" class="tsd-kind-icon">_renderer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_size" class="tsd-kind-icon">_size</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_sizesubject" class="tsd-kind-icon">_size<wbr>Subject</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#_toucheventprovider" class="tsd-kind-icon">_touch<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="canvas.html#default_clear_color" class="tsd-kind-icon">DEFAULT_<wbr>CLEAR_<wbr>COLOR</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="canvas.html#default_frame_precision" class="tsd-kind-icon">DEFAULT_<wbr>FRAME_<wbr>PRECISION</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="canvas.html#default_multi_frame_number" class="tsd-kind-icon">DEFAULT_<wbr>MULTI_<wbr>FRAME_<wbr>NUMBER</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#backend" class="tsd-kind-icon">backend</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="canvas.html#clearcolor" class="tsd-kind-icon">clear<wbr>Color</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#controller" class="tsd-kind-icon">controller</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#element" class="tsd-kind-icon">element</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#eyegazeeventprovider" class="tsd-kind-icon">eye<wbr>Gaze<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="canvas.html#frameprecision" class="tsd-kind-icon">frame<wbr>Precision</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#frameprecision_" class="tsd-kind-icon">frame<wbr>Precision$</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="canvas.html#framescale" class="tsd-kind-icon">frame<wbr>Scale</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#framescale_" class="tsd-kind-icon">frame<wbr>Scale$</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="canvas.html#framesize" class="tsd-kind-icon">frame<wbr>Size</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#framesize_" class="tsd-kind-icon">frame<wbr>Size$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#height" class="tsd-kind-icon">height</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#keyboardeventprovider" class="tsd-kind-icon">keyboard<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#mouseeventprovider" class="tsd-kind-icon">mouse<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="canvas.html#renderer" class="tsd-kind-icon">renderer</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#size" class="tsd-kind-icon">size</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#size_" class="tsd-kind-icon">size$</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#toucheventprovider" class="tsd-kind-icon">touch<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="canvas.html#width" class="tsd-kind-icon">width</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="canvas.html#_mutationeventlistener" class="tsd-kind-icon">_mutation<wbr>Event<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="canvas.html#_resizeeventlistener" class="tsd-kind-icon">_resize<wbr>Event<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="canvas.html#activateeyegazeeventprovider" class="tsd-kind-icon">activate<wbr>Eye<wbr>Gaze<wbr>Event<wbr>Provider</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#bind" class="tsd-kind-icon">bind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#configurecontextlostandrestore" class="tsd-kind-icon">configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#configurecontextlostandrestoreemulation" class="tsd-kind-icon">configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore<wbr>Emulation</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#configurecontroller" class="tsd-kind-icon">configure<wbr>Controller</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#configuresizeandscale" class="tsd-kind-icon">configure<wbr>Size<wbr>And<wbr>Scale</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="canvas.html#dispose" class="tsd-kind-icon">dispose</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#frameprecisionnext" class="tsd-kind-icon">frame<wbr>Precision<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#framescalenext" class="tsd-kind-icon">frame<wbr>Scale<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#framesizenext" class="tsd-kind-icon">frame<wbr>Size<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="canvas.html#observe" class="tsd-kind-icon">observe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#oncontextlost" class="tsd-kind-icon">on<wbr>Context<wbr>Lost</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#oncontextrestore" class="tsd-kind-icon">on<wbr>Context<wbr>Restore</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="canvas.html#onresize" class="tsd-kind-icon">on<wbr>Resize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="canvas.html#resize" class="tsd-kind-icon">resize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#retrievesize" class="tsd-kind-icon">retrieve<wbr>Size</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#sizenext" class="tsd-kind-icon">size<wbr>Next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="canvas.html#testlosecontext" class="tsd-kind-icon">test<wbr>Lose<wbr>Context</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="canvas.html#testrestorecontext" class="tsd-kind-icon">test<wbr>Restore<wbr>Context</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="canvas.html#unbind" class="tsd-kind-icon">unbind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="canvas.html#elementsize" class="tsd-kind-icon">element<wbr>Size</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="canvas.html#resize-1" class="tsd-kind-icon">resize</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Canvas<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">HTMLCanvasElement</span>, attributes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">WebGLContextAttributes</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="canvas.html" class="tsd-signature-type" data-tsd-kind="Class">Canvas</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides Resizable.constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L130">source/canvas.ts:130</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create and initialize a multi-frame controller, setup a default multi-frame number and get the canvas&#39;s webgl
+										context as well as the canvas resolution. The context and resolution will be passed on to the set renderer and
+										its stages/passes appropriately. The canvas does not provide lazy initialization and is strictly bound to a
+									single canvas element (DOM) that cannot be changed.</p>
+								</div>
+								<p>Note: the multi-frame number can be set using a data attribute in the canvas element called
+								&#39;data-multi-frame-number&#39;.</p>
+								<p>The canvas supports the following data attributes:</p>
+								<ul>
+									<li>data-multi-frame-number {number} - integer greater than 0</li>
+									<li>data-clear-color {Color} - rgba color for clearing</li>
+									<li>data-frame-scale {GLclampf2} - width and height frame scale in [0.0,1.0]</li>
+									<li>data-frame-size {GLizei2} - width and height frame size in pixel</li>
+									<li>data-frame-precision {RenderPrecision} - precision for, e.g., frame accumulation
+									, either &#39;float&#39;, &#39;half&#39;, &#39;byte&#39;, or &#39;auto&#39;.</li>
+								</ul>
+								<p>Note: data-frame-size takes precedence if both frame-scale and frame-size data attributes are provided.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>element: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">HTMLCanvasElement</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Canvas element or element id {string} to be used for querying the canvas element.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> attributes: <span class="tsd-signature-type">WebGLContextAttributes</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Overrides the internal default attributes @see{Context.DEFAULT_ATTRIBUTES}.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="canvas.html" class="tsd-signature-type" data-tsd-kind="Class">Canvas</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_clearcolor" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _clear<wbr>Color</h3>
+					<div class="tsd-signature tsd-kind-icon">_clear<wbr>Color<span class="tsd-signature-symbol">:</span> <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L71">source/canvas.ts:71</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#clearcolor">clearColor</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_context" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _context</h3>
+					<div class="tsd-signature tsd-kind-icon">_context<span class="tsd-signature-symbol">:</span> <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L61">source/canvas.ts:61</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#context">context</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_controller" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _controller</h3>
+					<div class="tsd-signature tsd-kind-icon">_controller<span class="tsd-signature-symbol">:</span> <a href="controller.html" class="tsd-signature-type" data-tsd-kind="Class">Controller</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L64">source/canvas.ts:64</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#controller">controller</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_element" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _element</h3>
+					<div class="tsd-signature tsd-kind-icon">_element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLCanvasElement</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L113">source/canvas.ts:113</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#element">element</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_eyegazeeventprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _eye<wbr>Gaze<wbr>Event<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">_eye<wbr>Gaze<wbr>Event<wbr>Provider<span class="tsd-signature-symbol">:</span> <a href="eyegazeeventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">EyeGazeEventProvider</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L125">source/canvas.ts:125</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#eyegazeeventprovider">eyeGazeEventProvider</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_favorsizeoverscale" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _favor<wbr>Size<wbr>Over<wbr>Scale</h3>
+					<div class="tsd-signature tsd-kind-icon">_favor<wbr>Size<wbr>Over<wbr>Scale<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L109">source/canvas.ts:109</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag used to determine whether frame size or frame scale is the dominant configuration.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_frameprecision" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Precision</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Precision<span class="tsd-signature-symbol">:</span> <a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L78">source/canvas.ts:78</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#frameprecision">framePrecision</a>
+								This property can be observed, e.g., <code>aCanvas.framePrecisionObservable.subscribe()</code>.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_frameprecisionsubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Precision<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Precision<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L79">source/canvas.ts:79</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_framescale" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Scale</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Scale<span class="tsd-signature-symbol">:</span> <a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L96">source/canvas.ts:96</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#framescale">frameScale</a>
+								This property can be observed, <code>aCanvas.frameScaleObservable.subscribe()</code>.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_framescalesubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Scale<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Scale<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L97">source/canvas.ts:97</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_framesize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Size</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Size<span class="tsd-signature-symbol">:</span> <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L103">source/canvas.ts:103</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#framesize">frameSize</a>
+								This property can be observed, <code>aCanvas.frameSizeObservable.subscribe()</code>.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_framesizesubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _frame<wbr>Size<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_frame<wbr>Size<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L104">source/canvas.ts:104</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_keyboardeventprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _keyboard<wbr>Event<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">_keyboard<wbr>Event<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">KeyboardEventProvider</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L128">source/canvas.ts:128</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#keyboardeventprovider">keyboardEventProvider</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_lostcontextextension" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _lost<wbr>Context<wbr>Extension</h3>
+					<div class="tsd-signature tsd-kind-icon">_lost<wbr>Context<wbr>Extension<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">WEBGL_lose_context</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L130">source/canvas.ts:130</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_mouseeventprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _mouse<wbr>Event<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">_mouse<wbr>Event<wbr>Provider<span class="tsd-signature-symbol">:</span> <a href="mouseeventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">MouseEventProvider</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L116">source/canvas.ts:116</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#mouseeventprovider">mouseEventProvider</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_pointereventprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _pointer<wbr>Event<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">_pointer<wbr>Event<wbr>Provider<span class="tsd-signature-symbol">:</span> <a href="pointereventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">PointerEventProvider</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L122">source/canvas.ts:122</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="../interfaces/eventprovider.html#pointereventprovider">pointerEventProvider</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_renderer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _renderer</h3>
+					<div class="tsd-signature tsd-kind-icon">_renderer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L67">source/canvas.ts:67</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#renderer">renderer</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_size" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _size</h3>
+					<div class="tsd-signature tsd-kind-icon">_size<span class="tsd-signature-symbol">:</span> <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L89">source/canvas.ts:89</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#size">size</a>
+									This property can be observed, e.g., <code>aCanvas.sizeObservable.subscribe()</code>.
+									Zero-initialization prevents drawing on an invalid canvas size, i.e., a canvas size [1, 1] is technically valid
+									for rendering, which might lead to rendering on an [1, 1] canvas before the first &#39;real&#39; size is set (e.g., via
+								resize event), resulting in visually unpleasant initial frames in some (slow) applications.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_sizesubject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _size<wbr>Subject</h3>
+					<div class="tsd-signature tsd-kind-icon">_size<wbr>Subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReplaySubject</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L90">source/canvas.ts:90</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_toucheventprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _touch<wbr>Event<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">_touch<wbr>Event<wbr>Provider<span class="tsd-signature-symbol">:</span> <a href="toucheventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">TouchEventProvider</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L119">source/canvas.ts:119</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="canvas.html#toucheventprovider">touchEventProvider</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="default_clear_color" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>CLEAR_<wbr>COLOR</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>CLEAR_<wbr>COLOR<span class="tsd-signature-symbol">:</span> <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L47">source/canvas.ts:47</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Default color that is used if none is set via data attributes.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="default_frame_precision" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>FRAME_<wbr>PRECISION</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>FRAME_<wbr>PRECISION<span class="tsd-signature-symbol">:</span> <a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L52">source/canvas.ts:52</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Default frame precision, e.g., accumulation format when multi-frame rendering is used.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="default_multi_frame_number" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>MULTI_<wbr>FRAME_<wbr>NUMBER</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>MULTI_<wbr>FRAME_<wbr>NUMBER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L57">source/canvas.ts:57</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Default multi-frame number used if none is set via data attributes.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="backend" class="tsd-anchor"></a>
+					<h3>backend</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> backend<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L720">source/canvas.ts:720</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Getter for the created rendering backend (webgl context type).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<ul>
+								<li>Backend that was created on construction, either &#39;webgl&#39; or &#39;webgl2&#39; based on which one was created
+								successfully. If no context could be created undefined is returned.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="clearcolor" class="tsd-anchor"></a>
+					<h3>clear<wbr>Color</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> clearColor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> clearColor<span class="tsd-signature-symbol">(</span>clearColor<span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L659">source/canvas.ts:659</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Getter for the canvas&#39;s clear color. The clear color is provided to the renderer (on bind). Since this is a
+									canvas specific setting it is stored here, not in a renderer or controller.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>Color object passed to any renderer bound to this canvas.</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L668">source/canvas.ts:668</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the clear color that is then passed to the currently bound renderer as well as to any pipelines bound in
+									the future. The provided color will be clamped to [0.0;1.0] for every component.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>clearColor: <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Color object that will be referenced.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>Color object passed to any renderer bound to this canvas.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="context" class="tsd-anchor"></a>
+					<h3>context</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L711">source/canvas.ts:711</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provides access to the WebGL context (leaky abstraction).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="controller" class="tsd-anchor"></a>
+					<h3>controller</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> controller<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="controller.html" class="tsd-signature-type" data-tsd-kind="Class">Controller</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L513">source/canvas.ts:513</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Single controller that is managing the rendering control flow of a bound renderer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="controller.html" class="tsd-signature-type" data-tsd-kind="Class">Controller</a></h4>
+							<ul>
+								<li>The controller used by the canvas.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="element" class="tsd-anchor"></a>
+					<h3>element</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> element<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L766">source/canvas.ts:766</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Canvas element within the HTML5 document.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">HTMLElement</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="eyegazeeventprovider" class="tsd-anchor"></a>
+					<h3>eye<wbr>Gaze<wbr>Event<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> eyeGazeEventProvider<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eyegazeeventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">EyeGazeEventProvider</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L818">source/canvas.ts:818</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Eye gaze event provider referring to the canvas element.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="eyegazeeventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">EyeGazeEventProvider</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="frameprecision" class="tsd-anchor"></a>
+					<h3>frame<wbr>Precision</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> framePrecision<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> framePrecision<span class="tsd-signature-symbol">(</span>precision<span class="tsd-signature-symbol">: </span><a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L681">source/canvas.ts:681</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Getter for the targeted frame precision. This property can be observed, e.g.,
+									<code>canvas.framePrecisionObservable.subscribe()</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a></h4>
+							<ul>
+								<li>Accumulation format as string passed to any renderer bound.</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L690">source/canvas.ts:690</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the targeted frame precision that is then passed to the currently bound renderer as well as to any renderers
+									bound in the future. This might be used for frame accumulation in multi-frame based rendering.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>precision: <a href="../enums/wizard.precision.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Precision</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Frame precision, &#39;float&#39;, &#39;half&#39;, &#39;byte&#39; or &#39;auto&#39; are supported.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>Accumulation format as string passed to any renderer bound.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="frameprecision_" class="tsd-anchor"></a>
+					<h3>frame<wbr>Precision$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> framePrecision$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L703">source/canvas.ts:703</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to frame precision changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="framescale" class="tsd-anchor"></a>
+					<h3>frame<wbr>Scale</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameScale<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> frameScale<span class="tsd-signature-symbol">(</span>frameScale<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L539">source/canvas.ts:539</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Targeted scale for rendering with respect to the canvas size. This property can be observed, e.g.,
+									<code>canvas.frameScaleObservable.subscribe()</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a></h4>
+							<ul>
+								<li>The frame scale in [0.0, 1.0].</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L552">source/canvas.ts:552</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set the targeted scale for rendering with respect to the canvas size. The scale will be clamped to [0.0,1.0]. A
+										scale of 0.0 results in 1px frame resolution for the respective component.
+										The frame scale allows to detach the rendering resolution from the native canvas resolution, e.g., in order to
+										decrease rendering cost. The frame resolution can also be specified explicitly by width and height. Non-finite
+									values will be ignored.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>frameScale: <a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Scale of rendering.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>The frame scale in [0.0,1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="framescale_" class="tsd-anchor"></a>
+					<h3>frame<wbr>Scale$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameScale$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L591">source/canvas.ts:591</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to frame scale changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glclampf2" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf2</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="framesize" class="tsd-anchor"></a>
+					<h3>frame<wbr>Size</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameSize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> frameSize<span class="tsd-signature-symbol">(</span>frameSize<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L601">source/canvas.ts:601</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Targeted resolution (width and height) for rendering in pixel. This property can be observed, e.g.,
+									<code>canvas.frameSizeObservable.subscribe()</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h4>
+							<ul>
+								<li>The frame size in pixel (must not be physical/native pixels).</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L613">source/canvas.ts:613</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set the targeted size for rendering in pixels. The size will be clamped to [1, canvas-size]. The frame size
+										allows to detach the rendering resolution from the native canvas resolution, e.g., in order to decrease
+										rendering cost. Non-finite values will be ignored.
+									The render resolution can also be specified implicitly by width and height in scale (@see frameScale).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>frameSize: <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Size for rendering in pixel (must not be physical/native pixels).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>The frame size in [1, canvas-size].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="framesize_" class="tsd-anchor"></a>
+					<h3>frame<wbr>Size$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameSize$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L649">source/canvas.ts:649</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to frame size changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="height" class="tsd-anchor"></a>
+					<h3>height</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> height<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L758">source/canvas.ts:758</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Height of the canvas measured in physical/native screen pixels. This is the &#39;managed&#39; canvas height. The
+									unmanaged canvas height is available via context.gl.canvas_height (which should always be the same).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The canvas height in physical/native screen pixels.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="keyboardeventprovider" class="tsd-anchor"></a>
+					<h3>keyboard<wbr>Event<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> keyboardEventProvider<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">KeyboardEventProvider</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L785">source/canvas.ts:785</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">KeyboardEventProvider</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="mouseeventprovider" class="tsd-anchor"></a>
+					<h3>mouse<wbr>Event<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> mouseEventProvider<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mouseeventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">MouseEventProvider</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L774">source/canvas.ts:774</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Canvas mouse event provider referring to the canvas element.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="mouseeventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">MouseEventProvider</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="renderer" class="tsd-anchor"></a>
+					<h3>renderer</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> renderer<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> renderer<span class="tsd-signature-symbol">(</span>renderer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L522">source/canvas.ts:522</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The currently bound renderer. If no renderer is bound, undefined is returned. If a renderer is bound, it should
+									always be initialized (renderer initialization handled by the canvas).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a></h4>
+							<ul>
+								<li>The currently bound renderer.</li>
+							</ul>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L530">source/canvas.ts:530</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds a renderer to the canvas. A previously bound renderer will be unbound (see bind and unbind).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>renderer: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A renderer object or undefined.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<ul>
+								<li>The currently bound renderer.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="size" class="tsd-anchor"></a>
+					<h3>size</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> size<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L732">source/canvas.ts:732</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Size of the canvas measured in physical/native screen pixels. This is the &#39;managed&#39; canvas width and height. The
+										unmanaged canvas width and height are available via context.gl.canvas.width and context.gl.canvas.height (which
+										should always be the same).
+									This property can be observed, e.g., <code>allocationRegister.bytesObservable.subscribe()</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h4>
+							<ul>
+								<li>The canvas width and height in physical/native screen pixels as 2-tuple.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="size_" class="tsd-anchor"></a>
+					<h3>size$</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> size$<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L739">source/canvas.ts:739</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observable that can be used to subscribe to canvas size changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="toucheventprovider" class="tsd-anchor"></a>
+					<h3>touch<wbr>Event<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> touchEventProvider<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="toucheventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">TouchEventProvider</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L781">source/canvas.ts:781</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Canvas touch event provider referring to the canvas element.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="toucheventprovider.html" class="tsd-signature-type" data-tsd-kind="Class">TouchEventProvider</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="width" class="tsd-anchor"></a>
+					<h3>width</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> width<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L749">source/canvas.ts:749</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Width of the canvas measured in physical/native screen pixels. This is the &#39;managed&#39; canvas width. The
+									unmanaged canvas width is available via context.gl.canvas_width (which should always be the same).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The canvas width in physical/native screen pixels.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_mutationeventlistener" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _mutation<wbr>Event<wbr>Listener</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">_mutation<wbr>Event<wbr>Listener<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from Resizable._mutationEventListener</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/resizable.ts#L106">source/resizable.ts:106</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="_resizeeventlistener" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _resize<wbr>Event<wbr>Listener</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">_resize<wbr>Event<wbr>Listener<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from Resizable._resizeEventListener</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/resizable.ts#L103">source/resizable.ts:103</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="activateeyegazeeventprovider" class="tsd-anchor"></a>
+					<h3>activate<wbr>Eye<wbr>Gaze<wbr>Event<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">activate<wbr>Eye<wbr>Gaze<wbr>Event<wbr>Provider<span class="tsd-signature-symbol">(</span>eyeGazeDataStreams<span class="tsd-signature-symbol">: </span><a href="eyegazedatastreams.html" class="tsd-signature-type" data-tsd-kind="Class">EyeGazeDataStreams</a>, serverAddress<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L825">source/canvas.ts:825</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Activates the eye gaze event provider referring to the canvas element.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eyeGazeDataStreams: <a href="eyegazedatastreams.html" class="tsd-signature-type" data-tsd-kind="Class">EyeGazeDataStreams</a></h5>
+								</li>
+								<li>
+									<h5>serverAddress: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="bind" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> bind</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>renderer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L432">source/canvas.ts:432</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The renderer (if not undefined) will be connected to the controller and navigation. The controller will
+									immediately trigger a multi-frame, thereby causing the renderer to render frames.</p>
+								</div>
+								<p>Note that no renderer should be bound to multiple canvases
+								simultaneously. The reference is non owning.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>renderer: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="renderer.html" class="tsd-signature-type" data-tsd-kind="Class">Renderer</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Either undefined or an uninitialized renderer.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="configurecontextlostandrestore" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L283">source/canvas.ts:283</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Register &#39;webglcontextlost&#39; and &#39;webglcontextrestored&#39; to handle lost and restoration
+									of WebGL contexts.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="configurecontextlostandrestoreemulation" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore<wbr>Emulation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore<wbr>Emulation<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L297">source/canvas.ts:297</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Obtain the WEBGL_lose_context extension, store it with this canvas instance and use it
+									for emulation of the context lost and restore feature.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="configurecontroller" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> configure<wbr>Controller</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Controller<span class="tsd-signature-symbol">(</span>dataset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DOMStringMap</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L216">source/canvas.ts:216</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates and initializes a new controller that is used for this canvas. If provided via data attributes
+									multi-frame number and debug-frame number are set.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>dataset: <span class="tsd-signature-type">DOMStringMap</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The attributes data-multi-frame-number and data-debug-frame-number are supported.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="configuresizeandscale" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> configure<wbr>Size<wbr>And<wbr>Scale</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">configure<wbr>Size<wbr>And<wbr>Scale<span class="tsd-signature-symbol">(</span>dataset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DOMStringMap</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L255">source/canvas.ts:255</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Initializes the frame size and scale. By default, the scale is 1.0 for width and height and the size reflects
+									the native canvas size.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>dataset: <span class="tsd-signature-type">DOMStringMap</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The attributes data-frame-size and data-frame-scale are supported.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="dispose" class="tsd-anchor"></a>
+					<h3>dispose</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">dispose<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides Resizable.dispose</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L492">source/canvas.ts:492</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Uninitializes and deletes the controller as well as all other properties.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="frameprecisionnext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> frame<wbr>Precision<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">frame<wbr>Precision<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L397">source/canvas.ts:397</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._framePrecision changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="framescalenext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> frame<wbr>Scale<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">frame<wbr>Scale<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L411">source/canvas.ts:411</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._frameScale changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="framesizenext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> frame<wbr>Size<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">frame<wbr>Size<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L418">source/canvas.ts:418</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._frameSize changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="observe" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> observe</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">observe<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from Resizable.observe</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/resizable.ts#L121">source/resizable.ts:121</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe a certain element for style or class mutations. Any mutation invokes the resize event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>element: <span class="tsd-signature-type">HTMLElement</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>element that can be observed for style mutations (style mutation will trigger resize).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="oncontextlost" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> on<wbr>Context<wbr>Lost</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Context<wbr>Lost<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L305">source/canvas.ts:305</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Handle a WebGL context lost event.
+									This is for both natural and emulated lost contexts.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="oncontextrestore" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> on<wbr>Context<wbr>Restore</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Context<wbr>Restore<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L319">source/canvas.ts:319</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Handle a WebGL context restore event.
+									This is for both natural and emulated restored contexts.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<a name="onresize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> on<wbr>Resize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Resize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides Resizable.onResize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L359">source/canvas.ts:359</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resize is invoked by the resizable mixin. It retrieves the canvas size and promotes it to the renderer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="resize" class="tsd-anchor"></a>
+					<h3>resize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">resize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L504">source/canvas.ts:504</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Allows for explicit trigger of onResize, e.g., in case resize event-handling is managed explicitly ...</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="retrievesize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> retrieve<wbr>Size</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">retrieve<wbr>Size<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L346">source/canvas.ts:346</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Convenience function that triggers the canvas size retrieval. The native width and height of the canvas dom
+									element is cached (in pixel).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="sizenext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> size<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">size<wbr>Next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L404">source/canvas.ts:404</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Utility for communicating this._size changes to its associated subject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="testlosecontext" class="tsd-anchor"></a>
+					<h3>test<wbr>Lose<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">test<wbr>Lose<wbr>Context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L794">source/canvas.ts:794</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Emulate a WebGL context loss.
+										This functionality requires to have configureContextLostAndRestoreEmulation() called before.
+									This function is usually called within the constructor of this canvas.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="testrestorecontext" class="tsd-anchor"></a>
+					<h3>test<wbr>Restore<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">test<wbr>Restore<wbr>Context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L807">source/canvas.ts:807</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Emulate a WebGL context restore.
+										This functionality requires to have configureContextLostAndRestoreEmulation() called before.
+									This function is usually called within the constructor of this canvas.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="unbind" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> unbind</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">unbind<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/canvas.ts#L474">source/canvas.ts:474</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unbinds the current renderer from the canvas as well as the controller and navigation, and uninitializes the
+									renderer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="elementsize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> element<wbr>Size</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">element<wbr>Size<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from Resizable.elementSize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/resizable.ts#L61">source/resizable.ts:61</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves the native width and height of a given element in device pixel (size on screen in physical pixels). If
+										the element is not found, or either window or its device pixel ratio are not defined, a default vec2 is returned.
+									If the canvas size is not yet computed, i.e., not provided in px unit, undefined will be return.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>element: <span class="tsd-signature-type">HTMLElement</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>DOM element to get the width and height in (native) pixel from.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h4>
+							<ul>
+								<li>Size of the element in native screen pixels. Undefined when size is not available in &#39;px&#39;.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<a name="resize-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> resize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">resize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from Resizable.resize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/resizable.ts#L48">source/resizable.ts:48</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This function is called when the window is resized (and the event listener was successfully registered). The
+									event is forwarded to each registered resizable object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="canvas.html" class="tsd-kind-icon">Canvas</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="canvas.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_clearcolor" class="tsd-kind-icon">_clear<wbr>Color</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_context" class="tsd-kind-icon">_context</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_controller" class="tsd-kind-icon">_controller</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_element" class="tsd-kind-icon">_element</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_eyegazeeventprovider" class="tsd-kind-icon">_eye<wbr>Gaze<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_favorsizeoverscale" class="tsd-kind-icon">_favor<wbr>Size<wbr>Over<wbr>Scale</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_frameprecision" class="tsd-kind-icon">_frame<wbr>Precision</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_frameprecisionsubject" class="tsd-kind-icon">_frame<wbr>Precision<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_framescale" class="tsd-kind-icon">_frame<wbr>Scale</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_framescalesubject" class="tsd-kind-icon">_frame<wbr>Scale<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_framesize" class="tsd-kind-icon">_frame<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_framesizesubject" class="tsd-kind-icon">_frame<wbr>Size<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_keyboardeventprovider" class="tsd-kind-icon">_keyboard<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_lostcontextextension" class="tsd-kind-icon">_lost<wbr>Context<wbr>Extension</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_mouseeventprovider" class="tsd-kind-icon">_mouse<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_pointereventprovider" class="tsd-kind-icon">_pointer<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_renderer" class="tsd-kind-icon">_renderer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_size" class="tsd-kind-icon">_size</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_sizesubject" class="tsd-kind-icon">_size<wbr>Subject</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#_toucheventprovider" class="tsd-kind-icon">_touch<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="canvas.html#default_clear_color" class="tsd-kind-icon">DEFAULT_<wbr>CLEAR_<wbr>COLOR</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="canvas.html#default_frame_precision" class="tsd-kind-icon">DEFAULT_<wbr>FRAME_<wbr>PRECISION</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="canvas.html#default_multi_frame_number" class="tsd-kind-icon">DEFAULT_<wbr>MULTI_<wbr>FRAME_<wbr>NUMBER</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#backend" class="tsd-kind-icon">backend</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="canvas.html#clearcolor" class="tsd-kind-icon">clear<wbr>Color</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#context" class="tsd-kind-icon">context</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#controller" class="tsd-kind-icon">controller</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#element" class="tsd-kind-icon">element</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#eyegazeeventprovider" class="tsd-kind-icon">eye<wbr>Gaze<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="canvas.html#frameprecision" class="tsd-kind-icon">frame<wbr>Precision</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#frameprecision_" class="tsd-kind-icon">frame<wbr>Precision$</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="canvas.html#framescale" class="tsd-kind-icon">frame<wbr>Scale</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#framescale_" class="tsd-kind-icon">frame<wbr>Scale$</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="canvas.html#framesize" class="tsd-kind-icon">frame<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#framesize_" class="tsd-kind-icon">frame<wbr>Size$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#height" class="tsd-kind-icon">height</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#keyboardeventprovider" class="tsd-kind-icon">keyboard<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#mouseeventprovider" class="tsd-kind-icon">mouse<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="canvas.html#renderer" class="tsd-kind-icon">renderer</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#size" class="tsd-kind-icon">size</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#size_" class="tsd-kind-icon">size$</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#toucheventprovider" class="tsd-kind-icon">touch<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="canvas.html#width" class="tsd-kind-icon">width</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="canvas.html#_mutationeventlistener" class="tsd-kind-icon">_mutation<wbr>Event<wbr>Listener</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="canvas.html#_resizeeventlistener" class="tsd-kind-icon">_resize<wbr>Event<wbr>Listener</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="canvas.html#activateeyegazeeventprovider" class="tsd-kind-icon">activate<wbr>Eye<wbr>Gaze<wbr>Event<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#bind" class="tsd-kind-icon">bind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#configurecontextlostandrestore" class="tsd-kind-icon">configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#configurecontextlostandrestoreemulation" class="tsd-kind-icon">configure<wbr>Context<wbr>Lost<wbr>And<wbr>Restore<wbr>Emulation</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#configurecontroller" class="tsd-kind-icon">configure<wbr>Controller</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#configuresizeandscale" class="tsd-kind-icon">configure<wbr>Size<wbr>And<wbr>Scale</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="canvas.html#dispose" class="tsd-kind-icon">dispose</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#frameprecisionnext" class="tsd-kind-icon">frame<wbr>Precision<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#framescalenext" class="tsd-kind-icon">frame<wbr>Scale<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#framesizenext" class="tsd-kind-icon">frame<wbr>Size<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="canvas.html#observe" class="tsd-kind-icon">observe</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#oncontextlost" class="tsd-kind-icon">on<wbr>Context<wbr>Lost</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#oncontextrestore" class="tsd-kind-icon">on<wbr>Context<wbr>Restore</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+								<a href="canvas.html#onresize" class="tsd-kind-icon">on<wbr>Resize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="canvas.html#resize" class="tsd-kind-icon">resize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#retrievesize" class="tsd-kind-icon">retrieve<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#sizenext" class="tsd-kind-icon">size<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="canvas.html#testlosecontext" class="tsd-kind-icon">test<wbr>Lose<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="canvas.html#testrestorecontext" class="tsd-kind-icon">test<wbr>Restore<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="canvas.html#unbind" class="tsd-kind-icon">unbind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="canvas.html#elementsize" class="tsd-kind-icon">element<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+								<a href="canvas.html#resize-1" class="tsd-kind-icon">resize</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,685 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ray_math | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="ray_math.html">ray_math</a>
+				</li>
+			</ul>
+			<h1>Namespace ray_math</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#distancepointtoray" class="tsd-kind-icon">distance<wbr>Point<wbr>ToRay</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#eyewithpointinview" class="tsd-kind-icon">eye<wbr>With<wbr>Point<wbr>InView</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#ispointwithinndc" class="tsd-kind-icon">is<wbr>Point<wbr>WithinNDC</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#ispointwithinsquare" class="tsd-kind-icon">is<wbr>Point<wbr>Within<wbr>Square</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#pointsquareintersection" class="tsd-kind-icon">point<wbr>Square<wbr>Intersection</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#raycircleintersection" class="tsd-kind-icon">ray<wbr>Circle<wbr>Intersection</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#raylineintersection" class="tsd-kind-icon">ray<wbr>Line<wbr>Intersection</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#rayplaneintersection" class="tsd-kind-icon">ray<wbr>Plane<wbr>Intersection</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#rayplaneintersection_tube" class="tsd-kind-icon">ray<wbr>Plane<wbr>Intersection_<wbr>tube</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#raysphereintersection" class="tsd-kind-icon">ray<wbr>Sphere<wbr>Intersection</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="ray_math.html#raysquareintersection" class="tsd-kind-icon">ray<wbr>Square<wbr>Intersection</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="distancepointtoray" class="tsd-anchor"></a>
+					<h3>distance<wbr>Point<wbr>ToRay</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">distance<wbr>Point<wbr>ToRay<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, point<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L231">source/raymath.ts:231</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the shortest distance of a point to a ray (closest point on ray distance).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>point: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Point to compute the distance for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Distance of the closest point on a ray to a point.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="eyewithpointinview" class="tsd-anchor"></a>
+					<h3>eye<wbr>With<wbr>Point<wbr>InView</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">eye<wbr>With<wbr>Point<wbr>InView<span class="tsd-signature-symbol">(</span>camera<span class="tsd-signature-symbol">: </span><a href="../classes/camera.html" class="tsd-signature-type" data-tsd-kind="Class">Camera</a>, point<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L250">source/raymath.ts:250</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes a new eye coordinate for the camera that should have the given point within view. The eye is only
+									modified with respect to its distance to the camera&#39;s center (on the camera look-at ray).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>camera: <a href="../classes/camera.html" class="tsd-signature-type" data-tsd-kind="Class">Camera</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Camera as base constraint for the eye movement (only distance to center is changed).</p>
+									</div>
+								</li>
+								<li>
+									<h5>point: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Point to adjust the camera position for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h4>
+							<ul>
+								<li>Eye coordinate for the given camera that should have the given point within view.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="ispointwithinndc" class="tsd-anchor"></a>
+					<h3>is<wbr>Point<wbr>WithinNDC</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Point<wbr>WithinNDC<span class="tsd-signature-symbol">(</span>viewProjection<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, point<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L218">source/raymath.ts:218</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Evaluates whether or not a given point is within the NDC-space (normalized device coordinates) after being
+									transformed by a view projection matrix.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>viewProjection: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>(Model) view projection matrix to transform the point with.</p>
+									</div>
+								</li>
+								<li>
+									<h5>point: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Point that is to be transformed</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the point should be visible (within NDC), false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="ispointwithinsquare" class="tsd-anchor"></a>
+					<h3>is<wbr>Point<wbr>Within<wbr>Square</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Point<wbr>Within<wbr>Square<span class="tsd-signature-symbol">(</span>point<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, halfLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L206">source/raymath.ts:206</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Evaluates whether or not a given point is within a square of a given edge length.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>point: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Point to check the within-square-status for.</p>
+									</div>
+								</li>
+								<li>
+									<h5>halfLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Half of the side length of the square.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<ul>
+								<li>Whether or not the given point is within an axis aligned square at [0.0, 0.0] and edge length.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="pointsquareintersection" class="tsd-anchor"></a>
+					<h3>point<wbr>Square<wbr>Intersection</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">point<wbr>Square<wbr>Intersection<span class="tsd-signature-symbol">(</span>point<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, edgeLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L62">source/raymath.ts:62</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection point of a ray starting at a given point and pointing to the center of an axis-aligned
+									square of a given side length.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>point: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Starting point used to derive a ray for intersection.</p>
+									</div>
+								</li>
+								<li>
+									<h5>edgeLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Side length of the square.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h4>
+							<ul>
+								<li>The intersection point of the square and the derived ray.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="raycircleintersection" class="tsd-anchor"></a>
+					<h3>ray<wbr>Circle<wbr>Intersection</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">ray<wbr>Circle<wbr>Intersection<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, radius<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L27">source/raymath.ts:27</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection point of a given ray and a circle at [0.0, 0.0] and a given radius.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray&#39;s direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>radius: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Radius of the circle to test for intersection with.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<p>The intersection point of the given ray and a circle, undefined if no intersection exists.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="raylineintersection" class="tsd-anchor"></a>
+					<h3>ray<wbr>Line<wbr>Intersection</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">ray<wbr>Line<wbr>Intersection<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, line0<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, line1<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L98">source/raymath.ts:98</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection of a ray with a line.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>line0: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a line.</p>
+									</div>
+								</li>
+								<li>
+									<h5>line1: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>End point of a line.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<ul>
+								<li>If ray intersects, a 2-tuple of intersection point and t (ray0 + t + ray1) is returned.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="rayplaneintersection" class="tsd-anchor"></a>
+					<h3>ray<wbr>Plane<wbr>Intersection</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">ray<wbr>Plane<wbr>Intersection<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, origin<span class="tsd-signature-symbol">?: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, normal<span class="tsd-signature-symbol">?: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L129">source/raymath.ts:129</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection point of a given ray and a given plane (rooted at [ 0, 0, 0 ]).
+										t = -(dot(plane.xyz, origin) + plane.w) / dot(plane.xyz, ray);
+									The ray intersects when (t &gt; 0.0) &amp;&amp; (t &lt; tm) is true.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>origin: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Point on a plane with origin [ 0, 0, 0 ].</p>
+									</div>
+								</li>
+								<li>
+									<h5>normal: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Normal of the plane with origin [ 0, 0, 0 ].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<ul>
+								<li>If ray intersects, the intersection point on the plane if the plane was hit.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="rayplaneintersection_tube" class="tsd-anchor"></a>
+					<h3>ray<wbr>Plane<wbr>Intersection_<wbr>tube</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">ray<wbr>Plane<wbr>Intersection_<wbr>tube<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, radius<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L185">source/raymath.ts:185</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection point of a given ray and a given plane (origin [ 0, 0, 0 ]). The intersection point,
+										however, is constrained to a tube of a given radius. The computation is currently limited to a tube
+									on the plane y = 0 with origin in [0.0, 0.0, 0.0], extending towards [0.0, 1.0, 0.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>radius: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Constrain intersection point to be within a tube of this radius.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<ul>
+								<li>The intersection point on the plane if the plane was hit, undefined otherwise.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="raysphereintersection" class="tsd-anchor"></a>
+					<h3>ray<wbr>Sphere<wbr>Intersection</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">ray<wbr>Sphere<wbr>Intersection<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, origin<span class="tsd-signature-symbol">?: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, radius<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L158">source/raymath.ts:158</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection point of a given ray and a given sphere.
+										t = -(dot(plane.xyz, origin) + plane.w) / dot(plane.xyz, ray);
+									The ray intersects when (t &gt; 0.0) &amp;&amp; (t &lt; tm) is true.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>origin: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Location of the sphere.</p>
+									</div>
+								</li>
+								<li>
+									<h5>radius: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Radius of the sphere.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<ul>
+								<li>If ray intersects, the intersection point on the plane if the plane was hit.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="raysquareintersection" class="tsd-anchor"></a>
+					<h3>ray<wbr>Square<wbr>Intersection</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">ray<wbr>Square<wbr>Intersection<span class="tsd-signature-symbol">(</span>ray0<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, ray1<span class="tsd-signature-symbol">: </span><a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, halfLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/raymath.ts#L76">source/raymath.ts:76</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the intersection of a ray with an axis-aligned square at [0.0, 0.0] with side length of 2 * halfLength.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ray0: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Start point of a ray.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ray1: <a href="vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far point of a ray, used to derive the ray&#39;s direction.</p>
+									</div>
+								</li>
+								<li>
+									<h5>halfLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h4>
+							<ul>
+								<li>The intersection point of the square and the ray.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="ray_math.html">ray_<wbr>math</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#distancepointtoray" class="tsd-kind-icon">distance<wbr>Point<wbr>ToRay</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#eyewithpointinview" class="tsd-kind-icon">eye<wbr>With<wbr>Point<wbr>InView</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#ispointwithinndc" class="tsd-kind-icon">is<wbr>Point<wbr>WithinNDC</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#ispointwithinsquare" class="tsd-kind-icon">is<wbr>Point<wbr>Within<wbr>Square</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#pointsquareintersection" class="tsd-kind-icon">point<wbr>Square<wbr>Intersection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#raycircleintersection" class="tsd-kind-icon">ray<wbr>Circle<wbr>Intersection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#raylineintersection" class="tsd-kind-icon">ray<wbr>Line<wbr>Intersection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#rayplaneintersection" class="tsd-kind-icon">ray<wbr>Plane<wbr>Intersection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#rayplaneintersection_tube" class="tsd-kind-icon">ray<wbr>Plane<wbr>Intersection_<wbr>tube</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#raysphereintersection" class="tsd-kind-icon">ray<wbr>Sphere<wbr>Intersection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="ray_math.html#raysquareintersection" class="tsd-kind-icon">ray<wbr>Square<wbr>Intersection</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

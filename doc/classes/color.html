@@ -1,0 +1,1919 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Color | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="color.html">Color</a>
+				</li>
+			</ul>
+			<h1>Class Color</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Color class that allows for specification and conversion of colors in various color spaces. Please not that most of
+							the color conversion math is based on  <a href="https://www.easyrgb.com/en/math.php" class="external">https://www.easyrgb.com/en/math.php</a>. The internal color representation
+							is a 4-tuple of GLclampf components in RGB color space and additional alpha. All color conversion, e.g., getters is
+						computed on the fly, not cached, and is not optimized for, e.g., massive pixel processing.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Color</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="color.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="color.html#_altered" class="tsd-kind-icon">_altered</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="color.html#_rgba" class="tsd-kind-icon">_rgba</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="color.html#default_alpha" class="tsd-kind-icon">DEFAULT_<wbr>ALPHA</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="color.html#hex_format_regex" class="tsd-kind-icon">HEX_<wbr>FORMAT_<wbr>REGEX</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#a" class="tsd-kind-icon">a</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="color.html#altered" class="tsd-kind-icon">altered</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#b" class="tsd-kind-icon">b</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#cmyk" class="tsd-kind-icon">cmyk</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#cmyka" class="tsd-kind-icon">cmyka</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#g" class="tsd-kind-icon">g</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#hexrgb" class="tsd-kind-icon">hexRGB</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#hexrgba" class="tsd-kind-icon">hexRGBA</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#hsl" class="tsd-kind-icon">hsl</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#hsla" class="tsd-kind-icon">hsla</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#lab" class="tsd-kind-icon">lab</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#laba" class="tsd-kind-icon">laba</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#r" class="tsd-kind-icon">r</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#rgb" class="tsd-kind-icon">rgb</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#rgbf32" class="tsd-kind-icon">rgb<wbr>F32</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#rgbui8" class="tsd-kind-icon">rgbUI8</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#rgba" class="tsd-kind-icon">rgba</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#rgbaf32" class="tsd-kind-icon">rgba<wbr>F32</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="color.html#rgbaui8" class="tsd-kind-icon">rgbaUI8</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#equals" class="tsd-kind-icon">equals</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromcmyk" class="tsd-kind-icon">fromCMYK</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromf32" class="tsd-kind-icon">from<wbr>F32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromhsl" class="tsd-kind-icon">fromHSL</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromhex" class="tsd-kind-icon">from<wbr>Hex</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromlab" class="tsd-kind-icon">fromLAB</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromrgb" class="tsd-kind-icon">fromRGB</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#fromui8" class="tsd-kind-icon">fromUI8</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#gray" class="tsd-kind-icon">gray</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="color.html#tuple" class="tsd-kind-icon">tuple</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#cmyk2rgb" class="tsd-kind-icon">cmyk2rgb</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#hex2rgba" class="tsd-kind-icon">hex2rgba</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#hsl2rgb" class="tsd-kind-icon">hsl2rgb</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="color.html#hue2rgb" class="tsd-kind-icon">hue2rgb</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#lab2rgb" class="tsd-kind-icon">lab2rgb</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#lab2xyz" class="tsd-kind-icon">lab2xyz</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#lerp" class="tsd-kind-icon">lerp</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#rgb2cmyk" class="tsd-kind-icon">rgb2cmyk</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#rgb2hex" class="tsd-kind-icon">rgb2hex</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#rgb2hsl" class="tsd-kind-icon">rgb2hsl</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#rgb2lab" class="tsd-kind-icon">rgb2lab</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#rgb2xyz" class="tsd-kind-icon">rgb2xyz</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#rgba2hex" class="tsd-kind-icon">rgba2hex</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="color.html#to2charhexcode" class="tsd-kind-icon">to2<wbr>Char<wbr>Hex<wbr>Code</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#xyz2lab" class="tsd-kind-icon">xyz2lab</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="color.html#xyz2rgb" class="tsd-kind-icon">xyz2rgb</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Color<span class="tsd-signature-symbol">(</span>rgba<span class="tsd-signature-symbol">?: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L356">source/color.ts:356</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates an instance of color (a 4-tuple in RGBA space).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> rgba: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Either RGB tuple or RGBA tuple. If none is provided, default will be kept.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> alpha: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If RGB tuple is provided an additional alpha value can be specified.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_altered" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _altered</h3>
+					<div class="tsd-signature tsd-kind-icon">_altered<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L32">source/color.ts:32</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="color.html#altered">altered</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_rgba" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _rgba</h3>
+					<div class="tsd-signature tsd-kind-icon">_rgba<span class="tsd-signature-symbol">:</span> <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L28">source/color.ts:28</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="default_alpha" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>ALPHA</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>ALPHA<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L25">source/color.ts:25</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="hex_format_regex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> HEX_<wbr>FORMAT_<wbr>REGEX</h3>
+					<div class="tsd-signature tsd-kind-icon">HEX_<wbr>FORMAT_<wbr>REGEX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L26">source/color.ts:26</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="a" class="tsd-anchor"></a>
+					<h3>a</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> a<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L655">source/color.ts:655</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the Alpha component as float value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="altered" class="tsd-anchor"></a>
+					<h3>altered</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> altered<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> altered<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L721">source/color.ts:721</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether or not color value has changed.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L728">source/color.ts:728</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Intended for resetting alteration status.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>status: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="b" class="tsd-anchor"></a>
+					<h3>b</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> b<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L648">source/color.ts:648</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the Blue component as float value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="cmyk" class="tsd-anchor"></a>
+					<h3>cmyk</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> cmyk<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L706">source/color.ts:706</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the CMYK components as floating point 4-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="cmyka" class="tsd-anchor"></a>
+					<h3>cmyka</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> cmyka<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf5" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf5</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L713">source/color.ts:713</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the CMYKA components as floating point 5-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf5" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf5</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="g" class="tsd-anchor"></a>
+					<h3>g</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> g<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L641">source/color.ts:641</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the Green component as float value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="hexrgb" class="tsd-anchor"></a>
+					<h3>hexRGB</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hexRGB<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L662">source/color.ts:662</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGB components as hexadecimal string.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="hexrgba" class="tsd-anchor"></a>
+					<h3>hexRGBA</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hexRGBA<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L669">source/color.ts:669</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGBA components as hexadecimal string.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="hsl" class="tsd-anchor"></a>
+					<h3>hsl</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hsl<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L676">source/color.ts:676</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the HSL components as floating point 3-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="hsla" class="tsd-anchor"></a>
+					<h3>hsla</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hsla<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L683">source/color.ts:683</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the HSLA components as floating point 4-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="lab" class="tsd-anchor"></a>
+					<h3>lab</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> lab<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L691">source/color.ts:691</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the LAB components as floating point 3-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="laba" class="tsd-anchor"></a>
+					<h3>laba</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> laba<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L698">source/color.ts:698</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the LABA components as floating point 4-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="r" class="tsd-anchor"></a>
+					<h3>r</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> r<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L634">source/color.ts:634</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the Red component as float value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="rgb" class="tsd-anchor"></a>
+					<h3>rgb</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> rgb<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L579">source/color.ts:579</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGB components as floating point 3-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="rgbf32" class="tsd-anchor"></a>
+					<h3>rgb<wbr>F32</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> rgbF32<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L597">source/color.ts:597</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGB components as array of three 32bit floats, each in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float32Array</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="rgbui8" class="tsd-anchor"></a>
+					<h3>rgbUI8</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> rgbUI8<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L586">source/color.ts:586</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGB components as array of three bytes (8bit unsigned int), each in range [0, 255].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="rgba" class="tsd-anchor"></a>
+					<h3>rgba</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> rgba<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L608">source/color.ts:608</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGBA components as floating point 4-tuple, each value in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="rgbaf32" class="tsd-anchor"></a>
+					<h3>rgba<wbr>F32</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> rgbaF32<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L627">source/color.ts:627</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGBA components as array of four 32bit floats, each in range [0.0, 1.0].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float32Array</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="rgbaui8" class="tsd-anchor"></a>
+					<h3>rgbaUI8</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> rgbaUI8<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L615">source/color.ts:615</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read access to the RGBA components as array of four bytes (8bit unsigned int), each in range [0, 255].</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="equals" class="tsd-anchor"></a>
+					<h3>equals</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">equals<span class="tsd-signature-symbol">(</span>other<span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L383">source/color.ts:383</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks whether or not this color matches a second color (based on internal rgba floating representation).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>other: <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Color to compare color values to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<ul>
+								<li>True iff both colors have the exact same rgba floating point values.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromcmyk" class="tsd-anchor"></a>
+					<h3>fromCMYK</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fromCMYK<span class="tsd-signature-symbol">(</span>cyan<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, magenta<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, yellow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L499">source/color.ts:499</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a color in CMYK color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>cyan: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Cyan color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>magenta: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Magenta color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>yellow: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Yellow color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>key: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Key/Black color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Alpha color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromf32" class="tsd-anchor"></a>
+					<h3>from<wbr>F32</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>F32<span class="tsd-signature-symbol">(</span>red<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, green<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, blue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L396">source/color.ts:396</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a color in float (32bit) RGBA colors.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>red: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Red color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>green: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Green color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>blue: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Blue color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Alpha color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromhsl" class="tsd-anchor"></a>
+					<h3>fromHSL</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fromHSL<span class="tsd-signature-symbol">(</span>hue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, saturation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, lightness<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L456">source/color.ts:456</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a color in HSL color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hue: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Hue color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>saturation: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Saturation color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>lightness: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Lightness color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Alpha color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromhex" class="tsd-anchor"></a>
+					<h3>from<wbr>Hex</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Hex<span class="tsd-signature-symbol">(</span>hex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L517">source/color.ts:517</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a hexadecimal color string.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hex: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Hexadecimal color string: red, green, blue, and alpha (optional) each in [&#39;00&#39;, &#39;ff&#39;].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromlab" class="tsd-anchor"></a>
+					<h3>fromLAB</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fromLAB<span class="tsd-signature-symbol">(</span>lightness<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, greenRed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, blueYellow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L477">source/color.ts:477</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a color in CIE-Lab color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>lightness: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Lightness color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>greenRed: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Green-Red/a color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>blueYellow: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Blue-Yellow/b color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Alpha color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromrgb" class="tsd-anchor"></a>
+					<h3>fromRGB</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fromRGB<span class="tsd-signature-symbol">(</span>red<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, green<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, blue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L438">source/color.ts:438</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a color in RGB color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>red: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Red color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>green: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Green color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>blue: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Blue color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Alpha color component in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fromui8" class="tsd-anchor"></a>
+					<h3>fromUI8</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fromUI8<span class="tsd-signature-symbol">(</span>red<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, green<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, blue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L417">source/color.ts:417</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the internal rgba store using a color in unsigned int (8bit) RGBA colors.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>red: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Red color component in [0, 255]</p>
+									</div>
+								</li>
+								<li>
+									<h5>green: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Green color component in [0, 255]</p>
+									</div>
+								</li>
+								<li>
+									<h5>blue: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Blue color component in [0, 255]</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Alpha color component in [0, 255]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>The color instance (this).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="gray" class="tsd-anchor"></a>
+					<h3>gray</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">gray<span class="tsd-signature-symbol">(</span>algorithm<span class="tsd-signature-symbol">?: </span><a href="../enums/color.grayscalealgorithm.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GrayscaleAlgorithm</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L530">source/color.ts:530</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts the color to a gray value using the specified algorithm.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>algorithm: <a href="../enums/color.grayscalealgorithm.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GrayscaleAlgorithm</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The algorithm used for color to gray conversion.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="tuple" class="tsd-anchor"></a>
+					<h3>tuple</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">tuple<span class="tsd-signature-symbol">(</span>space<span class="tsd-signature-symbol">: </span><a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glclampf5" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf5</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L562">source/color.ts:562</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Enables generic color access within a specified color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>space: <a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Expected color space of the requested color values.</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether or not alpha channel should be provided as well.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a><span class="tsd-signature-symbol"> | </span><a href="../modules/tuples.html#glclampf5" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf5</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="cmyk2rgb" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> cmyk2rgb</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">cmyk2rgb<span class="tsd-signature-symbol">(</span>cmyk<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L241">source/color.ts:241</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from CMYK space to RGB space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>cmyk: <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>CMYK color tuple: cyan, magenta, yellow, and key, each in [0.0, 1.0].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="hex2rgba" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> hex2rgba</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">hex2rgba<span class="tsd-signature-symbol">(</span>hex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L268">source/color.ts:268</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from HEX string to RGBA space. The hex string can start with &#39;#&#39; or &#39;0x&#39; or neither of these.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hex: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Hexadecimal color string: red, green, and blue, each in [&#39;00&#39;, &#39;ff&#39;].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h4>
+							<ul>
+								<li>RGBA color tuple: red, green, blue, and alpha, each in [0.0, 1.0]. On error [0, 0, 0, 0] is returned.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="hsl2rgb" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> hsl2rgb</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">hsl2rgb<span class="tsd-signature-symbol">(</span>hsl<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L72">source/color.ts:72</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from HSL space to RGB space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hsl: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>HSL color tuple: hue, saturation, and lightness, each in [0.0, 1.0].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>RGB color tuple: red, green, and blue, each in [0.0, 1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="hue2rgb" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> hue2rgb</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">hue2rgb<span class="tsd-signature-symbol">(</span>p<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, q<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, t<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L38">source/color.ts:38</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a hue value into an rgb value.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>p: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>q: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>t: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="lab2rgb" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> lab2rgb</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">lab2rgb<span class="tsd-signature-symbol">(</span>lab<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L222">source/color.ts:222</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from LAB space to RGB space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>lab: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="lab2xyz" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> lab2xyz</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">lab2xyz<span class="tsd-signature-symbol">(</span>lab<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L126">source/color.ts:126</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from LAB space to XYZ space (D65/2° illuminant)</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>lab: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>XYZ color tuple: x, y, and z, each in [0.0, 1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="lerp" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> lerp</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">lerp<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a>, y<span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, space<span class="tsd-signature-symbol">?: </span><a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L329">source/color.ts:329</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Performs a linear interpolation between x and y using a to weight between them within the specified color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>First color stop for lerp/linear interpolation.</p>
+									</div>
+								</li>
+								<li>
+									<h5>y: <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Second color stop for lerp/linear interpolation.</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Specify the value to use to interpolate between x and y.</p>
+									</div>
+								</li>
+								<li>
+									<h5>space: <a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The color space that is to be used for linear interpolation of two colors.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="rgb2cmyk" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> rgb2cmyk</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">rgb2cmyk<span class="tsd-signature-symbol">(</span>rgb<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L253">source/color.ts:253</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from RGB space to CMYK space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rgb: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h4>
+							<ul>
+								<li>CMYK color tuple: cyan, magenta, yellow, and key, each in [0.0, 1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="rgb2hex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> rgb2hex</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">rgb2hex<span class="tsd-signature-symbol">(</span>rgb<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L298">source/color.ts:298</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from RGB space to HEX string.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rgb: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<ul>
+								<li>Hexadecimal color string: red, green, and blue, each in [&#39;00&#39;, &#39;ff&#39;], with &#39;#&#39; prefix</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="rgb2hsl" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> rgb2hsl</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">rgb2hsl<span class="tsd-signature-symbol">(</span>rgb<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L91">source/color.ts:91</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from HSL space to RGB space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rgb: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>RGB color tuple: red, green, and blue, each in [0.0, 1.0].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>HSL color tuple: hue, saturation, and lightness, each in [0.0, 1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="rgb2lab" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> rgb2lab</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">rgb2lab<span class="tsd-signature-symbol">(</span>rgb<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L231">source/color.ts:231</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from RGB space to LAB space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rgb: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="rgb2xyz" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> rgb2xyz</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">rgb2xyz<span class="tsd-signature-symbol">(</span>rgb<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L203">source/color.ts:203</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from Adobe-RGB space to XYZ space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rgb: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>XYZ color tuple: x, y, and z, each in [0.0, 1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="rgba2hex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> rgba2hex</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">rgba2hex<span class="tsd-signature-symbol">(</span>rgba<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L312">source/color.ts:312</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from RGBA space to HEX string.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rgba: <a href="../modules/tuples.html#glclampf4" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>RGBA color tuple: red, green, blue, and alpha, each in [0.0, 1.0]</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<ul>
+								<li>Hexadecimal color string: red, green, blue, and alpha, each in [&#39;00&#39;, &#39;ff&#39;], with &#39;#&#39; prefix</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="to2charhexcode" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> to2<wbr>Char<wbr>Hex<wbr>Code</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">to2<wbr>Char<wbr>Hex<wbr>Code<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L63">source/color.ts:63</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a float value to two-character HEX code.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A float value in [0.0, 1.0].</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<ul>
+								<li>Two-character hexadecimal representation in [00, FF].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="xyz2lab" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> xyz2lab</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">xyz2lab<span class="tsd-signature-symbol">(</span>xyz<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L153">source/color.ts:153</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from XYZ space to CIE-Lab space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>xyz: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>XYZ color tuple: x, y, and z, and refer to the D65/2° illuminant.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>LAB color tuple: lightness, greenRed, and blueYellow, each in [0.0, 1.0].</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="xyz2rgb" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> xyz2rgb</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">xyz2rgb<span class="tsd-signature-symbol">(</span>xyz<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/color.ts#L175">source/color.ts:175</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a color from XYZ space to Adobe-RGB space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>xyz: <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>XYZ color tuple: x, y, and z, and refer to the D65/2° illuminant.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glclampf3" class="tsd-signature-type" data-tsd-kind="Type alias">GLclampf3</a></h4>
+							<ul>
+								<li>RGB color tuple: red, green, and blue, each in [0.0, 1.0]</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="color.html" class="tsd-kind-icon">Color</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="color.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="color.html#_altered" class="tsd-kind-icon">_altered</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="color.html#_rgba" class="tsd-kind-icon">_rgba</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="color.html#default_alpha" class="tsd-kind-icon">DEFAULT_<wbr>ALPHA</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="color.html#hex_format_regex" class="tsd-kind-icon">HEX_<wbr>FORMAT_<wbr>REGEX</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#a" class="tsd-kind-icon">a</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="color.html#altered" class="tsd-kind-icon">altered</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#b" class="tsd-kind-icon">b</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#cmyk" class="tsd-kind-icon">cmyk</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#cmyka" class="tsd-kind-icon">cmyka</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#g" class="tsd-kind-icon">g</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#hexrgb" class="tsd-kind-icon">hexRGB</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#hexrgba" class="tsd-kind-icon">hexRGBA</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#hsl" class="tsd-kind-icon">hsl</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#hsla" class="tsd-kind-icon">hsla</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#lab" class="tsd-kind-icon">lab</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#laba" class="tsd-kind-icon">laba</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#r" class="tsd-kind-icon">r</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#rgb" class="tsd-kind-icon">rgb</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#rgbf32" class="tsd-kind-icon">rgb<wbr>F32</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#rgbui8" class="tsd-kind-icon">rgbUI8</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#rgba" class="tsd-kind-icon">rgba</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#rgbaf32" class="tsd-kind-icon">rgba<wbr>F32</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="color.html#rgbaui8" class="tsd-kind-icon">rgbaUI8</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#equals" class="tsd-kind-icon">equals</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromcmyk" class="tsd-kind-icon">fromCMYK</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromf32" class="tsd-kind-icon">from<wbr>F32</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromhsl" class="tsd-kind-icon">fromHSL</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromhex" class="tsd-kind-icon">from<wbr>Hex</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromlab" class="tsd-kind-icon">fromLAB</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromrgb" class="tsd-kind-icon">fromRGB</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#fromui8" class="tsd-kind-icon">fromUI8</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#gray" class="tsd-kind-icon">gray</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="color.html#tuple" class="tsd-kind-icon">tuple</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#cmyk2rgb" class="tsd-kind-icon">cmyk2rgb</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#hex2rgba" class="tsd-kind-icon">hex2rgba</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#hsl2rgb" class="tsd-kind-icon">hsl2rgb</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="color.html#hue2rgb" class="tsd-kind-icon">hue2rgb</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#lab2rgb" class="tsd-kind-icon">lab2rgb</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#lab2xyz" class="tsd-kind-icon">lab2xyz</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#lerp" class="tsd-kind-icon">lerp</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#rgb2cmyk" class="tsd-kind-icon">rgb2cmyk</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#rgb2hex" class="tsd-kind-icon">rgb2hex</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#rgb2hsl" class="tsd-kind-icon">rgb2hsl</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#rgb2lab" class="tsd-kind-icon">rgb2lab</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#rgb2xyz" class="tsd-kind-icon">rgb2xyz</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#rgba2hex" class="tsd-kind-icon">rgba2hex</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="color.html#to2charhexcode" class="tsd-kind-icon">to2<wbr>Char<wbr>Hex<wbr>Code</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#xyz2lab" class="tsd-kind-icon">xyz2lab</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="color.html#xyz2rgb" class="tsd-kind-icon">xyz2rgb</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

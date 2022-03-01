@@ -1,0 +1,1493 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Camera | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="camera.html">Camera</a>
+				</li>
+			</ul>
+			<h1>Class Camera</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Virtual 3D camera specified by eye, center, up, fovy, near, far, and a viewport size. It provides access to cached
+							view, projection, and view projection matrices. Cached by means of whenever one of the attributes change, all
+							matrices are invalidated and recalculated only once and only when requested. Please note that eye denotes the
+						position in a virtual 3D scene and center denotes the position which is being looked at.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Camera</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="camera.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_altered" class="tsd-kind-icon">_altered</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_aspect" class="tsd-kind-icon">_aspect</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_center" class="tsd-kind-icon">_center</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_eye" class="tsd-kind-icon">_eye</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_far" class="tsd-kind-icon">_far</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_fovy" class="tsd-kind-icon">_fovy</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_near" class="tsd-kind-icon">_near</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_postviewprojection" class="tsd-kind-icon">_post<wbr>View<wbr>Projection</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_projection" class="tsd-kind-icon">_projection</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_projectioninverse" class="tsd-kind-icon">_projection<wbr>Inverse</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_up" class="tsd-kind-icon">_up</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_view" class="tsd-kind-icon">_view</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_viewinverse" class="tsd-kind-icon">_view<wbr>Inverse</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_viewprojection" class="tsd-kind-icon">_view<wbr>Projection</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_viewprojectioninverse" class="tsd-kind-icon">_view<wbr>Projection<wbr>Inverse</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="camera.html#_viewport" class="tsd-kind-icon">_viewport</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="camera.html#default_center" class="tsd-kind-icon">DEFAULT_<wbr>CENTER</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="camera.html#default_eye" class="tsd-kind-icon">DEFAULT_<wbr>EYE</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="camera.html#default_far" class="tsd-kind-icon">DEFAULT_<wbr>FAR</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="camera.html#default_fovy" class="tsd-kind-icon">DEFAULT_<wbr>FOVY</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="camera.html#default_near" class="tsd-kind-icon">DEFAULT_<wbr>NEAR</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="camera.html#default_up" class="tsd-kind-icon">DEFAULT_<wbr>UP</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#altered" class="tsd-kind-icon">altered</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#aspect" class="tsd-kind-icon">aspect</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#center" class="tsd-kind-icon">center</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#eye" class="tsd-kind-icon">eye</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#far" class="tsd-kind-icon">far</a></li>
+								<li class="tsd-kind-set-signature tsd-parent-kind-class"><a href="camera.html#fovx" class="tsd-kind-icon">fovx</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#fovy" class="tsd-kind-icon">fovy</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#height" class="tsd-kind-icon">height</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#near" class="tsd-kind-icon">near</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#postviewprojection" class="tsd-kind-icon">post<wbr>View<wbr>Projection</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#projection" class="tsd-kind-icon">projection</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#projectioninverse" class="tsd-kind-icon">projection<wbr>Inverse</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#up" class="tsd-kind-icon">up</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#view" class="tsd-kind-icon">view</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#viewinverse" class="tsd-kind-icon">view<wbr>Inverse</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#viewprojection" class="tsd-kind-icon">view<wbr>Projection</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#viewprojectioninverse" class="tsd-kind-icon">view<wbr>Projection<wbr>Inverse</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="camera.html#viewport" class="tsd-kind-icon">viewport</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="camera.html#width" class="tsd-kind-icon">width</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="camera.html#fovfromlens" class="tsd-kind-icon">fov<wbr>From<wbr>Lens</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="camera.html#invalidate" class="tsd-kind-icon">invalidate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="camera.html#calculatefovy" class="tsd-kind-icon">calculate<wbr>FovY</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Camera<span class="tsd-signature-symbol">(</span>eye<span class="tsd-signature-symbol">?: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, center<span class="tsd-signature-symbol">?: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, up<span class="tsd-signature-symbol">?: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="camera.html" class="tsd-signature-type" data-tsd-kind="Class">Camera</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L88">source/camera.ts:88</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Constructor setting up the camera&#39;s eye, center and up vectors.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eye: <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The viewpoint of the virtual camera</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> center: <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The look-at point in the scene</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> up: <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The up-vector of the virtual camera</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="camera.html" class="tsd-signature-type" data-tsd-kind="Class">Camera</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_altered" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _altered</h3>
+					<div class="tsd-signature tsd-kind-icon">_altered<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L75">source/camera.ts:75</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#altered">altered</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_aspect" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _aspect</h3>
+					<div class="tsd-signature tsd-kind-icon">_aspect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1.0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L53">source/camera.ts:53</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#aspect">aspect</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_center" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _center</h3>
+					<div class="tsd-signature tsd-kind-icon">_center<span class="tsd-signature-symbol">:</span> <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L35">source/camera.ts:35</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#center">center</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_eye" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _eye</h3>
+					<div class="tsd-signature tsd-kind-icon">_eye<span class="tsd-signature-symbol">:</span> <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L32">source/camera.ts:32</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#eye">eye</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_far" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _far</h3>
+					<div class="tsd-signature tsd-kind-icon">_far<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L47">source/camera.ts:47</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#far">far</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_fovy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _fovy</h3>
+					<div class="tsd-signature tsd-kind-icon">_fovy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L41">source/camera.ts:41</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#fovy">fovy</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_near" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _near</h3>
+					<div class="tsd-signature tsd-kind-icon">_near<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L44">source/camera.ts:44</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#near">near</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_postviewprojection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _post<wbr>View<wbr>Projection</h3>
+					<div class="tsd-signature tsd-kind-icon">_post<wbr>View<wbr>Projection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L72">source/camera.ts:72</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#postviewprojection">postViewProjection</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_projection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _projection</h3>
+					<div class="tsd-signature tsd-kind-icon">_projection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L61">source/camera.ts:61</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#projection">projection</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_projectioninverse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _projection<wbr>Inverse</h3>
+					<div class="tsd-signature tsd-kind-icon">_projection<wbr>Inverse<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L63">source/camera.ts:63</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#projectioninverse">projectionInverse</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_up" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _up</h3>
+					<div class="tsd-signature tsd-kind-icon">_up<span class="tsd-signature-symbol">:</span> <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L38">source/camera.ts:38</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#up">up</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_view" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _view</h3>
+					<div class="tsd-signature tsd-kind-icon">_view<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L56">source/camera.ts:56</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#view">view</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_viewinverse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _view<wbr>Inverse</h3>
+					<div class="tsd-signature tsd-kind-icon">_view<wbr>Inverse<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L58">source/camera.ts:58</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#viewinverse">viewInverse</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_viewprojection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _view<wbr>Projection</h3>
+					<div class="tsd-signature tsd-kind-icon">_view<wbr>Projection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L66">source/camera.ts:66</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#viewprojection">viewProjection</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_viewprojectioninverse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _view<wbr>Projection<wbr>Inverse</h3>
+					<div class="tsd-signature tsd-kind-icon">_view<wbr>Projection<wbr>Inverse<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L68">source/camera.ts:68</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#viewprojectioninverse">viewProjectionInverse</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_viewport" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _viewport</h3>
+					<div class="tsd-signature tsd-kind-icon">_viewport<span class="tsd-signature-symbol">:</span> <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L50">source/camera.ts:50</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="camera.html#viewport">viewport</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="default_center" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>CENTER</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>CENTER<span class="tsd-signature-symbol">:</span> <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L22">source/camera.ts:22</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="default_eye" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>EYE</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>EYE<span class="tsd-signature-symbol">:</span> <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L21">source/camera.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="default_far" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>FAR</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>FAR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">8</span><span class="tsd-signature-symbol"> = 8.0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L28">source/camera.ts:28</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="default_fovy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>FOVY</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>FOVY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">45</span><span class="tsd-signature-symbol"> = 45.0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L25">source/camera.ts:25</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="default_near" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>NEAR</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>NEAR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> = 2.0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L27">source/camera.ts:27</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="default_up" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DEFAULT_<wbr>UP</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>UP<span class="tsd-signature-symbol">:</span> <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L23">source/camera.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="altered" class="tsd-anchor"></a>
+					<h3>altered</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> altered<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> altered<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L414">source/camera.ts:414</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether or not any other public property has changed. Please note that the alteration status is detached from
+									caching state of lazily computed properties.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L421">source/camera.ts:421</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Intended for resetting alteration status.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>status: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="aspect" class="tsd-anchor"></a>
+					<h3>aspect</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> aspect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> aspect<span class="tsd-signature-symbol">(</span>aspect<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L316">source/camera.ts:316</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the ratio of width over height (set explicitly for differentiation between viewport size and scale).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L306">source/camera.ts:306</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the aspect ratio (width over height). However, this is not derived from viewport to allow for
+									differentiation between viewport size and scale.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>aspect: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="center" class="tsd-anchor"></a>
+					<h3>center</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> center<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> center<span class="tsd-signature-symbol">(</span>center<span class="tsd-signature-symbol">: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L146">source/camera.ts:146</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Look-at point into a virtual 3D scene.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L153">source/camera.ts:153</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the center. Invalidates the view.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>center: <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="eye" class="tsd-anchor"></a>
+					<h3>eye</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> eye<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> eye<span class="tsd-signature-symbol">(</span>eye<span class="tsd-signature-symbol">: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L128">source/camera.ts:128</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Position of the virtual camera in a virtual 3D scene, the point of view.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L135">source/camera.ts:135</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the eye. Invalidates the view.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eye: <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="far" class="tsd-anchor"></a>
+					<h3>far</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> far<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> far<span class="tsd-signature-symbol">(</span>far<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L251">source/camera.ts:251</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Distance of far-plane in view coordinates.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L258">source/camera.ts:258</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the distance to the far clipping plane. Invalidates the projection.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>far: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class">
+					<a name="fovx" class="tsd-anchor"></a>
+					<h3>fovx</h3>
+					<ul class="tsd-signatures tsd-kind-set-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> fovx<span class="tsd-signature-symbol">(</span>fovx<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L201">source/camera.ts:201</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the horizontal field-of-view in degrees. Invalidates the projection.
+									Note that internally, this will be translated to the corresponding the vertical field.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fovx: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="fovy" class="tsd-anchor"></a>
+					<h3>fovy</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> fovy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> fovy<span class="tsd-signature-symbol">(</span>fovy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L182">source/camera.ts:182</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Vertical field of view in degree.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L189">source/camera.ts:189</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the vertical field-of-view in degrees. Invalidates the projection.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fovy: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="height" class="tsd-anchor"></a>
+					<h3>height</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> height<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L298">source/camera.ts:298</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Access to the viewport height.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="near" class="tsd-anchor"></a>
+					<h3>near</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> near<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> near<span class="tsd-signature-symbol">(</span>near<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L230">source/camera.ts:230</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Distance of near-plane in view coordinates.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L237">source/camera.ts:237</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the distance to the near clipping plane. Invalidates the projection.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>near: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="postviewprojection" class="tsd-anchor"></a>
+					<h3>post<wbr>View<wbr>Projection</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> postViewProjection<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> postViewProjection<span class="tsd-signature-symbol">(</span>matrix<span class="tsd-signature-symbol">: </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L393">source/camera.ts:393</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the matrix which contains the operations that are applied to the viewProjection matrix.
+									For now this is only used by the TiledRenderer to adjust the NDC-coordinates to the tile.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L405">source/camera.ts:405</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the matrix which contains the operations that are applied to the viewProjection matrix.
+									For now this is only used by the TiledRenderer to adjust the NDC-coordinates to the tile.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>matrix: <a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="projection" class="tsd-anchor"></a>
+					<h3>projection</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> projection<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L345">source/camera.ts:345</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Either returns the cached projection matrix or derives the current one after invalidation and caches it.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="projectioninverse" class="tsd-anchor"></a>
+					<h3>projection<wbr>Inverse</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> projectionInverse<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L356">source/camera.ts:356</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Either returns the cached inverse projection matrix or derives the current one after invalidation and caches it.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="up" class="tsd-anchor"></a>
+					<h3>up</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> up<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> up<span class="tsd-signature-symbol">(</span>up<span class="tsd-signature-symbol">: </span><a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L164">source/camera.ts:164</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Up-vector of the virtual camera.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L171">source/camera.ts:171</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the up vector. Invalidates the view.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>up: <a href="../modules/vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="view" class="tsd-anchor"></a>
+					<h3>view</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> view<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L323">source/camera.ts:323</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Either returns the cached view matrix or derives the current one after invalidation and caches it.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="viewinverse" class="tsd-anchor"></a>
+					<h3>view<wbr>Inverse</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> viewInverse<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L334">source/camera.ts:334</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Either returns the inverse cached view matrix or derives the current one after invalidation and caches it.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="viewprojection" class="tsd-anchor"></a>
+					<h3>view<wbr>Projection</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> viewProjection<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L368">source/camera.ts:368</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the view projection matrix based on view and projection. This is also cached (since matrix
+									multiplication is involved).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="viewprojectioninverse" class="tsd-anchor"></a>
+					<h3>view<wbr>Projection<wbr>Inverse</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> viewProjectionInverse<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L381">source/camera.ts:381</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the inverse view projection matrix based on view and projection. This is also cached (since matrix
+									multiplication is involved).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="viewport" class="tsd-anchor"></a>
+					<h3>viewport</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> viewport<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> viewport<span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L284">source/camera.ts:284</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The size of the target viewport used to determine the aspect ratio for subsequent perspective matrix projection
+									computation.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L272">source/camera.ts:272</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the viewport size. Invalidates the projection.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>size: <a href="../modules/tuples.html#glsizei2" class="tsd-signature-type" data-tsd-kind="Type alias">GLsizei2</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="width" class="tsd-anchor"></a>
+					<h3>width</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> width<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L291">source/camera.ts:291</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Access to the viewport width.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fovfromlens" class="tsd-anchor"></a>
+					<h3>fov<wbr>From<wbr>Lens</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fov<wbr>From<wbr>Lens<span class="tsd-signature-symbol">(</span>sensorWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, focalLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L222">source/camera.ts:222</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>With this function the view of a physical camera can be emulated. The width and focal length of
+										a lens are used to generate the correct field of view.
+										Blender camera presets can be imported by using the camera setting &#39;HorizontalFit&#39; and using the
+										width and focal length values in this function.
+									See: <a href="https://www.scantips.com/lights/fieldofviewmath.html">https://www.scantips.com/lights/fieldofviewmath.html</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sensorWidth: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Width of the sensor in mm</p>
+									</div>
+								</li>
+								<li>
+									<h5>focalLength: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Focal length of the lens in mm</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="invalidate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> invalidate</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">invalidate<span class="tsd-signature-symbol">(</span>invalidateView<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, invalidateProjection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, invalidateOnlyViewProjection<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L108">source/camera.ts:108</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Invalidates derived matrices, i.e., view, projection, and view-projection. The view should be invalidated on
+										eye, center, and up changes. The projection should be invalidated on fovy, viewport, near, and far changes.
+									The view projection invalidates whenever either one or both view and projection are to be invalidated.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>invalidateView: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+								<li>
+									<h5>invalidateProjection: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+								<li>
+									<h5>invalidateOnlyViewProjection: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="calculatefovy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> calculate<wbr>FovY</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">calculate<wbr>FovY<span class="tsd-signature-symbol">(</span>elementDisplayHeight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, eyeToDisplayDistance<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/camera.ts#L86">source/camera.ts:86</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes a vertical field of view angle based on the display height and distance to eye. Since both parameters
+										are highly dependent of the device, this function can only be used to derive a rough estimate for a reasonable
+									field of view. Note that both parameters should be passed using the same unit, e.g., inch or centimeters.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>elementDisplayHeight: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Height of an element on the display.</p>
+									</div>
+								</li>
+								<li>
+									<h5>eyeToDisplayDistance: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Distance from the users eye to that element.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Vertical field of view angle in radian.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="camera.html" class="tsd-kind-icon">Camera</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="camera.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_altered" class="tsd-kind-icon">_altered</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_aspect" class="tsd-kind-icon">_aspect</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_center" class="tsd-kind-icon">_center</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_eye" class="tsd-kind-icon">_eye</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_far" class="tsd-kind-icon">_far</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_fovy" class="tsd-kind-icon">_fovy</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_near" class="tsd-kind-icon">_near</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_postviewprojection" class="tsd-kind-icon">_post<wbr>View<wbr>Projection</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_projection" class="tsd-kind-icon">_projection</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_projectioninverse" class="tsd-kind-icon">_projection<wbr>Inverse</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_up" class="tsd-kind-icon">_up</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_view" class="tsd-kind-icon">_view</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_viewinverse" class="tsd-kind-icon">_view<wbr>Inverse</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_viewprojection" class="tsd-kind-icon">_view<wbr>Projection</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_viewprojectioninverse" class="tsd-kind-icon">_view<wbr>Projection<wbr>Inverse</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#_viewport" class="tsd-kind-icon">_viewport</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="camera.html#default_center" class="tsd-kind-icon">DEFAULT_<wbr>CENTER</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="camera.html#default_eye" class="tsd-kind-icon">DEFAULT_<wbr>EYE</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="camera.html#default_far" class="tsd-kind-icon">DEFAULT_<wbr>FAR</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="camera.html#default_fovy" class="tsd-kind-icon">DEFAULT_<wbr>FOVY</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="camera.html#default_near" class="tsd-kind-icon">DEFAULT_<wbr>NEAR</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="camera.html#default_up" class="tsd-kind-icon">DEFAULT_<wbr>UP</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#altered" class="tsd-kind-icon">altered</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#aspect" class="tsd-kind-icon">aspect</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#center" class="tsd-kind-icon">center</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#eye" class="tsd-kind-icon">eye</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#far" class="tsd-kind-icon">far</a>
+							</li>
+							<li class=" tsd-kind-set-signature tsd-parent-kind-class">
+								<a href="camera.html#fovx" class="tsd-kind-icon">fovx</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#fovy" class="tsd-kind-icon">fovy</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#height" class="tsd-kind-icon">height</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#near" class="tsd-kind-icon">near</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#postviewprojection" class="tsd-kind-icon">post<wbr>View<wbr>Projection</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#projection" class="tsd-kind-icon">projection</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#projectioninverse" class="tsd-kind-icon">projection<wbr>Inverse</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#up" class="tsd-kind-icon">up</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#view" class="tsd-kind-icon">view</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#viewinverse" class="tsd-kind-icon">view<wbr>Inverse</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#viewprojection" class="tsd-kind-icon">view<wbr>Projection</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#viewprojectioninverse" class="tsd-kind-icon">view<wbr>Projection<wbr>Inverse</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="camera.html#viewport" class="tsd-kind-icon">viewport</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="camera.html#width" class="tsd-kind-icon">width</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="camera.html#fovfromlens" class="tsd-kind-icon">fov<wbr>From<wbr>Lens</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="camera.html#invalidate" class="tsd-kind-icon">invalidate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="camera.html#calculatefovy" class="tsd-kind-icon">calculate<wbr>FovY</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

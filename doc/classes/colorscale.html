@@ -1,0 +1,767 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ColorScale | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="colorscale.html">ColorScale</a>
+				</li>
+			</ul>
+			<h1>Class ColorScale</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ColorScale</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="colorscale.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="colorscale.html#_colors" class="tsd-kind-icon">_colors</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="colorscale.html#_hint" class="tsd-kind-icon">_hint</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="colorscale.html#_inverted" class="tsd-kind-icon">_inverted</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="colorscale.html#schema" class="tsd-kind-icon">SCHEMA</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="colorscale.html#colors" class="tsd-kind-icon">colors</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="colorscale.html#hint" class="tsd-kind-icon">hint</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="colorscale.html#inverted" class="tsd-kind-icon">inverted</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="colorscale.html#length" class="tsd-kind-icon">length</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="colorscale.html#bitsf32" class="tsd-kind-icon">bits<wbr>F32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="colorscale.html#bitsui8" class="tsd-kind-icon">bitsUI8</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="colorscale.html#color" class="tsd-kind-icon">color</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="colorscale.html#invert" class="tsd-kind-icon">invert</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="colorscale.html#lerp" class="tsd-kind-icon">lerp</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="colorscale.html#fromarray" class="tsd-kind-icon">from<wbr>Array</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="colorscale.html#frompreset" class="tsd-kind-icon">from<wbr>Preset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="colorscale.html#stride" class="tsd-kind-icon">stride</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Color<wbr>Scale<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="colorscale.html" class="tsd-signature-type" data-tsd-kind="Class">ColorScale</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="colorscale.html" class="tsd-signature-type" data-tsd-kind="Class">ColorScale</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_colors" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _colors</h3>
+					<div class="tsd-signature tsd-kind-icon">_colors<span class="tsd-signature-symbol">:</span> <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L39">source/colorscale.ts:39</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>ee{@link</dt>
+							<dd><p>colors}</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_hint" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _hint</h3>
+					<div class="tsd-signature tsd-kind-icon">_hint<span class="tsd-signature-symbol">:</span> <a href="../enums/colorscale.interpolationhint.html" class="tsd-signature-type" data-tsd-kind="Enumeration">InterpolationHint</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L36">source/colorscale.ts:36</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see{@link</dt>
+							<dd><p>hint}</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_inverted" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _inverted</h3>
+					<div class="tsd-signature tsd-kind-icon">_inverted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L42">source/colorscale.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see{@link</dt>
+							<dd><p>invert}</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="schema" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> SCHEMA</h3>
+					<div class="tsd-signature tsd-kind-icon">SCHEMA<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L33">source/colorscale.ts:33</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Color scale preset file schema.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="colors" class="tsd-anchor"></a>
+					<h3>colors</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> colors<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> colors<span class="tsd-signature-symbol">(</span>colors<span class="tsd-signature-symbol">: </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L298">source/colorscale.ts:298</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the array containing the colors of the color scale.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L301">source/colorscale.ts:301</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the array containing the colors of the color scale.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>colors: <a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="hint" class="tsd-anchor"></a>
+					<h3>hint</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hint<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/colorscale.interpolationhint.html" class="tsd-signature-type" data-tsd-kind="Enumeration">InterpolationHint</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> hint<span class="tsd-signature-symbol">(</span>hint<span class="tsd-signature-symbol">: </span><a href="../enums/colorscale.interpolationhint.html" class="tsd-signature-type" data-tsd-kind="Enumeration">InterpolationHint</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L312">source/colorscale.ts:312</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The interpolation hint used when accessing a color using interpolation, e.g., @see<a href="colorscale.html#lerp">lerp</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/colorscale.interpolationhint.html" class="tsd-signature-type" data-tsd-kind="Enumeration">InterpolationHint</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L309">source/colorscale.ts:309</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The interpolation hint used when accessing a color using interpolation, e.g., @see<a href="colorscale.html#lerp">lerp</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hint: <a href="../enums/colorscale.interpolationhint.html" class="tsd-signature-type" data-tsd-kind="Enumeration">InterpolationHint</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="inverted" class="tsd-anchor"></a>
+					<h3>inverted</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> inverted<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L327">source/colorscale.ts:327</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether or not the scale was inverted based on its initial state.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="length" class="tsd-anchor"></a>
+					<h3>length</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> length<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L320">source/colorscale.ts:320</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provides read access to the number of colors of this scale. This is a shortcut for this.colors.length.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bitsf32" class="tsd-anchor"></a>
+					<h3>bits<wbr>F32</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bits<wbr>F32<span class="tsd-signature-symbol">(</span>space<span class="tsd-signature-symbol">?: </span><a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L368">source/colorscale.ts:368</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts the color scale into an array of interleaved float values of the requested color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>space: <a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Color space that is to be used for the array.</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether or not alpha is to be included.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float32Array</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bitsui8" class="tsd-anchor"></a>
+					<h3>bitsUI8</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bitsUI8<span class="tsd-signature-symbol">(</span>space<span class="tsd-signature-symbol">?: </span><a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a>, alpha<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L346">source/colorscale.ts:346</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts the color scale into an array of interleaved unsigned int values of the requested color space.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>space: <a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Color space that is to be used for the array.</p>
+									</div>
+								</li>
+								<li>
+									<h5>alpha: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether or not alpha is to be included.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="color" class="tsd-anchor"></a>
+					<h3>color</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">color<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L288">source/colorscale.ts:288</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the color with specified index. If the index is out of bounds, undefined is returned. Alternatively, the
+									color array can be used directly @see<a href="colorscale.html#colors">colors</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Index of the color to access.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="invert" class="tsd-anchor"></a>
+					<h3>invert</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">invert<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L335">source/colorscale.ts:335</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Inverts the color scale. Whether or not the scale is inverted can be checked using the
+									inverted read-only property (@link inverted).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="lerp" class="tsd-anchor"></a>
+					<h3>lerp</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">lerp<span class="tsd-signature-symbol">(</span>position<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, space<span class="tsd-signature-symbol">?: </span><a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L247">source/colorscale.ts:247</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Queries the color at a given position by identifying the adjacent stops (lower and upper bound) and either
+										interpolating between these or picking the nearest of both. In case no stop exists, a default color will be
+										returned. If only one color exists, this color is always returned no matter the position. If the position is
+									out of bounds, either the first or last stop&#39;s color is returned.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>position: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Position in [0.0, 1.0] to linear interpolate the color at.</p>
+									</div>
+								</li>
+								<li>
+									<h5>space: <a href="../enums/color.space.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Space</a><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The color space that is to be used for linear interpolation of two colors.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="color.html" class="tsd-signature-type" data-tsd-kind="Class">Color</a></h4>
+							<ul>
+								<li>Color, depending on the gradient type either linearly or nearest filtered color.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="fromarray" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> from<wbr>Array</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Array<span class="tsd-signature-symbol">(</span>interleavedColorComponents<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, type<span class="tsd-signature-symbol">: </span><a href="../enums/colorscale.arraytype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ArrayType</a>, stepCount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, positions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="colorscale.html" class="tsd-signature-type" data-tsd-kind="Class">ColorScale</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L146">source/colorscale.ts:146</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a color scale from a set of colors and (optional) positions for a specific step count. If no positions
+									are specified, the colors are spread equally. A step count of 1 returns the first color.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>interleavedColorComponents: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Interleaved array of color components, e.g., red, green, and blue.</p>
+									</div>
+								</li>
+								<li>
+									<h5>type: <a href="../enums/colorscale.arraytype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ArrayType</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The array type specifying the number of subsequent color components for each color.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stepCount: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of colors to be computed from the color scale.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> positions: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Interleaved array of positions, matching the length of the color array divided by stride.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="colorscale.html" class="tsd-signature-type" data-tsd-kind="Class">ColorScale</a></h4>
+							<ul>
+								<li>A color scale of fixed number and position of colors for index and linear interpolation access.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="frompreset" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> from<wbr>Preset</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Preset<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, preset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, stepCount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="colorscale.html" class="tsd-signature-type" data-tsd-kind="Class">ColorScale</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L84">source/colorscale.ts:84</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Fetches a color schema file, and, if successful, picks a preset for the specified number of steps. If the named
+										preset cannot be found, a list of all available presets within the file is logged and undefined is returned. If
+										the preset does not specify exact colors for the requested number of steps, the color array with the most colors
+									and linear interpolation in CIE-LAB is used to generate the scale.</p>
+								</div>
+								<p>The following preset libraries are included within webgl-operate but are required to be loaded dynamically (in
+								order to reduce bundle size and memory use):</p>
+								<pre><code><span style="color: #001080">ColorScale</span><span style="color: #000000">.</span><span style="color: #795E26">fromPreset</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;./colorbrewer.json&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;YlGnBu&#039;</span><span style="color: #000000">, </span><span style="color: #098658">7</span><span style="color: #000000">);</span>
+<span style="color: #001080">ColorScale</span><span style="color: #000000">.</span><span style="color: #795E26">fromPreset</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;./smithwalt.json&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;viridis&#039;</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">);</span>
+</code></pre>
+								<p>And resolving the promise:</p>
+								<pre><code><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">scale</span><span style="color: #000000">: </span><span style="color: #267F99">ColorScale</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #001080">ColorScale</span><span style="color: #000000">.</span><span style="color: #795E26">fromPreset</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;./data/colorbrewer.json&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;YlGnBu&#039;</span><span style="color: #000000">, </span><span style="color: #098658">5</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">scale</span><span style="color: #000000"> = </span><span style="color: #001080">value</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Uniform resource locator string referencing a json file complying to the JSON color schema.</p>
+									</div>
+								</li>
+								<li>
+									<h5>preset: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Name of a preset to choose from the json file.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stepCount: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of steps to be used for the resulting color scheme.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="colorscale.html" class="tsd-signature-type" data-tsd-kind="Class">ColorScale</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<ul>
+								<li>Undefined if loading and validating the json failed or the preset was not found. Else, a color scale.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="stride" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> stride</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">stride<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../enums/colorscale.arraytype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ArrayType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/colorscale.ts#L49">source/colorscale.ts:49</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the stride for interleaved arrays of color components based on the array type.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>type: <a href="../enums/colorscale.arraytype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ArrayType</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>One of the supported color array types.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="colorscale.html" class="tsd-kind-icon">Color<wbr>Scale</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="colorscale.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="colorscale.html#_colors" class="tsd-kind-icon">_colors</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="colorscale.html#_hint" class="tsd-kind-icon">_hint</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="colorscale.html#_inverted" class="tsd-kind-icon">_inverted</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="colorscale.html#schema" class="tsd-kind-icon">SCHEMA</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="colorscale.html#colors" class="tsd-kind-icon">colors</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="colorscale.html#hint" class="tsd-kind-icon">hint</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="colorscale.html#inverted" class="tsd-kind-icon">inverted</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="colorscale.html#length" class="tsd-kind-icon">length</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="colorscale.html#bitsf32" class="tsd-kind-icon">bits<wbr>F32</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="colorscale.html#bitsui8" class="tsd-kind-icon">bitsUI8</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="colorscale.html#color" class="tsd-kind-icon">color</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="colorscale.html#invert" class="tsd-kind-icon">invert</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="colorscale.html#lerp" class="tsd-kind-icon">lerp</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="colorscale.html#fromarray" class="tsd-kind-icon">from<wbr>Array</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="colorscale.html#frompreset" class="tsd-kind-icon">from<wbr>Preset</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="colorscale.html#stride" class="tsd-kind-icon">stride</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1354 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>UnifiedBuffer | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="unifiedbuffer.html">UnifiedBuffer</a>
+				</li>
+			</ul>
+			<h1>Class UnifiedBuffer</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Class to encapsulating a WebGL buffer adding functionality to record changes to the underlying buffer without
+							instantly propagating them to the WebGL buffer. It is intended to be a direct replacement for <a href="buffer.html">Buffer</a>.
+							When calling <a href="unifiedbuffer.html#subdata">subData</a> the data will be copied to an internal, CPU-sided buffer and the affecting range will be
+							recorded. If the newly recorded range overrides a part of or the whole of a previously recorded range the older one
+							will either be discarded completely or merged with the new one according to a specifiable merge threshold.
+							To propagate all recorded changes to the GPU-sided buffer, <a href="unifiedbuffer.html#update">update</a> has to be called. This will take care of
+							both the allocation of the GPU-sided buffer and the transfer of the changed data.
+							While <a href="unifiedbuffer.html#update">update</a> can must only be called after initializing the object, <a href="unifiedbuffer.html#subdata">subData</a>,
+							<a href="unifiedbuffer.html#mergesubdataranges">mergeSubDataRanges</a> and resizing (@see<a href="unifiedbuffer.html#size">size</a>) can be called on the unitialized object.
+							The GPU-sided buffer is created on initialization and deleted on uninitialization.
+						A typical usage could look like this:</p>
+						<p>```
+							// Create a unified buffer with the size of 1028 bytes and a mergeThreshold of 32 bytes
+							const unifiedBuffer = new UnifiedBuffer(context, 1028, gl.STATIC_DRAW, 32, &#39;UnifiedBuffer&#39;);
+							unifiedBuffer.initialize(gl.ARRAY_BUFFER);
+							unifiedBuffer.attribEnable(0, 1, gl.FLOAT, gl.FALSE, 0, 0, true, false);
+						unifiedBuffer.attribEnable(1, 1, gl.SHORT, gl.FALSE, 0, 512, false, true);</p>
+					</div>
+					<p>unifiedBuffer.subData(0, new Float32Array(64).fill(3.14));
+					unifiedBuffer.subData(512, new Int16Array(128).fill(1200));</p>
+					<p>unifiedBuffer.update(true, true);</p>
+					<p>unifiedBuffer.subData(128, new Float32Array(32).fill(1.57));
+					unifiedBuffer.subData(640, new Int36Array(64).fill(600));</p>
+					<p>unifiedBuffer.mergeThreshold = -1;
+						// This will merge both already existing ranges resulting in a single update
+					unifiedBuffer.mergeSubDataRanges();</p>
+					<p>unifiedBuffer.bind();
+						unifiedBuffer.update();
+					unifiedBuffer.unbind();</p>
+					<pre><code>
+</code></pre>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">UnifiedBuffer</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="unifiedbuffer.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#_cpubuffer" class="tsd-kind-icon">_cpu<wbr>Buffer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#_gpubuffer" class="tsd-kind-icon">_gpu<wbr>Buffer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#_mergethreshold" class="tsd-kind-icon">_merge<wbr>Threshold</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#_updates" class="tsd-kind-icon">_updates</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#_usage" class="tsd-kind-icon">_usage</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="unifiedbuffer.html#assertinitialized" class="tsd-kind-icon">assert<wbr>Initialized</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="unifiedbuffer.html#assertuninitialized" class="tsd-kind-icon">assert<wbr>Uninitialized</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="unifiedbuffer.html#initialized" class="tsd-kind-icon">initialized</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="unifiedbuffer.html#mergethreshold" class="tsd-kind-icon">merge<wbr>Threshold</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="unifiedbuffer.html#size" class="tsd-kind-icon">size</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="unifiedbuffer.html#target" class="tsd-kind-icon">target</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="unifiedbuffer.html#usage" class="tsd-kind-icon">usage</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#addupdate" class="tsd-kind-icon">add<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#attribdisable" class="tsd-kind-icon">attrib<wbr>Disable</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#attribenable" class="tsd-kind-icon">attrib<wbr>Enable</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#bind" class="tsd-kind-icon">bind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="unifiedbuffer.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#mergesubdataranges" class="tsd-kind-icon">merge<wbr>Sub<wbr>Data<wbr>Ranges</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#mergeupdatesleft" class="tsd-kind-icon">merge<wbr>Updates<wbr>Left</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="unifiedbuffer.html#mergeupdatesright" class="tsd-kind-icon">merge<wbr>Updates<wbr>Right</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#subdata" class="tsd-kind-icon">sub<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#unbind" class="tsd-kind-icon">unbind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="unifiedbuffer.html#uninitialize" class="tsd-kind-icon">uninitialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="unifiedbuffer.html#update" class="tsd-kind-icon">update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="unifiedbuffer.html#assertinitializedfalse" class="tsd-kind-icon">assert<wbr>Initialized<wbr>False</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="unifiedbuffer.html#assertuninitializedfalse" class="tsd-kind-icon">assert<wbr>Uninitialized<wbr>False</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="unifiedbuffer.html#assert_initialized" class="tsd-kind-icon">assert_<wbr>initialized</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="unifiedbuffer.html#assert_uninitialized" class="tsd-kind-icon">assert_<wbr>uninitialized</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="unifiedbuffer.html#discard" class="tsd-kind-icon">discard</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="unifiedbuffer.html#initialize-1" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="unifiedbuffer.html#uninitialize-1" class="tsd-kind-icon">uninitialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="unifiedbuffer.html#updatesneedmerge" class="tsd-kind-icon">updates<wbr>Need<wbr>Merge</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Unified<wbr>Buffer<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a>, sizeInBytes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, usage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, mergeThreshold<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, identifier<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="unifiedbuffer.html" class="tsd-signature-type" data-tsd-kind="Class">UnifiedBuffer</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="initializable.html">Initializable</a>.<a href="initializable.html#constructor">constructor</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L69">source/unifiedbuffer.ts:69</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a zero initialized buffer with the given size.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>context: <a href="context.html" class="tsd-signature-type" data-tsd-kind="Class">Context</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Context used for all GPU operations.</p>
+									</div>
+								</li>
+								<li>
+									<h5>sizeInBytes: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Size of the buffer in bytes.</p>
+									</div>
+								</li>
+								<li>
+									<h5>usage: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Usage hint for allocation of the GPU-sided buffer.</p>
+									</div>
+								</li>
+								<li>
+									<h5>mergeThreshold: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Threshold in which all updates will get merged.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> identifier: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Unique identifier for this UnifiedBuffer.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="unifiedbuffer.html" class="tsd-signature-type" data-tsd-kind="Class">UnifiedBuffer</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_cpubuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _cpu<wbr>Buffer</h3>
+					<div class="tsd-signature tsd-kind-icon">_cpu<wbr>Buffer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ArrayBuffer</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L49">source/unifiedbuffer.ts:49</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_gpubuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _gpu<wbr>Buffer</h3>
+					<div class="tsd-signature tsd-kind-icon">_gpu<wbr>Buffer<span class="tsd-signature-symbol">:</span> <a href="buffer.html" class="tsd-signature-type" data-tsd-kind="Class">Buffer</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L50">source/unifiedbuffer.ts:50</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_mergethreshold" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _merge<wbr>Threshold</h3>
+					<div class="tsd-signature tsd-kind-icon">_merge<wbr>Threshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L57">source/unifiedbuffer.ts:57</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="unifiedbuffer.html#mergethreshold">mergeThreshold</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_updates" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _updates</h3>
+					<div class="tsd-signature tsd-kind-icon">_updates<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Update</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L51">source/unifiedbuffer.ts:51</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="_usage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _usage</h3>
+					<div class="tsd-signature tsd-kind-icon">_usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L54">source/unifiedbuffer.ts:54</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p><a href="unifiedbuffer.html#usage">usage</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="assertinitialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> assert<wbr>Initialized</h3>
+					<div class="tsd-signature tsd-kind-icon">assert<wbr>Initialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#assertinitialized">assertInitialized</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L185">source/initializable.ts:185</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Asserts the objects initialization status to be true. Note that the implementation is cached and forwarded to
+							either an empty function when initialized and to an acutal assert(false) otherwise.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="assertuninitialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> assert<wbr>Uninitialized</h3>
+					<div class="tsd-signature tsd-kind-icon">assert<wbr>Uninitialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#assertuninitialized">assertUninitialized</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L191">source/initializable.ts:191</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Asserts the objects initialization status to be false. Note that the implementation is cached and forwarded to
+							either an empty function when uninitialized and to an acutal assert(false) otherwise.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+					<a name="initialized" class="tsd-anchor"></a>
+					<h3>initialized</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> initialized<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L210">source/initializable.ts:210</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Property getter for readonly access to the initialization status of an initializable instance.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="mergethreshold" class="tsd-anchor"></a>
+					<h3>merge<wbr>Threshold</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> mergeThreshold<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> mergeThreshold<span class="tsd-signature-symbol">(</span>mergeThreshold<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L334">source/unifiedbuffer.ts:334</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the threshold used to determine whether two ranges have to be merged.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L342">source/unifiedbuffer.ts:342</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the threshold determining whether two ranges have to be merged. If the mergeThreshold is set to -1 all
+									ranges will get merged disregarding their distance to each other.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mergeThreshold: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="size" class="tsd-anchor"></a>
+					<h3>size</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> size<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> size<span class="tsd-signature-symbol">(</span>sizeInBytes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L289">source/unifiedbuffer.ts:289</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the size of the CPU-sided buffer. This is not necessarily the same as the size of the GPU-sided buffer,
+									if update has not been called after resizing the buffer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L297">source/unifiedbuffer.ts:297</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resizes the buffer. Note, that this does not resize the GPU-sided buffer. To update the size of the GPU-sided
+									buffer update has to be called.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sizeInBytes: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="target" class="tsd-anchor"></a>
+					<h3>target</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> target<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L312">source/unifiedbuffer.ts:312</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Target to which the buffer object is bound (either GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER).
+									Readonly access to the target (as specified on initialization) the buffer will be bound to.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="usage" class="tsd-anchor"></a>
+					<h3>usage</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> usage<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> usage<span class="tsd-signature-symbol">(</span>usage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L320">source/unifiedbuffer.ts:320</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the usage hint used for allocation of the GPU-sided buffer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L327">source/unifiedbuffer.ts:327</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the usage hint used for allocation of the GPU-sided buffer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>usage: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="addupdate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> add<wbr>Update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Update<span class="tsd-signature-symbol">(</span>update<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Update</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L147">source/unifiedbuffer.ts:147</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds a range to recorded updates. Transitively merges all already recorded updates within the mergeThreshold of
+									the added range.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>update: <span class="tsd-signature-type">Update</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Range to add to the updates.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="attribdisable" class="tsd-anchor"></a>
+					<h3>attrib<wbr>Disable</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">attrib<wbr>Disable<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L221">source/unifiedbuffer.ts:221</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Disables a buffer binding point.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Index of the vertex attribute that is to be disabled.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip binding the object (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5>unbind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip unbinding the object (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="attribenable" class="tsd-anchor"></a>
+					<h3>attrib<wbr>Enable</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">attrib<wbr>Enable<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, normalized<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, stride<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, offset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L209">source/unifiedbuffer.ts:209</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Specifies the memory layout of the buffer for a binding point.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Index of the vertex attribute that is to be setup and enabled.</p>
+									</div>
+								</li>
+								<li>
+									<h5>size: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of components per vertex attribute.</p>
+									</div>
+								</li>
+								<li>
+									<h5>type: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Data type of each component in the array.</p>
+									</div>
+								</li>
+								<li>
+									<h5>normalized: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether integer data values should be normalized when being casted to a float.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stride: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Offset in bytes between the beginning of consecutive vertex attributes.</p>
+									</div>
+								</li>
+								<li>
+									<h5>offset: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Offset in bytes of the first component in the vertex attribute array.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip binding the object (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5>unbind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip unbinding the object (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bind" class="tsd-anchor"></a>
+					<h3>bind</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L185">source/unifiedbuffer.ts:185</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the buffer object as buffer to predefined target.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="initialize" class="tsd-anchor"></a>
+					<h3>initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="initializable.html">Initializable</a>.<a href="initializable.html#initialize">initialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L169">source/unifiedbuffer.ts:169</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create the buffer object on the GPU.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Target used as binding point.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mergesubdataranges" class="tsd-anchor"></a>
+					<h3>merge<wbr>Sub<wbr>Data<wbr>Ranges</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">merge<wbr>Sub<wbr>Data<wbr>Ranges<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L228">source/unifiedbuffer.ts:228</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Merges all recorded subData ranges.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="mergeupdatesleft" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> merge<wbr>Updates<wbr>Left</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">merge<wbr>Updates<wbr>Left<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L94">source/unifiedbuffer.ts:94</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Merges all updates left of index transitively with the update at index until there are no more updates within the
+									merge threshold.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Index of the update that should get merged.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Number of merged updates.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="mergeupdatesright" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> merge<wbr>Updates<wbr>Right</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">merge<wbr>Updates<wbr>Right<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L121">source/unifiedbuffer.ts:121</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Merges all updates right of index transitively with the update at index until there are no more updates within
+									the merge threshold.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Index of the update that should get merged.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>Number of merged updates.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="subdata" class="tsd-anchor"></a>
+					<h3>sub<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">sub<wbr>Data<span class="tsd-signature-symbol">(</span>dstByteOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, srcData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBufferView</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L242">source/unifiedbuffer.ts:242</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies the new data into the CPU-sided buffer and records the range as changed. All previously added ranges will
+										get merged transitively with the new one, if they are within the set mergeThreshold.
+									Note: This does not transfer anything to the GPU-sided buffer yet.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>dstByteOffset: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Offset of bytes into the destination buffer.</p>
+									</div>
+								</li>
+								<li>
+									<h5>srcData: <span class="tsd-signature-type">ArrayBufferView</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Data that will be copied into the destination buffer.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="unbind" class="tsd-anchor"></a>
+					<h3>unbind</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">unbind<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L193">source/unifiedbuffer.ts:193</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds null as current buffer to predefined target;</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="uninitialize" class="tsd-anchor"></a>
+					<h3>uninitialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">uninitialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="initializable.html">Initializable</a>.<a href="initializable.html#uninitialize">uninitialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L177">source/unifiedbuffer.ts:177</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Delete the buffer object on the GPU. This should have the reverse effect of <code>create</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="update" class="tsd-anchor"></a>
+					<h3>update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>bind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, unbind<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L263">source/unifiedbuffer.ts:263</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies all previously recorded ranges and their data to the GPU. (Re-)Allocate the GPU-sided buffer if the size
+									changed or the object was reinitialized.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>bind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip binding the object (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+								<li>
+									<h5>unbind: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Allows to skip unbinding the object (e.g., when binding is handled outside).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<a name="assertinitializedfalse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> assert<wbr>Initialized<wbr>False</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>Initialized<wbr>False<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#assertinitializedfalse">assertInitializedFalse</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L50">source/initializable.ts:50</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>object: <a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<a name="assertuninitializedfalse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> assert<wbr>Uninitialized<wbr>False</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>Uninitialized<wbr>False<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#assertuninitializedfalse">assertUninitializedFalse</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L53">source/initializable.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>object: <a href="initializable.html" class="tsd-signature-type" data-tsd-kind="Class">Initializable</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="assert_initialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> assert_<wbr>initialized</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert_<wbr>initialized<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#assert_initialized">assert_initialized</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L146">source/initializable.ts:146</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for asserting the initialization status of an initializable to be true.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="unifiedbuffer.html#assertinitialized">assertInitialized</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="assert_uninitialized" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> assert_<wbr>uninitialized</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">assert_<wbr>uninitialized<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#assert_uninitialized">assert_uninitialized</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L165">source/initializable.ts:165</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for asserting the initialization status of an initializable to be false.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>see</dt>
+									<dd><p><a href="unifiedbuffer.html#assertuninitialized">assertUninitialized</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="discard" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> discard</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">discard<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#discard">discard</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L122">source/initializable.ts:122</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for discarding of Initializable inheritors. This decorator asserts the initialization
+										status of the instance that is to be discarded, invokes its uninitialization, and falsifies the
+										initialization status. In order to encourage the use of <code>assertInitialized</code> and <code>assertUninitialized</code> they are
+									dynamically bound to a static, always-failing assert and an empty/undefined function respectively.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="initialize-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#initialize-1">initialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L64">source/initializable.ts:64</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for initialization of Initializable inheritors. This decorator asserts the initialization status
+										of the instance that is to be initialized, invokes its initialization with arbitrary number of parameters,
+										and sets the initialization status to the initialization success (either false or true).
+										In order to encourage the use of <code>assertInitialized</code> and <code>assertUninitialized</code> they are dynamically
+									bound to either a static, always-failing assert or an empty/undefined function.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="uninitialize-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> uninitialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">uninitialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="initializable.html">Initializable</a>.<a href="initializable.html#uninitialize-1">uninitialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/initializable.ts#L96">source/initializable.ts:96</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method decorator for uninitialization of Initializable inheritors. This decorator asserts the initialization
+										status of the instance that is to be uninitialized, invokes its uninitialization, and falsifies the
+										initialization status. In order to encourage the use of <code>assertInitialized</code> and <code>assertUninitialized</code> they are
+									dynamically bound to a static, always-failing assert and an empty/undefined function respectively.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MethodDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a name="updatesneedmerge" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> updates<wbr>Need<wbr>Merge</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">updates<wbr>Need<wbr>Merge<span class="tsd-signature-symbol">(</span>lhsUpdate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Update</span>, rhsUpdate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Update</span>, mergeThreshold<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/unifiedbuffer.ts#L67">source/unifiedbuffer.ts:67</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if two updates have to be merged according to the mergeThreshold. Note: lhsUpdate.begin has to be smaller
+									than rhsUpdate.begin.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>lhsUpdate: <span class="tsd-signature-type">Update</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>First update</p>
+									</div>
+								</li>
+								<li>
+									<h5>rhsUpdate: <span class="tsd-signature-type">Update</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Second update</p>
+									</div>
+								</li>
+								<li>
+									<h5>mergeThreshold: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Threshold considered for merging.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<ul>
+								<li>True if mergeThreshold == -1 or distance between the two updates &lt;= mergeThreshold, false otherwise.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="unifiedbuffer.html" class="tsd-kind-icon">Unified<wbr>Buffer</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="unifiedbuffer.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#_cpubuffer" class="tsd-kind-icon">_cpu<wbr>Buffer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#_gpubuffer" class="tsd-kind-icon">_gpu<wbr>Buffer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#_mergethreshold" class="tsd-kind-icon">_merge<wbr>Threshold</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#_updates" class="tsd-kind-icon">_updates</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#_usage" class="tsd-kind-icon">_usage</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="unifiedbuffer.html#assertinitialized" class="tsd-kind-icon">assert<wbr>Initialized</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="unifiedbuffer.html#assertuninitialized" class="tsd-kind-icon">assert<wbr>Uninitialized</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+								<a href="unifiedbuffer.html#initialized" class="tsd-kind-icon">initialized</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#mergethreshold" class="tsd-kind-icon">merge<wbr>Threshold</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#size" class="tsd-kind-icon">size</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#target" class="tsd-kind-icon">target</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#usage" class="tsd-kind-icon">usage</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#addupdate" class="tsd-kind-icon">add<wbr>Update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#attribdisable" class="tsd-kind-icon">attrib<wbr>Disable</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#attribenable" class="tsd-kind-icon">attrib<wbr>Enable</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#bind" class="tsd-kind-icon">bind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="unifiedbuffer.html#initialize" class="tsd-kind-icon">initialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#mergesubdataranges" class="tsd-kind-icon">merge<wbr>Sub<wbr>Data<wbr>Ranges</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#mergeupdatesleft" class="tsd-kind-icon">merge<wbr>Updates<wbr>Left</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="unifiedbuffer.html#mergeupdatesright" class="tsd-kind-icon">merge<wbr>Updates<wbr>Right</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#subdata" class="tsd-kind-icon">sub<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#unbind" class="tsd-kind-icon">unbind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="unifiedbuffer.html#uninitialize" class="tsd-kind-icon">uninitialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="unifiedbuffer.html#update" class="tsd-kind-icon">update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+								<a href="unifiedbuffer.html#assertinitializedfalse" class="tsd-kind-icon">assert<wbr>Initialized<wbr>False</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+								<a href="unifiedbuffer.html#assertuninitializedfalse" class="tsd-kind-icon">assert<wbr>Uninitialized<wbr>False</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="unifiedbuffer.html#assert_initialized" class="tsd-kind-icon">assert_<wbr>initialized</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="unifiedbuffer.html#assert_uninitialized" class="tsd-kind-icon">assert_<wbr>uninitialized</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="unifiedbuffer.html#discard" class="tsd-kind-icon">discard</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="unifiedbuffer.html#initialize-1" class="tsd-kind-icon">initialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="unifiedbuffer.html#uninitialize-1" class="tsd-kind-icon">uninitialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="unifiedbuffer.html#updatesneedmerge" class="tsd-kind-icon">updates<wbr>Need<wbr>Merge</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

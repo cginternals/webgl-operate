@@ -1,0 +1,2548 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>mat4 | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="mat4.html">mat4</a>
+				</li>
+			</ul>
+			<h1>Namespace mat4</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#adjoint" class="tsd-kind-icon">adjoint</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#clone" class="tsd-kind-icon">clone</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#copy" class="tsd-kind-icon">copy</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#create" class="tsd-kind-icon">create</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#determinant" class="tsd-kind-icon">determinant</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#equals" class="tsd-kind-icon">equals</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#exactequals" class="tsd-kind-icon">exact<wbr>Equals</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#frob" class="tsd-kind-icon">frob</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromquat" class="tsd-kind-icon">from<wbr>Quat</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromquat2" class="tsd-kind-icon">from<wbr>Quat2</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromrotation" class="tsd-kind-icon">from<wbr>Rotation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromrotationtranslation" class="tsd-kind-icon">from<wbr>Rotation<wbr>Translation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromrotationtranslationscale" class="tsd-kind-icon">from<wbr>Rotation<wbr>Translation<wbr>Scale</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromrotationtranslationscaleorigin" class="tsd-kind-icon">from<wbr>Rotation<wbr>Translation<wbr>Scale<wbr>Origin</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromscaling" class="tsd-kind-icon">from<wbr>Scaling</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromtranslation" class="tsd-kind-icon">from<wbr>Translation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromvalues" class="tsd-kind-icon">from<wbr>Values</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromxrotation" class="tsd-kind-icon">fromXRotation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromyrotation" class="tsd-kind-icon">fromYRotation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#fromzrotation" class="tsd-kind-icon">fromZRotation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#frustum" class="tsd-kind-icon">frustum</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#getrotation" class="tsd-kind-icon">get<wbr>Rotation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#getscaling" class="tsd-kind-icon">get<wbr>Scaling</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#gettranslation" class="tsd-kind-icon">get<wbr>Translation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#identity" class="tsd-kind-icon">identity</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#invert" class="tsd-kind-icon">invert</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#lookat" class="tsd-kind-icon">look<wbr>At</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#mul" class="tsd-kind-icon">mul</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#multiply" class="tsd-kind-icon">multiply</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#multiplyscalar" class="tsd-kind-icon">multiply<wbr>Scalar</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#multiplyscalarandadd" class="tsd-kind-icon">multiply<wbr>Scalar<wbr>And<wbr>Add</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#ortho" class="tsd-kind-icon">ortho</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#perspective" class="tsd-kind-icon">perspective</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#perspectivefromfieldofview" class="tsd-kind-icon">perspective<wbr>From<wbr>Field<wbr>OfView</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#rotate" class="tsd-kind-icon">rotate</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#rotatex" class="tsd-kind-icon">rotateX</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#rotatey" class="tsd-kind-icon">rotateY</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#rotatez" class="tsd-kind-icon">rotateZ</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#scale" class="tsd-kind-icon">scale</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#set" class="tsd-kind-icon">set</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#str" class="tsd-kind-icon">str</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#sub" class="tsd-kind-icon">sub</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#subtract" class="tsd-kind-icon">subtract</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#targetto" class="tsd-kind-icon">target<wbr>To</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#translate" class="tsd-kind-icon">translate</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace tsd-is-external"><a href="mat4.html#transpose" class="tsd-kind-icon">transpose</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="add" class="tsd-anchor"></a>
+					<h3>add</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1337</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds two mat4&#39;s</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the first operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second operand</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="adjoint" class="tsd-anchor"></a>
+					<h3>adjoint</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">adjoint<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:996</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calculates the adjugate of a mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the source matrix</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="clone" class="tsd-anchor"></a>
+					<h3>clone</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">clone<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:912</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a new mat4 initialized with values from an existing matrix</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>matrix to clone</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>a new 4x4 matrix</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="copy" class="tsd-anchor"></a>
+					<h3>copy</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:920</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copy the values from one mat4 to another</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the source matrix</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="create" class="tsd-anchor"></a>
+					<h3>create</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:905</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a new identity mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>a new 4x4 matrix</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="determinant" class="tsd-anchor"></a>
+					<h3>determinant</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">determinant<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1003</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calculates the determinant of a mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the source matrix</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>determinant of a</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="equals" class="tsd-anchor"></a>
+					<h3>equals</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">equals<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1381</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether or not the matrices have approximately the same elements in the same position.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The first matrix.</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The second matrix.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the matrices are equal, false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="exactequals" class="tsd-anchor"></a>
+					<h3>exact<wbr>Equals</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">exact<wbr>Equals<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1373</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The first matrix.</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The second matrix.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the matrices are equal, false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="frob" class="tsd-anchor"></a>
+					<h3>frob</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">frob<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1328</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns Frobenius norm of a mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to calculate Frobenius norm of</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>Frobenius norm</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromquat" class="tsd-anchor"></a>
+					<h3>from<wbr>Quat</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Quat<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, q<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyQuat</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1243</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calculates a 4x4 matrix from the given quaternion</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>q: <span class="tsd-signature-type">ReadonlyQuat</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Quaternion to create matrix from</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromquat2" class="tsd-anchor"></a>
+					<h3>from<wbr>Quat2</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Quat2<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyQuat2</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1164</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a new mat4 from a dual quat.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyQuat2</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Dual Quaternion</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>mat4 receiving operation result</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromrotation" class="tsd-anchor"></a>
+					<h3>from<wbr>Rotation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Rotation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, axis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1104</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from a given angle around a given axis
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">rotate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">rad</span><span style="color: #000000">, </span><span style="color: #001080">axis</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+								<li>
+									<h5>axis: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the axis to rotate around</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromrotationtranslation" class="tsd-anchor"></a>
+					<h3>from<wbr>Rotation<wbr>Translation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Rotation<wbr>Translation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, q<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1156</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from a quaternion rotation and vector translation
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">vec</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">quatMat</span><span style="color: #000000"> = </span><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #001080">quat4</span><span style="color: #000000">.</span><span style="color: #795E26">toMat4</span><span style="color: #000000">(</span><span style="color: #001080">quat</span><span style="color: #000000">, </span><span style="color: #001080">quatMat</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">multiply</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">quatMat</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>q: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Rotation quaternion</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Translation vector</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromrotationtranslationscale" class="tsd-anchor"></a>
+					<h3>from<wbr>Rotation<wbr>Translation<wbr>Scale</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Rotation<wbr>Translation<wbr>Scale<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, q<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span>, s<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1213</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from a quaternion rotation, vector translation and vector scale
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">vec</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">quatMat</span><span style="color: #000000"> = </span><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #001080">quat4</span><span style="color: #000000">.</span><span style="color: #795E26">toMat4</span><span style="color: #000000">(</span><span style="color: #001080">quat</span><span style="color: #000000">, </span><span style="color: #001080">quatMat</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">multiply</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">quatMat</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">scale</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">scale</span><span style="color: #000000">)</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>q: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Rotation quaternion</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Translation vector</p>
+									</div>
+								</li>
+								<li>
+									<h5>s: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Scaling vector</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromrotationtranslationscaleorigin" class="tsd-anchor"></a>
+					<h3>from<wbr>Rotation<wbr>Translation<wbr>Scale<wbr>Origin</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Rotation<wbr>Translation<wbr>Scale<wbr>Origin<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, q<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span>, s<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span>, o<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1234</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from a quaternion rotation, vector translation and vector scale, rotating and scaling around the given origin
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">vec</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">origin</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">quatMat</span><span style="color: #000000"> = </span><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #001080">quat4</span><span style="color: #000000">.</span><span style="color: #795E26">toMat4</span><span style="color: #000000">(</span><span style="color: #001080">quat</span><span style="color: #000000">, </span><span style="color: #001080">quatMat</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">multiply</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">quatMat</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">scale</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">scale</span><span style="color: #000000">)</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">negativeOrigin</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>q: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Rotation quaternion</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Translation vector</p>
+									</div>
+								</li>
+								<li>
+									<h5>s: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Scaling vector</p>
+									</div>
+								</li>
+								<li>
+									<h5>o: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The origin vector around which to scale and rotate</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromscaling" class="tsd-anchor"></a>
+					<h3>from<wbr>Scaling</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Scaling<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1091</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from a vector scaling
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">scale</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">vec</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Scaling vector</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromtranslation" class="tsd-anchor"></a>
+					<h3>from<wbr>Translation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Translation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1079</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from a vector translation
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">vec</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Translation vector</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromvalues" class="tsd-anchor"></a>
+					<h3>from<wbr>Values</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Values<span class="tsd-signature-symbol">(</span>m00<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m01<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m02<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m03<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m10<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m11<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m12<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m13<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m20<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m21<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m22<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m23<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m30<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m31<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m32<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m33<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:942</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new mat4 with the given values</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>m00: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 0 position (index 0)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m01: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 1 position (index 1)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m02: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 2 position (index 2)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m03: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 3 position (index 3)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m10: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 0 position (index 4)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m11: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 1 position (index 5)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m12: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 2 position (index 6)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m13: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 3 position (index 7)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m20: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 0 position (index 8)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m21: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 1 position (index 9)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m22: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 2 position (index 10)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m23: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 3 position (index 11)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m30: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 0 position (index 12)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m31: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 1 position (index 13)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m32: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 2 position (index 14)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m33: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 3 position (index 15)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>A new mat4</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromxrotation" class="tsd-anchor"></a>
+					<h3>fromXRotation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">fromXRotation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1116</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from the given angle around the X axis
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">rotateX</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">rad</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromyrotation" class="tsd-anchor"></a>
+					<h3>fromYRotation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">fromYRotation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1128</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from the given angle around the Y axis
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">rotateY</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">rad</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="fromzrotation" class="tsd-anchor"></a>
+					<h3>fromZRotation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">fromZRotation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1140</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a matrix from the given angle around the Z axis
+									This is equivalent to (but much faster than):</p>
+								</div>
+								<pre><code><span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">identity</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">);</span>
+<span style="color: #001080">mat4</span><span style="color: #000000">.</span><span style="color: #795E26">rotateZ</span><span style="color: #000000">(</span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">dest</span><span style="color: #000000">, </span><span style="color: #001080">rad</span><span style="color: #000000">);</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 receiving operation result</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="frustum" class="tsd-anchor"></a>
+					<h3>frustum</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">frustum<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bottom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, top<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, near<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, far<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1256</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a frustum matrix with the given bounds</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 frustum matrix will be written into</p>
+									</div>
+								</li>
+								<li>
+									<h5>left: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Left bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>right: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Right bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>bottom: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Bottom bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>top: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Top bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>near: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Near bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>far: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far bound of the frustum</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="getrotation" class="tsd-anchor"></a>
+					<h3>get<wbr>Rotation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Rotation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="quat.html" class="tsd-signature-type" data-tsd-kind="Namespace">quat</a>, mat<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="quat.html" class="tsd-signature-type" data-tsd-kind="Namespace">quat</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1195</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a quaternion representing the rotational component
+										of a transformation matrix. If a matrix is built with
+										fromRotationTranslation, the returned quaternion will be the
+									same as the quaternion originally supplied.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="quat.html" class="tsd-signature-type" data-tsd-kind="Namespace">quat</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Quaternion to receive the rotation component</p>
+									</div>
+								</li>
+								<li>
+									<h5>mat: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Matrix to be decomposed (input)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="quat.html" class="tsd-signature-type" data-tsd-kind="Namespace">quat</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="getscaling" class="tsd-anchor"></a>
+					<h3>get<wbr>Scaling</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Scaling<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, mat<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1185</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the scaling factor component of a transformation
+										matrix. If a matrix is built with fromRotationTranslationScale
+										with a normalized Quaternion paramter, the returned vector will be
+										the same as the scaling vector
+									originally supplied.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vector to receive scaling factor component</p>
+									</div>
+								</li>
+								<li>
+									<h5>mat: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Matrix to be decomposed (input)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="gettranslation" class="tsd-anchor"></a>
+					<h3>get<wbr>Translation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Translation<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a>, mat<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1174</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the translation vector component of a transformation
+										matrix. If a matrix is built with fromRotationTranslation,
+										the returned vector will be the same as the translation vector
+									originally supplied.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vector to receive translation component</p>
+									</div>
+								</li>
+								<li>
+									<h5>mat: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Matrix to be decomposed (input)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="vec3.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec3</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="identity" class="tsd-anchor"></a>
+					<h3>identity</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">identity<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:972</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set a mat4 to the identity matrix</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="invert" class="tsd-anchor"></a>
+					<h3>invert</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">invert<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:988</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Inverts a mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the source matrix</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="lookat" class="tsd-anchor"></a>
+					<h3>look<wbr>At</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">look<wbr>At<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, eye<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span>, center<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span>, up<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1304</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a look-at matrix with the given eye position, focal point, and up axis.
+									If you want a matrix that actually makes an object look at another object, you should use targetTo instead.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 frustum matrix will be written into</p>
+									</div>
+								</li>
+								<li>
+									<h5>eye: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Position of the viewer</p>
+									</div>
+								</li>
+								<li>
+									<h5>center: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Point the viewer is looking at</p>
+									</div>
+								</li>
+								<li>
+									<h5>up: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>vec3 pointing up</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="mul" class="tsd-anchor"></a>
+					<h3>mul</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">mul<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1390</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Multiplies two mat4s</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the first operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second operand</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="multiply" class="tsd-anchor"></a>
+					<h3>multiply</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">multiply<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1012</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Multiplies two mat4s</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the first operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second operand</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="multiplyscalar" class="tsd-anchor"></a>
+					<h3>multiply<wbr>Scalar</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">multiply<wbr>Scalar<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1355</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Multiply each element of the matrix by a scalar.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to scale</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>amount to scale the matrix&#39;s elements by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="multiplyscalarandadd" class="tsd-anchor"></a>
+					<h3>multiply<wbr>Scalar<wbr>And<wbr>Add</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">multiply<wbr>Scalar<wbr>And<wbr>Add<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, scale<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1365</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds two mat4&#39;s after multiplying each element of the second operand by a scalar value.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving vector</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the first operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>scale: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the amount to scale b&#39;s elements by before adding</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="ortho" class="tsd-anchor"></a>
+					<h3>ortho</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">ortho<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, right<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bottom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, top<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, near<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, far<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1293</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a orthogonal projection matrix with the given bounds</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 frustum matrix will be written into</p>
+									</div>
+								</li>
+								<li>
+									<h5>left: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Left bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>right: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Right bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>bottom: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Bottom bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>top: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Top bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>near: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Near bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>far: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far bound of the frustum</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="perspective" class="tsd-anchor"></a>
+					<h3>perspective</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">perspective<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, fovy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, aspect<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, near<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, far<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1268</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a perspective projection matrix with the given bounds.
+									Passing null/undefined/no value for far will generate infinite projection matrix.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 frustum matrix will be written into</p>
+									</div>
+								</li>
+								<li>
+									<h5>fovy: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertical field of view in radians</p>
+									</div>
+								</li>
+								<li>
+									<h5>aspect: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Aspect ratio. typically viewport width/height</p>
+									</div>
+								</li>
+								<li>
+									<h5>near: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Near bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>far: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far bound of the frustum, can be null or Infinity</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="perspectivefromfieldofview" class="tsd-anchor"></a>
+					<h3>perspective<wbr>From<wbr>Field<wbr>OfView</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">perspective<wbr>From<wbr>Field<wbr>OfView<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, fov<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, near<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, far<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1280</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a perspective projection matrix with the given field of view.
+										This is primarily useful for generating projection matrices to be used
+									with the still experiemental WebVR API.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 frustum matrix will be written into</p>
+									</div>
+								</li>
+								<li>
+									<h5>fov: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees</p>
+									</div>
+								</li>
+								<li>
+									<h5>near: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Near bound of the frustum</p>
+									</div>
+								</li>
+								<li>
+									<h5>far: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Far bound of the frustum</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="rotate" class="tsd-anchor"></a>
+					<h3>rotate</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">rotate<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, axis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1040</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Rotates a mat4 by the given angle around the given axis</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to rotate</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+								<li>
+									<h5>axis: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the axis to rotate around</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="rotatex" class="tsd-anchor"></a>
+					<h3>rotateX</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">rotateX<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1049</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Rotates a matrix by the given angle around the X axis</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to rotate</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="rotatey" class="tsd-anchor"></a>
+					<h3>rotateY</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">rotateY<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1058</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Rotates a matrix by the given angle around the Y axis</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to rotate</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="rotatez" class="tsd-anchor"></a>
+					<h3>rotateZ</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">rotateZ<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, rad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1067</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Rotates a matrix by the given angle around the Z axis</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to rotate</p>
+									</div>
+								</li>
+								<li>
+									<h5>rad: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the angle to rotate the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="scale" class="tsd-anchor"></a>
+					<h3>scale</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">scale<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1030</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Scales the mat4 by the dimensions in the given vec3 not using vectorization</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to scale</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the vec3 to scale the matrix by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="set" class="tsd-anchor"></a>
+					<h3>set</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, m00<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m01<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m02<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m03<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m10<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m11<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m12<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m13<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m20<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m21<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m22<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m23<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m30<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m31<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m32<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, m33<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:965</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set the components of a mat4 to the given values</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>m00: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 0 position (index 0)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m01: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 1 position (index 1)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m02: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 2 position (index 2)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m03: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 0, row 3 position (index 3)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m10: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 0 position (index 4)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m11: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 1 position (index 5)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m12: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 2 position (index 6)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m13: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 1, row 3 position (index 7)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m20: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 0 position (index 8)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m21: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 1 position (index 9)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m22: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 2 position (index 10)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m23: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 2, row 3 position (index 11)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m30: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 0 position (index 12)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m31: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 1 position (index 13)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m32: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 2 position (index 14)</p>
+									</div>
+								</li>
+								<li>
+									<h5>m33: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Component in column 3, row 3 position (index 15)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="str" class="tsd-anchor"></a>
+					<h3>str</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">str<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1321</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a string representation of a mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>matrix to represent as a string</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<p>string representation of the matrix</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="sub" class="tsd-anchor"></a>
+					<h3>sub</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">sub<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1399</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Subtracts matrix b from matrix a</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the first operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second operand</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="subtract" class="tsd-anchor"></a>
+					<h3>subtract</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">subtract<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1346</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Subtracts matrix b from matrix a</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the first operand</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second operand</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="targetto" class="tsd-anchor"></a>
+					<h3>target<wbr>To</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">target<wbr>To<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, eye<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span>, target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, up<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1314</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a matrix that makes something look at something else.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>mat4 frustum matrix will be written into</p>
+									</div>
+								</li>
+								<li>
+									<h5>eye: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Position of the viewer</p>
+									</div>
+								</li>
+								<li>
+									<h5>target: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>up: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>vec3 pointing up</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="translate" class="tsd-anchor"></a>
+					<h3>translate</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">translate<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span>, v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyVec3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:1021</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Translate a mat4 by the given vector</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the matrix to translate</p>
+									</div>
+								</li>
+								<li>
+									<h5>v: <span class="tsd-signature-type">ReadonlyVec3</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>vector to translate by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+					<a name="transpose" class="tsd-anchor"></a>
+					<h3>transpose</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">transpose<span class="tsd-signature-symbol">(</span>out<span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadonlyMat4</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/gl-matrix/index.d.ts:980</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Transpose the values of a mat4</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>out: <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the receiving matrix</p>
+									</div>
+								</li>
+								<li>
+									<h5>a: <span class="tsd-signature-type">ReadonlyMat4</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the source matrix</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h4>
+							<p>out</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class="current tsd-kind-namespace tsd-is-external">
+						<a href="mat4.html">mat4</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#add" class="tsd-kind-icon">add</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#adjoint" class="tsd-kind-icon">adjoint</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#clone" class="tsd-kind-icon">clone</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#copy" class="tsd-kind-icon">copy</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#determinant" class="tsd-kind-icon">determinant</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#equals" class="tsd-kind-icon">equals</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#exactequals" class="tsd-kind-icon">exact<wbr>Equals</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#frob" class="tsd-kind-icon">frob</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromquat" class="tsd-kind-icon">from<wbr>Quat</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromquat2" class="tsd-kind-icon">from<wbr>Quat2</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromrotation" class="tsd-kind-icon">from<wbr>Rotation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromrotationtranslation" class="tsd-kind-icon">from<wbr>Rotation<wbr>Translation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromrotationtranslationscale" class="tsd-kind-icon">from<wbr>Rotation<wbr>Translation<wbr>Scale</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromrotationtranslationscaleorigin" class="tsd-kind-icon">from<wbr>Rotation<wbr>Translation<wbr>Scale<wbr>Origin</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromscaling" class="tsd-kind-icon">from<wbr>Scaling</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromtranslation" class="tsd-kind-icon">from<wbr>Translation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromvalues" class="tsd-kind-icon">from<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromxrotation" class="tsd-kind-icon">fromXRotation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromyrotation" class="tsd-kind-icon">fromYRotation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#fromzrotation" class="tsd-kind-icon">fromZRotation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#frustum" class="tsd-kind-icon">frustum</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#getrotation" class="tsd-kind-icon">get<wbr>Rotation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#getscaling" class="tsd-kind-icon">get<wbr>Scaling</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#gettranslation" class="tsd-kind-icon">get<wbr>Translation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#identity" class="tsd-kind-icon">identity</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#invert" class="tsd-kind-icon">invert</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#lookat" class="tsd-kind-icon">look<wbr>At</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#mul" class="tsd-kind-icon">mul</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#multiply" class="tsd-kind-icon">multiply</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#multiplyscalar" class="tsd-kind-icon">multiply<wbr>Scalar</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#multiplyscalarandadd" class="tsd-kind-icon">multiply<wbr>Scalar<wbr>And<wbr>Add</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#ortho" class="tsd-kind-icon">ortho</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#perspective" class="tsd-kind-icon">perspective</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#perspectivefromfieldofview" class="tsd-kind-icon">perspective<wbr>From<wbr>Field<wbr>OfView</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#rotate" class="tsd-kind-icon">rotate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#rotatex" class="tsd-kind-icon">rotateX</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#rotatey" class="tsd-kind-icon">rotateY</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#rotatez" class="tsd-kind-icon">rotateZ</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#scale" class="tsd-kind-icon">scale</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#set" class="tsd-kind-icon">set</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#str" class="tsd-kind-icon">str</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#sub" class="tsd-kind-icon">sub</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#subtract" class="tsd-kind-icon">subtract</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#targetto" class="tsd-kind-icon">target<wbr>To</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#translate" class="tsd-kind-icon">translate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace tsd-is-external">
+						<a href="mat4.html#transpose" class="tsd-kind-icon">transpose</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

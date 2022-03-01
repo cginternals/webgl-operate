@@ -1,0 +1,929 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Typesetter | webgl-operate</title>
+	<meta name="description" content="Documentation for webgl-operate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">webgl-operate</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">webgl-operate</a>
+				</li>
+				<li>
+					<a href="typesetter.html">Typesetter</a>
+				</li>
+			</ul>
+			<h1>Class Typesetter</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The typesetter is responsible for layouting text on the screen or in a virtual space. It takes a label,
+							which defines where it wants to appear (@see <a href="label.html">Label</a>), and a font face that is used to display the
+							text, and computes the actual position for each glyph. Its output is a vertex array, which describes the glyphs
+						position and appearance on the screen/in the scene and which can be rendered using a LabelRenderPass.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Typesetter</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="typesetter.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#delimiters" class="tsd-kind-icon">DELIMITERS</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#advances" class="tsd-kind-icon">advances</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#elidefragments" class="tsd-kind-icon">elide<wbr>Fragments</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#elidethresholds" class="tsd-kind-icon">elide<wbr>Thresholds</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#fragmentwidths" class="tsd-kind-icon">fragment<wbr>Widths</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#fragments" class="tsd-kind-icon">fragments</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#getminmaxvertices" class="tsd-kind-icon">get<wbr>Min<wbr>Max<wbr>Vertices</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#kernings" class="tsd-kind-icon">kernings</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#lineanchoroffset" class="tsd-kind-icon">line<wbr>Anchor<wbr>Offset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#minmax" class="tsd-kind-icon">min<wbr>Max</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#transform" class="tsd-kind-icon">transform</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#transformalignment" class="tsd-kind-icon">transform<wbr>Alignment</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#transformvertices" class="tsd-kind-icon">transform<wbr>Vertices</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="typesetter.html#typeset" class="tsd-kind-icon">typeset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#updaterectangleminmax" class="tsd-kind-icon">update<wbr>Rectangle<wbr>Min<wbr>Max</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="typesetter.html#writevertex" class="tsd-kind-icon">write<wbr>Vertex</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Typesetter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="typesetter.html" class="tsd-signature-type" data-tsd-kind="Class">Typesetter</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="typesetter.html" class="tsd-signature-type" data-tsd-kind="Class">Typesetter</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="delimiters" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> DELIMITERS</h3>
+					<div class="tsd-signature tsd-kind-icon">DELIMITERS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;\x0A ,.-/()[]&lt;&gt;&#x27;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L29">source/text/typesetter.ts:29</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="advances" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> advances</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">advances<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a>, text<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L107">source/text/typesetter.ts:107</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resolves a typed float array storing the advances of each of the label&#39;s characters.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Label to resolve advances for.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> text: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Text to compute advances for, if none is given, label.text is used.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float32Array</span></h4>
+							<ul>
+								<li>A typed float array of all ordered character advances.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="elidefragments" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> elide<wbr>Fragments</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">elide<wbr>Fragments<span class="tsd-signature-symbol">(</span>threshold<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, labelFragments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span>, labelFragmentWidths<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span>, labelAdvances<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span>, labelKernings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span>, reverse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L241">source/text/typesetter.ts:241</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a sub list of fragments that fit into threshold. The last fragment might be adjusted in order to cram
+									as many  characters as possible for the elide. Reverse flag can be used do start left or right.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>threshold: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Threshold in typesetting space.</p>
+									</div>
+								</li>
+								<li>
+									<h5>labelFragments: <span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Pre-computed label fragments.</p>
+									</div>
+								</li>
+								<li>
+									<h5>labelFragmentWidths: <span class="tsd-signature-type">Float32Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Pre-accumulated widths of the label fragments.</p>
+									</div>
+								</li>
+								<li>
+									<h5>labelAdvances: <span class="tsd-signature-type">Float32Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Advances in order to reduce lookups.</p>
+									</div>
+								</li>
+								<li>
+									<h5>labelKernings: <span class="tsd-signature-type">Float32Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Kernings in order to reduce lookups.</p>
+									</div>
+								</li>
+								<li>
+									<h5>reverse: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>-If enabled, the right side elide fragments will be collected and adjusted. Left side otherwise.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></h4>
+							<ul>
+								<li>A new fragment, fragment-widths array for elide advancing, and overall width.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="elidethresholds" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> elide<wbr>Thresholds</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">elide<wbr>Thresholds<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a>, ellipsisWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L215">source/text/typesetter.ts:215</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes the left and right side thresholds for elide computation.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Label to query elide mode and line width from.</p>
+									</div>
+								</li>
+								<li>
+									<h5>ellipsisWidth: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Pre-computed width of the full ellipsis (t avoid re-computation).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></h4>
+							<ul>
+								<li>The left and right thresholds intended for elide fragment retrieval.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="fragmentwidths" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> fragment<wbr>Widths</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">fragment<wbr>Widths<span class="tsd-signature-symbol">(</span>fragments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span>, advances<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span>, kernings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L197">source/text/typesetter.ts:197</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Compute fragment widths without kernings w.r.t. preceding and subsequent fragments.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fragments: <span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>-</p>
+									</div>
+								</li>
+								<li>
+									<h5>advances: <span class="tsd-signature-type">Float32Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>-</p>
+									</div>
+								</li>
+								<li>
+									<h5>kernings: <span class="tsd-signature-type">Float32Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>-</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float32Array</span></h4>
+							<p>-</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="fragments" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> fragments</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">fragments<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L161">source/text/typesetter.ts:161</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create array of word, delimiter, and line feed fragments. A fragment thereby denotes the start and exclusive end
+									index as well as the type. The array is intended to favor maintainability over performance.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Label to create fragments for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Fragment</span><span class="tsd-signature-symbol">[]</span></h4>
+							<ul>
+								<li>Fragments, i.e., indices ranges and associated fragment type (word, linefeed, delimiter).</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="getminmaxvertices" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Min<wbr>Max<wbr>Vertices</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Min<wbr>Max<wbr>Vertices<span class="tsd-signature-symbol">(</span>vertices<span class="tsd-signature-symbol">: </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a>, begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L360">source/text/typesetter.ts:360</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns [minX, minY, minZ, maxX, maxY, maxZ] of the vertices coordinates, i.e., origins,
+									origins + tangents, origins + ups, from which a bounding rectangle can be calculated.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>vertices: <a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph vertices to be transformed (expected untransformed, in typesetting space).</p>
+									</div>
+								</li>
+								<li>
+									<h5>begin: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertex index to start alignment at.</p>
+									</div>
+								</li>
+								<li>
+									<h5>end: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertex index to stop alignment at.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="kernings" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> kernings</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">kernings<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a>, text<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L127">source/text/typesetter.ts:127</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resolves a typed float array storing the kernings of each of the label&#39;s characters.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Label to resolve kernings for.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> text: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Text to compute advances for, if none is given, label.text is used.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float32Array</span></h4>
+							<ul>
+								<li>A typed float array of all ordered character kernings.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="lineanchoroffset" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> line<wbr>Anchor<wbr>Offset</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">line<wbr>Anchor<wbr>Offset<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L71">source/text/typesetter.ts:71</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Compute an initial line anchor w.r.t. the targeted anchoring.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Label to adjust the y-positions for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="minmax" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> min<wbr>Max</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">min<wbr>Max<span class="tsd-signature-symbol">(</span>currentMin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, currentMax<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, values<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L347">source/text/typesetter.ts:347</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a vec2 [min, max] containing the minimum and the maximum of the given values.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>currentMin: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the current minimum (e.g., initialized to +Infinity)</p>
+									</div>
+								</li>
+								<li>
+									<h5>currentMax: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the current maximum (e.g., initialized to -Infinity)</p>
+									</div>
+								</li>
+								<li>
+									<h5>values: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>find the maximum and minimum of the given values</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="transform" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> transform</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a>, vertices<span class="tsd-signature-symbol">: </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a>, lines<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Line</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L422">source/text/typesetter.ts:422</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create and transform glyph vertices for rendering.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Label providing transform data, e.g., alignment and static transform.</p>
+									</div>
+								</li>
+								<li>
+									<h5>vertices: <a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph vertices to apply transformations to.</p>
+									</div>
+								</li>
+								<li>
+									<h5>lines: <span class="tsd-signature-type">Line</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Indices of glyph vertices on same lines to apply line-based transformations.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="transformalignment" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Alignment</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Alignment<span class="tsd-signature-symbol">(</span>width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, alignment<span class="tsd-signature-symbol">: </span><a href="../enums/label.alignment.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Alignment</a>, vertices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a>, begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L399">source/text/typesetter.ts:399</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adjusts the vertices for a line after typesetting (done due to line feed, word wrap, or end of line) w.r.t.
+									the targeted line alignment.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>width: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Width of the line (e.g., typesetting position at the end of the line in typesetting space).</p>
+									</div>
+								</li>
+								<li>
+									<h5>alignment: <a href="../enums/label.alignment.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Alignment</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Targeted alignment, e.g., left, center, or right.</p>
+									</div>
+								</li>
+								<li>
+									<h5>vertices: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph vertices for rendering to align the origins&#39; x-components of (expected untransformed).</p>
+									</div>
+								</li>
+								<li>
+									<h5>begin: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertex index to start alignment at.</p>
+									</div>
+								</li>
+								<li>
+									<h5>end: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertex index to stop alignment at.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="transformvertices" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Vertices</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Vertices<span class="tsd-signature-symbol">(</span>transform<span class="tsd-signature-symbol">: </span><a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a>, vertices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a>, begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L303">source/text/typesetter.ts:303</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Computes origin, tangent, and up vector for every vertex of in the given range.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>transform: <a href="../modules/mat4.html" class="tsd-signature-type" data-tsd-kind="Namespace">mat4</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Transformation to apply to every vertex.</p>
+									</div>
+								</li>
+								<li>
+									<h5>vertices: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph vertices to be transformed (expected untransformed, in typesetting space).</p>
+									</div>
+								</li>
+								<li>
+									<h5>begin: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertex index to start alignment at.</p>
+									</div>
+								</li>
+								<li>
+									<h5>end: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vertex index to stop alignment at.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="typeset" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> typeset</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">typeset<span class="tsd-signature-symbol">(</span>label<span class="tsd-signature-symbol">: </span><a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a>, vertices<span class="tsd-signature-symbol">: </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L458">source/text/typesetter.ts:458</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Typesets the given label, transforming the vertices in-world, ready to be rendered.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>label: <a href="label.html" class="tsd-signature-type" data-tsd-kind="Class">Label</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The label that is to be typeset.</p>
+									</div>
+								</li>
+								<li>
+									<h5>vertices: <a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>in/out The glyph vertices, a prepared (optionally empty) vertex storage.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<ul>
+								<li>The number of glyphs that are actually typeset and setup as vertices.</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="updaterectangleminmax" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> update<wbr>Rectangle<wbr>Min<wbr>Max</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Rectangle<wbr>Min<wbr>Max<span class="tsd-signature-symbol">(</span>currentRectangle<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, newRectangle<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L329">source/text/typesetter.ts:329</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>currentRectangle: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>[minX, minY, minZ, maxX, maxY, maxZ] is updated in-place</p>
+									</div>
+								</li>
+								<li>
+									<h5>newRectangle: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>[minX, minY, minZ, maxX, maxY, maxZ] used to update currentRectangle</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="writevertex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> write<wbr>Vertex</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">write<wbr>Vertex<span class="tsd-signature-symbol">(</span>fontFace<span class="tsd-signature-symbol">: </span><a href="fontface.html" class="tsd-signature-type" data-tsd-kind="Class">FontFace</a>, pen<span class="tsd-signature-symbol">: </span><a href="../modules/vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a>, glyph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Glyph</span>, vertices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/cginternals/webgl-operate/blob/6c39376/source/text/typesetter.ts#L40">source/text/typesetter.ts:40</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Configuring the vertex for a given glyph to be rendered. If no vertex is given or the glyph is not depictable,
+									this method immediately exits at the beginning.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fontFace: <a href="fontface.html" class="tsd-signature-type" data-tsd-kind="Class">FontFace</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Font face to be applied for setting up the vertex.</p>
+									</div>
+								</li>
+								<li>
+									<h5>pen: <a href="../modules/vec2.html" class="tsd-signature-type" data-tsd-kind="Namespace">vec2</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Typesetting position which is the not-yet-transformed position the glyph will be rendered at.</p>
+									</div>
+								</li>
+								<li>
+									<h5>glyph: <span class="tsd-signature-type">Glyph</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph that is to be rendered/configured.</p>
+									</div>
+								</li>
+								<li>
+									<h5>vertices: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="glyphvertices.html" class="tsd-signature-type" data-tsd-kind="Class">GlyphVertices</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph vertex store required for rendering.</p>
+									</div>
+								</li>
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Glyph vertex index for store manipulation.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="typesetter.html" class="tsd-kind-icon">Typesetter</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="typesetter.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#delimiters" class="tsd-kind-icon">DELIMITERS</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#advances" class="tsd-kind-icon">advances</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#elidefragments" class="tsd-kind-icon">elide<wbr>Fragments</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#elidethresholds" class="tsd-kind-icon">elide<wbr>Thresholds</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#fragmentwidths" class="tsd-kind-icon">fragment<wbr>Widths</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#fragments" class="tsd-kind-icon">fragments</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#getminmaxvertices" class="tsd-kind-icon">get<wbr>Min<wbr>Max<wbr>Vertices</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#kernings" class="tsd-kind-icon">kernings</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#lineanchoroffset" class="tsd-kind-icon">line<wbr>Anchor<wbr>Offset</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#minmax" class="tsd-kind-icon">min<wbr>Max</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#transform" class="tsd-kind-icon">transform</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#transformalignment" class="tsd-kind-icon">transform<wbr>Alignment</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#transformvertices" class="tsd-kind-icon">transform<wbr>Vertices</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="typesetter.html#typeset" class="tsd-kind-icon">typeset</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#updaterectangleminmax" class="tsd-kind-icon">update<wbr>Rectangle<wbr>Min<wbr>Max</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="typesetter.html#writevertex" class="tsd-kind-icon">write<wbr>Vertex</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
