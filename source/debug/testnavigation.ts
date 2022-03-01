@@ -22,10 +22,12 @@ export class TestNavigation {
             this.onMouseLeave(latests, previous));
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onMouseEnter(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         this._altered = false;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onMouseLeave(latests: Array<MouseEvent>, previous: Array<MouseEvent>): void {
         this._altered = true;
     }

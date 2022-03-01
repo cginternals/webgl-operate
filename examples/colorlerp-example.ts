@@ -4,7 +4,7 @@
 import { auxiliaries } from 'webgl-operate';
 
 const log = auxiliaries.log;
-const LogLvl = auxiliaries.LogLevel;
+const logLevel = auxiliaries.LogLevel;
 
 
 import {
@@ -108,7 +108,7 @@ class ColorLerpRenderer extends Renderer {
                 this.finishLoading();
                 this.invalidate();
             })
-            .catch((reason) => log(LogLvl.Error, reason));
+            .catch((reason) => log(logLevel.Error, reason));
 
         this.setupScene();
 
@@ -156,9 +156,9 @@ class ColorLerpRenderer extends Renderer {
         }
 
         // This would render the clear color to be black?
-        //if (this._altered.clearColor) {
-        //     this._defaultFBO.clearColor(this._clearColor);
-        //}
+        // if (this._altered.clearColor) {
+        //      this._defaultFBO.clearColor(this._clearColor);
+        // }
 
         this._labelPass.update();
 
@@ -260,7 +260,7 @@ class ColorLerpRenderer extends Renderer {
         const colorScale = ColorScale.fromArray(colors, ColorScale.ArrayType.RGBA, stepCount, [0, 1.0]);
 
         for (const color of colorScale.colors) {
-            log(LogLvl.Info, `generated color: ${color.rgba}`);
+            log(logLevel.Info, `generated color: ${color.rgba}`);
         }
 
         this._labelLAB.color = colorScale.lerp(0.5, Color.Space.LAB)!;
@@ -277,7 +277,7 @@ class ColorLerpRenderer extends Renderer {
         colorScale.hint = ColorScale.InterpolationHint.Nearest;
         for (const label of nearestLabels) {
             const r = colorScale.lerp(i / l, Color.Space.LAB)!;
-            log(LogLvl.Info, `lerp (nearest): ${i} ${i / l} ${r.rgba}`);
+            log(logLevel.Info, `lerp (nearest): ${i} ${i / l} ${r.rgba}`);
             label.color = r;
             i++;
         }
@@ -287,7 +287,7 @@ class ColorLerpRenderer extends Renderer {
         colorScale.hint = ColorScale.InterpolationHint.Linear;
         for (const label of linearLabels) {
             const r = colorScale.lerp(i / l, Color.Space.LAB)!;
-            log(LogLvl.Info, `lerp (linear): ${i} ${i / l} ${r.rgba}`);
+            log(logLevel.Info, `lerp (linear): ${i} ${i / l} ${r.rgba}`);
             label.color = r;
             i++;
         }

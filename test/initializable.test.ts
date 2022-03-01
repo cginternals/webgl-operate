@@ -1,7 +1,8 @@
 
 /* spellchecker: disable */
 
-import * as chai from 'chai';
+const chai = require('chai');
+
 
 const expect = chai.expect;
 
@@ -9,8 +10,6 @@ import { Initializable as AbstractInitializable } from '../source/initializable'
 
 /* spellchecker: enable */
 
-
-/* tslint:disable:no-unused-expression */
 
 class Initializable extends AbstractInitializable {
 

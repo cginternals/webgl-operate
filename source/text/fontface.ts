@@ -87,12 +87,26 @@ export class FontFace {
 
         const transform = (data: any): PromiseLike<FontFace> => {
             const font = new FontFace(context, identifier);
-            return FontFaceLoader.process(font, data, url, headless)
+            return FontFaceLoader.process(font, data, url, undefined, headless)
                 .then((fontFace: FontFace) => fontFace)
                 .catch((reason: any) => Promise.reject(`processing font face data failed: ${reason}`));
         };
 
         return fetchAsync<FontFace>(url, 'text').then(transform);
+    }
+
+
+    static fromFiles(fontFileUrl: string, pageFileUrlsByPageID: Map<number, string>,
+        context: Context, headless: boolean = false, identifier?: string): Promise<FontFace> {
+
+        const transform = (data: any): PromiseLike<FontFace> => {
+            const font = new FontFace(context, identifier);
+            return FontFaceLoader.process(font, data, fontFileUrl, pageFileUrlsByPageID, headless)
+                .then((fontFace: FontFace) => fontFace)
+                .catch((reason: any) => Promise.reject(`processing font face data failed: ${reason}`));
+        };
+
+        return fetchAsync<FontFace>(fontFileUrl, 'text').then(transform);
     }
 
     /**

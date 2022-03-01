@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /* spellchecker: disable */
 
@@ -29,6 +30,7 @@ export { Renderer, Invalidate, LoadingStatus } from './renderer';
 export { Shader } from './shader';
 export { Texture2D } from './texture2d';
 export { Texture3D } from './texture3d';
+export { Texture2DArray } from './texture2darray';
 export { TextureCube } from './texturecube';
 export { UnifiedBuffer } from './unifiedbuffer';
 export { VertexArray } from './vertexarray';
@@ -45,6 +47,7 @@ export { TrackballModifier } from './trackballmodifier';
 export { TurntableModifier } from './turntablemodifier';
 export { PinchZoomModifier } from './pinchzoommodifier';
 export { WheelZoomModifier } from './wheelzoommodifier';
+export { CanvasRecorder } from './canvasrecorder';
 
 export { NdcFillingRectangle } from './ndcfillingrectangle';
 export { NdcFillingTriangle } from './ndcfillingtriangle';
@@ -67,6 +70,8 @@ export { ShadowPass } from './shadowpass';
 export { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
 export { EyeGazeEventProvider } from './eyegazeeventprovider';
 export { EyeGazeEvent, EyeGazeData } from './eyegazeevent';
+
+export { FrameCapture } from './framecapture';
 
 
 export * from './core/index';

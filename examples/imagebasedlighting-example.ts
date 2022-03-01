@@ -279,8 +279,6 @@ export class ImageBasedLightingRenderer extends Renderer {
         gl.enable(gl.DEPTH_TEST);
 
         this._environmentRenderingPass.frame();
-
-
     }
 
     protected onSwap(): void { }

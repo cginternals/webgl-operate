@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "ES2020",
         "lib": [
             "dom",
-            "es2015",
-            "es2019.string"
+            "ES2020"
         ],
         "outDir": "lib",
         "sourceMap": true,
@@ -19,22 +18,13 @@
         "preserveConstEnums": true,
         "allowSyntheticDefaultImports": false,
         "skipLibCheck": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "esModuleInterop": true
     },
     "typedocOptions": {
-        "mode": "file",
         "out": "build/doc",
-        "ignoreCompilerErrors": false,
         "excludePrivate": false,
-        "excludeNotExported": false,
-        "target": "ES5",
-        "moduleResolution": "node",
-        "preserveConstEnums": true,
-        "stripInternal": true,
-        "suppressExcessPropertyErrors": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "hideGenerator": true,
-        "module": "umd"
+        "hideGenerator": true
     },
     "include": [
         "source"

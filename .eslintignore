@@ -1,0 +1,16 @@
+.vscode
+*.js
+
+**/node_modules
+node_modules
+
+build
+dist
+lib
+website
+
+examples
+demos
+
+demos/data
+examples/data

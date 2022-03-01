@@ -44,7 +44,8 @@ module.exports = {
     ],
     resolve: {
         modules: [__dirname + '/node_modules', __dirname + '/source'],
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js'],
+        fallback: { "url": require.resolve("url/") }
     },
     watchOptions: {
         ignored: ['node_modules/**']

@@ -8,8 +8,6 @@ import { GLsizei3 } from './tuples';
 /* spellchecker: enable */
 
 
-/* tslint:disable:max-classes-per-file */
-
 export interface KernelJSON {
     kernel: any;
     size: {
@@ -77,7 +75,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         }
         assert(i < this.length, `index expected to be in range [0, ${this.length - 1}], given ${i}`);
 
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch (this._components) {
             case 1:
                 return [this._samples[i]];
@@ -110,7 +108,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         }
         assert(i < this.length, `index expected to be in range [0, ${this.length - 1}], given ${i}`);
 
-        /* tslint:disable-next-line:switch-default */
+        // eslint-disable-next-line default-case
         switch (this._components) {
             /* falls through */
             case 4:
@@ -203,8 +201,8 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         for (let i = 0; i < this.elements; ++i) {
             let value = 0.0;
             switch (approach) {
-                default:
                 case AbstractKernel.SortApproach.BySquaredLength:
+                default:
                     for (let c = 0; c < this._components; ++c) {
                         const v = this._samples[i * this._components + c];
                         value += v * v;
@@ -217,8 +215,8 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
         /* Invoke the actual sorting approaches. Since the samples are always dense, the index structure can later be
         used directly for restructuring/applying the new order to the samples. */
         switch (approach) {
-            default:
             case AbstractKernel.SortApproach.BySquaredLength:
+            default:
                 tuples.sort((a: [number, number], b: [number, number]) => a[1] - b[1]);
                 break;
         }

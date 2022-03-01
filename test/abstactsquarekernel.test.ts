@@ -1,9 +1,7 @@
+
 /* spellchecker: disable */
 
-
-import * as chai from 'chai';
-import * as spies from 'chai-spies';
-
+const chai = require('chai'), spies = require('chai-spies');
 chai.use(spies);
 
 const expect = chai.expect;
@@ -12,8 +10,6 @@ import {
     KernelF32, KernelI8, KernelUI32, KernelI32, KernelUI8, KernelJSON, AbstractKernel
 } from '../source/kernel';
 
-
-/* tslint:disable:no-unused-expression */
 
 describe('PrimitiveKernels', () => {
 
@@ -103,31 +99,31 @@ describe('PrimitiveKernels', () => {
 
     it('should be able to retrieve dimension lengths', () => {
         const kernelF32 = new KernelI32(1, 1);
-        expect(() => { kernelF32.width}).to.not.throws();
+        expect(() => { kernelF32.width }).to.not.throws();
         expect(kernelF32.width).to.not.be.undefined;
 
-        expect(() => { kernelF32.height}).to.not.throws();
+        expect(() => { kernelF32.height }).to.not.throws();
         expect(kernelF32.height).to.not.be.undefined;
 
-        expect(() => { kernelF32.depth}).to.not.throws();
+        expect(() => { kernelF32.depth }).to.not.throws();
         expect(kernelF32.depth).to.not.be.undefined;
     });
 
     it('should be able to retrieve strides', () => {
         const kernelF32 = new KernelI32(1, 1);
-        expect(() => { kernelF32.xStride}).to.not.throws();
+        expect(() => { kernelF32.xStride }).to.not.throws();
         expect(kernelF32.xStride).to.not.be.undefined;
 
-        expect(() => { kernelF32.yStride}).to.not.throws();
+        expect(() => { kernelF32.yStride }).to.not.throws();
         expect(kernelF32.yStride).to.not.be.undefined;
 
-        expect(() => { kernelF32.zStride}).to.not.throws();
+        expect(() => { kernelF32.zStride }).to.not.throws();
         expect(kernelF32.zStride).to.not.be.undefined;
 
-        expect(() => { kernelF32.bytesLength}).to.not.throws();
+        expect(() => { kernelF32.bytesLength }).to.not.throws();
         expect(kernelF32.bytesLength).to.not.be.undefined;
 
-        expect(() => { kernelF32.bytesPerComponent}).to.not.throws();
+        expect(() => { kernelF32.bytesPerComponent }).to.not.throws();
         expect(kernelF32.bytesPerComponent).to.not.be.undefined;
     });
 });

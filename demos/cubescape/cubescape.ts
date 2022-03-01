@@ -27,7 +27,7 @@ import { CubeGeometry } from './cubegeometry';
 // tslint:disable:max-classes-per-file
 
 
-const _gEye = vec3.fromValues(1.0, -0.5, -1.0);
+const _gEye = vec3.fromValues(1.5, -0.2, 1.5); //vec3.fromValues(1.0, -0.5, -1.0);
 const _gCenter = vec3.fromValues(0.0, -1.0, 0.0);
 const _gUp = vec3.fromValues(0.0, 1.0, 0.0);
 
@@ -43,7 +43,7 @@ class CubescapeRenderer extends Renderer {
     protected _program: Program;
     protected _uViewProjection: WebGLUniformLocation;
     protected _aVertex: GLuint;
-    protected _numCubes = 256;
+    protected _numCubes = 128;
 
     protected _patches: Texture2D;
     protected _terrain: Texture2D;
@@ -76,7 +76,7 @@ class CubescapeRenderer extends Renderer {
 
         // bind FBO
         this._defaultFBO.bind();
-        this._defaultFBO.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
+        this._defaultFBO.clear(gl.DEPTH_BUFFER_BIT, true, true);
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 

@@ -60,10 +60,10 @@ export class PointCloudRenderer extends Renderer {
     protected _program: Program;
 
     protected _pointSize: GLfloat = PointCloudRenderer.DEFAULT_POINT_SIZE;
-    protected _billboards: boolean = true;
-    protected _alpha2Coverage: boolean = false;
-    protected _alphaBlending: boolean = false;
-    protected _phongShading: boolean = true;
+    protected _billboards = true;
+    protected _alpha2Coverage = false;
+    protected _alphaBlending = false;
+    protected _phongShading = true;
 
     protected _renderingConfigAltered = true;
 
@@ -394,8 +394,10 @@ export class PointCloudRenderer extends Renderer {
 
     //             console.log(`BENCHMARK CONFIG`);
     //             console.log(`frameSize: ${this._frameSize}, pointSize: ${this._pointSize}`);
-    //             console.log(`alpha2Coverage: ${this._alpha2Coverage}, alphaBlending ${this._alphaBlending}, billboards: ${this._billboards}, phongShading: ${this._phongShading}`);
-    //             console.log(`#cycles:  ${cycles}, #framesForWarmup: ${framesForWarmup}, #framesPerCycle: ${framesPerCycle}`);
+    //             console.log(`alpha2Coverage: ${this._alpha2Coverage}, alphaBlending ${this._alphaBlending},
+    //                 billboards: ${this._billboards}, phongShading: ${this._phongShading}`);
+    //             console.log(`#cycles:  ${cycles}, #framesForWarmup: ${framesForWarmup},
+    //                 #framesPerCycle: ${framesPerCycle}`);
     //             console.log(`values: ${JSON.stringify(values)}`);
     //             console.log(`BENCHMARK RESULTS`);
     //             console.log(JSON.stringify(results));

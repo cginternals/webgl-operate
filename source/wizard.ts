@@ -14,16 +14,13 @@ import { Context } from './context';
 export class Wizard {
 
     /**
-     * Queries the internal texture format matching the target format best for the given context. For 'auto' precision
-     * the format of maximum accuracy supported is returned.
+     * Queries the support of internal texture precision given a query precision within the given context.
      * @param context - Wrapped gl context for function resolution (passed to all stages).
-     * @param target - Target format, e.g., gl.RGBA, used to find the supported precision/accuracy for.
      * @param precision - Requested precision of the internal format: 'auto', 'float', 'half', 'byte'.
-     * @returns - 3-tuple containing the (1) internal format, (2) the type (required for some internal formats to work
-     * ...), and (3) the precision enum/string that matches the resulting format best.
+     * @returns tuple of query, type, and internal format index to reduce tuple return logic (see switch)
      */
-    static queryInternalTextureFormat(context: Context, target: GLenum,
-        precision: Wizard.Precision | undefined): [GLenum, GLenum, Wizard.Precision] {
+    private static queryPrecisionSupport(
+        context: Context, precision: Wizard.Precision): [Wizard.Precision, GLenum, GLint] {
 
         const gl = context.gl;
         const gl2facade = context.gl2facade;
@@ -37,10 +34,7 @@ export class Wizard {
         const halfWriteSupport = (context.isWebGL1 && context.supportsTextureHalfFloat) ||
             (context.isWebGL2 && context.supportsColorBufferFloat);
 
-        if (precision === undefined) {
-            precision = Wizard.Precision.auto;
-        }
-        let query = precision === undefined ? Wizard.Precision.auto : precision;
+        let query = precision;
 
         if (!(precision in Wizard.Precision)) {
             log(LogLevel.Warning, `unknown precision '${query}' changed to '${Wizard.Precision.auto}'`);
@@ -51,28 +45,37 @@ export class Wizard {
                 Wizard.Precision.half : Wizard.Precision.byte;
         }
 
-        let type: GLenum;
-        let internalFormatIndex: GLint; /* Utility index to reduce tuple return logic (see switch). */
-
         /* Query type and, if required), enable extension. */
         if (query === Wizard.Precision.half && halfWriteSupport) {
-            /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureHalfFloat;
-            type = gl2facade.HALF_FLOAT;
-            internalFormatIndex = 1;
+            return [query, gl2facade.HALF_FLOAT, 1];
 
         } else if ((query === Wizard.Precision.float || query === Wizard.Precision.half)
             && floatWriteSupport) {
             /* If not explicitly requested, fallback for half_float. */
-            /* tslint:disable-next-line:no-unused-expression */
             context.isWebGL2 ? context.colorBufferFloat : context.textureFloat;
-            type = gl.FLOAT;
-            internalFormatIndex = 0;
+            return [query, gl.FLOAT, 0];
 
         } else {
-            type = gl.UNSIGNED_BYTE;
-            internalFormatIndex = 2;
+            return [query, gl.UNSIGNED_BYTE, 2];
         }
+    }
+
+    /**
+     * Queries the internal texture format matching the target format best for the given context. For 'auto' precision
+     * the format of maximum accuracy supported is returned.
+     * @param context - Wrapped gl context for function resolution (passed to all stages).
+     * @param target - Target format, e.g., gl.RGBA, used to find the supported precision/accuracy for.
+     * @param precision - Requested precision of the internal format: 'auto', 'float', 'half', 'byte'.
+     * @returns - 3-tuple containing the (1) internal format, (2) the type (required for some internal formats to work
+     * ...), and (3) the precision enum/string that matches the resulting format best.
+     */
+    static queryInternalTextureFormat(context: Context, target: GLenum,
+        precision: Wizard.Precision = Wizard.Precision.auto): [GLenum, GLenum, Wizard.Precision] {
+
+        const [query, type, internalFormatIndex] = this.queryPrecisionSupport(context, precision);
+
+        const gl = context.gl;
 
         /* In this case, no specialized internal formats are available. */
         if (context.isWebGL1) {
