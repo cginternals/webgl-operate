@@ -14,12 +14,14 @@ import { MouseEventProvider } from './mouseeventprovider';
 import { PointerEventProvider } from './pointereventprovider';
 import { Invalidate } from './renderer';
 import { TouchEventProvider } from './toucheventprovider';
+import { KeyboardEventProvider, KeyboardEventType } from './keyboardeventprovider';
 
 /* spellchecker: enable */
 export interface EventProvider {
     pointerEventProvider: PointerEventProvider;
     mouseEventProvider: MouseEventProvider;
     eyeGazeEventProvider?: EyeGazeEventProvider;
+    keyboardEventProvider?: KeyboardEventProvider;
 }
 
 /**
@@ -41,6 +43,11 @@ export interface PointerEventHandler { (latests: Array<PointerEvent>, previous: 
  * Callback for handling eye gaze events, given the latest eye gaze events (since last update) as well as the previous.
  */
 export interface EyeGazeEventHandler { (latests: Array<EyeGazeEvent>, previous: Array<EyeGazeEvent>): void; }
+
+/**
+ * Callback for handling keyboard events, given the latest keyboard events (since last update) as well as the previous.
+ */
+export interface KeyboardEventHandler { (latests: Array<KeyboardEvent>, previous: Array<KeyboardEvent>): void; }
 
 
 /**
@@ -84,6 +91,10 @@ export class EventHandler {
      */
     protected _eyeGazeEventProvider: EyeGazeEventProvider | undefined;
 
+    /**
+     * Assigned keyboard event provider. This is usually created and owned by the canvas.
+     */
+    protected _keyboardEventProvider: KeyboardEventProvider | undefined;
 
     protected _latestMouseEventsByType =
         new Map<MouseEventProvider.Type, Array<MouseEvent>>();
@@ -113,6 +124,13 @@ export class EventHandler {
     protected _eyeGazeEventHandlerByType =
         new Map<EyeGazeEventProvider.Type, Array<EyeGazeEventHandler>>();
 
+    protected _latestKeyboardEventsByType =
+        new Map<KeyboardEventType, Array<KeyboardEvent>>();
+    protected _previousKeyboardEventsByType =
+        new Map<KeyboardEventType, Array<KeyboardEvent>>();
+    protected _keyboardEventHandlerByType =
+        new Map<KeyboardEventType, Array<KeyboardEventHandler>>();
+
 
     constructor(invalidate: Invalidate | undefined,
         eventProvider: EventProvider) {
@@ -122,6 +140,7 @@ export class EventHandler {
 
         this._pointerEventProvider = eventProvider.pointerEventProvider;
         this._eyeGazeEventProvider = eventProvider.eyeGazeEventProvider;
+        this._keyboardEventProvider = eventProvider.keyboardEventProvider;
 
     }
 
@@ -320,6 +339,50 @@ export class EventHandler {
     }
 
     /**
+     * Utility for registering an additional keyboard event handler for updates on keyboard events of the given type. The
+     * handler is to be called on update if at least a single keyboard event of the given type has occurred since last
+     * update.
+     * @param type - Keyboard event type the handler is to be associated with.
+     * @param handler - Handler to be called on update.
+     */
+    protected pushKeyboardEventHandler(type: KeyboardEventType, handler: KeyboardEventHandler): void {
+        if (this._keyboardEventHandlerByType.has(type)) {
+            (this._keyboardEventHandlerByType.get(type) as Array<KeyboardEventHandler>).push(handler);
+            return;
+        }
+
+        this._keyboardEventHandlerByType.set(type, new Array<KeyboardEventHandler>());
+
+        this._previousKeyboardEventsByType.set(type, new Array<KeyboardEvent>());
+        const latest = new Array<KeyboardEvent>();
+        this._latestKeyboardEventsByType.set(type, latest);
+
+        assert(this._keyboardEventProvider !== undefined, `expected valid keyboard event provider`);
+        const observable = (this._keyboardEventProvider as KeyboardEventProvider).observable(type);
+
+        this._subscriptions.push((observable as Observable<KeyboardEvent>).subscribe(
+            (event) => { latest.push(event); this.invalidate(); }));
+
+        (this._keyboardEventHandlerByType.get(type) as Array<KeyboardEventHandler>).push(handler);
+    }
+
+    protected invokeKeyboardEventHandler(type: KeyboardEventType): void {
+        const handlers = this._keyboardEventHandlerByType.get(type);
+        if (handlers === undefined || handlers.length === 0) {
+            return;
+        }
+        const latest = this._latestKeyboardEventsByType.get(type) as Array<KeyboardEvent>;
+        if (latest.length === 0) {
+            return;
+        }
+        const previous = this._previousKeyboardEventsByType.get(type) as Array<KeyboardEvent>;
+        handlers.forEach((handler) => handler(latest, previous));
+
+        Object.assign(previous, latest);
+        latest.length = 0;
+    }
+
+    /**
      * Disposes all registered handlers of all event types.
      */
     dispose(): void {
@@ -331,6 +394,8 @@ export class EventHandler {
         this._previousPointerEventsByType.forEach((value) => value.length = 0);
         this._previousEyeGazeEventsByType.forEach((value) => value.length = 0);
         this._latestEyeGazeEventsByType.forEach((value) => value.length = 0);
+        this._latestKeyboardEventsByType.forEach((value) => value.length = 0);
+        this._previousKeyboardEventsByType.forEach((value) => value.length = 0);
 
         for (const subscription of this._subscriptions) {
             subscription.unsubscribe();
@@ -365,6 +430,10 @@ export class EventHandler {
         this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.NewServerMessage);
         this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.ConnectionStatus);
         this.invokeEyeGazeEventHandler(EyeGazeEventProvider.Type.BinaryMessageParsingError);
+
+        this.invokeKeyboardEventHandler(KeyboardEventType.KeyDown);
+        this.invokeKeyboardEventHandler(KeyboardEventType.KeyPress);
+        this.invokeKeyboardEventHandler(KeyboardEventType.KeyUp);
     }
 
 
@@ -621,6 +690,32 @@ export class EventHandler {
         this.pushEyeGazeEventHandler(EyeGazeEventProvider.Type.BinaryMessageParsingError, handler);
     }
 
+    /**
+         * Register a key down event handler that is to be called on update if at least a single key down event has
+         * occurred since last update.
+         * @param handler - Handler to be called on update.
+         */
+    pushKeyDownHandler(handler: KeyboardEventHandler): void {
+        this.pushKeyboardEventHandler(KeyboardEventType.KeyDown, handler);
+    }
+
+    /**
+     * Register a key press event handler that is to be called on update if at least a single key press event has
+     * occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushKeyPressHandler(handler: KeyboardEventHandler): void {
+        this.pushKeyboardEventHandler(KeyboardEventType.KeyPress, handler);
+    }
+
+    /**
+     * Register a key up event handler that is to be called on update if at least a single key up event has
+     * occurred since last update.
+     * @param handler - Handler to be called on update.
+     */
+    pushKeyUpHandler(handler: KeyboardEventHandler): void {
+        this.pushKeyboardEventHandler(KeyboardEventType.KeyUp, handler);
+    }
 
     /**
      * Forward pointer lock request to the mouse event provider (if one exists).

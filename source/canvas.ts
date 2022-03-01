@@ -20,6 +20,7 @@ import { PointerEventProvider } from './pointereventprovider';
 import { Renderer } from './renderer';
 import { Resizable } from './resizable';
 import { TouchEventProvider } from './toucheventprovider';
+import { KeyboardEventProvider } from './keyboardeventprovider';
 import { Wizard } from './wizard';
 
 /* spellchecker: enable */
@@ -123,6 +124,9 @@ export class Canvas extends Resizable {
     /** @see {@link eyeGazeEventProvider} */
     protected _eyeGazeEventProvider: EyeGazeEventProvider;
 
+    /** @see {@link keyboardEventProvider} */
+    protected _keyboardEventProvider: KeyboardEventProvider;
+
     protected _lostContextExtension: WEBGL_lose_context | undefined;
 
 
@@ -163,6 +167,7 @@ export class Canvas extends Resizable {
         this._mouseEventProvider = new MouseEventProvider(this._element, 200);
         this._touchEventProvider = new TouchEventProvider(this._element, 200);
         this._pointerEventProvider = new PointerEventProvider(this._element, 200);
+        this._keyboardEventProvider = new KeyboardEventProvider(this._element, 200);
 
         /**
          * Disable default handling of touch events by the browser.
@@ -445,6 +450,7 @@ export class Canvas extends Resizable {
                 pointerEventProvider: this._pointerEventProvider,
                 mouseEventProvider: this._mouseEventProvider,
                 eyeGazeEventProvider: this._eyeGazeEventProvider,
+                keyboardEventProvider: this._keyboardEventProvider,
             });
 
         this._renderer.frameSize = this._frameSize;
@@ -774,6 +780,10 @@ export class Canvas extends Resizable {
      */
     get touchEventProvider(): TouchEventProvider {
         return this._touchEventProvider;
+    }
+
+    get keyboardEventProvider(): KeyboardEventProvider {
+        return this._keyboardEventProvider;
     }
 
     /**
