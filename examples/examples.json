@@ -55,6 +55,12 @@
         "caption": "Example showing instanced rendering of a glTF mesh."
     },
     {
+        "target": "instanced-zprepass-example",
+        "title": "Instanced Rendering w. Z-Prepass",
+        "object": "InstancedZPrepassExample",
+        "caption": "Example showing instanced rendering and a z-prepass."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",

@@ -49,8 +49,9 @@ class DefaultSceneRenderer extends Renderer {
 
     // - FRUSTUM-LABELS -
     // internal
-    protected _frustumLabelFont: FontFace;
-    protected _frustumLabelPass: LabelRenderPass;
+    protected _fontFace: FontFace;
+    protected _labelPass: LabelRenderPass;
+    protected _labels: Array<Label>;
 
     // - FRUSTUM-TEXTURE -
     // internal
@@ -93,10 +94,7 @@ class DefaultSceneRenderer extends Renderer {
     protected onInitialize(context: Context, callback: Invalidate,
         eventProvider: EventProvider): boolean {
 
-        // shorthands
-        // gl for gl functions access
         const gl = context.gl;
-        // gl2facade for ADDITIONAL gl functions access
         const gl2facade = this._context.gl2facade;
 
         // init the default final buffer
@@ -161,9 +159,6 @@ class DefaultSceneRenderer extends Renderer {
         gl.uniform1i(this._program.uniform('u_texture'), 0);
         gl.uniform1i(this._program.uniform('u_textured'), false);
 
-
-
-
         this._texture = new Texture2D(context, 'Texture');
         this._texture.initialize(1, 1, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
         this._texture.wrap(gl.REPEAT, gl.REPEAT);
@@ -197,9 +192,8 @@ class DefaultSceneRenderer extends Renderer {
         this._navigation = new Navigation(callback, eventProvider);
         this._navigation.camera = this._camera;
 
-        this._frustumLabelPass = new LabelRenderPass(context);
-        this._frustumLabelPass.initialize();
-
+        this._labelPass = new LabelRenderPass(context);
+        this._labelPass.initialize();
 
         this.updateObservedFrustum(this._observedCamera);
 
@@ -222,20 +216,22 @@ class DefaultSceneRenderer extends Renderer {
         this._frustumProgram.attribute('a_color', 1);
 
 
-        this._frustumLabelPass.camera = this._camera;
-        this._frustumLabelPass.target = this._defaultFBO;
-        this._frustumLabelPass.depthMask = true;
+        this._labelPass.camera = this._camera;
+        this._labelPass.target = this._defaultFBO;
+        this._labelPass.depthMask = false;
+
 
         // - FRUSTUM -
         // @TODO create frustum thingies
         FontFace.fromFile('./data/opensans2048p160d16.fnt', context)
             .then((fontFace) => {
+                this.setupLabels();
                 this.updateObservedFrustum(this._observedCamera);
 
-                for (const label of this._frustumLabelPass.labels) {
+                for (const label of this._labelPass.labels) {
                     label.fontFace = fontFace;
                 }
-                this._frustumLabelFont = fontFace;
+                this._fontFace = fontFace;
 
                 this.finishLoading();
                 this.invalidate(true);
@@ -255,7 +251,7 @@ class DefaultSceneRenderer extends Renderer {
         this._context.gl.deleteBuffer(this._frustumBuffer);
         this._frustumProgram.uninitialize();
 
-        this._frustumLabelPass.uninitialize();
+        this._labelPass.uninitialize();
 
         this._defaultFBO.uninitialize();
     }
@@ -301,6 +297,8 @@ class DefaultSceneRenderer extends Renderer {
             this._defaultFBO.clearColor(this._clearColor);
         }
 
+        //this._labelPass.update();
+
         this._altered.reset();
         this._camera.altered = false;
         this._observedCamera.altered = false;
@@ -319,8 +317,8 @@ class DefaultSceneRenderer extends Renderer {
 
         gl.viewport(0, 0, this._frameSize[0], this._frameSize[1]);
 
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
+        gl.disable(gl.CULL_FACE);
+        // gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
 
         this._texture.bind(gl.TEXTURE0);
@@ -402,15 +400,13 @@ class DefaultSceneRenderer extends Renderer {
 
         this._frustumProgram.unbind();
 
-
-
         gl.cullFace(gl.BACK);
         gl.disable(gl.CULL_FACE);
 
 
-        this._frustumLabelPass.update();
-        this._frustumLabelPass.frame();
-        this._frustumLabelPass.unbind();
+        // this._labelPass.update();
+        // this._labelPass.frame();
+        // this._labelPass.unbind();
 
     }
 
@@ -614,67 +610,105 @@ class DefaultSceneRenderer extends Renderer {
             vertices.set(farColor, offset++ * 3);
         }
 
-        const nearPoint = this.buildCorner(vec3.create(), eye, nDir, nUp, 0, nSide, +1);
-        const farPoint = this.buildCorner(vec3.create(), eye, fDir, fUp, 0, fSide, +1);
-        const upTriangleBottom = this.buildCorner(vec3.create(), eye, nDir, nUp, +1.1, nSide, 0);
-        const upTriangleSize = vec3.distance(upTriangleBottom, upTriangleTop) * 0.5;
+        // const nearPoint = this.buildCorner(vec3.create(), eye, nDir, nUp, 0, nSide, +1);
+        // const farPoint = this.buildCorner(vec3.create(), eye, fDir, fUp, 0, fSide, +1);
+        // const upTriangleBottom = this.buildCorner(vec3.create(), eye, nDir, nUp, +1.1, nSide, 0);
+        // const upTriangleSize = vec3.distance(upTriangleBottom, upTriangleTop) * 0.5;
 
-        this.updateLabels(dir, up, eye, nearPoint, farPoint, nHalfHeight, upTriangleBottom, upTriangleSize);
+        // this.updateLabels(); //dir, up, eye, nearPoint, farPoint, nHalfHeight, upTriangleBottom, upTriangleSize);
 
         this._frustumData = vertices;
     }
 
-    protected updateLabels(lookAt: vec3, up: vec3, eye: vec3, nearPoint: vec3, farPoint: vec3, frustumFontHeight: Number, upTriangleBottom: vec3, upTriangleSize: Number): void {
-        var labels = new Array(4);
-        labels[0] = new Position3DLabel(new Text('Near-Clipping-Plane'), Label.Type.Static);
-        labels[0].lineAnchor = Label.LineAnchor.Center;
-        labels[0].alignment = Label.Alignment.Left;
-        labels[0].position = nearPoint;
-        labels[0].direction = lookAt;
-        labels[0].up = up;
-        labels[0].fontSize = frustumFontHeight;
-        labels[0].fontSizeUnit = Label.Unit.World;
-        labels[0].color.fromHex('#ffffff');
+    protected setupLabels(): void {
 
-        labels[0] = new Position3DLabel(new Text('Scatterplot'), Label.Type.Static);
-        labels[0].lineAnchor = Label.LineAnchor.Bottom;
-        labels[0].alignment = Label.Alignment.Center;
-        labels[0].position = [0.0, 0.0, 0.0];
-        labels[0].direction = [1.0, 1.0, -1.0];
-        labels[0].up = [-1.5, 0.5, -1.0];
-        labels[0].fontSize = 0.3;
-        labels[0].fontSizeUnit = Label.Unit.World;
-        labels[0].color.fromHex('#ffffff');
+        const worldFontSize = 0.3;
 
-        labels[1] = new Position3DLabel(new Text('Far-Clipping-Plane'), Label.Type.Static);
-        labels[1].lineAnchor = Label.LineAnchor.Center;
-        labels[1].alignment = Label.Alignment.Left;
-        labels[1].position = farPoint;
-        labels[1].direction = lookAt;
-        labels[1].up = up;
-        labels[1].fontSize = frustumFontHeight;
-        labels[1].fontSizeUnit = Label.Unit.World;
-        labels[1].color.fromHex('#ffffff');
+        const l0 = new Position3DLabel(new Text('Near-Clipping-Plane'), Label.Type.Dynamic);
+        l0.lineAnchor = Label.LineAnchor.Center;
+        l0.alignment = Label.Alignment.Left;
+        l0.position = [0.0, 0.0, 0.0];
+        l0.direction = [1.0, 0.0, 0.0];
+        l0.up = [0.0, 1.0, 0.0];
+        l0.fontSize = worldFontSize;
+        l0.fontSizeUnit = Label.Unit.World;
+        l0.color.fromHex('#ffffff');
 
-        labels[2] = new Position3DLabel(new Text('Up'), Label.Type.Static);
-        labels[2].lineAnchor = Label.LineAnchor.Bottom;
-        labels[2].alignment = Label.Alignment.Center;
-        labels[2].position = upTriangleBottom;
-        labels[2].direction = lookAt;
-        labels[2].up = up;
-        labels[2].fontSize = upTriangleSize;
-        labels[2].fontSizeUnit = Label.Unit.World;
-        labels[2].color.fromHex('#ffffff');
 
-        labels[3] = new Projected3DLabel(new Text('   Eye'), Label.Type.Dynamic);
-        labels[3].lineAnchor = Label.LineAnchor.Center;
-        labels[3].alignment = Label.Alignment.Left;
-        labels[3].position = eye;
-        labels[3].fontSize = 16.0;
-        labels[3].fontSizeUnit = Label.Unit.Mixed;
-        labels[3].color.fromHex('#ffffff');
+        const l1 = new Position3DLabel(new Text('Far-Clipping-Plane'), Label.Type.Dynamic);
+        l1.lineAnchor = Label.LineAnchor.Center;
+        l1.alignment = Label.Alignment.Left;
+        l1.position = [0.0, 0.0, 0.0];
+        l1.direction = [1.0, 0.0, 0.0];
+        l1.up = [0.0, 1.0, 0.0];
+        l1.fontSize = worldFontSize;
+        l1.fontSizeUnit = Label.Unit.World;
+        l1.color.fromHex('#ffffff');
 
-        this._frustumLabelPass.labels = labels;
+        const l2 = new Position3DLabel(new Text('Up'), Label.Type.Dynamic);
+        l2.lineAnchor = Label.LineAnchor.Bottom;
+        l2.alignment = Label.Alignment.Center;
+        l2.position = [0.0, 0.0, 0.0];
+        l2.direction = [1.0, 0.0, 0.0];
+        l2.up = [0.0, 1.0, 0.0];
+        l2.fontSize = worldFontSize;
+        l2.fontSizeUnit = Label.Unit.World;
+        l2.color.fromHex('#ffffff');
+
+        const l3 = new Projected3DLabel(new Text('Eye'), Label.Type.Dynamic);
+        l3.lineAnchor = Label.LineAnchor.Center;
+        l3.alignment = Label.Alignment.Left;
+        l3.position = [0.0, 0.0, 0.0];
+        l3.fontSize = 16.0;
+        l3.fontSizeUnit = Label.Unit.Mixed;
+        l3.color.fromHex('#ffffff');
+
+        this._labels = new Array<Label>();
+        this._labels[0] = l0;
+        this._labels[1] = l1;
+        this._labels[2] = l2;
+        this._labels[3] = l3;
+
+        this._labelPass.labels = this._labels;
+        this._labelPass.update();
+    }
+
+    protected updateLabels(): void { //lookAt: vec3, up: vec3, eye: vec3, nearPoint: vec3, farPoint: vec3, frustumFontHeight: Number, upTriangleBottom: vec3, upTriangleSize: Number): void {
+
+        if (this._labels === undefined) {
+            return;
+        }
+
+        // const camera = this._observedCamera;
+        // const look = vec3.sub(vec3.create(), camera.eye, camera.center);
+        // vec3.normalize(look, look);
+
+        // // Up
+
+        // const l2 = this._labels[2] as Position3DLabel;
+        // l2.position = camera.eye;
+        // l2.up = camera.up;
+        // vec3.cross(l2.direction, camera.up, look);
+        // // l0.direction = lookAt;
+        // // l0.up = up;
+
+        // const l1 = this._labels[1] as Position3DLabel;
+        // vec3.copy(l1.position, farPoint);
+        // // l1.position = farPoint;
+        // // l1.direction = lookAt;
+        // // l1.up = up;
+
+        // const l2 = this._labels[2] as Position3DLabel;
+        // vec3.copy(l2.position, upTriangleBottom);
+        // // l2.position = upTriangleBottom;
+        // // l2.direction = lookAt;
+        // // l2.up = up;
+
+        // const l3 = this._labels[3] as Projected3DLabel;
+        // vec3.copy(l3.position, eye);
+        // // l3.position = eye;
+
+        this._labelPass.update();
     }
 
 }
