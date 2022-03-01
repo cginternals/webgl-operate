@@ -251,7 +251,7 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    loadFromSingleImages(uris: string[], slices: GLsizei, crossOrigin: boolean = false, useHorizontalSlicing: boolean = false) : Promise<void> {
+    loadFromSingleImages(uris: string[], slices: GLsizei, crossOrigin: boolean = false, useHorizontalSlicing: boolean = false): Promise<void> {
         return new Promise((resolve, reject) => {
             const auxiliaryCanvas = document.createElement('canvas');
             const auxiliaryContext = auxiliaryCanvas.getContext('2d');

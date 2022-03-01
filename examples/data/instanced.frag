@@ -13,6 +13,7 @@ uniform vec4 u_clearColor;
 
 varying vec2 v_uv;
 varying float v_attenuation;
+varying vec3 v_position;
 
 
 void main(void)

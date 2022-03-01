@@ -55,6 +55,12 @@
         "caption": "Example showing instanced rendering of a glTF mesh."
     },
     {
+        "target": "instanced-zprepass-example",
+        "title": "Instanced Rendering w. Z-Prepass",
+        "object": "InstancedZPrepassExample",
+        "caption": "Example showing instanced rendering and a z-prepass."
+    },
+    {
         "target": "label2d-example",
         "title": "Label 2D",
         "object": "Label2DExample",
@@ -138,5 +144,17 @@
         "title": "XToon Shading",
         "object": "XToonExample",
         "caption": "Minimal example showing XToon shading for simple geometry."
+    },
+    {
+        "target": "vector-example",
+        "title": "Labeled Vectors and Points",
+        "object": "VectorExample",
+        "caption": "Displaying labeled vectors and points for educational examples."
+    },
+    {
+        "target": "default-scene-example",
+        "title": "Default Scene for CG1",
+        "object": "DefaultSceneExample",
+        "caption": "The base scene for the CG1 lecture interactive examples."
     }
 ]

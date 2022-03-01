@@ -555,13 +555,13 @@ export class Canvas extends Resizable {
             return;
         }
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
-        logIf(frameScale[0] < 0.0 || frameScale[0] > 2.0, LogLevel.Info,
+        logIf(frameScale[0] < 0.0 || frameScale[0] > 8.0, LogLevel.Info,
             `frame width scale clamped to [0.0,2.0], given ${frameScale[0]}`);
-        logIf(frameScale[1] < 0.0 || frameScale[1] > 2.0, LogLevel.Info,
+        logIf(frameScale[1] < 0.0 || frameScale[1] > 8.0, LogLevel.Info,
             `frame height scale clamped to [0.0,2.0], given ${frameScale[0]}`);
 
         const scale = vec2.create();
-        clamp2(scale, frameScale, [0.0, 0.0], [2.0, 2.0]);
+        clamp2(scale, frameScale, [0.0, 0.0], [8.0, 8.0]);
 
         const size = vec2.create();
         vec2.mul(size, this._size, scale);
@@ -615,13 +615,13 @@ export class Canvas extends Resizable {
             log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameSize}]`);
             return;
         }
-        logIf(frameSize[0] < 1 || frameSize[0] > this._size[0], LogLevel.Info,
+        logIf(frameSize[0] < 1 || frameSize[0] > 8 * this._size[0], LogLevel.Info,
             `frame width scale clamped to [1,${this._size[0]}], given ${frameSize[0]}`);
-        logIf(frameSize[1] < 1 || frameSize[1] > this._size[1], LogLevel.Info,
+        logIf(frameSize[1] < 1 || frameSize[1] > 8 * this._size[1], LogLevel.Info,
             `frame height scale clamped to [1, ${this._size[1]}], given ${frameSize[1]}`);
 
         const size = vec2.create();
-        clamp2(size, frameSize, [1.0, 1.0], this._size);
+        clamp2(size, frameSize, [1.0, 1.0], [8 * this._size[0], 8 * this._size[1]]);
         vec2.round(size, size);
 
         logIf(!vec2.exactEquals(size, frameSize), LogLevel.Warning,
