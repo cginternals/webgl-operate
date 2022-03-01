@@ -66,10 +66,10 @@ export class TurntableModifier extends CameraModifier {
         vec2.scale(magnitudes, magnitudes, window.devicePixelRatio * this._sensitivity);
 
         if (Number.isFinite(this._minAzimuth)) {
-            magnitudes[1] = Math.min(this._azimuth - this._minAzimuth, magnitudes[1]);
+            magnitudes[1] = Math.min(this._azimuth - this._minAzimuth!, magnitudes[1]);
         }
         if (Number.isFinite(this._maxAzimuth)) {
-            magnitudes[1] = Math.max(this._azimuth - this._maxAzimuth, magnitudes[1]);
+            magnitudes[1] = Math.max(this._azimuth - this._maxAzimuth!, magnitudes[1]);
         }
 
         mat4.rotateY(this._rotation, m4(), magnitudes[0]);
