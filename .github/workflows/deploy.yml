@@ -31,6 +31,9 @@ jobs:
       - name: Build website
         run: CI=false npm run website
         working-directory: src
+      - name: Build documentation
+        run: CI=false npm run doc
+        working-directory: src
       - name: Copy website
         run: cp -r src/build/* deploy
       - name: Create CNAME

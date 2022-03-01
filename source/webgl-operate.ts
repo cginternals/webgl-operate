@@ -17,11 +17,10 @@ export import fetch = root_fetch;
 import * as root_raymath from './raymath';
 export import ray_math = root_raymath;
 
-
 /* DEBUG facilities */
 
+export { FramePrepareCallback, RunsFinishedCallback, Benchmark } from './benchmark';
 export * from './debug/index';
-
 
 /* VIEWER facilities */
 
