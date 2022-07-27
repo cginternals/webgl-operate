@@ -2,15 +2,15 @@ name: HiViSer
 
 on:
   # Trigger the workflow on push or pull request,
-  # but only for the main branch
+  # but only for the master branch
   push:
     branches:
-      - main
+      - master
   # Replace pull_request with pull_request_target if you
   # plan to use this action with forks, see the Limitations section
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   run-hiviser:
