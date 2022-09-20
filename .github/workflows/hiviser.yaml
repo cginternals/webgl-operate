@@ -23,6 +23,5 @@ jobs:
 
       - name: Run Hiviser Action
         uses: hpicgs/github-software-analytics-embedding@v0
-        # Optional, use if you want to analyze a specific folder
         with:
           repository_path: ./source
