@@ -1,0 +1,29 @@
+name: Analytics Treemap Embedding
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  analytics-embedding:
+    name: Run Analytics Treemap Embedding 🔎
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Run Analytics Treemap Embedding Action 🚀
+        uses: hpicgs/github-software-analytics-embedding@v0.6.0
+        with:
+          # Optional, use if you want to analyse a specific folder
+          repository_path: ./source
+          # Optional to enable benchmarking
+          benchmark: true
