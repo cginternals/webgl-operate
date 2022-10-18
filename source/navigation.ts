@@ -41,7 +41,7 @@ export class Navigation {
     /**
      * Currently active metaphor.
      */
-    protected _rotationMetaphor: Navigation.RotationMetaphor;
+    protected _rotationMetaphor: RotationMetaphorState;
 
     /**
      * Identifies the active camera modifier.
@@ -221,29 +221,7 @@ export class Navigation {
         const events = Array.from(this._activeEvents.values());
         const point = this._eventHandler.offsets(events[0])[0];
 
-        switch (this._rotationMetaphor) {
-            case Navigation.RotationMetaphor.FirstPerson:
-                const firstPerson = this._firstPerson as FirstPersonModifier;
-                let movement: vec2 | undefined;
-                if (PointerLock.active() && event instanceof MouseEvent) {
-                    movement = vec2.fromValues((event as MouseEvent).movementX, (event as MouseEvent).movementY);
-                }
-                start ? firstPerson.initiate(point) : firstPerson.process(point, movement);
-                break;
-
-            case Navigation.RotationMetaphor.Trackball:
-                const trackball = this._trackball as TrackballModifier;
-                start ? trackball.initiate(point) : trackball.process(point);
-                break;
-
-            case Navigation.RotationMetaphor.Turntable:
-                const turntable = this._turntable as TurntableModifier;
-                start ? turntable.initiate(point) : turntable.process(point);
-                break;
-
-            default:
-                break;
-        }
+        this._rotationMetaphor.rotate(events[0], start, point);
     }
 
     protected pan(start: boolean): void {
@@ -407,15 +385,9 @@ export class Navigation {
      */
     set camera(camera: Camera) {
         this._camera = camera;
-        if (this._firstPerson) {
-            this._firstPerson.camera = camera;
-        }
-        if (this._trackball) {
-            this._trackball.camera = camera;
-        }
-        if (this._turntable) {
-            this._turntable.camera = camera;
-        }
+
+        this._rotationMetaphor.camera = camera;
+
         if (this._pan) {
             this._pan.camera = camera;
         }
@@ -431,7 +403,7 @@ export class Navigation {
      * Configure this navigation's metaphor.
      */
     set rotationMetaphor(metaphor: Navigation.RotationMetaphor) {
-        if (this._rotationMetaphor === metaphor) {
+        if (this._rotationMetaphor.rotationMetaphor! === metaphor) {
             return;
         }
 
@@ -442,35 +414,28 @@ export class Navigation {
         this._eventHandler.exitPointerLock(); /* Might be requested (and active) from FirstPerson or Flight. */
         this._alwaysRotateOnMove = false;
 
-        this._rotationMetaphor = metaphor;
-        switch (this._rotationMetaphor) {
+        switch (metaphor) {
             case Navigation.RotationMetaphor.FirstPerson:
-
-                this._eventHandler.requestPointerLock();
-                this._alwaysRotateOnMove = true;
-
-                this._firstPerson = new FirstPersonModifier();
-                this._firstPerson.camera = this._camera;
+                this._rotationMetaphor = new FirstPersonRotationMetaphor(this);
                 break;
 
             case Navigation.RotationMetaphor.Trackball:
-                this._trackball = new TrackballModifier();
-                this._trackball.camera = this._camera;
+                this._rotationMetaphor = new TrackballRotationMetaphor(this);
                 break;
 
             case Navigation.RotationMetaphor.Turntable:
-                this._turntable = new TurntableModifier();
-                this._turntable.camera = this._camera;
+                this._rotationMetaphor = new TurntableRotationMetaphor(this);
                 break;
 
             default:
                 break;
         }
+
         this._invalidate(true);
     }
 
     get rotationMetaphor(): Navigation.RotationMetaphor {
-        return this._rotationMetaphor;
+        return this._rotationMetaphor.rotationMetaphor;
     }
 
 }
@@ -505,3 +470,80 @@ export namespace Navigation {
         Turntable = 'turntable',
     }
 }
+
+abstract class RotationMetaphorState {
+    get rotationMetaphor(): Navigation.RotationMetaphor | undefined {
+        return undefined;
+    }
+    abstract rotate(event: Event, start: boolean, point: vec2): void;
+};
+
+class FirstPersonRotationMetaphor extends RotationMetaphorState {
+    protected _camera: Camera;
+    protected _modifier: FirstPersonModifier;
+
+    get rotationMetaphor() {
+        return Navigation.RotationMetaphor.FirstPerson;
+    }
+
+    constructor(navigation: Navigation) {
+        super();
+
+        this._modifier = new FirstPersonModifier();
+
+        navigation._eventHandler.requestPointerLock();
+        navigation._alwaysRotateOnMove = true;
+
+        this._camera = navigation.camera;
+    }
+
+    rotate(event: Event, start: boolean, point: vec2) {
+        let movement: vec2 | undefined;
+        if (PointerLock.active() && event instanceof MouseEvent) {
+            movement = vec2.fromValues((event as MouseEvent).movementX, (event as MouseEvent).movementY);
+        }
+        start ? this._modifier.initiate(point) : this._modifier.process(point, movement);
+    }
+};
+
+class TrackballRotationMetaphor extends RotationMetaphorState {
+    protected _camera: Camera;
+    protected _modifier: TrackballModifier;
+
+    constructor(navigation: Navigation) {
+        super();
+
+        this._modifier = new TrackballModifier();
+        this._camera = navigation.camera;
+    }
+
+    get rotationMetaphor() {
+        return Navigation.RotationMetaphor.Trackball;
+    }
+
+    rotate(event: Event, start: boolean, point: vec2) {
+        start ? this._modifier.initiate(point) : this._modifier.process(point);
+    }
+
+};
+
+class TurntableRotationMetaphor extends RotationMetaphorState {
+    protected _camera: Camera;
+    protected _modifier: TurntableModifier;
+
+    constructor(navigation: Navigation) {
+        super();
+
+        this._modifier = new TurntableModifier();
+        this._camera = navigation.camera;
+    }
+
+    get rotationMetaphor() {
+        return Navigation.RotationMetaphor.Turntable;
+    }
+
+    rotate(event: Event, start: boolean, point: vec2) {
+        start ? this._modifier.initiate(point) : this._modifier.process(point);
+    }
+};
+
