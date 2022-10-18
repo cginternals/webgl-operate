@@ -163,10 +163,6 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
             gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.object, 0);
         });
 
-        if (gl2facade.drawBuffers) {
-            gl2facade.drawBuffers(this._drawBuffers);
-        }
-
 
         /* Check status and cache minimum renderable area. */
         const status: GLenum = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
@@ -174,6 +170,10 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         logIf(!this._valid, LogLevel.Warning, Framebuffer.statusString(this.context, status));
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
+
+        if (gl2facade.drawBuffers) {
+            gl2facade.drawBuffers(this._drawBuffers);
+        }
 
         return this._object;
 

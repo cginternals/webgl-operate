@@ -19,13 +19,11 @@ type ImagesAvailableCallback = (images: Array<Blob>) => void;
  * be retrieved by setting the onImagesAvailable callback.
  * Exemplary usage:
  * ```
- * const recorder = new CanvasRecorder(canvas);
- * const images = new Array<Blob>();
- * recorder.onImagesAvailable = (data: Array<Blob>) => images.push(data);
- * recorder.start(60);
+ * const recorder = new gloperate.CanvasRecorder(canvas);
+ * recorder.start(30, 'video/webm', 2.0 * 2**20);
  * ...
  * recorder.stop();
- *
+ * recorder.download();
  * ```
  */
 export class CanvasRecorder {

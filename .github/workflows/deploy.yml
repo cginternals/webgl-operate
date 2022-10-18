@@ -1,0 +1,49 @@
+name: Deploy website
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize Node.js environment
+        uses: actions/setup-node@v2
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: src
+      - name: Check out deploy branch
+        uses: actions/checkout@v2
+        with:
+          ref: deploy
+          path: deploy
+      - name: Clean up output
+        run: git rm -rf *
+        working-directory: deploy
+      - name: Set up dependencies
+        run: npm install
+        working-directory: src
+      - name: Build website
+        run: CI=false npm run website
+        working-directory: src
+      - name: Build documentation
+        run: CI=false npm run doc
+        working-directory: src
+      - name: Copy website
+        run: cp -r src/build/* deploy
+      - name: Create CNAME
+        run: echo "webgl-operate.org" > CNAME
+        working-directory: deploy
+      - name: Commit result
+        run: |
+          git config user.email "${{ github.event.pusher.email }}"
+          git config user.name "${{ github.event.pusher.name }}"
+          git add *
+          git diff-index --quiet HEAD || git commit -m "deploy: ${{ github.event.head_commit.message }}"
+          git push
+        working-directory: deploy

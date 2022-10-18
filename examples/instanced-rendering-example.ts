@@ -74,9 +74,9 @@ export class InstancedRenderer extends Renderer {
         /* Create and configure camera. */
 
         this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.center = vec3.fromValues(0.125, 0.25, 0.4);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 0.0, 4.0);
+        this._camera.eye = vec3.fromValues(0.0, 0.0, 1.5);
         this._camera.near = 0.01;
         this._camera.far = 8.0;
 
@@ -86,6 +86,8 @@ export class InstancedRenderer extends Renderer {
         this._navigation.camera = this._camera;
 
         this.loadAsset();
+
+        // gl.disable(gl.CULL_FACE);
 
         return true;
     }

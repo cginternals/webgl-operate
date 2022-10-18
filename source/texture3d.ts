@@ -154,64 +154,177 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
     }
 
     /**
-     * Asynchronous load of an image comprising a column of slices via URL or data URI. Please note that due to the lack
+     * Asynchronous load of an image comprising a column/row of slices via URL or data URI. Please note that due to the lack
      * of sub-data access on images, the slices are loaded using a auxiliary canvas and context (temporarily). The sub
      * images (slices) are drawn using the canvas and the image data is then captured.
-     * @todo perhaps also support horizontal slicing.
-     * @param url - Uniform resource locator string referencing image slices that should be loaded (data URI supported).
+     * @param uri - Uniform resource locator string referencing image slices that should be loaded (data URI supported).
      * @param slices - Number of slices (resulting in the 3D texture's depth) vertically aligned within the image.
      * @param crossOrigin - Enable cross origin data loading.
+     * @param useHorizontalSlicing - Optional: Whether or not to use horizontal (rows) instead of vertical (columns) slice alignment.
      * @returns - Promise for handling image load status.
      */
     @Initializable.assert_initialized()
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    load(url: string, slices: GLsizei, crossOrigin: boolean = false): Promise<void> {
-        assert(false, `not implemented`);
-        return new Promise<void>(() => true);
-        // return new Promise((resolve, reject) => {
-        //     const image = new Image();
-        //     image.onerror = () => reject();
+    load(uri: string, slices: GLsizei, crossOrigin: boolean = false, useHorizontalSlicing: boolean = false): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onerror = () => reject();
 
-        //     image.onload = () => {
-        //         /* Use an auxiliary canvas to extract slices by drawing and extracting each slice. */
-        //         const auxiliaryCanvas: HTMLCanvasElement =
-        //             document.createElementNS('http://www.w3.org/1999/xhtml', 'aux-canvas') as HTMLCanvasElement;
-        //         const auxiliaryContext = auxiliaryCanvas.getContext('2d');
+            image.onload = () => {
+                /* Use an auxiliary canvas to extract slices by drawing and extracting each slice. */
+                const auxiliaryCanvas = document.createElement('canvas');
+                const auxiliaryContext = auxiliaryCanvas.getContext('2d');
 
-        //         assert(auxiliaryContext !== undefined, `expected auxiliary 2D context for temporary slicing`);
-        //         assert(image.height % slices === 0 && image.height / slices >= 1.0,
-        //             `expected height to be a multitude of number of slices`);
+                assert(auxiliaryContext !== undefined, `expected auxiliary 2D context for temporary slicing`);
 
-        //         const width = image.width;
-        //         const height = Math.floor(image.height / slices);
-        //         const depth = height * slices;
+                let width, height, depth, data;
 
-        //         auxiliaryCanvas.width = width;
-        //         auxiliaryCanvas.height = height;
+                if (useHorizontalSlicing === false) {
+                    // TODO: Reduce code duplication with horizontal slicing code (else branch) below
+                    assert(image.height % slices === 0 && image.height / slices >= 1.0,
+                        `expected height to be a multitude of number of slices`);
 
-        //         const data = new Uint8Array(width * height * depth);
-        //         const subImageSize = width * height;
+                    width = image.width;
+                    height = Math.floor(image.height / slices);
+                    depth = slices;
 
-        //         for (let slice = 0; slice < slices; ++slice) {
-        //             auxiliaryContext!.drawImage(image, 0, height * slice, width, height, 0, 0, width, height);
-        //             const subImageData = auxiliaryContext!.getImageData(0, 0, width, height).data;
+                    auxiliaryCanvas.width = width;
+                    auxiliaryCanvas.height = height;
 
-        //             for (let i = 0; i < subImageSize; ++i) {
-        //                 data[subImageSize * slice + i] = subImageData[4 * i];
-        //             }
-        //         }
+                    data = new Uint8Array(width * height * depth);
+                    const subImageSize = width * height;
 
-        //         this.resize(width, height, depth);
-        //         this.data(image);
+                    for (let slice = 0; slice < slices; ++slice) {
+                        auxiliaryContext!.drawImage(image, 0, height * slice, width, height, 0, 0, width, height);
+                        const subImageData = auxiliaryContext!.getImageData(0, 0, width, height).data;
 
-        //         resolve();
-        //     };
+                        for (let i = 0; i < subImageSize; ++i) {
+                            data[subImageSize * slice + i] = subImageData[4 * i];
+                        }
+                    }
+                } else {
+                    assert(image.width % slices === 0 && image.width / slices >= 1.0,
+                        `expected width to be a multitude of number of slices`);
 
-        //     if (crossOrigin) {
-        //         image.crossOrigin = 'anonymous';
-        //     }
-        //     image.src = url;
-        // });
+                    width = Math.floor(image.width / slices);
+                    height = image.height;
+                    depth = slices;
+
+                    auxiliaryCanvas.width = width;
+                    auxiliaryCanvas.height = height;
+
+                    data = new Uint8Array(width * height * depth);
+                    const subImageSize = width * height;
+
+                    for (let slice = 0; slice < slices; ++slice) {
+                        auxiliaryContext!.drawImage(image, width * slice, 0, width, height, 0, 0, width, height);
+                        const subImageData = auxiliaryContext!.getImageData(0, 0, width, height).data;
+
+                        for (let i = 0; i < subImageSize; ++i) {
+                            data[subImageSize * slice + i] = subImageData[4 * i];
+                        }
+                    }
+                }
+
+                this.resize(width, height, depth);
+                this.data(data);
+
+                resolve();
+            };
+
+            if (crossOrigin) {
+                image.crossOrigin = 'anonymous';
+            }
+            image.src = uri;
+        });
+    }
+
+    /**
+     * Asynchronous load of multiple images, each containing a column/row of slices, via URL or data URI.
+     * This can be used, e. g., for a dynamically sized array of 3D textures.
+     * Note that all the images must have the exact same dimensions.
+     * Each image is loaded and drawn into a large, multi-row/-column image. This image is then used as a base64 encoded
+     * PNG for subsequent usage in the regular @see {load} function.
+     * @param uris - Uniform resource locator strings referencing a set of equally-sized images that should be loaded (data URI supported).
+     * @param slices - Number of slices (resulting in the 3D texture's depth) vertically aligned within each image.
+     * @param crossOrigin - Enable cross origin data loading.
+     * @param useHorizontalSlicing - Optional: Whether or not to use horizontal (rows) instead of vertical (columns) slice alignment.
+     * @returns - Promise for handling image load status.
+     */
+    @Initializable.assert_initialized()
+    loadFromSingleImages(uris: string[], slices: GLsizei, crossOrigin: boolean = false, useHorizontalSlicing: boolean = false): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const auxiliaryCanvas = document.createElement('canvas');
+            const auxiliaryContext = auxiliaryCanvas.getContext('2d');
+
+            const drawingPromises = [];
+
+            let mergedImageWidth: number;
+            let mergedImageHeight: number;
+
+            for (let imageIndex = 0; imageIndex < uris.length; imageIndex++) {
+                const singleImage = new Image();
+                singleImage.onerror = () => reject();
+
+                const drawingPromise: Promise<void> = new Promise((resolve, reject) => {
+                    try {
+                        singleImage.onload = () => {
+                            const singleImageWidth = singleImage.width;
+                            const singleImageHeight = singleImage.height;
+
+                            if (useHorizontalSlicing === false) {
+                                if (mergedImageWidth === undefined) {
+                                    mergedImageWidth = singleImageWidth * uris.length;
+                                    auxiliaryCanvas.width = mergedImageWidth;
+                                } else {
+                                    assert(singleImageWidth * uris.length === mergedImageWidth, "The single images do not have the same width");
+                                }
+                                if (mergedImageHeight === undefined) {
+                                    mergedImageHeight = singleImageHeight;
+                                    auxiliaryCanvas.height = mergedImageHeight;
+                                } else {
+                                    assert(singleImageHeight === mergedImageHeight, "The single images do not have the same height");
+                                }
+
+                                auxiliaryContext!.drawImage(singleImage, singleImageWidth * imageIndex, 0);
+                            } else {
+                                if (mergedImageWidth === undefined) {
+                                    mergedImageWidth = singleImageWidth;
+                                    auxiliaryCanvas.width = mergedImageWidth;
+                                } else {
+                                    assert(singleImageWidth === mergedImageWidth, "The single images do not have the same width");
+                                }
+                                if (mergedImageHeight === undefined) {
+                                    mergedImageHeight = singleImageHeight * uris.length;
+                                    auxiliaryCanvas.height = mergedImageHeight;
+                                } else {
+                                    assert(singleImageHeight * uris.length === mergedImageHeight, "The single images do not have the same height");
+                                }
+
+                                auxiliaryContext!.drawImage(singleImage, 0, singleImageHeight * imageIndex);
+                            }
+
+                            resolve();
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+
+                drawingPromises.push(drawingPromise);
+
+                if (crossOrigin) {
+                    singleImage.crossOrigin = 'anonymous';
+                }
+                singleImage.src = uris[imageIndex];
+            }
+
+            Promise.all(drawingPromises).then(() => {
+                const mergedImageDataUri = auxiliaryCanvas.toDataURL('image/png', 1.0);
+                return this.load(mergedImageDataUri, slices, crossOrigin, useHorizontalSlicing).then(() => {
+                    resolve();
+                });
+            })
+        });
     }
 
     /**
