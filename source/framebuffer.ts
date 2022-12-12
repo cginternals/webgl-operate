@@ -169,11 +169,11 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         this._valid = gl.isFramebuffer(this._object) && (status === gl.FRAMEBUFFER_COMPLETE);
         logIf(!this._valid, LogLevel.Warning, Framebuffer.statusString(this.context, status));
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
-
         if (gl2facade.drawBuffers) {
             gl2facade.drawBuffers(this._drawBuffers);
         }
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, Framebuffer.DEFAULT_FRAMEBUFFER);
 
         return this._object;
 
