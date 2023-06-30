@@ -7,6 +7,7 @@ import { auxiliaries } from 'webgl-operate';
 
 import {
     Camera,
+    ChangeLookup,
     Canvas,
     Context,
     DefaultFramebuffer,
@@ -19,6 +20,7 @@ import {
     Invalidate,
     Material,
     Navigation,
+    NdcFillingTriangle,
     Program,
     Renderer,
     Shader,
@@ -37,20 +39,60 @@ export class AmbientOcclusionRenderer extends Renderer {
 
     protected _loader: GLTFLoader;
 
-    protected _navigation: Navigation;
+    /* Shared Across Passes */
 
+    protected _geom: NdcFillingTriangle;
+
+    /* Scene Pass */
+    protected _navigation: Navigation;
+    protected _camera: Camera;
     protected _forwardPass: ForwardSceneRenderPass;
 
-    protected _camera: Camera;
+    protected _sceneColor: Texture2D;
+    protected _sceneNormal: Texture2D;
+    protected _sceneDepth: Texture2D;
 
-    protected _texture: Texture2D;
-    protected _framebuffer: Framebuffer;
-    protected _program: Program;
+    protected _sceneProgram: Program;
 
     protected _uViewProjection: WebGLUniformLocation;
     protected _uModel: WebGLUniformLocation;
-    protected _uNormal: WebGLUniformLocation;
+    protected _uNormalLocation: WebGLUniformLocation;
     protected _uEye: WebGLUniformLocation;
+    /* // Scene Pass */
+
+    protected _sceneRenderFb: Framebuffer;
+    protected _sceneReadFb: Framebuffer;
+
+    /* Ambient Occlusion Pass */
+    protected _aoNoisyMap: Texture2D;
+
+    protected _aoProgram: Program;
+
+    protected _uDepthTextureLocation: WebGLUniformLocation;
+    /* // Ambient Occlusion Pass */
+
+    protected _aoFbo: Framebuffer;
+
+    /* Blur Pass */
+    protected _aoMap: Texture2D;
+
+    protected _blurProgram: Program;
+
+    protected _uKernelSize: WebGLUniformLocation;
+    protected _uaoMapLocation: WebGLUniformLocation;
+    /* // Blur Pass */
+
+    protected _blurredAOFbo: Framebuffer;
+
+    /* Composition Pass */
+    protected _compositionProgram: Program;
+
+    protected _uColorLocation: WebGLUniformLocation;
+    protected _uDepthLocation: WebGLUniformLocation;
+    protected _uAOMapLocation: WebGLUniformLocation;
+    /* // Composition Pass */
+
+    protected _outputFbo: DefaultFramebuffer;
 
     /**
      * Initializes and sets up rendering passes, navigation, loads a font face and links shaders with program.
@@ -65,24 +107,26 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
-        this._framebuffer = new DefaultFramebuffer(this._context, 'DefaultFBO');
-        this._framebuffer.initialize();
+        this._geom = new NdcFillingTriangle(this._context);
+
+        this._outputFbo = new DefaultFramebuffer(this._context, 'DefaultFBO');
+        this._outputFbo.initialize();
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'geometry.vert');
         vert.initialize(require('./data/ssao/geometry.vert'));
         const frag = new Shader(context, gl.FRAGMENT_SHADER, 'geometry.frag');
         frag.initialize(require('./data/ssao/geometry.frag'));
 
-        this._program = new Program(context, 'ShadingProgram');
-        this._program.initialize([vert, frag], true);
-        this._program.link();
-        this._program.bind();
+        this._sceneProgram = new Program(context, 'ShadingProgram');
+        this._sceneProgram.initialize([vert, frag], true);
+        this._sceneProgram.link();
+        this._sceneProgram.bind();
 
-        this._uViewProjection = this._program.uniform('u_viewProjection');
-        this._uModel = this._program.uniform('u_model');
-        this._uEye = this._program.uniform('u_eye');
+        this._uViewProjection = this._sceneProgram.uniform('u_viewProjection');
+        this._uModel = this._sceneProgram.uniform('u_model');
+        this._uEye = this._sceneProgram.uniform('u_eye');
 
-        this._uNormal = this._program.uniform('u_normal');
+        this._uNormalLocation = this._sceneProgram.uniform('u_normal');
 
         /* Create and configure camera. */
 
@@ -104,9 +148,9 @@ export class AmbientOcclusionRenderer extends Renderer {
         this._forwardPass.initialize();
 
         this._forwardPass.camera = this._camera;
-        this._forwardPass.target = this._framebuffer;
+        this._forwardPass.target = this._outputFbo;
 
-        this._forwardPass.program = this._program;
+        this._forwardPass.program = this._sceneProgram;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
             gl.uniformMatrix4fv(this._uModel, false, matrix);
         };
@@ -116,7 +160,10 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         this._forwardPass.bindUniforms = () => {
             gl.uniform3fv(this._uEye, this._camera.eye);
-            gl.uniform1i(this._uNormal, 2);
+            gl.uniform1i(this._uNormalLocation, 2);
+
+            // Also, update draw buffers
+            gl.drawBuffers(gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2);
         };
 
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
@@ -188,8 +235,8 @@ export class AmbientOcclusionRenderer extends Renderer {
         const gl = this._context.gl;
 
         if (this._altered.canvasSize) {
-            this._program.bind();
-            gl.uniform2f(this._program.uniform('u_frameSize'), this._frameSize[0], this._frameSize[1]);
+            this._sceneProgram.bind();
+            gl.uniform2f(this._sceneProgram.uniform('u_frameSize'), this._frameSize[0], this._frameSize[1]);
         }
 
         this._altered.reset();

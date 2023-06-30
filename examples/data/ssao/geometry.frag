@@ -23,7 +23,6 @@ varying vec3 v_normal;
 
 void main(void)
 {
-    // select normal either from vertex or from normal map
     vec3 normal = pbrNormal(v_position, v_uv, v_normal, u_normal);
     vec3 f_phong = phong(v_position, normal, u_eye);
 
