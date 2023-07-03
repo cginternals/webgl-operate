@@ -9,6 +9,8 @@ precision highp float;
     #define fragColor gl_FragColor
 #else
     layout(location = 0) out vec4 fragColor;
+    layout(location = 1) out vec3 fragNormal;
+    layout(location = 2) out float fragDepth;
 #endif
 
 uniform vec2 u_frameSize;
@@ -29,4 +31,6 @@ void main(void)
     vec3 color = f_phong;
 
     fragColor = vec4(color, 1.0);
+    fragNormal = vec3(normal);
+    fragDepth = 1.0;
 }

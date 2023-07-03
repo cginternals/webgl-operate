@@ -6,7 +6,6 @@ import { auxiliaries } from 'webgl-operate';
 
 import {
     Camera,
-    ChangeLookup,
     Canvas,
     Context,
     DefaultFramebuffer,
@@ -22,6 +21,7 @@ import {
     NdcFillingTriangle,
     Program,
     Renderer,
+    Renderbuffer,
     Shader,
     Texture2D,
     Wizard,
@@ -40,7 +40,7 @@ export class AmbientOcclusionRenderer extends Renderer {
 
     /* Shared Across Passes */
 
-    protected _geom: NdcFillingTriangle;
+    protected _ndcGeometry: NdcFillingTriangle;
 
     /* Scene Pass */
     protected _navigation: Navigation;
@@ -49,7 +49,8 @@ export class AmbientOcclusionRenderer extends Renderer {
 
     protected _sceneColor: Texture2D;
     protected _sceneNormal: Texture2D;
-    protected _sceneDepth: Texture2D;
+    protected _sceneLinearDepth: Texture2D;
+    protected _sceneDepth: Renderbuffer;
 
     protected _sceneProgram: Program;
 
@@ -59,8 +60,7 @@ export class AmbientOcclusionRenderer extends Renderer {
     protected _uEye: WebGLUniformLocation;
     /* // Scene Pass */
 
-    protected _sceneRenderFb: Framebuffer;
-    protected _sceneReadFb: Framebuffer;
+    protected _sceneFbo: Framebuffer;
 
     /* Ambient Occlusion Pass */
     protected _aoNoisyMap: Texture2D;
@@ -104,11 +104,14 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         const gl = this._context.gl;
 
+        this._context.enable(['OES_standard_derivatives', 'WEBGL_color_buffer_float',
+            'OES_texture_float', 'OES_texture_float_linear']);
+
         this._loader = new GLTFLoader(this._context);
 
         /* Initialize Shared Geometry for Postprocessing Passes */
 
-        this._geom = new NdcFillingTriangle(this._context);
+        this._ndcGeometry = new NdcFillingTriangle(this._context);
 
         /* Create and configure camera. */
 
@@ -126,7 +129,51 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         /* Initialize FBOs */
 
-        this._outputFbo = new DefaultFramebuffer(this._context, 'DefaultFBO');
+        this._sceneColor = new Texture2D(this._context);
+        this._sceneColor.initialize(1, 1, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE);
+        this._sceneColor.filter(gl.LINEAR, gl.LINEAR);
+
+        this._sceneNormal = new Texture2D(this._context);
+        this._sceneNormal.initialize(1, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
+        this._sceneNormal.filter(gl.LINEAR, gl.LINEAR);
+
+        this._sceneLinearDepth = new Texture2D(this._context);
+        this._sceneLinearDepth.initialize(1, 1, gl.R32F, gl.RED, gl.FLOAT);
+        this._sceneLinearDepth.filter(gl.LINEAR, gl.LINEAR);
+
+        this._sceneDepth = new Renderbuffer(this._context, 'Scene_Depth');
+        this._sceneDepth.initialize(1, 1, gl.DEPTH_COMPONENT16);
+
+        this._sceneFbo = new Framebuffer(this._context, 'Scene_FBO');
+        this._sceneFbo.initialize([
+            [gl.COLOR_ATTACHMENT0, this._sceneColor],
+            [gl.COLOR_ATTACHMENT0 + 1, this._sceneNormal],
+            [gl.COLOR_ATTACHMENT0 + 2, this._sceneLinearDepth],
+            [gl.DEPTH_ATTACHMENT, this._sceneDepth]
+        ]);
+        this._sceneFbo.clearColor([0.0, 0.0, 0.0, 0.0], gl.COLOR_ATTACHMENT0);
+        this._sceneFbo.clearColor([0.5, 0.5, 0.5, 0.0], gl.COLOR_ATTACHMENT0 + 1);
+        this._sceneFbo.clearColor([0.0, 0.0, 0.0, 0.0], gl.COLOR_ATTACHMENT0 + 2);
+
+        this._aoNoisyMap = new Texture2D(this._context);
+        this._aoNoisyMap.initialize(1, 1, gl.R32F, gl.RED, gl.FLOAT);
+        this._aoNoisyMap.filter(gl.LINEAR, gl.LINEAR);
+
+        this._aoFbo = new Framebuffer(this._context, 'AO_FBO');
+        this._aoFbo.initialize([
+            [gl.COLOR_ATTACHMENT0, this._aoNoisyMap]
+        ]);
+
+        this._aoMap = new Texture2D(this._context);
+        this._aoMap.initialize(1, 1, gl.R32F, gl.RED, gl.FLOAT);
+        this._aoMap.filter(gl.LINEAR, gl.LINEAR);
+
+        this._blurredAOFbo = new Framebuffer(this._context, 'BlurredAO_FBO');
+        this._blurredAOFbo.initialize([
+            [gl.COLOR_ATTACHMENT0, this._aoMap]
+        ]);
+
+        this._outputFbo = new DefaultFramebuffer(this._context, 'Default_FBO');
         this._outputFbo.initialize();
 
         /* Initialize Programs */
@@ -153,7 +200,7 @@ export class AmbientOcclusionRenderer extends Renderer {
         this._forwardPass.initialize();
 
         this._forwardPass.camera = this._camera;
-        this._forwardPass.target = this._outputFbo;
+        this._forwardPass.target = this._sceneFbo;
 
         this._forwardPass.program = this._sceneProgram;
         this._forwardPass.updateModelTransform = (matrix: mat4) => {
@@ -166,9 +213,6 @@ export class AmbientOcclusionRenderer extends Renderer {
         this._forwardPass.bindUniforms = () => {
             gl.uniform3fv(this._uEye, this._camera.eye);
             gl.uniform1i(this._uNormalLocation, 2);
-
-            // Also, update draw buffers as we want to output color (0), normals (1), and linearized depth
-            gl.drawBuffers(gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2);
         };
 
         this._forwardPass.bindGeometry = (geometry: Geometry) => {
@@ -222,10 +266,9 @@ export class AmbientOcclusionRenderer extends Renderer {
     protected onUpdate(): boolean {
         if (this._altered.frameSize) {
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
+            this._camera.aspect = this._frameSize[0] / this._frameSize[1];
         }
-        if (this._altered.canvasSize) {
-            this._camera.aspect = this._canvasSize[0] / this._canvasSize[1];
-        }
+
         if (this._altered.clearColor) {
             this._forwardPass.clearColor = this._clearColor;
         }
@@ -241,25 +284,67 @@ export class AmbientOcclusionRenderer extends Renderer {
      * camera-updates.
      */
     protected onPrepare(): void {
-        this._forwardPass.prepare();
-
         const gl = this._context.gl;
 
+        this._forwardPass.prepare();
+
+        if (this._altered.frameSize) {
+            this._sceneFbo.resize(this._frameSize[0], this._frameSize[1]);
+            this._aoFbo.resize(this._frameSize[0], this._frameSize[1]);
+            this._blurredAOFbo.resize(this._frameSize[0], this._frameSize[1]);
+        }
+
+        /* This? */
         if (this._altered.canvasSize) {
             this._sceneProgram.bind();
             gl.uniform2f(this._sceneProgram.uniform('u_frameSize'), this._frameSize[0], this._frameSize[1]);
         }
+        /* */
 
         this._altered.reset();
         this._camera.altered = false;
     }
 
     protected onFrame(frameNumber: number): void {
+        const gl = this._context.gl;
+
         if (this.isLoading) {
             return;
         }
 
+        this._sceneFbo.bind();
+        this._sceneFbo.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT0 + 1, gl.COLOR_ATTACHMENT0 + 2]);
+
         this._forwardPass.frame();
+
+        this._aoFbo.bind();
+        this._aoFbo.clear(gl.COLOR_BUFFER_BIT, false, false);
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+
+        this._ndcGeometry.bind();
+        this._ndcGeometry.draw();
+        this._ndcGeometry.unbind();
+
+        this._aoFbo.bind();
+        this._aoFbo.clear(gl.COLOR_BUFFER_BIT, false, false);
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+
+        this._ndcGeometry.bind();
+        this._ndcGeometry.draw();
+        this._ndcGeometry.unbind();
+
+        this._outputFbo.bind();
+        this._outputFbo.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+
+        this._ndcGeometry.bind();
+        this._ndcGeometry.draw();
+        this._ndcGeometry.unbind();
     }
 
     protected onSwap(): void {

@@ -8,6 +8,7 @@ precision highp float;
 #if __VERSION__ == 100
     attribute vec4 a_position;
     attribute vec4 a_normal;
+    attribute vec2 a_texcoord_0;
 #else
     layout (location = 0) in vec4 a_position;
     layout (location = 1) in vec3 a_normal;
