@@ -4,7 +4,6 @@ import { mat4, vec3 } from 'gl-matrix';
 
 import { auxiliaries } from 'webgl-operate';
 
-
 import {
     Camera,
     ChangeLookup,
@@ -107,10 +106,30 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         this._loader = new GLTFLoader(this._context);
 
+        /* Initialize Shared Geometry for Postprocessing Passes */
+
         this._geom = new NdcFillingTriangle(this._context);
+
+        /* Create and configure camera. */
+
+        this._camera = new Camera();
+        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
+        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
+        this._camera.eye = vec3.fromValues(0.0, 1.0, 2.0);
+        this._camera.near = 0.5;
+        this._camera.far = 4.0;
+
+        /* Create and configure navigation */
+
+        this._navigation = new Navigation(callback, eventProvider);
+        this._navigation.camera = this._camera;
+
+        /* Initialize FBOs */
 
         this._outputFbo = new DefaultFramebuffer(this._context, 'DefaultFBO');
         this._outputFbo.initialize();
+
+        /* Initialize Programs */
 
         const vert = new Shader(context, gl.VERTEX_SHADER, 'geometry.vert');
         vert.initialize(require('./data/ssao/geometry.vert'));
@@ -128,21 +147,7 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         this._uNormalLocation = this._sceneProgram.uniform('u_normal');
 
-        /* Create and configure camera. */
-
-        this._camera = new Camera();
-        this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
-        this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
-        this._camera.eye = vec3.fromValues(0.0, 1.0, 2.0);
-        this._camera.near = 0.5;
-        this._camera.far = 4.0;
-
-        /* Create and configure navigation */
-
-        this._navigation = new Navigation(callback, eventProvider);
-        this._navigation.camera = this._camera;
-
-        /* Create and configure forward pass. */
+        /* Create and Configure Scene Forward Pass. */
 
         this._forwardPass = new ForwardSceneRenderPass(context);
         this._forwardPass.initialize();
@@ -162,7 +167,7 @@ export class AmbientOcclusionRenderer extends Renderer {
             gl.uniform3fv(this._uEye, this._camera.eye);
             gl.uniform1i(this._uNormalLocation, 2);
 
-            // Also, update draw buffers
+            // Also, update draw buffers as we want to output color (0), normals (1), and linearized depth
             gl.drawBuffers(gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2);
         };
 
@@ -177,6 +182,12 @@ export class AmbientOcclusionRenderer extends Renderer {
         };
 
         this.loadAsset();
+
+        /* Initialize Ambient Occlusion Pass */
+
+        /* Initialize Blur Pass */
+
+        /* Initialize Composition Pass */
 
         return true;
     }
