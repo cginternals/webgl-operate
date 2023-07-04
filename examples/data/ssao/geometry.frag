@@ -32,5 +32,5 @@ void main(void)
 
     fragColor = vec4(color, 1.0);
     fragNormal = vec3(normal);
-    fragDepth = 1.0;
+    fragDepth = gl_FragCoord.z;
 }

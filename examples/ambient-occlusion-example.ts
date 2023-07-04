@@ -71,6 +71,8 @@ export class AmbientOcclusionRenderer extends Renderer {
     protected _uAOFrameSizeLocation: WebGLUniformLocation;
     protected _uNormalTextureLocation: WebGLUniformLocation;
     protected _uDepthTextureLocation: WebGLUniformLocation;
+    protected _uViewProjectionLocation2: WebGLUniformLocation;
+    protected _uViewProjectionInverseLocation: WebGLUniformLocation;
     /* // Ambient Occlusion Pass */
 
     protected _aoFbo: Framebuffer;
@@ -125,8 +127,8 @@ export class AmbientOcclusionRenderer extends Renderer {
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 1.0, 2.0);
-        this._camera.near = 0.5;
-        this._camera.far = 4.0;
+        this._camera.near = 0.25;
+        this._camera.far = 12.0;
 
         /* Create and configure navigation */
 
@@ -157,12 +159,12 @@ export class AmbientOcclusionRenderer extends Renderer {
             [gl.COLOR_ATTACHMENT0 + 2, this._sceneLinearDepth],
             [gl.DEPTH_ATTACHMENT, this._sceneDepth]
         ]);
-        this._sceneFbo.clearColor([0.0, 0.0, 0.0, 0.0], gl.COLOR_ATTACHMENT0);
+        this._sceneFbo.clearColor(this._clearColor, gl.COLOR_ATTACHMENT0);
         this._sceneFbo.clearColor([0.5, 0.5, 0.5, 0.0], gl.COLOR_ATTACHMENT0 + 1);
-        this._sceneFbo.clearColor([0.0, 0.0, 0.0, 0.0], gl.COLOR_ATTACHMENT0 + 2);
+        this._sceneFbo.clearColor([1.0, 1.0, 1.0, 0.0], gl.COLOR_ATTACHMENT0 + 2);
 
         this._aoNoisyMap = new Texture2D(this._context);
-        this._aoNoisyMap.initialize(1, 1, gl.R32F, gl.RED, gl.FLOAT);
+        this._aoNoisyMap.initialize(1, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
         this._aoNoisyMap.filter(gl.LINEAR, gl.LINEAR);
 
         this._aoFbo = new Framebuffer(this._context, 'AO_FBO');
@@ -171,7 +173,7 @@ export class AmbientOcclusionRenderer extends Renderer {
         ]);
 
         this._aoMap = new Texture2D(this._context);
-        this._aoMap.initialize(1, 1, gl.R32F, gl.RED, gl.FLOAT);
+        this._aoMap.initialize(1, 1, gl.RGBA32F, gl.RGBA, gl.FLOAT);
         this._aoMap.filter(gl.LINEAR, gl.LINEAR);
 
         this._blurredAOFbo = new Framebuffer(this._context, 'BlurredAO_FBO');
@@ -221,6 +223,8 @@ export class AmbientOcclusionRenderer extends Renderer {
         this._uDepthTextureLocation = this._aoProgram.uniform('u_depth');
         this._uNormalTextureLocation = this._aoProgram.uniform('u_normal');
         this._uAOFrameSizeLocation = this._aoProgram.uniform('u_frameSize');
+        this._uViewProjectionLocation2 = this._aoProgram.uniform('u_viewProjection');
+        this._uViewProjectionInverseLocation = this._aoProgram.uniform('u_viewProjectionInverse');
 
         /* Blur Pass */
 
@@ -234,7 +238,7 @@ export class AmbientOcclusionRenderer extends Renderer {
 
         this._uKernelSizeLocation = this._blurProgram.uniform('u_kernelSize');
         this._uSourceLocation = this._blurProgram.uniform('u_source');
-        this._uAOFrameSizeLocation = this._blurProgram.uniform('u_frameSize');
+        this._uBlurFrameSizeLocation = this._blurProgram.uniform('u_frameSize');
 
         /* Composition Pass */
 
@@ -316,17 +320,26 @@ export class AmbientOcclusionRenderer extends Renderer {
      * @returns whether to redraw
      */
     protected onUpdate(): boolean {
+        const gl = this._context.gl;
+
         if (this._altered.frameSize) {
             this._camera.viewport = [this._frameSize[0], this._frameSize[1]];
             this._camera.aspect = this._frameSize[0] / this._frameSize[1];
         }
 
         if (this._altered.clearColor) {
+            this._sceneFbo.clearColor(this._clearColor, gl.COLOR_ATTACHMENT0);
             this._forwardPass.clearColor = this._clearColor;
         }
 
         this._navigation.update();
         this._forwardPass.update();
+
+        if (this._camera.altered) {
+            this._aoProgram.bind();
+            gl.uniformMatrix4fv(this._uViewProjectionLocation2, false, this._camera.viewProjection);
+            gl.uniformMatrix4fv(this._uViewProjectionInverseLocation, false, this._camera.viewProjectionInverse);
+        }
 
         return this._altered.any || this._camera.altered;
     }
@@ -388,9 +401,13 @@ export class AmbientOcclusionRenderer extends Renderer {
         /* Scene Pass */
 
         this._sceneFbo.bind();
-        this._sceneFbo.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
 
         gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT0 + 1, gl.COLOR_ATTACHMENT0 + 2]);
+
+        this._sceneFbo.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
+
+        gl.clearBufferfv(gl.COLOR, 1, [0.5, 0.5, 0.5, 1.0]);
+        gl.clearBufferfv(gl.COLOR, 2, [1.0, 1.0, 1.0, 1.0]);
 
         this._sceneProgram.bind();
 
@@ -399,12 +416,13 @@ export class AmbientOcclusionRenderer extends Renderer {
         /* Ambient Occlusion Pass */
 
         this._aoFbo.bind();
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+
         this._aoFbo.clear(gl.COLOR_BUFFER_BIT, false, false);
 
         this._sceneNormal.bind(gl.TEXTURE0);
         this._sceneLinearDepth.bind(gl.TEXTURE1);
-
-        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
 
         this._aoProgram.bind();
 
@@ -415,11 +433,12 @@ export class AmbientOcclusionRenderer extends Renderer {
         /* Blur Pass */
 
         this._blurredAOFbo.bind();
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+
         this._blurredAOFbo.clear(gl.COLOR_BUFFER_BIT, false, false);
 
         this._aoNoisyMap.bind(gl.TEXTURE0);
-
-        gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
 
         this._blurProgram.bind();
 
@@ -438,15 +457,16 @@ export class AmbientOcclusionRenderer extends Renderer {
         /* Composition Pass */
 
         this._outputFbo.bind();
+
+        gl.drawBuffers([gl.BACK]);
+
         this._outputFbo.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, false, false);
 
         this._sceneColor.bind(gl.TEXTURE0);
-        this._sceneLinearDepth.bind(gl.TEXTURE0);
-        this._aoMap.bind(gl.TEXTURE0);
+        this._sceneLinearDepth.bind(gl.TEXTURE1);
+        this._aoMap.bind(gl.TEXTURE2);
 
         this._compositionProgram.bind();
-
-        gl.drawBuffers([gl.BACK]);
 
         this._ndcGeometry.bind();
         this._ndcGeometry.draw();
