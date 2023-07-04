@@ -10,10 +10,14 @@ precision highp float;
 
 in vec2 v_uv;
 
-uniform vec2 u_kernelSize;
+uniform int u_kernelSize;
 uniform vec2 u_frameSize;
 
 uniform sampler2D u_source;
+
+#define TARGET_KERNEL_SIZE 7
+
+#if TARGET_KERNEL_SIZE==5
 
 const int kernelSize = 5;
 const int kernelHalfSize = 2;
@@ -25,9 +29,32 @@ const float kernel[25] = float[25](
     1.0,  4.0,  6.0,  4.0, 1.0
 );
 
+#elif TARGET_KERNEL_SIZE==7
+
+const int kernelSize = 7;
+const int kernelHalfSize = 3;
+const float kernel[49] = float[49](
+     1.0,  6.0, 15.0, 20.0, 15.0,  6.0,  1.0,
+     6.0, 36.0, 90.0,120.0, 90.0, 36.0,  6.0,
+    15.0, 90.0,225.0,300.0,225.0, 90.0, 15.0,
+    20.0,120.0,300.0,400.0,300.0,120.0, 20.0,
+    15.0, 90.0,225.0,300.0,225.0, 90.0, 15.0,
+     6.0, 36.0, 90.0,120.0, 90.0, 36.0,  6.0,
+     1.0,  6.0, 15.0, 20.0, 15.0,  6.0,  1.0
+);
+
+#else
+
+const int kernelSize = 1;
+const int kernelHalfSize = 0;
+const float kernel[1] = float[1](
+    1.0
+);
+
+#endif
+
 void main(void)
 {
-    /*
     vec2 offset = vec2(1.0) / vec2(u_frameSize);
 
     vec4 result = vec4(0.0);
@@ -48,8 +75,10 @@ void main(void)
         }
     }
 
-    fragColor = vec4(result.rgb / vec3(weight_sum), 1.0);
-    */
+    if (weight_sum < 0.0001) {
+        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
 
-    fragColor = texture(u_source, v_uv);
+    fragColor = vec4(result.rgb / vec3(weight_sum), 1.0);
 }

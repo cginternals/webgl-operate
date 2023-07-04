@@ -1,11 +1,5 @@
 [
     {
-        "target": "ambient-occlusion-example",
-        "title": "Ambient Occlusion Shading",
-        "object": "AmbientOcclusionExample",
-        "caption": "Default implementation of Screen-space Ambient Occlusion."
-    },
-    {
         "target": "arealight-example",
         "title": "Area Lights",
         "object": "AreaLightExample",

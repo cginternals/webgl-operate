@@ -127,7 +127,7 @@ export class AmbientOcclusionRenderer extends Renderer {
         this._camera.center = vec3.fromValues(0.0, 0.0, 0.0);
         this._camera.up = vec3.fromValues(0.0, 1.0, 0.0);
         this._camera.eye = vec3.fromValues(0.0, 1.0, 2.0);
-        this._camera.near = 0.25;
+        this._camera.near = 0.05;
         this._camera.far = 12.0;
 
         /* Create and configure navigation */
@@ -373,7 +373,7 @@ export class AmbientOcclusionRenderer extends Renderer {
         /* Prepare Blur Pass */
 
         this._blurProgram.bind();
-        gl.uniform2i(this._uKernelSizeLocation, 3, 3);
+        gl.uniform1i(this._uKernelSizeLocation, 5);
         gl.uniform1i(this._uSourceLocation, 0);
         gl.uniform2f(this._uBlurFrameSizeLocation, this._frameSize[0], this._frameSize[1]);
 
