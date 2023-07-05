@@ -15,7 +15,7 @@ uniform vec2 u_frameSize;
 
 uniform sampler2D u_source;
 
-#define TARGET_KERNEL_SIZE 7
+#define TARGET_KERNEL_SIZE 5
 
 #if TARGET_KERNEL_SIZE==5
 

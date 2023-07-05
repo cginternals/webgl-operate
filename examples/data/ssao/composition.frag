@@ -16,8 +16,8 @@ uniform sampler2D u_color;
 uniform sampler2D u_depth;
 uniform sampler2D u_aoMap;
 
-const float aoPower = 4.0;
-const float aoFocus = 0.6;
+const float aoPower = 1.0;
+const float aoFocus = 0.4;
 
 void main(void)
 {
