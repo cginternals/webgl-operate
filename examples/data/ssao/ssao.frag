@@ -67,8 +67,8 @@ void main(void)
     initRandomGenerator(v_uv, u_frameSize, int(2034.3423*v_uv.x+324.234564543*v_uv.y));
 
     //ssao
-    int max_sample = 64;
-    float radius = 0.05;
+    int max_sample = 1024;
+    float radius = 0.25;
 
     vec3 n = texture(u_normal, v_uv).xyz;
     float depth = texture(u_depth, v_uv).x;
