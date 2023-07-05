@@ -213,10 +213,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
         const size = this._target.size;
         gl.viewport(0, 0, size[0], size[1]);
 
-        const c = this._clearColor;
-        gl.clearColor(c[0], c[1], c[2], c[3]);
+        //const c = this._clearColor;
+        //gl.clearColor(c[0], c[1], c[2], c[3]);
 
-        this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
+        //this._target.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, true, false);
 
         this._program.bind();
 
