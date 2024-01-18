@@ -127,7 +127,8 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
     }
 
     /**
-     * Specifies the memory layout of the buffer for a binding point.
+     * Specifies the memory layout of the buffer for a binding point. Integer data will be cast to float according to
+     * "normalized".
      * @param index - Index of the vertex attribute that is to be setup and enabled.
      * @param size - Number of components per vertex attribute.
      * @param type - Data type of each component in the array.
@@ -136,6 +137,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * @param offset - Offset in bytes of the first component in the vertex attribute array.
      * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
      * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
+     * @see attribEnableInt
      */
     @Initializable.assert_initialized()
     attribEnable(index: GLuint, size: GLint, type: GLenum, normalized: GLboolean = false,
@@ -146,6 +148,32 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
             this.bind();
         }
         gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
+        gl.enableVertexAttribArray(index);
+        if (unbind) {
+            this.unbind();
+        }
+    }
+
+    /**
+     * Specifies the memory layout of the buffer for a binding point. Only to be used for integers.
+     * @param index - Index of the vertex attribute that is to be setup and enabled.
+     * @param size - Number of components per vertex attribute.
+     * @param type - Data type of each component in the array.
+     * @param stride - Offset in bytes between the beginning of consecutive vertex attributes.
+     * @param offset - Offset in bytes of the first component in the vertex attribute array.
+     * @param bind - Allows to skip binding the object (e.g., when binding is handled outside).
+     * @param unbind - Allows to skip unbinding the object (e.g., when binding is handled outside).
+     * @see attribEnable
+     */
+    @Initializable.assert_initialized()
+    attribEnableInt(index: GLuint, size: GLint, type: GLenum,
+         stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
+
+        const gl = this.context.gl;
+        if (bind) {
+            this.bind();
+        }
+        gl.vertexAttribIPointer(index, size, type, stride, offset);
         gl.enableVertexAttribArray(index);
         if (unbind) {
             this.unbind();
