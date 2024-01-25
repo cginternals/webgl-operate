@@ -73,11 +73,11 @@
         "target": "metaballs",
         "title": "Metaballs",
         "authors": [
-            "cgcostume",
-            "bwasty"
+            "MartinBuessemeyer",
+            "cgcostume"
         ],
         "caption": "Raymarched Metaballs with 3D force field, reflections, and some post processing.",
-        "disabled": true
+        "disabled": false
     },
     {
         "target": "cubescape",
