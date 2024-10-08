@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries } from '../../webgl-operate';
 
 const log = auxiliaries.log;
 const logLevel = auxiliaries.LogLevel;
@@ -22,7 +22,7 @@ import {
     Renderer,
     Text,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

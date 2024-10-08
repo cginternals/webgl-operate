@@ -15,7 +15,7 @@ module.exports = (env, options) => {
     config.module.rules[0].use.options.compilerOptions.declaration = false;
     config.module.rules[0].use.options.compilerOptions.removeComments = true;
 
-    // config.output.library = 'gloperate';
+    // config.output.library = 'webgl-operate';
     // config.output.libraryTarget = 'umd';
 
     // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),

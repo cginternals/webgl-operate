@@ -18,7 +18,7 @@ import {
     Shader,
     Texture2D,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

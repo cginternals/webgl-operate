@@ -14,7 +14,7 @@ module.exports = (env, options) => {
     config.module.rules[0].use.options.compilerOptions.removeComments = false;
 
     config.output.library = undefined;
-    config.output.libraryTarget = 'commonjs2';
+    config.output.libraryTarget = 'umd';
 
     // DISABLE_ASSERTIONS: JSON.stringify(options.mode === 'development'),
     config.plugins[0].definitions.DISABLE_ASSERTIONS

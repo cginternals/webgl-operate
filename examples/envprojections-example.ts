@@ -16,7 +16,7 @@ import {
     Texture2D,
     TextureCube,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

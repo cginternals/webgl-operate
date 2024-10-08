@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec3 } from 'webgl-operate';
+import { mat4, vec3 } from '../../../webgl-operate';
 
 import {
     Camera,
@@ -19,7 +19,7 @@ import {
     Renderer,
     Shader,
     Wizard,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import { Demo } from '../demo';
 

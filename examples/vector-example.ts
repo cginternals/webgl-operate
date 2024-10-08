@@ -18,7 +18,8 @@ import {
     Shader,
     Text,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
+
 import { vec3 } from 'gl-matrix';
 import { Example } from './example';
 

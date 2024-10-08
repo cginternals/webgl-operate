@@ -1,14 +1,14 @@
 
 /* spellchecker: disable */
 
-import { gl_matrix_extensions, vec4 } from 'webgl-operate';
+import { gl_matrix_extensions, vec4 } from '../../../webgl-operate';
 
 import {
     Buffer,
     Context,
     Geometry,
     Initializable,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 /* spellchecker: enable */
 

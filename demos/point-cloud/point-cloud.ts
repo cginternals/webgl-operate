@@ -5,7 +5,7 @@ import { mat4, quat, vec3, vec4 } from 'gl-matrix';
 
 import {
     auxiliaries,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import {
     Buffer,
@@ -20,7 +20,7 @@ import {
     Renderer,
     Shader,
     Wizard,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import { Demo } from '../demo';
 

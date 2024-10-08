@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries, vec3 } from 'webgl-operate';
+import { auxiliaries, vec3 } from '../../webgl-operate';
 
 import {
     Camera,
@@ -18,7 +18,7 @@ import {
     Renderer,
     Text,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

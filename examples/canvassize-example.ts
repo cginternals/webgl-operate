@@ -11,7 +11,7 @@ import {
     Shader,
     Renderer,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

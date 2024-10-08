@@ -7,7 +7,7 @@ import {
     LoadingStatus,
     Renderer,
     viewer,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 /* spellchecker: enable */
 

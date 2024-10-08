@@ -25,7 +25,7 @@ import {
     Texture2D,
     TransformComponent,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

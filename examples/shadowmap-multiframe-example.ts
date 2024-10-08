@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { mat4, vec2, vec3 } from 'webgl-operate';
+import { mat4, vec2, vec3 } from '../../webgl-operate';
 
 import {
     AccumulatePass,
@@ -25,7 +25,7 @@ import {
     ShadowPass,
     Texture2D,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

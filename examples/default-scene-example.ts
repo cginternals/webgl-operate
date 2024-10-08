@@ -23,8 +23,9 @@ import {
     Projected3DLabel,
     FontFace,
     Text,
-} from 'webgl-operate';
-import { mat4, vec4, vec3 } from 'gl-matrix'; // correct imports?
+} from '../../webgl-operate';
+
+import { mat4, vec4, vec3 } from 'gl-matrix';
 import { Example } from './example';
 
 class DefaultSceneRenderer extends Renderer {

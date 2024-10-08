@@ -1,15 +1,17 @@
 
+const path = require('path');
+
 module.exports = {
 
     context: __dirname + '/demos',
     cache: false,
     entry: {
-        'cornell-box': ['cornell-box/cornellbox.ts'],
-        'cubescape': ['cubescape/cubescape.ts'],
-        'gltf-renderer': ['gltf-renderer/gltfrenderer.ts'],
-        'progressive-lighting': ['progressive-lighting/progressive-lighting.ts'],
-        'eye-tracking': ['eye-tracking/eyetracking.ts'],
-        'point-cloud': ['point-cloud/point-cloud.ts']
+        'cornell-box': ['./cornell-box/cornellbox.ts'],
+        'cubescape': ['./cubescape/cubescape.ts'],
+        'gltf-renderer': ['./gltf-renderer/gltfrenderer.ts'],
+        'progressive-lighting': ['./progressive-lighting/progressive-lighting.ts'],
+        'eye-tracking': ['./eye-tracking/eyetracking.ts'],
+        'point-cloud': ['./point-cloud/point-cloud.ts']
     },
     devtool: 'source-map',
     output: {
@@ -18,11 +20,8 @@ module.exports = {
         library: undefined,
         libraryTarget: 'umd'
     },
-    externals: {
-        'webgl-operate': 'gloperate'
-    },
     resolve: {
-        modules: [__dirname + '/node_modules', __dirname + '/demos', __dirname + '/source'],
+        modules: ['node_modules', path.resolve(__dirname, "..")],
         extensions: ['.ts', '.tsx', '.js']
     },
     module: {

@@ -1,7 +1,7 @@
 
 import {
     Camera,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import { DiskLight, SphereLight } from './arealight';
 

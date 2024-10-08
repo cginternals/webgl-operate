@@ -1,5 +1,5 @@
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries } from '../../../webgl-operate';
 
 import { vec3 } from 'gl-matrix';
 

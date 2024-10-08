@@ -2,7 +2,7 @@
 import { mat3, mat4, vec3 } from 'gl-matrix';
 
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries } from '../../../webgl-operate';
 
 import {
     Camera,
@@ -25,7 +25,7 @@ import {
     Texture2D,
     TextureCube,
     Wizard,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import { Demo } from '../demo';
 

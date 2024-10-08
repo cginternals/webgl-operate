@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries, vec3 } from 'webgl-operate';
+import { auxiliaries, vec3 } from '../../../webgl-operate';
 
 import {
     AccumulatePass,
@@ -22,7 +22,7 @@ import {
     Shader,
     Texture2D,
     Wizard,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import { Demo } from '../demo';
 

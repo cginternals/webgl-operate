@@ -2,7 +2,7 @@
 import { mat3, mat4, vec2, vec3 } from 'gl-matrix';
 
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries } from '../../../webgl-operate';
 
 import {
     AccumulatePass,
@@ -32,7 +32,7 @@ import {
     Texture2D,
     TextureCube,
     Wizard,
-} from 'webgl-operate';
+} from '../../../webgl-operate';
 
 import { PostProcessingPass } from './postprocessingpass';
 import { Scene } from './scene';

@@ -3,7 +3,7 @@
 
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
-import { tuples } from 'webgl-operate';
+import { tuples } from '../../webgl-operate';
 
 
 import {
@@ -24,7 +24,7 @@ import {
     Texture2D,
     TileCameraGenerator,
     Wizard,
-} from 'webgl-operate';
+} from '../../webgl-operate';
 
 import { Example } from './example';
 

@@ -36,14 +36,14 @@ module.exports = {
     output: {
         path: __dirname + '/build',
         filename: '[name]',
-        library: 'gloperate',
-        libraryTarget: 'umd'
+        library: 'webgl-operate',
+        libraryTarget: 'umd',
     },
     externals: [
         rxjsExternals()
     ],
     resolve: {
-        modules: [__dirname + '/node_modules', __dirname + '/source'],
+        modules: ['node_modules', path.resolve(__dirname, 'source')],
         extensions: ['.ts', '.tsx', '.js'],
         fallback: { "url": require.resolve("url/") }
     },

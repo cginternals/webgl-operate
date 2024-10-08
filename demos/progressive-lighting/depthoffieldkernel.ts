@@ -1,9 +1,9 @@
 
 /* spellchecker: disable */
 
-import { auxiliaries } from 'webgl-operate';
+import { auxiliaries } from '../../../webgl-operate';
 
-import { AbstractKernel, KernelF32 } from 'webgl-operate'
+import { AbstractKernel, KernelF32 } from '../../../webgl-operate'
 
 /* spellchecker: enable */
 
