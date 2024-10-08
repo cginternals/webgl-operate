@@ -3,7 +3,7 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
-import { m4, v3 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
 import { CameraModifier } from './cameramodifier';
 
@@ -15,7 +15,7 @@ export class WheelZoomModifier extends CameraModifier {
 
     protected _sensitivity: number = WheelZoomModifier.DEFAULT_SENSITIVITY;
 
-    protected _translation: vec3 = v3();
+    protected _translation: vec3 = gl_matrix_extensions.v3();
 
     /**
      * Update the panning transform w.r.t. a specific event position.
@@ -26,10 +26,10 @@ export class WheelZoomModifier extends CameraModifier {
 
         const magnitude = delta * this._sensitivity;
 
-        const eyeToCenter = vec3.sub(v3(), this._reference.center, this._reference.eye);
+        const eyeToCenter = vec3.sub(gl_matrix_extensions.v3(), this._reference.center, this._reference.eye);
         vec3.normalize(eyeToCenter, eyeToCenter);
 
-        this._translation = vec3.scale(v3(), eyeToCenter, magnitude);
+        this._translation = vec3.scale(gl_matrix_extensions.v3(), eyeToCenter, magnitude);
 
         this.update();
     }
@@ -43,9 +43,9 @@ export class WheelZoomModifier extends CameraModifier {
         }
 
         /* Adjust for arbitrary camera center and rotate using quaternion based rotation. */
-        const T = mat4.fromTranslation(m4(), this._translation);
+        const T = mat4.fromTranslation(gl_matrix_extensions.m4(), this._translation);
 
-        const eye = vec3.transformMat4(v3(), this._reference.eye, T);
+        const eye = vec3.transformMat4(gl_matrix_extensions.v3(), this._reference.eye, T);
 
         this._camera.eye = eye;
     }

@@ -3,7 +3,7 @@
 
 import { mat4, vec2, vec3 } from 'gl-matrix';
 
-import { m4, v2, v3 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
 import { CameraModifier } from './cameramodifier';
 
@@ -23,12 +23,12 @@ export class TurntableModifier extends CameraModifier {
     /**
      * Current rotation matrix.
      */
-    protected _rotation: mat4 = m4();
+    protected _rotation: mat4 = gl_matrix_extensions.m4();
 
     protected _maxAzimuth: number | undefined = +Math.PI * 0.5 - 1e-4;
     protected _minAzimuth: number | undefined = -Math.PI * 0.5 + 1e-4;
 
-    protected _xAxisScreenSpace = v3();
+    protected _xAxisScreenSpace = gl_matrix_extensions.v3();
     protected _azimuth: number;
 
 
@@ -46,10 +46,10 @@ export class TurntableModifier extends CameraModifier {
         /* Retrieve initial event position. */
         this._initialPoint = point;
 
-        const centerToEye = vec3.sub(v3(), this._reference.eye, this._reference.center);
+        const centerToEye = vec3.sub(gl_matrix_extensions.v3(), this._reference.eye, this._reference.center);
         vec3.normalize(centerToEye, centerToEye);
 
-        this._xAxisScreenSpace = vec3.cross(v3(), [0.0, 1.0, 0.0], centerToEye);
+        this._xAxisScreenSpace = vec3.cross(gl_matrix_extensions.v3(), [0.0, 1.0, 0.0], centerToEye);
         this._azimuth = Math.acos(vec3.dot(centerToEye, [0.0, 1.0, 0.0]));
         this._azimuth = Math.PI * 0.5 - this._azimuth;
     }
@@ -62,7 +62,7 @@ export class TurntableModifier extends CameraModifier {
         /* Retrieve current event positions. */
         this._currentPoint = point;
 
-        const magnitudes = vec2.subtract(v2(), this._initialPoint, this._currentPoint);
+        const magnitudes = vec2.subtract(gl_matrix_extensions.v2(), this._initialPoint, this._currentPoint);
         vec2.scale(magnitudes, magnitudes, window.devicePixelRatio * this._sensitivity);
 
         if (Number.isFinite(this._minAzimuth)) {
@@ -72,7 +72,7 @@ export class TurntableModifier extends CameraModifier {
             magnitudes[1] = Math.max(this._azimuth - this._maxAzimuth!, magnitudes[1]);
         }
 
-        mat4.rotateY(this._rotation, m4(), magnitudes[0]);
+        mat4.rotateY(this._rotation, gl_matrix_extensions.m4(), magnitudes[0]);
         mat4.rotate(this._rotation, this._rotation, magnitudes[1], this._xAxisScreenSpace);
 
         this.update();
@@ -87,12 +87,12 @@ export class TurntableModifier extends CameraModifier {
         }
 
         /* Adjust for arbitrary camera center and rotate using quaternion based rotation. */
-        const T = mat4.fromTranslation(m4(), this._reference.center);
+        const T = mat4.fromTranslation(gl_matrix_extensions.m4(), this._reference.center);
         mat4.multiply(T, T, this._rotation);
-        mat4.translate(T, T, vec3.negate(v3(), this._reference.center));
+        mat4.translate(T, T, vec3.negate(gl_matrix_extensions.v3(), this._reference.center));
 
-        const up = vec3.transformMat4(v3(), [0.0, 1.0, 0.0], this._rotation);
-        const eye = vec3.transformMat4(v3(), this._reference.eye, T);
+        const up = vec3.transformMat4(gl_matrix_extensions.v3(), [0.0, 1.0, 0.0], this._rotation);
+        const eye = vec3.transformMat4(gl_matrix_extensions.v3(), this._reference.eye, T);
 
         this._camera.up = up;
         this._camera.eye = eye;

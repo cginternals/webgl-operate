@@ -2,7 +2,8 @@
 /* spellchecker: disable */
 
 import { Canvas } from './canvas';
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 /* spellchecker: enable */
 

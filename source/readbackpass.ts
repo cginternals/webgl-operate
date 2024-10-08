@@ -3,11 +3,10 @@
 
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
-import { assert } from './auxiliaries';
-import {
-    decode_float24x1_from_uint8x3,
-    decode_uint32_from_rgba8,
-} from './gl-matrix-extensions';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
@@ -16,7 +15,7 @@ import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
 import { Shader } from './shader';
 import { Texture2D } from './texture2d';
-import { GLsizei2 } from './tuples';
+import { tuples } from './tuples';
 
 /* spellchecker: enable */
 
@@ -83,7 +82,7 @@ export class ReadbackPass extends Initializable {
     /**
      * Coordinate reference size @see {@link coordinateReferenceSize}.
      */
-    protected _referenceSize: GLsizei2 | undefined;
+    protected _referenceSize: tuples.GLsizei2 | undefined;
 
 
     /**
@@ -116,7 +115,7 @@ export class ReadbackPass extends Initializable {
      * Returns the maximal depth value that can be encoded when using a uint8[3] - @see{@link depthAt}.
      */
     static maxClearDepth(): GLfloat {
-        return decode_float24x1_from_uint8x3(vec3.fromValues(255, 255, 255));
+        return gl_matrix_extensions.decode_float24x1_from_uint8x3(vec3.fromValues(255, 255, 255));
     }
 
 
@@ -330,7 +329,7 @@ export class ReadbackPass extends Initializable {
 
         /* See notes above for more info on this weird convention. */
         const depth: GLfloat | undefined = buffer[0] === 255 && buffer[1] === 255 && buffer[2] === 255 ?
-            undefined : decode_float24x1_from_uint8x3(vec3.fromValues(buffer[0], buffer[1], buffer[2]));
+            undefined : gl_matrix_extensions.decode_float24x1_from_uint8x3(vec3.fromValues(buffer[0], buffer[1], buffer[2]));
 
         if (this._cache) {
             this._cachedDepths.set(hash, depth);
@@ -389,7 +388,7 @@ export class ReadbackPass extends Initializable {
         }
         gl.readPixels(x * scale[0], size[1] - y * scale[1], 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._buffer);
 
-        const id = decode_uint32_from_rgba8(
+        const id = gl_matrix_extensions.decode_uint32_from_rgba8(
             vec4.fromValues(this._buffer[0], this._buffer[1], this._buffer[2], this._buffer[3]));
 
         if (this._cache) {
@@ -451,7 +450,7 @@ export class ReadbackPass extends Initializable {
      * Sets the coordinate-reference size that is, if not undefined, used to scale incomming x and y coordinates.
      * @param size - Size of the output, e.g., the canvas, the buffer is rendered to.
      */
-    set coordinateReferenceSize(size: GLsizei2 | undefined) {
+    set coordinateReferenceSize(size: tuples.GLsizei2 | undefined) {
         this._referenceSize = size;
     }
 

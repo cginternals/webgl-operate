@@ -1,6 +1,6 @@
 
 
-namespace viewer {
+export namespace viewer {
 
     interface HTMLEventListener { (event: Event): boolean; }
 
@@ -73,4 +73,4 @@ namespace viewer {
 
 }
 
-export = viewer;
+export default viewer;

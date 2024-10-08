@@ -8,7 +8,7 @@ import { EventHandler } from './eventhandler';
 import { PointerLock } from './pointerlock';
 import { Invalidate } from './renderer';
 
-import { log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 import { FirstPersonModifier } from './firstpersonmodifier';
 import { PanModifier } from './panmodifier';
 import { PinchZoomModifier } from './pinchzoommodifier';
@@ -147,7 +147,7 @@ export class Navigation {
         const primaryEvent = this.getPrimaryEvent(events);
 
         if (primaryEvent === undefined) {
-            log(LogLevel.Warning, 'No primary pointer event detected in Navigation::mode.');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'No primary pointer event detected in Navigation::mode.');
             return;
         }
 
@@ -188,7 +188,7 @@ export class Navigation {
 
     protected resolveMultiTouch(): Navigation.Modes | undefined {
         if (this._activeEvents.size < 2) {
-            log(LogLevel.Warning,
+            auxiliaries.log(auxiliaries.LogLevel.Warning,
                 'MultiTouch resolution was canceled because less than two touches were detected.');
             return undefined;
         }
@@ -214,7 +214,7 @@ export class Navigation {
 
     protected rotate(start: boolean): void {
         if (this._activeEvents.size !== 1) {
-            log(LogLevel.Info,
+            auxiliaries.log(auxiliaries.LogLevel.Info,
                 'Rotate event was canceled because less or more than two pointers were detected.');
             return;
         }
@@ -251,7 +251,7 @@ export class Navigation {
         const event = this.getPrimaryEvent(events);
 
         if (event === undefined) {
-            log(LogLevel.Warning,
+            auxiliaries.log(auxiliaries.LogLevel.Warning,
                 'Pan event was canceled because no primary event was detected.');
             return;
         }
@@ -264,7 +264,7 @@ export class Navigation {
 
     protected pinch(start: boolean): void {
         if (this._activeEvents.size !== 2) {
-            log(LogLevel.Info,
+            auxiliaries.log(auxiliaries.LogLevel.Info,
                 'Pinch event was canceled because less or more than two pointers were detected.');
             return;
         }

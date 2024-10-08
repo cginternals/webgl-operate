@@ -3,7 +3,7 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert, bitInBitfield } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 import { IS_EDGE, IS_IE11 } from './msagent';
 
 import { PointerLock } from './pointerlock';
@@ -50,7 +50,7 @@ export class PointerEventProvider {
     protected _preventDefaultMask: PointerEventProvider.Type;
 
     constructor(element: HTMLCanvasElement, timeframe?: number) {
-        assert(element !== undefined, `expected valid canvas element on initialization, given ${element}`);
+        auxiliaries.assert(element !== undefined, `expected valid canvas element on initialization, given ${element}`);
         this._element = element;
         this._timeframe = timeframe;
 
@@ -83,7 +83,7 @@ export class PointerEventProvider {
      * @param event - Actual event to prevent default handling on (if masked).
      */
     protected preventDefaultOnEvent(type: PointerEventProvider.Type, event: PointerEvent): void {
-        if (bitInBitfield(this._preventDefaultMask, type)) {
+        if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
     }
@@ -94,7 +94,7 @@ export class PointerEventProvider {
      */
     preventDefault(...types: PointerEventProvider.Type[]): void {
         for (const type of types) {
-            if (!bitInBitfield(this._preventDefaultMask, type)) {
+            if (!auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask |= type;
             }
         }
@@ -106,7 +106,7 @@ export class PointerEventProvider {
      */
     allowDefault(...types: PointerEventProvider.Type[]): void {
         for (const type of types) {
-            if (bitInBitfield(this._preventDefaultMask, type)) {
+            if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask &= ~type;
             }
         }

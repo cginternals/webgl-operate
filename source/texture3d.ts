@@ -1,9 +1,11 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { byteSizeOfFormat } from './formatbytesizes';
-import { GLsizei3 } from './tuples';
+import { tuples } from './tuples';
 
 import { Bindable } from './bindable';
 import { TexImage3DData } from './gl2facade';
@@ -511,7 +513,7 @@ export class Texture3D extends AbstractObject<WebGLTexture> implements Bindable 
      * @see {@link heigth}
      * @see {@link depth}
      */
-    get size(): GLsizei3 {
+    get size(): tuples.GLsizei3 {
         this.assertInitialized();
         return [this._width, this._height, this._depth];
     }

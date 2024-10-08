@@ -3,8 +3,10 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { assert } from '../auxiliaries';
-import { v3 } from '../gl-matrix-extensions';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
+
+import { gl_matrix_extensions } from '../gl-matrix-extensions';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
@@ -309,11 +311,11 @@ export class Typesetter {
         for (let index: number = begin; index < end; ++index) {
             const origin = vertices.origin(index);
 
-            const ll: vec3 = v3(); // Lower Left
+            const ll: vec3 = gl_matrix_extensions.v3(); // Lower Left
             vec3.transformMat4(ll, origin, transform);
-            const lr: vec3 = v3(); // Lower Right
+            const lr: vec3 = gl_matrix_extensions.v3(); // Lower Right
             vec3.transformMat4(lr, vec3.add(lr, origin, vertices.tangent(index)), transform);
-            const ul: vec3 = v3(); // Upper Left
+            const ul: vec3 = gl_matrix_extensions.v3(); // Upper Left
             vec3.transformMat4(ul, vec3.add(ul, origin, vertices.up(index)), transform);
 
             vec3.copy(vertices.origin(index), ll);

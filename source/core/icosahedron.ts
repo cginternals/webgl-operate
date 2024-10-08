@@ -1,6 +1,6 @@
 
 import { vec2, vec3 } from 'gl-matrix';
-import { v3 } from '../gl-matrix-extensions';
+import { gl_matrix_extensions } from '../gl-matrix-extensions';
 
 type ivec3 = [number, number, number];
 
@@ -144,7 +144,7 @@ export class Icosahedron {
         }
 
         /* Create vertex between these two, normalize it to form a point on the sphere. */
-        const pos = vec3.add(v3(), vertices[a], vertices[b]);
+        const pos = vec3.add(gl_matrix_extensions.v3(), vertices[a], vertices[b]);
         vec3.normalize(pos, pos);
         vertices.push(pos);
 
@@ -182,7 +182,7 @@ export class Icosahedron {
         const ofs = 0.5;
 
         for (const pos of this._vertices) {
-            const normal = vec3.normalize(v3(), pos);
+            const normal = vec3.normalize(gl_matrix_extensions.v3(), pos);
 
             const uv = vec2.fromValues(
                 ofs - (Math.atan2(normal[2], normal[0]) / (2.0 * Math.PI)),

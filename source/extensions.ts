@@ -1,7 +1,7 @@
 
 
 /** Namespace that comprises extensions by WebGL version (also cleans up documentation). */
-namespace extensions {
+export namespace extensions {
 
     /**
      * All extensions specified for WebGL. This array is used to verify extension queries in WebGL contexts. Most of
@@ -89,4 +89,4 @@ namespace extensions {
 
 }
 
-export = extensions;
+export default extensions;

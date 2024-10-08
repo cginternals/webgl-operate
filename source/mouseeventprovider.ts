@@ -3,7 +3,9 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert, bitInBitfield } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { IS_EDGE, IS_IE11 } from './msagent';
 
 import { PointerLock } from './pointerlock';
@@ -90,7 +92,7 @@ export class MouseEventProvider {
      * @param event - Actual event to prevent default handling on (if masked).
      */
     protected preventDefaultOnEvent(type: MouseEventProvider.Type, event: MouseEvent): void {
-        if (bitInBitfield(this._preventDefaultMask, type)) {
+        if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
     }
@@ -101,7 +103,7 @@ export class MouseEventProvider {
      */
     preventDefault(...types: MouseEventProvider.Type[]): void {
         for (const type of types) {
-            if (!bitInBitfield(this._preventDefaultMask, type)) {
+            if (!auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask |= type;
             }
         }
@@ -113,7 +115,7 @@ export class MouseEventProvider {
      */
     allowDefault(...types: MouseEventProvider.Type[]): void {
         for (const type of types) {
-            if (bitInBitfield(this._preventDefaultMask, type)) {
+            if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask &= ~type;
             }
         }

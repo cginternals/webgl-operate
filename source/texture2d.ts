@@ -1,9 +1,11 @@
 
 /* spellchecker: disable */
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { byteSizeOfFormat } from './formatbytesizes';
-import { GLsizei2 } from './tuples';
+import { tuples } from './tuples';
 
 import { Bindable } from './bindable';
 import { TexImage2DData } from './gl2facade';
@@ -177,7 +179,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onerror = () => {
-                log(LogLevel.Error, `loading image from '${image.src}' failed`);
+                auxiliaries.log(auxiliaries.LogLevel.Error, `loading image from '${image.src}' failed`);
                 reject();
             };
 
@@ -249,7 +251,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         if (bind) {
             this.bind();
         }
-        logIf(mag === gl.LINEAR_MIPMAP_LINEAR || mag === gl.LINEAR_MIPMAP_NEAREST, LogLevel.Debug,
+        auxiliaries.logIf(mag === gl.LINEAR_MIPMAP_LINEAR || mag === gl.LINEAR_MIPMAP_NEAREST, auxiliaries.LogLevel.Debug,
             `magnification does not utilize a MipMap (refer to LINEAR and NEAREST only)`);
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mag);
@@ -367,7 +369,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
      */
     maxAnisotropy(max: GLfloat | undefined, bind: boolean = true, unbind: boolean = true): GLfloat | undefined {
         if (this._context.supportsTextureFilterAnisotropic === false) {
-            log(LogLevel.Debug, `setting anisotropy not supported (EXT_texture_filter_anisotropic missing)`);
+            auxiliaries.log(auxiliaries.LogLevel.Debug, `setting anisotropy not supported (EXT_texture_filter_anisotropic missing)`);
             return undefined;
         }
 
@@ -375,7 +377,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
         const ext = this._context.textureFilterAnisotropic;
 
         this._anisotropy = max === undefined ? undefined : Math.max(0.0, Math.min(Texture2D.MAX_ANISOTROPY!, max));
-        logIf(max !== this._anisotropy, LogLevel.Debug,
+        auxiliaries.logIf(max !== this._anisotropy, auxiliaries.LogLevel.Debug,
             `value clamped to max supported anisotropy of ${Texture2D.MAX_ANISOTROPY}, given ${max}`);
 
         if (bind) {
@@ -445,7 +447,7 @@ export class Texture2D extends AbstractObject<WebGLTexture> implements Bindable 
      * @see {@link width}
      * @see {@link height}
      */
-    get size(): GLsizei2 {
+    get size(): tuples.GLsizei2 {
         this.assertInitialized();
         return [this._width, this._height];
     }

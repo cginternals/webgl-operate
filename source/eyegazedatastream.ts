@@ -1,3 +1,4 @@
+
 import { EyeGazeData, EyeGazeEvent } from './eyegazeevent';
 
 // tslint:disable:max-classes-per-file

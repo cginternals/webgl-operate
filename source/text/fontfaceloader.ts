@@ -1,8 +1,10 @@
 
 /* spellchecker: disable */
 
-import { assert, dirname, log, logIf, LogLevel } from '../auxiliaries';
-import { GLfloat2, GLfloat4 } from '../tuples';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
+
+import { tuples } from '../tuples';
 
 import { FontFace } from './fontface';
 import { Glyph } from './glyph';
@@ -36,11 +38,11 @@ export class FontFaceLoader {
 
         const values = pairs.get('padding')!.split(',');
         if (values.length !== 4) {
-            log(LogLevel.Warning, `expected 4 values for padding, given ${values} (${values.length})`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `expected 4 values for padding, given ${values} (${values.length})`);
             return false;
         }
 
-        const padding: GLfloat4 = [
+        const padding: tuples.GLfloat4 = [
             parseFloat(values[0]), /* top */
             parseFloat(values[1]), /* right */
             parseFloat(values[2]), /* bottom */
@@ -98,7 +100,7 @@ export class FontFaceLoader {
             return undefined;
         }
 
-        const path = dirname(url);
+        const path = auxiliaries.dirname(url);
         let page = pairs.get('file')!;
         page = page.replace(/['"]+/g, ''); /* remove quotes */
 
@@ -116,7 +118,7 @@ export class FontFaceLoader {
     protected static processPages(fontFace: FontFace,
         pageFileUrlsByPageID: Map<number, string>): Promise<void> | undefined {
 
-        logIf(pageFileUrlsByPageID.size !== 1, LogLevel.Warning,
+        auxiliaries.logIf(pageFileUrlsByPageID.size !== 1, auxiliaries.LogLevel.Warning,
             'glyph atlas supports a single page only (impl. for multiple pages pending)');
 
         assert(pageFileUrlsByPageID.has(0),
@@ -149,17 +151,17 @@ export class FontFaceLoader {
         }
 
         const index: number = parseInt(pairs.get('id')!, 10);
-        logIf(index <= 0.0, LogLevel.Warning,
+        auxiliaries.logIf(index <= 0.0, auxiliaries.LogLevel.Warning,
             `expected glyph index to be greater than 0, given ${index}`);
 
         const glyph = new Glyph();
         glyph.index = index;
 
-        const extentScale: GLfloat2 = [
+        const extentScale: tuples.GLfloat2 = [
             1.0 / fontFace.glyphTextureExtent[0],
             1.0 / fontFace.glyphTextureExtent[1],
         ];
-        const extent: GLfloat2 = [
+        const extent: tuples.GLfloat2 = [
             parseFloat(pairs.get('width')!),
             parseFloat(pairs.get('height')!),
         ];
@@ -199,13 +201,13 @@ export class FontFaceLoader {
 
         const first: number = parseInt(pairs.get('first')!, 10);
         if (first <= 0.0) {
-            log(LogLevel.Warning, `expected kerning's first to be greater than 0, given ${first}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `expected kerning's first to be greater than 0, given ${first}`);
             return false;
         }
 
         const second: number = parseInt(pairs.get('second')!, 10);
         if (second <= 0.0) {
-            log(LogLevel.Warning, `expected kerning's second to be greater than 0, given ${second}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `expected kerning's second to be greater than 0, given ${second}`);
             return false;
         }
 
@@ -239,7 +241,7 @@ export class FontFaceLoader {
         let valid = true;
         mandatoryKeys.forEach((key) => valid = valid && resultPairs.has(key));
         if (!valid) {
-            log(LogLevel.Warning, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `Not all required keys are provided! Mandatory keys: ${mandatoryKeys}`);
         }
         return valid;
     }
@@ -274,7 +276,7 @@ export class FontFaceLoader {
         }
         fontFace.ascent = maximumYBearing;
         fontFace.descent = fontFace.ascent - size;
-        log(LogLevel.Debug, `ascent not specified, derived ${fontFace.ascent} from maximum y-offset`);
+        auxiliaries.log(auxiliaries.LogLevel.Debug, `ascent not specified, derived ${fontFace.ascent} from maximum y-offset`);
     }
 
     /**
@@ -343,7 +345,7 @@ export class FontFaceLoader {
 
         FontFaceLoader.findAscentAndDescentIfNoneProvided(fontFace, fontFace.size);
         if (fontFace.size <= 0.0) {
-            log(LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `expected fontFace.size to be greater than 0, given ${fontFace.size}`);
         }
 
         /* Multiple promises might be invoked (one per page due to async texture2D load). Since this is a non async

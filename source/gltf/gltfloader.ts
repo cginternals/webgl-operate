@@ -1,7 +1,8 @@
 
 import { mat4, quat, vec3, vec4 } from 'gl-matrix';
 
-import { assert, isPowerOfTwo, log, LogLevel, upperPowerOfTwo } from '../auxiliaries';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
 
 import { GLTF_ELEMENTS_PER_TYPE, GltfAsset, GltfLoader } from 'gltf-loader-ts';
 import { MeshPrimitive } from 'gltf-loader-ts/lib/gltf';
@@ -78,7 +79,7 @@ export class GLTFLoader {
         let textureId = 0;
         for (const textureInfo of textures) {
             if (textureInfo.source === undefined) {
-                log(LogLevel.Warning,
+                auxiliaries.log(auxiliaries.LogLevel.Warning,
                     `The GLTF model does not specify a texture source. Possibly it uses an unsupported extension.`);
                 textureId++;
                 continue;
@@ -96,16 +97,16 @@ export class GLTFLoader {
              * If the texture is not power of two, resize it to avoid problems with REPEAT samplers.
              * See: https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
              */
-            if (!isPowerOfTwo(data.width) || !isPowerOfTwo(data.height)) {
+            if (!auxiliaries.isPowerOfTwo(data.width) || !auxiliaries.isPowerOfTwo(data.height)) {
                 // Scale up the texture to the next highest power of two dimensions.
                 const canvas = document.createElement('canvas');
-                canvas.width = upperPowerOfTwo(data.width);
-                canvas.height = upperPowerOfTwo(data.height);
+                canvas.width = auxiliaries.upperPowerOfTwo(data.width);
+                canvas.height = auxiliaries.upperPowerOfTwo(data.height);
 
                 const ctx = canvas.getContext('2d');
 
                 if (ctx === undefined) {
-                    log(LogLevel.Error, 'Failed to create context while trying to resize non power of two texture');
+                    auxiliaries.log(auxiliaries.LogLevel.Error, 'Failed to create context while trying to resize non power of two texture');
                 }
                 ctx!.drawImage(data, 0, 0, canvas.width, canvas.height);
                 data = canvas;
@@ -146,7 +147,7 @@ export class GLTFLoader {
         const texture = this._resourceManager.get(identifier) as Texture2D;
 
         if (texture === undefined) {
-            log(LogLevel.Warning, `Texture with index ${index} could not be located.`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `Texture with index ${index} could not be located.`);
             return;
         }
 
@@ -216,7 +217,7 @@ export class GLTFLoader {
 
             // TODO: full support of material properties
             if (pbrInfo === undefined) {
-                log(LogLevel.Warning, 'Model contains a material without PBR information');
+                auxiliaries.log(auxiliaries.LogLevel.Warning, 'Model contains a material without PBR information');
             }
 
             const baseColorTexture = pbrInfo!.baseColorTexture;
@@ -258,7 +259,7 @@ export class GLTFLoader {
         const accessors = asset.gltf.accessors;
 
         if (meshes === undefined || accessors === undefined) {
-            log(LogLevel.Error, `Asset does not include any meshes or accessors`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `Asset does not include any meshes or accessors`);
             return gl.ARRAY_BUFFER;
         }
 
@@ -295,12 +296,12 @@ export class GLTFLoader {
         const accessors = asset.gltf.accessors;
 
         if (!bufferViews) {
-            log(LogLevel.Warning, 'The asset does not include any buffer view information.');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'The asset does not include any buffer view information.');
             return;
         }
 
         if (!accessors) {
-            log(LogLevel.Warning, 'The asset does not include any accessor information.');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'The asset does not include any accessor information.');
             return;
         }
 
@@ -356,7 +357,7 @@ export class GLTFLoader {
         const meshes = asset.gltf.meshes;
 
         if (meshes === undefined) {
-            log(LogLevel.Warning, 'The asset does not contain any mesh information');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'The asset does not contain any mesh information');
             return this._meshes;
         }
 
@@ -390,12 +391,12 @@ export class GLTFLoader {
         const bufferViews = asset.gltf.bufferViews;
 
         if (accessors === undefined) {
-            log(LogLevel.Error, 'GLTF asset does not have any accessors.');
+            auxiliaries.log(auxiliaries.LogLevel.Error, 'GLTF asset does not have any accessors.');
             return;
         }
 
         if (bufferViews === undefined) {
-            log(LogLevel.Error, 'GLTF asset does not have any buffer views.');
+            auxiliaries.log(auxiliaries.LogLevel.Error, 'GLTF asset does not have any buffer views.');
             return;
         }
 
@@ -418,7 +419,7 @@ export class GLTFLoader {
             if (fetchedMaterial !== undefined) {
                 material = fetchedMaterial as Material;
             } else {
-                log(LogLevel.Warning, `Material ${materialIdentifier} could not be found.`);
+                auxiliaries.log(auxiliaries.LogLevel.Warning, `Material ${materialIdentifier} could not be found.`);
             }
         }
 
@@ -475,7 +476,7 @@ export class GLTFLoader {
             const accessorInfo = accessors[primitiveInfo.indices];
             const bufferViewIndex = accessorInfo.bufferView;
             if (!bufferViewIndex === undefined) {
-                log(LogLevel.Error, 'Accessor does not reference a BufferView.');
+                auxiliaries.log(auxiliaries.LogLevel.Error, 'Accessor does not reference a BufferView.');
             }
             const bufferViewIdentifier = this._sceneName + '_bufferView_' + bufferViewIndex;
             const buffer = this._resourceManager.get(bufferViewIdentifier) as Buffer;
@@ -498,7 +499,7 @@ export class GLTFLoader {
         const scenes = asset.gltf.scenes;
 
         if (!nodes || !scenes) {
-            log(LogLevel.Warning, 'The asset does not contain any nodes or scene information.');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'The asset does not contain any nodes or scene information.');
             return;
         }
 
@@ -558,7 +559,7 @@ export class GLTFLoader {
              * TODO: skinning support
              */
             if (node.skin || node.weights) {
-                log(LogLevel.Info, 'Imported GLTF assets uses skins, which are not supported yet.');
+                auxiliaries.log(auxiliaries.LogLevel.Info, 'Imported GLTF assets uses skins, which are not supported yet.');
             }
 
             nodeId++;
@@ -578,7 +579,7 @@ export class GLTFLoader {
                     const childNode = idToNode.get(childId);
 
                     if (!childNode) {
-                        log(LogLevel.Error, 'Model references a node that does not exist.');
+                        auxiliaries.log(auxiliaries.LogLevel.Error, 'Model references a node that does not exist.');
                     }
 
                     sceneNode!.addNode(childNode!);
@@ -603,13 +604,13 @@ export class GLTFLoader {
                     const node = idToNode.get(nodeId);
 
                     if (!node) {
-                        log(LogLevel.Error, 'Scene references a node that does not exist.');
+                        auxiliaries.log(auxiliaries.LogLevel.Error, 'Scene references a node that does not exist.');
                     }
 
                     sceneNode.addNode(node!);
                 }
             } else {
-                log(LogLevel.Warning, `Scene ${name} does not contain any nodes.`);
+                auxiliaries.log(auxiliaries.LogLevel.Warning, `Scene ${name} does not contain any nodes.`);
             }
 
             this._scenes.push(sceneNode);
@@ -693,7 +694,7 @@ export class GLTFLoader {
         } else if (this._scenes !== undefined && this._scenes.length > 0) {
             return this._scenes[0];
         } else {
-            log(LogLevel.Warning, 'Default scene was requested, but none is available.');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'Default scene was requested, but none is available.');
             return new SceneNode('EmptyScene');
         }
     }

@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { clamp } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
 /* spellchecker: enable */
 
@@ -18,7 +18,7 @@ declare let LOG_VERBOSITY_THRESHOLD: number; // -1 disables all logs
 
 
 /** Namespace that comprises various utils (also cleans up documentation). */
-namespace auxiliaries {
+export namespace auxiliaries {
 
     /* istanbul ignore next line - LOG_VERBOSITY_THRESHOLD has to be defined by the build environment*/
     let logVerbosityThreshold = typeof LOG_VERBOSITY_THRESHOLD !== 'undefined' ? LOG_VERBOSITY_THRESHOLD : 3;
@@ -272,7 +272,7 @@ namespace auxiliaries {
     export function prettyPrintMilliseconds(milliseconds: number): string {
         let prefix: number = milliseconds > 0 ?
             Math.max(1, Math.floor(Math.log(milliseconds * 10) / Math.log(1e+3)) + 3) : 0;
-        prefix = clamp(prefix, 0, 4);
+        prefix = gl_matrix_extensions.clamp(prefix, 0, 4);
 
         const value = milliseconds * msScales[prefix];
         return `${value.toFixed(3)}${msSuffixes[prefix]}`;
@@ -356,4 +356,4 @@ namespace auxiliaries {
 
 }
 
-export = auxiliaries;
+export default auxiliaries;

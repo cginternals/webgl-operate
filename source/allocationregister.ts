@@ -3,7 +3,7 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert, prettyPrintBytes } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 
 /* spellchecker: enable */
 
@@ -62,7 +62,7 @@ export class AllocationRegister {
      * @param identifier - Identifier to assert the existence of.
      */
     protected assertIdentifier(identifier: string): void {
-        assert(this._bytesByIdentifier.has(identifier), `allocation identifier unknown`);
+        auxiliaries.assert(this._bytesByIdentifier.has(identifier), `allocation identifier unknown`);
     }
 
 
@@ -91,7 +91,7 @@ export class AllocationRegister {
      * @param identifier - Identifier that is to be deleted from allocation registration.
      */
     deleteUniqueIdentifier(identifier: string): void {
-        assert(this._bytesByIdentifier.has(identifier), `identifier expected to be known for allocation registration`);
+        auxiliaries.assert(this._bytesByIdentifier.has(identifier), `identifier expected to be known for allocation registration`);
         this._bytesByIdentifier.delete(identifier);
     }
 
@@ -103,7 +103,7 @@ export class AllocationRegister {
     allocate(identifier: string, allocate: number): void {
         this.assertIdentifier(identifier);
 
-        assert(allocate >= 0, `positive number of bytes expected for allocation, given ${allocate}`);
+        auxiliaries.assert(allocate >= 0, `positive number of bytes expected for allocation, given ${allocate}`);
 
         /* Nothing to do if no bytes are allocated */
         if (allocate === 0) {
@@ -126,8 +126,8 @@ export class AllocationRegister {
         this.assertIdentifier(identifier);
 
         const bytes = this._bytesByIdentifier.get(identifier)!;
-        assert(deallocate >= 0, `positive number of bytes expected for deallocation, given ${deallocate}`);
-        assert(deallocate <= bytes, `deallocation cannot exceed previous allocations of ${bytes}, given ${deallocate}`);
+        auxiliaries.assert(deallocate >= 0, `positive number of bytes expected for deallocation, given ${deallocate}`);
+        auxiliaries.assert(deallocate <= bytes, `deallocation cannot exceed previous allocations of ${bytes}, given ${deallocate}`);
 
         /* Nothing to do if no bytes are deallocated */
         if (deallocate === 0) {
@@ -147,7 +147,7 @@ export class AllocationRegister {
      */
     reallocate(identifier: string, reallocate: number): void {
         this.assertIdentifier(identifier);
-        assert(reallocate >= 0, `positive number of bytes expected for reallocation, given ${reallocate}`);
+        auxiliaries.assert(reallocate >= 0, `positive number of bytes expected for reallocation, given ${reallocate}`);
 
         const previousBytes = this._bytesByIdentifier.get(identifier)!;
 
@@ -188,7 +188,7 @@ export class AllocationRegister {
     toString(): string {
         const output = new Array<string>();
         this._bytesByIdentifier.forEach((bytes: number, identifier: string) => {
-            output.push(`${identifier}: ${prettyPrintBytes(bytes)}`);
+            output.push(`${identifier}: ${auxiliaries.prettyPrintBytes(bytes)}`);
         });
         return output.join(', ');
     }
@@ -200,7 +200,7 @@ export class AllocationRegister {
      * @returns - Pretty printed string of the requested number of bytes.
      */
     bytesToString(identifier?: string): string {
-        return prettyPrintBytes(this.allocated(identifier));
+        return auxiliaries.prettyPrintBytes(this.allocated(identifier));
     }
 
 

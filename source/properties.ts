@@ -3,7 +3,9 @@
 
 import { Validator } from 'jsonschema';
 
-import { assert, logIf, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { ChangeLookup } from './changelookup';
 
 /* spellchecker: enable */
@@ -68,7 +70,7 @@ function complementArray(instance: any | undefined, schema: any): void {
     }
 }
 
-namespace properties {
+export namespace properties {
 
     /**
      * Validates if an object (POJO/JSON) adheres to a specific structure using a JSON schema.
@@ -88,7 +90,7 @@ namespace properties {
         /* Validate of (sub) schema of given POJO/JSON. */
         const result = validator.validate(instance, schema);
 
-        logIf(!result.valid, LogLevel.Warning, `schema expected to be valid:\n${result.toString()}`);
+        auxiliaries.logIf(!result.valid, auxiliaries.LogLevel.Warning, `schema expected to be valid:\n${result.toString()}`);
         return result.valid;
     }
 
@@ -200,4 +202,4 @@ namespace properties {
 
 }
 
-export = properties;
+export default properties;

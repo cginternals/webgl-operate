@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { clampf2, GLclampf2, GLfloat2 } from '../tuples';
+import { tuples } from '../tuples';
 
 /* spellchecker: enable */
 
@@ -18,10 +18,10 @@ export class Glyph {
     protected _advance: GLfloat;
 
     /** @see {@link bearing} */
-    protected _bearing: GLfloat2 = [0.0, 0.0];
+    protected _bearing: tuples.GLfloat2 = [0.0, 0.0];
 
     /** @see {@link extent} */
-    protected _extent: GLfloat2 = [0.0, 0.0];
+    protected _extent: tuples.GLfloat2 = [0.0, 0.0];
 
     /** @see {@link index} */
     protected _index: GLsizei;
@@ -30,10 +30,10 @@ export class Glyph {
     protected _kernings = new Map<GLsizei, GLfloat>();
 
     /** @see {@link subTextureOrigin} */
-    protected _subTextureOrigin: GLclampf2 = [0.0, 0.0];
+    protected _subTextureOrigin: tuples.GLclampf2 = [0.0, 0.0];
 
     /** @see {@link subTextureExtent} */
-    protected _subTextureExtent: GLclampf2 = [0.0, 0.0];
+    protected _subTextureExtent: tuples.GLclampf2 = [0.0, 0.0];
 
     constructor(index: GLsizei = 0, advance: GLfloat = 0) {
         this._index = index;
@@ -94,10 +94,10 @@ export class Glyph {
      * sub-texture within the texture atlas. The coordinates are normalized in [0;1].
      * @param origin - Normalized coordinates pointing to the upper left texel of the glyph's sub-texture.
      */
-    set subTextureOrigin(origin: GLclampf2) {
-        this._subTextureOrigin = clampf2(origin, 'texture origin');
+    set subTextureOrigin(origin: tuples.GLclampf2) {
+        this._subTextureOrigin = tuples.clampf2(origin, 'texture origin');
     }
-    get subTextureOrigin(): GLclampf2 {
+    get subTextureOrigin(): tuples.GLclampf2 {
         return this._subTextureOrigin;
     }
 
@@ -107,10 +107,10 @@ export class Glyph {
      * comprises the font face's padding.
      * @param extent - Normalized width and height of the glyph's sub-texture.
      */
-    set subTextureExtent(extent: GLclampf2) {
-        this._subTextureExtent = clampf2(extent, 'texture extent');
+    set subTextureExtent(extent: tuples.GLclampf2) {
+        this._subTextureExtent = tuples.clampf2(extent, 'texture extent');
     }
-    get subTextureExtent(): GLclampf2 {
+    get subTextureExtent(): tuples.GLclampf2 {
         return this._subTextureExtent;
     }
 
@@ -121,10 +121,10 @@ export class Glyph {
      * @param bearing - Horizontal and vertical bearing based on the glyph's origin/pen-position placed on the
      * baseline in pt.
      */
-    set bearing(bearing: GLfloat2) {
+    set bearing(bearing: tuples.GLfloat2) {
         this._bearing = bearing;
     }
-    get bearing(): GLfloat2 {
+    get bearing(): tuples.GLfloat2 {
         return this._bearing;
     }
 
@@ -148,10 +148,10 @@ export class Glyph {
      * Width and height of the glyph in pt.
      * @param extent - The glyph's extent by means of width and height in pt.
      */
-    set extent(extent: GLfloat2) {
+    set extent(extent: tuples.GLfloat2) {
         this._extent = extent;
     }
-    get extent(): GLfloat2 {
+    get extent(): tuples.GLfloat2 {
         return this._extent;
     }
 

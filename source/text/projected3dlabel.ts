@@ -3,10 +3,10 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { log, logIf, LogLevel } from '../auxiliaries';
+import { auxiliaries } from '../auxiliaries';
 import { Camera } from '../camera';
-import { m4 } from '../gl-matrix-extensions';
-import { GLfloat2, GLfloat3 } from '../tuples';
+import { gl_matrix_extensions } from '../gl-matrix-extensions';
+import { tuples } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -119,16 +119,16 @@ export class Projected3DLabel extends Label {
         if (this._camera.viewProjectionInverse) {
             mat4.mul(transform, this._camera.viewProjectionInverse, transform);
         } else {
-            log(LogLevel.Warning, `camera.viewProjectionInverse is null`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `camera.viewProjectionInverse is null`);
         }
 
         switch (this._type) {
             case Label.Type.Static:
                 this.staticTransform = mat4.clone(transform);
-                this.dynamicTransform = m4();
+                this.dynamicTransform = gl_matrix_extensions.m4();
                 break;
             case Label.Type.Dynamic:
-                this.staticTransform = m4();
+                this.staticTransform = gl_matrix_extensions.m4();
                 this.dynamicTransform = mat4.clone(transform);
                 break;
             default:
@@ -164,22 +164,22 @@ export class Projected3DLabel extends Label {
     /**
      * Sets the 3D position of the label's reference point.
      */
-    set position(position: vec3 | GLfloat3) {
+    set position(position: vec3 | tuples.GLfloat3) {
         this._position = vec3.clone(position);
         this._altered.alter(this._type);
     }
-    get position(): vec3 | GLfloat3 {
+    get position(): vec3 | tuples.GLfloat3 {
         return this._position;
     }
 
     /**
      * Sets the 2D direction of the label, i.e., the direction of the baseline.
      */
-    set direction(direction: vec2 | GLfloat2) {
+    set direction(direction: vec2 | tuples.GLfloat2) {
         vec2.normalize(this._direction, direction);
         this._altered.alter(this._type);
     }
-    get direction(): vec2 | GLfloat2 {
+    get direction(): vec2 | tuples.GLfloat2 {
         return this._direction;
     }
 
@@ -190,7 +190,7 @@ export class Projected3DLabel extends Label {
      * @param newUnit - Unit to be used, though, this label type only supports pixel units (px).
      */
     set fontSizeUnit(unit: Label.Unit) {
-        logIf(unit !== Label.Unit.Mixed, LogLevel.Warning,
+        auxiliaries.logIf(unit !== Label.Unit.Mixed, auxiliaries.LogLevel.Warning,
             `font size unit other than 'px' are not supported in projected-3d-label, given ${unit}`);
     }
     get fontSizeUnit(): Label.Unit {

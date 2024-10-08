@@ -1,9 +1,10 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
-import { GLsizei3 } from './tuples';
+import { tuples } from './tuples';
 
 /* spellchecker: enable */
 
@@ -174,7 +175,7 @@ export abstract class AbstractKernel<T extends Float32Array | Uint32Array | Int3
      * @param index - Index of the requested position (clamped to range [0, size]).
      * @returns - The position of the element at the requested index as 3-tuple [x, y, z].
      */
-    position(index: GLsizei): GLsizei3 {
+    position(index: GLsizei): tuples.GLsizei3 {
         let clamped = Math.min(this.elements, Math.max(0, index));
         const zPos: GLsizei = Math.floor(clamped / (this._width * this._height));
         clamped -= zPos * this._width * this._height;

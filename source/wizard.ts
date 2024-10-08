@@ -1,7 +1,8 @@
 
 /* spellchecker: disable */
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { Context } from './context';
 
@@ -37,7 +38,7 @@ export class Wizard {
         let query = precision;
 
         if (!(precision in Wizard.Precision)) {
-            log(LogLevel.Warning, `unknown precision '${query}' changed to '${Wizard.Precision.auto}'`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `unknown precision '${query}' changed to '${Wizard.Precision.auto}'`);
             precision = Wizard.Precision.auto;
         }
         if (precision === Wizard.Precision.auto) { /* Derive maximum supported write to texture/buffer format. */

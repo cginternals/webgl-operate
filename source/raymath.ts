@@ -2,15 +2,15 @@
 /* spellchecker: disable */
 
 import { mat4, vec2, vec3 } from 'gl-matrix';
-import { abs2, abs3, sign, v2, v3 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
-import { DEG2RAD } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 import { Camera } from './camera';
 
 /* spellchecker: enable */
 
 
-namespace ray_math {
+export namespace ray_math {
 
     /**
      * Lots of variables that represent components of other variables or are transformed.
@@ -25,7 +25,7 @@ namespace ray_math {
      * @returns The intersection point of the given ray and a circle, undefined if no intersection exists.
      */
     export function rayCircleIntersection(ray0: vec2, ray1: vec2, radius: number = 1.0): vec2 | undefined {
-        const ray_direction = vec2.subtract(v2(), ray1, ray0);
+        const ray_direction = vec2.subtract(gl_matrix_extensions.v2(), ray1, ray0);
         if (vec2.equals(ray_direction, vec2.fromValues(0.0, 0.0))) {
             return undefined;
         }
@@ -47,7 +47,7 @@ namespace ray_math {
         /* Compute the two possible intersections and use nearest one. */
         const s = Math.sqrt(delta);
         const t = Math.min((-b + s) / (2.0 * a), (-b - s) / (2.0 * a));
-        const intersection = vec2.scale(v2(), ray_direction, t);
+        const intersection = vec2.scale(gl_matrix_extensions.v2(), ray_direction, t);
 
         return vec2.add(intersection, intersection, ray0);
     }
@@ -60,11 +60,11 @@ namespace ray_math {
      * @returns - The intersection point of the square and the derived ray.
      */
     export function pointSquareIntersection(point: vec2, edgeLength: number = 1.0): vec2 {
-        const a = abs2(v2(), point);
+        const a = gl_matrix_extensions.abs2(gl_matrix_extensions.v2(), point);
         if (a[0] >= a[1]) { // intersection is with left or right border
-            return vec2.fromValues(sign(point[0]) * edgeLength, point[1] / a[0] * edgeLength);
+            return vec2.fromValues(gl_matrix_extensions.sign(point[0]) * edgeLength, point[1] / a[0] * edgeLength);
         }
-        return vec2.fromValues(point[0] / a[1] * edgeLength, sign(point[1]) * edgeLength);
+        return vec2.fromValues(point[0] / a[1] * edgeLength, gl_matrix_extensions.sign(point[1]) * edgeLength);
     }
 
     /**
@@ -97,23 +97,23 @@ namespace ray_math {
      */
     export function rayLineIntersection(ray0: vec2, ray1: vec2, line0: vec2, line1: vec2): [vec2, number] | undefined {
         const p = ray0; /* do not write to p (or clone ray0) */
-        const r = vec2.sub(v2(), ray1, ray0);
+        const r = vec2.sub(gl_matrix_extensions.v2(), ray1, ray0);
 
         const q = line0;  /* do not write to q (or clone line0) */
-        const s = vec2.sub(v2(), line1, line0);
+        const s = vec2.sub(gl_matrix_extensions.v2(), line1, line0);
 
-        const cross_rs = vec2.cross(v3(), r, s)[2];
+        const cross_rs = vec2.cross(gl_matrix_extensions.v3(), r, s)[2];
         if (cross_rs === 0.0) {
             return undefined;
         }
 
-        const qp = vec2.sub(v2(), q, p);
-        const u = vec2.cross(v3(), qp, vec2.scale(v2(), r, 1.0 / cross_rs))[2];
-        const t = vec2.cross(v3(), qp, vec2.scale(v2(), s, 1.0 / cross_rs))[2];
+        const qp = vec2.sub(gl_matrix_extensions.v2(), q, p);
+        const u = vec2.cross(gl_matrix_extensions.v3(), qp, vec2.scale(gl_matrix_extensions.v2(), r, 1.0 / cross_rs))[2];
+        const t = vec2.cross(gl_matrix_extensions.v3(), qp, vec2.scale(gl_matrix_extensions.v2(), s, 1.0 / cross_rs))[2];
         if (u < 0.0 || u > 1.0 || t < 0.0) { // } || t > 1.0) { // ray intersects line segment in both directions ...
             return undefined;
         }
-        return [vec2.add(v2(), q, vec2.scale(v2(), s, u)), t];
+        return [vec2.add(gl_matrix_extensions.v2(), q, vec2.scale(gl_matrix_extensions.v2(), s, u)), t];
     }
 
     /**
@@ -130,7 +130,7 @@ namespace ray_math {
         origin: vec3 = vec3.fromValues(0.0, 0.0, 0.0),
         normal: vec3 = vec3.fromValues(0.0, 1.0, 0.0)): vec3 | undefined {
 
-        const ray_direction = vec3.normalize(v3(), vec3.subtract(v3(), ray1, ray0));
+        const ray_direction = vec3.normalize(gl_matrix_extensions.v3(), vec3.subtract(gl_matrix_extensions.v3(), ray1, ray0));
 
         /* Intersect with plane in point normal form. */
         const rdDotN: number = vec3.dot(ray_direction, normal);
@@ -141,8 +141,8 @@ namespace ray_math {
         }
 
         /* Retrieve point using the ray. */
-        const t: number = vec3.dot(vec3.subtract(v3(), origin, ray0), normal) / rdDotN;
-        return vec3.add(v3(), vec3.scale(v3(), ray_direction, t), ray0);
+        const t: number = vec3.dot(vec3.subtract(gl_matrix_extensions.v3(), origin, ray0), normal) / rdDotN;
+        return vec3.add(gl_matrix_extensions.v3(), vec3.scale(gl_matrix_extensions.v3(), ray_direction, t), ray0);
     }
 
     /**
@@ -158,8 +158,8 @@ namespace ray_math {
     export function raySphereIntersection(ray0: vec3, ray1: vec3
         , origin: vec3 = vec3.fromValues(0.0, 0.0, 0.0), radius: number = 1.0): vec3 | undefined {
 
-        const rayOriginToSphereCenter = vec3.subtract(v3(), ray0, origin); // o - c
-        const ray_direction = vec3.normalize(v3(), vec3.subtract(v3(), ray1, ray0)); // l
+        const rayOriginToSphereCenter = vec3.subtract(gl_matrix_extensions.v3(), ray0, origin); // o - c
+        const ray_direction = vec3.normalize(gl_matrix_extensions.v3(), vec3.subtract(gl_matrix_extensions.v3(), ray1, ray0)); // l
 
         const dot_term = vec3.dot(ray_direction, rayOriginToSphereCenter); // l * (o - c)
 
@@ -170,7 +170,7 @@ namespace ray_math {
         if (t <= 0.0) { // no intersection
             return undefined;
         }
-        return vec3.add(v3(), ray0, vec3.scale(v3(), ray_direction, -dot_term - Math.sqrt(t)));
+        return vec3.add(gl_matrix_extensions.v3(), ray0, vec3.scale(gl_matrix_extensions.v3(), ray_direction, -dot_term - Math.sqrt(t)));
     }
 
     /**
@@ -204,7 +204,7 @@ namespace ray_math {
      * @returns - Whether or not the given point is within an axis aligned square at [0.0, 0.0] and edge length.
      */
     export function isPointWithinSquare(point: vec2, halfLength: number = 1.0): boolean {
-        const p_abs = abs2(v2(), point);
+        const p_abs = gl_matrix_extensions.abs2(gl_matrix_extensions.v2(), point);
         return p_abs[0] <= halfLength && p_abs[1] <= halfLength;
     }
 
@@ -216,8 +216,8 @@ namespace ray_math {
      * @returns True if the point should be visible (within NDC), false otherwise.
      */
     export function isPointWithinNDC(viewProjection: mat4, point: vec3): boolean {
-        const p_transformed = vec3.transformMat4(v3(), point, viewProjection);
-        const p_abs = abs3(v3(), p_transformed);
+        const p_transformed = vec3.transformMat4(gl_matrix_extensions.v3(), point, viewProjection);
+        const p_abs = gl_matrix_extensions.abs3(gl_matrix_extensions.v3(), p_transformed);
         return p_abs[0] <= 1.0 && p_abs[1] <= 1.0 && p_transformed[2] >= 0.0 && p_transformed[2] <= 1.0;
     }
 
@@ -229,13 +229,13 @@ namespace ray_math {
      * @returns - Distance of the closest point on a ray to a point.
      */
     export function distancePointToRay(ray0: vec3, ray1: vec3, point: vec3): number {
-        const ray_direction = vec3.subtract(v3(), ray1, ray0);
+        const ray_direction = vec3.subtract(gl_matrix_extensions.v3(), ray1, ray0);
         const ray_length = vec3.squaredLength(ray_direction);
         if (ray_length === 0.0) {
             return 0.0;
         }
 
-        const eyeToPoint = vec3.subtract(v3(), point, ray0);
+        const eyeToPoint = vec3.subtract(gl_matrix_extensions.v3(), point, ray0);
         const theta = vec3.dot(eyeToPoint, ray_direction);
         return theta / ray_length;
     }
@@ -248,18 +248,18 @@ namespace ray_math {
      * @returns - Eye coordinate for the given camera that should have the given point within view.
      */
     export function eyeWithPointInView(camera: Camera, point: vec3): vec3 {
-        const ray_direction = vec3.subtract(v3(), camera.center, camera.eye);
-        const ray_normalized = vec3.normalize(v3(), ray_direction);
+        const ray_direction = vec3.subtract(gl_matrix_extensions.v3(), camera.center, camera.eye);
+        const ray_normalized = vec3.normalize(gl_matrix_extensions.v3(), ray_direction);
 
         /* Retrieve u and v for an orthonormal basis. */
-        const ortho_v = vec3.normalize(v3(), vec3.cross(v3(), ray_normalized, camera.up));
-        const ortho_u = vec3.normalize(v3(), vec3.cross(v3(), ortho_v, ray_normalized));
+        const ortho_v = vec3.normalize(gl_matrix_extensions.v3(), vec3.cross(gl_matrix_extensions.v3(), ray_normalized, camera.up));
+        const ortho_u = vec3.normalize(gl_matrix_extensions.v3(), vec3.cross(gl_matrix_extensions.v3(), ortho_v, ray_normalized));
 
         const distance = distancePointToRay(camera.eye, camera.center, point);
 
         /* Compute the closest point c on the ray. */
-        const closest = vec3.add(v3(), camera.eye, vec3.scale(v3(), ray_direction, distance));
-        const t = vec3.subtract(v3(), point, closest);
+        const closest = vec3.add(gl_matrix_extensions.v3(), camera.eye, vec3.scale(gl_matrix_extensions.v3(), ray_direction, distance));
+        const t = vec3.subtract(gl_matrix_extensions.v3(), point, closest);
         const part_v = Math.abs(vec3.dot(t, ortho_v)) / camera.aspect;
         const part_u = Math.abs(vec3.dot(t, ortho_u));
 
@@ -267,10 +267,10 @@ namespace ray_math {
         const part_max = Math.max(part_v, part_u);
 
         /* Require distance from closest to new camera position. */
-        const a = part_max / Math.tan(camera.fovy * DEG2RAD * 0.5);
-        return vec3.subtract(v3(), closest, vec3.scale(v3(), ray_normalized, a));
+        const a = part_max / Math.tan(camera.fovy * auxiliaries.DEG2RAD * 0.5);
+        return vec3.subtract(gl_matrix_extensions.v3(), closest, vec3.scale(gl_matrix_extensions.v3(), ray_normalized, a));
     }
 
 }
 
-export = ray_math;
+export default ray_math;

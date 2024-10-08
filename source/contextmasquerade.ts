@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { assert, GETparameter } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 
 import { ExtensionsHash } from './extensionshash';
 
@@ -76,7 +76,7 @@ export class ContextMasquerade {
         }
 
         if (preset === undefined) {
-            assert(false,
+            auxiliaries.assert(false,
                 `expected valid identifier, available ['${identifiers.join('\', \'')}'], given '${identifier}'`);
         }
         preset = preset as ContextMasquerade.Preset;
@@ -89,7 +89,7 @@ export class ContextMasquerade {
             mask._backend = preset.backend!;
         }
 
-        assert(mask._backend !== undefined,
+        auxiliaries.assert(mask._backend !== undefined,
             'expected backend to be included in preset');
 
         if (preset.extensions_strive === undefined) {
@@ -111,11 +111,11 @@ export class ContextMasquerade {
      * found, a mask is generated from preset identifier.
      */
     static fromGET(): ContextMasquerade | undefined {
-        const msqrdHash = GETparameter('msqrd_h');
+        const msqrdHash = auxiliaries.GETparameter('msqrd_h');
         if (msqrdHash !== undefined) {
             return ContextMasquerade.fromHash(msqrdHash);
         }
-        const msqrdPreset = GETparameter('msqrd_p');
+        const msqrdPreset = auxiliaries.GETparameter('msqrd_p');
         if (msqrdPreset !== undefined) {
             return ContextMasquerade.fromPreset(msqrdPreset);
         }

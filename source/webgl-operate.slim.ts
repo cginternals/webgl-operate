@@ -81,17 +81,16 @@ export * from './text/index';
 
 /* AUXILIARIES */
 
-import * as root_auxiliaries from './auxiliaries';
-export import auxiliaries = root_auxiliaries;
+export * from './auxiliaries';
 
 export { vec2, vec3, vec4 } from 'gl-matrix';
 export { mat2, mat2d, mat3, mat4 } from 'gl-matrix';
 export { quat } from 'gl-matrix';
 
-import * as root_gl_matrix_extensions from './gl-matrix-extensions';
-export import gl_matrix_extensions = root_gl_matrix_extensions;
+export * from './gl-matrix-extensions';
 
-import * as root_tuples from './tuples';
-export import tuples = root_tuples;
+export * from './tuples';
+
+export * from './gltf/index';
 
 /* spellchecker: enable */

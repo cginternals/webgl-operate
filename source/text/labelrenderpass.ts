@@ -3,8 +3,10 @@
 
 import { mat4 } from 'gl-matrix';
 
-import { assert } from '../auxiliaries';
-import { GLfloat2, GLsizei2 } from '../tuples';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
+
+import { tuples } from '../tuples';
 
 import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
@@ -66,7 +68,7 @@ export class LabelRenderPass extends Initializable {
     protected _camera: Camera;
 
     /** @see {@link ndcOffset} */
-    protected _ndcOffset: GLfloat2 = [0.0, 0.0];
+    protected _ndcOffset: tuples.GLfloat2 = [0.0, 0.0];
 
     /** @see {@link depthMask} */
     protected _depthMask = false;
@@ -95,7 +97,7 @@ export class LabelRenderPass extends Initializable {
     /**
      * Stores for each label (same index in _labels) the range within the geometry.
      */
-    protected _ranges = new Array<GLsizei2>();
+    protected _ranges = new Array<tuples.GLsizei2>();
 
     /**
      * Stores typeset glyph vertices data per label and is used as cache to avoid unnecessary typesetting.
@@ -164,7 +166,7 @@ export class LabelRenderPass extends Initializable {
         /* Try to avoid unnecessary binds when texture or color does not change and accumulate draw calls as long as
         both remain unchanged. */
 
-        const range: GLsizei2 = [0, 0];
+        const range: tuples.GLsizei2 = [0, 0];
         let currentColor: Color | undefined;
         let currentFontFace: FontFace | undefined;
 
@@ -407,7 +409,7 @@ export class LabelRenderPass extends Initializable {
      * multiple intermediate frames (multi-frame sampling).
      * @param offset - Subpixel offset used for vertex displacement (multi-frame anti-aliasing).
      */
-    set ndcOffset(offset: GLfloat2) {
+    set ndcOffset(offset: tuples.GLfloat2) {
         this.assertInitialized();
         this._ndcOffset = offset;
     }

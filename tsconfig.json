@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "ESNext",
         "target": "ES2020",
         "lib": [
             "dom",
@@ -10,6 +10,7 @@
         "sourceMap": true,
         "declaration": false,
         "alwaysStrict": true,
+        "moduleResolution": "node",
         "noImplicitAny": true,
         "noUnusedParameters": false,
         "noUnusedLocals": true,
@@ -28,5 +29,10 @@
     },
     "include": [
         "source"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "lib"
     ]
 }

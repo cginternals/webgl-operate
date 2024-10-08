@@ -1,8 +1,8 @@
 
 /* spellchecker: disable */
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
-import { GLsizei2 } from './tuples';
+import { auxiliaries } from './auxiliaries';
+import { tuples } from './tuples';
 
 import { ChangeLookup } from './changelookup';
 import { Context } from './context';
@@ -168,7 +168,7 @@ export class AccumulatePass extends Initializable {
     @Initializable.assert_initialized()
     update(): void {
         if (!this._texture || !this._texture.valid) {
-            log(LogLevel.Warning, `valid texture for accumulation update expected, given ${this._texture}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `valid texture for accumulation update expected, given ${this._texture}`);
             return;
         }
 
@@ -179,7 +179,7 @@ export class AccumulatePass extends Initializable {
         const sizeAltered = this._altered.texture || this._accumulationTextures[0].width !== this._texture.width ||
             this._accumulationTextures[0].height !== this._texture.height;
         if (!this._altered.any && !sizeAltered) {
-            assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
+            auxiliaries.assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
                 `valid accumulation framebuffers expected`);
             return;
         }
@@ -215,7 +215,7 @@ export class AccumulatePass extends Initializable {
             this._accumulationFBOs[1].initialize([[gl2facade.COLOR_ATTACHMENT0, this._accumulationTextures[1]]]);
         }
 
-        assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
+        auxiliaries.assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
             `valid accumulation framebuffers expected`);
 
         this._altered.reset();
@@ -231,14 +231,14 @@ export class AccumulatePass extends Initializable {
      * the currently set viewport is used.
      */
     @Initializable.assert_initialized()
-    frame(frameNumber: number, viewport?: GLsizei2): void {
-        assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
+    frame(frameNumber: number, viewport?: tuples.GLsizei2): void {
+        auxiliaries.assert(this._accumulationFBOs[0].valid && this._accumulationFBOs[1].valid,
             `valid framebuffer objects for accumulation expected (initialize or update was probably not called)`);
 
         if (this._passThrough || this._texture === undefined) {
             return;
         }
-        logIf(!this._texture || !this._texture.valid, LogLevel.Warning,
+        auxiliaries.logIf(!this._texture || !this._texture.valid, auxiliaries.LogLevel.Warning,
             `valid texture for accumulation frame expected, given ${this._texture}`);
 
         const gl = this._context.gl;

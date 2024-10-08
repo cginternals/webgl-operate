@@ -1,7 +1,8 @@
 
 /* spellchecker: disable */
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
@@ -78,8 +79,8 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
                     break;
             }
         }
-        logIf(numVertShaders < 1, LogLevel.Error, `at least one vertex shader is expected`);
-        logIf(numFragShaders < 1, LogLevel.Error, `at least one fragment shader is expected`);
+        auxiliaries.logIf(numVertShaders < 1, auxiliaries.LogLevel.Error, `at least one vertex shader is expected`);
+        auxiliaries.logIf(numFragShaders < 1, auxiliaries.LogLevel.Error, `at least one fragment shader is expected`);
         if (numVertShaders < 1 || numFragShaders < 1) {
             return undefined;
         }
@@ -124,7 +125,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
             this._shaders.push(shader);
 
             if (!shader.initialized) {
-                log(LogLevel.Error, `shader '${shader.identifier}' not initialized.`);
+                auxiliaries.log(auxiliaries.LogLevel.Error, `shader '${shader.identifier}' not initialized.`);
                 continue;
             }
             gl.attachShader(this._object, shader.object);
@@ -169,7 +170,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
 
         if (!gl.getProgramParameter(this._object, gl.LINK_STATUS)) {
             const infoLog: string = gl.getProgramInfoLog(this._object);
-            log(LogLevel.Error, `linking of program '${this._identifier}' failed: '${infoLog}'`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `linking of program '${this._identifier}' failed: '${infoLog}'`);
 
             this._linked = false;
         } else {
@@ -214,7 +215,7 @@ export class Program extends AbstractObject<WebGLProgram> implements Bindable {
     @Initializable.assert_initialized()
     attribute(attribute: string, location?: GLuint): GLint {
         if (location !== undefined) {
-            logIf(this._linked, LogLevel.Debug,
+            auxiliaries.logIf(this._linked, auxiliaries.LogLevel.Debug,
                 `name-to-generic attribute index mapping does go into effect on next linking, ` +
                 `given ${attribute} -> ${location} (${this.identifier})`);
 

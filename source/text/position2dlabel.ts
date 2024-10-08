@@ -3,9 +3,9 @@
 
 import { mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
-import { logIf, LogLevel } from '../auxiliaries';
-import { m4, v2 } from '../gl-matrix-extensions';
-import { GLfloat2 } from '../tuples';
+import { auxiliaries } from '../auxiliaries';
+import { gl_matrix_extensions } from '../gl-matrix-extensions';
+import { tuples } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -74,7 +74,7 @@ export class Position2DLabel extends Label {
         const transform = mat4.create();
 
         /* translate to lower left in NDC */
-        mat4.translate(transform, m4(), vec3.fromValues(-1.0, -1.0, 0.0));
+        mat4.translate(transform, gl_matrix_extensions.m4(), vec3.fromValues(-1.0, -1.0, 0.0));
         /* scale glyphs to NDC size, this._frameSize should be the viewport size */
         mat4.scale(transform, transform, vec3.fromValues(2.0 / this._frameSize[0], 2.0 / this._frameSize[1], 1.0));
 
@@ -84,7 +84,7 @@ export class Position2DLabel extends Label {
         /* translate to origin in point space - scale origin within margined extend
          * (i.e., viewport with margined areas removed)
          */
-        const marginedExtent = vec2.sub(v2(), vec2.fromValues(
+        const marginedExtent = vec2.sub(gl_matrix_extensions.v2(), vec2.fromValues(
             this._frameSize[0], this._frameSize[1]),
             vec2.fromValues(margins[3] + margins[1], margins[2] + margins[0]));
 
@@ -109,10 +109,10 @@ export class Position2DLabel extends Label {
         switch (this._type) {
             case Label.Type.Static:
                 this.staticTransform = mat4.clone(transform);
-                this.dynamicTransform = m4();
+                this.dynamicTransform = gl_matrix_extensions.m4();
                 break;
             case Label.Type.Dynamic:
-                this.staticTransform = m4();
+                this.staticTransform = gl_matrix_extensions.m4();
                 this.dynamicTransform = mat4.clone(transform);
                 break;
             default:
@@ -134,39 +134,39 @@ export class Position2DLabel extends Label {
      * Width and height of targeted frame used to account for font size in px or pt units. Changing the frame size
      * invalidates the transform.
      */
-    set frameSize(size: vec2 | GLfloat2) {
+    set frameSize(size: vec2 | tuples.GLfloat2) {
         if (vec2.equals(this._frameSize, size)) {
             return;
         }
         vec2.max(this._frameSize, size, [1.0, 1.0]);
         this._altered.alter(this._type);
     }
-    get frameSize(): vec2 | GLfloat2 {
+    get frameSize(): vec2 | tuples.GLfloat2 {
         return this._frameSize;
     }
 
     /**
      * Sets the 2D position of the label's reference point.
      */
-    set position(position: vec2 | GLfloat2) {
+    set position(position: vec2 | tuples.GLfloat2) {
         if (vec2.equals(this._position, position)) {
             return;
         }
         this._position = vec2.clone(position);
         this._altered.alter(this._type);
     }
-    get position(): vec2 | GLfloat2 {
+    get position(): vec2 | tuples.GLfloat2 {
         return this._position;
     }
 
     /**
      * Sets the 2D direction of the label, i.e., the direction of the baseline.
      */
-    set direction(direction: vec2 | GLfloat2) {
+    set direction(direction: vec2 | tuples.GLfloat2) {
         vec2.normalize(this._direction, direction);
         this._altered.alter(this._type);
     }
-    get direction(): vec2 | GLfloat2 {
+    get direction(): vec2 | tuples.GLfloat2 {
         return this._direction;
     }
 
@@ -177,7 +177,7 @@ export class Position2DLabel extends Label {
      * @param newUnit - Unit to be used, though, this label type only supports pixel units (px).
      */
     set fontSizeUnit(unit: Label.Unit) {
-        logIf(unit !== Label.Unit.Pixel, LogLevel.Warning,
+        auxiliaries.logIf(unit !== Label.Unit.Pixel, auxiliaries.LogLevel.Warning,
             `font size unit other than 'px' are not supported in position-2d-label, given ${unit}`);
     }
     get fontSizeUnit(): Label.Unit {

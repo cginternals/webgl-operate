@@ -1,11 +1,14 @@
 
 /* spellchecker: disable */
 
-import { clamp } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
+import clamp = gl_matrix_extensions.clamp;
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { Color } from './color';
-import { fetchJsonAsync } from './fetch';
+import { fetch } from './fetch';
 
 /* spellchecker: enable */
 
@@ -131,7 +134,7 @@ export class ColorScale {
             return ColorScale.fromArray(colors, type, stepCount, positions);
 
         };
-        return fetchJsonAsync<ColorScale>(url, transform, ColorScale.SCHEMA.properties);
+        return fetch.fetchJsonAsync<ColorScale>(url, transform, ColorScale.SCHEMA.properties);
     }
 
     /**

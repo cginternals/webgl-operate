@@ -1,8 +1,10 @@
 
 /* spellchecker: disable */
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
-import { GLfloat2, GLsizei2 } from './tuples';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
+import { tuples } from './tuples';
 
 /* spellchecker: enable */
 
@@ -58,7 +60,7 @@ export abstract class Resizable {
      * @param element - DOM element to get the width and height in (native) pixel from.
      * @returns - Size of the element in native screen pixels. Undefined when size is not available in 'px'.
      */
-    static elementSize(element: HTMLElement): GLsizei2 | undefined {
+    static elementSize(element: HTMLElement): tuples.GLsizei2 | undefined {
         if (element === undefined || window === undefined || typeof window.devicePixelRatio !== 'number') {
             return [0, 0];
         }
@@ -69,11 +71,11 @@ export abstract class Resizable {
         const pxUnits = style.width !== null && (style.width as string).endsWith('px') &&
             style.height !== null && (style.height as string).endsWith('px');
         if (!pxUnits) {
-            log(LogLevel.Debug, `computed element size expected in 'px', given ${style.width} ${style.height}`);
+            auxiliaries.log(auxiliaries.LogLevel.Debug, `computed element size expected in 'px', given ${style.width} ${style.height}`);
             return undefined;
         }
-        const sizef: GLfloat2 = [parseFloat(style.width as string), parseFloat(style.height as string)];
-        const size: GLsizei2 = [Math.round(sizef[0] * scale), Math.round(sizef[1] * scale)];
+        const sizef: tuples.GLfloat2 = [parseFloat(style.width as string), parseFloat(style.height as string)];
+        const size: tuples.GLsizei2 = [Math.round(sizef[0] * scale), Math.round(sizef[1] * scale)];
 
         return size;
     }
@@ -90,7 +92,7 @@ export abstract class Resizable {
             /* istanbul ignore next */
             Resizable.eventSupported = document && (event in document.documentElement! || event in document.body);
 
-            logIf(!Resizable.eventSupported, LogLevel.Warning, `resize event not supported`);
+            auxiliaries.logIf(!Resizable.eventSupported, auxiliaries.LogLevel.Warning, `resize event not supported`);
         }
         /* istanbul ignore next */
         if (Resizable.instances.length === 0 && Resizable.eventSupported) {

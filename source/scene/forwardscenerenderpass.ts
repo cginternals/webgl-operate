@@ -1,7 +1,8 @@
 
 import { mat4 } from 'gl-matrix';
-import { assert } from '../auxiliaries';
-import { GLclampf4, GLfloat2 } from '../tuples';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
+import { tuples } from '../tuples';
 
 import { Camera } from '../camera';
 import { ChangeLookup } from '../changelookup';
@@ -41,10 +42,10 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     protected _camera: Camera;
 
     /** @see {@link ndcOffset} */
-    protected _ndcOffset: GLfloat2;
+    protected _ndcOffset: tuples.GLfloat2;
 
     /** @see {@link clearColor} */
-    protected _clearColor: GLclampf4;
+    protected _clearColor: tuples.GLclampf4;
 
     /** @see {@link program} */
     protected _program: Program;
@@ -270,7 +271,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
      * multiple intermediate frames (multi-frame sampling).
      * @param offset - Subpixel offset used for vertex displacement (multi-frame anti-aliasing).
      */
-    set ndcOffset(offset: GLfloat2) {
+    set ndcOffset(offset: tuples.GLfloat2) {
         this.assertInitialized();
         this._ndcOffset = offset;
     }
@@ -290,7 +291,7 @@ export class ForwardSceneRenderPass extends SceneRenderPass {
     /**
      * Sets the clear color for rendering.
      */
-    set clearColor(color: GLclampf4) {
+    set clearColor(color: tuples.GLclampf4) {
         this._clearColor = color;
     }
 

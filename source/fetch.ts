@@ -1,13 +1,13 @@
 
 /* spellchecker: disable */
 
-import { validate } from './properties';
+import { properties } from './properties';
 
 /* spellchecker: enable */
 
 
 /** Namespace that comprises various utils (also cleans up documentation). */
-namespace fetch {
+export namespace fetch {
 
     const failed = (url: string, request: XMLHttpRequest) =>
         `fetching '${url}' failed (${request.status}): ${request.statusText}`;
@@ -66,7 +66,7 @@ namespace fetch {
                 }
 
                 const json = request.responseText;
-                if (schema !== undefined && !validate(json, schema)) {
+                if (schema !== undefined && !properties.validate(json, schema)) {
                     return;
                 }
 
@@ -97,4 +97,4 @@ namespace fetch {
 
 }
 
-export = fetch;
+export default fetch;

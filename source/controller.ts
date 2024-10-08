@@ -3,8 +3,9 @@
 
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 
-import { assert, log, logIf, LogLevel, logVerbosity } from './auxiliaries';
-import { clamp } from './gl-matrix-extensions';
+import { auxiliaries } from './auxiliaries';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
+import clamp = gl_matrix_extensions.clamp;
 
 /* spellchecker: enable */
 
@@ -60,10 +61,10 @@ export class Controller {
      */
     protected static _debug = false;
     set debug(value: boolean) {
-        if (value && logVerbosity() < LogLevel.Debug) {
-            logVerbosity(LogLevel.Debug);
-            log(LogLevel.Debug,
-                `changed log verbosity to ${LogLevel.Debug} (debug)`);
+        if (value && auxiliaries.logVerbosity() < auxiliaries.LogLevel.Debug) {
+            auxiliaries.logVerbosity(auxiliaries.LogLevel.Debug);
+            auxiliaries.log(auxiliaries.LogLevel.Debug,
+                `changed log verbosity to ${auxiliaries.LogLevel.Debug} (debug)`);
         }
         Controller._debug = value;
     }
@@ -73,7 +74,7 @@ export class Controller {
      */
     protected _batchSize = 1;
     set batch(size: number) {
-        log(LogLevel.Warning, `(adaptive) batch multi-frame rendering is experimental for now`);
+        auxiliaries.log(auxiliaries.LogLevel.Warning, `(adaptive) batch multi-frame rendering is experimental for now`);
         this._batchSize = Math.max(1, size);
     }
 
@@ -199,7 +200,7 @@ export class Controller {
             return;
         }
 
-        assert(this._controllable !== undefined, `frame sequence invoked without controllable set`);
+        auxiliaries.assert(this._controllable !== undefined, `frame sequence invoked without controllable set`);
 
         if (this._invalidated) {
             this._invalidated = false;
@@ -237,7 +238,7 @@ export class Controller {
      * false otherwise.
      */
     protected invokeUpdate(): boolean {
-        logIf(Controller._debug, LogLevel.Debug, `c invoke update     | ` +
+        auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c invoke update     | ` +
             `pending: '${this._animationFrameID}', mfnum: ${this._multiFrameNumber}`);
 
         const redraw: boolean = (this._controllable as Controllable).update(this._multiFrameNumber);
@@ -248,7 +249,7 @@ export class Controller {
      * Actual invocation of the controllable's prepare method.
      */
     protected invokePrepare(): void {
-        logIf(Controller._debug, LogLevel.Debug, `c invoke prepare    |`);
+        auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c invoke prepare    |`);
 
         this._multiFrameTime = 0.0;
         this._intermediateFrameTimes[0] = Number.MAX_VALUE;
@@ -270,10 +271,10 @@ export class Controller {
      * asserts to assure correct control logic and absolutely prevent unnecessary frame requests.
      */
     protected invokeFrameAndSwap(): void {
-        logIf(Controller._debug, LogLevel.Debug, `c invoke frame      | pending: '${this._animationFrameID}'`);
+        auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c invoke frame      | pending: '${this._animationFrameID}'`);
 
         const debug = this._debugFrameNumber > 0;
-        assert(!debug || this._frameNumber < this._debugFrameNumber, `frame number about to exceed debug-frame number`);
+        auxiliaries.assert(!debug || this._frameNumber < this._debugFrameNumber, `frame number about to exceed debug-frame number`);
 
 
         /* Trigger an intermediate frame and measure and accumulate execution time for average frame time. This should
@@ -287,14 +288,14 @@ export class Controller {
         }
 
         for (; this._frameNumber < batchEnd; ++this._frameNumber) {
-            logIf(Controller._debug, LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
+            auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c -> frame          | frame: ${this._frameNumber}`);
 
             (this._controllable as Controllable).frame(this._frameNumber);
             this._postFrameEventSubject.next(this._frameNumber);
 
             ++this._intermediateFrameCount;
         }
-        logIf(Controller._debug, LogLevel.Debug, `c -> swap           |`);
+        auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c -> swap           |`);
 
         (this._controllable as Controllable).swap();
         this._postSwapEventSubject.next(this._frameNumber);
@@ -373,7 +374,7 @@ export class Controller {
      * triggering to multiple intermediate updates. The block updates mode can be exited using `unblock`.
      */
     block(): void {
-        logIf(Controller._debug, LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
+        auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c block   ${this._block ? '(ignored) ' : '          '}|`);
 
         this._block = true;
     }
@@ -382,7 +383,7 @@ export class Controller {
      * Unblock updates. If there was at least one blocked update request, an immediate update is invoked.
      */
     unblock(): void {
-        logIf(Controller._debug, LogLevel.Debug, `c unblock ${!this._block ? '(ignored) ' : '          '}` +
+        auxiliaries.logIf(Controller._debug, auxiliaries.LogLevel.Debug, `c unblock ${!this._block ? '(ignored) ' : '          '}` +
             `| blocked: #${this._blockedUpdates}`);
 
         if (!this._block) {
@@ -452,7 +453,7 @@ export class Controller {
         this._multiFrameNumber = value;
         this.multiFrameNumberNext();
 
-        logIf(value !== multiFrameNumber, LogLevel.Debug,
+        auxiliaries.logIf(value !== multiFrameNumber, auxiliaries.LogLevel.Debug,
             `multi-frame number adjusted to ${value}, given ${multiFrameNumber}`);
 
         if (this.debugFrameNumber > this.multiFrameNumber) {
@@ -501,7 +502,7 @@ export class Controller {
         this._debugFrameNumber = value;
         this.debugFrameNumberNext();
 
-        logIf(value !== debugFrameNumber, LogLevel.Debug,
+        auxiliaries.logIf(value !== debugFrameNumber, auxiliaries.LogLevel.Debug,
             `debug-frame number adjusted to ${value}, given ${debugFrameNumber}`);
 
         this.update(this.debugFrameNumber < this._frameNumber);

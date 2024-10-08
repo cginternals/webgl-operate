@@ -7,7 +7,7 @@ import { vec3 } from 'gl-matrix';
 import { Buffer } from '../buffer';
 import { Context } from '../context';
 import { Geometry } from '../geometry';
-import { GLfloat3 } from '../tuples';
+import { tuples } from '../tuples';
 
 
 /**
@@ -63,7 +63,7 @@ export class CuboidGeometry extends Geometry {
      * @param extent - Width, height, and depth of the cuboid (for backing vertices).
      */
     constructor(context: Context, identifier?: string,
-        uvCoordinates: boolean = false, extent: GLfloat3 | vec3 = [1.0, 1.0, 1.0]) {
+        uvCoordinates: boolean = false, extent: tuples.GLfloat3 | vec3 = [1.0, 1.0, 1.0]) {
         super(context, identifier);
 
         /* Generate identifier from constructor name if none given. */

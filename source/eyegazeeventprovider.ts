@@ -1,5 +1,6 @@
 import { Observable, ReplaySubject } from 'rxjs';
-import { assert, bitInBitfield } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 import { EyeGazeDataStream, EyeGazeDataStreams } from './eyegazedatastream';
 import { EyeGazeEvent } from './eyegazeevent';
 
@@ -47,7 +48,7 @@ export class EyeGazeEventProvider {
      * @param event - Actual event to prevent default handling on (if masked).
      */
     protected preventDefaultOnEvent(type: EyeGazeEventProvider.Type, event: EyeGazeEvent): void {
-        if (bitInBitfield(this._preventDefaultMask, type)) {
+        if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
     }
@@ -58,7 +59,7 @@ export class EyeGazeEventProvider {
      */
     allowDefault(...types: EyeGazeEventProvider.Type[]): void {
         for (const type of types) {
-            if (bitInBitfield(this._preventDefaultMask, type)) {
+            if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask &= ~type;
             }
         }
@@ -70,7 +71,7 @@ export class EyeGazeEventProvider {
      */
     preventDefault(...types: EyeGazeEventProvider.Type[]): void {
         for (const type of types) {
-            if (!bitInBitfield(this._preventDefaultMask, type)) {
+            if (!auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask |= type;
             }
         }

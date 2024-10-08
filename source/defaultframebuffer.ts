@@ -2,8 +2,10 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
-import { GLclampf4 } from './tuples';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
+import { tuples } from './tuples';
 
 import { Framebuffer } from './framebuffer';
 import { Initializable } from './initializable';
@@ -32,7 +34,7 @@ export class DefaultFramebuffer extends Framebuffer {
         this._valid = true;
 
         /* Initialize with default clear values */
-        this._clearColors = new Array<GLclampf4>(1);
+        this._clearColors = new Array<tuples.GLclampf4>(1);
         this._clearDepth = 1.0;
         this._clearStencil = 0;
 
@@ -75,7 +77,7 @@ export class DefaultFramebuffer extends Framebuffer {
      * automatically when the context's `premultipliedAlpha` attribute is set.
      * @param color - RGBA clear color.
      */
-    clearColor(color: GLclampf4): void {
+    clearColor(color: tuples.GLclampf4): void {
         super.clearColor(color);
     }
 

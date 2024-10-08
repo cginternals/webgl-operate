@@ -1,10 +1,11 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { Context } from './context';
-import { WEBGL1_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+import { extensions } from './extensions';
 
 /* spellchecker: enable */
 
@@ -13,8 +14,8 @@ export class ExtensionsHash {
     protected static readonly WEBGL_BACKENDS: Array<string> = ['webgl1', 'webgl2'];
 
     protected static readonly WEBGL_EXTENSIONS_BY_BACKEND = new Map<number, Array<string>>([
-        [0, WEBGL1_EXTENSIONS],
-        [1, WEBGL2_EXTENSIONS],
+        [0, extensions.WEBGL1_EXTENSIONS],
+        [1, extensions.WEBGL2_EXTENSIONS],
     ]);
 
     /**

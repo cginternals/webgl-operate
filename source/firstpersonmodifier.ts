@@ -3,7 +3,7 @@
 
 import { mat4, vec2, vec3 } from 'gl-matrix';
 
-import { m4, v3 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
 import { CameraModifier } from './cameramodifier';
 
@@ -57,12 +57,12 @@ export class FirstPersonModifier extends CameraModifier {
         /* Difference between two subsequent events, thus, initial position is reset. */
         vec2.copy(this._initialPoint, this._currentPoint);
 
-        const centerToEye = vec3.sub(v3(), this._reference.eye, this._reference.center);
+        const centerToEye = vec3.sub(gl_matrix_extensions.v3(), this._reference.eye, this._reference.center);
         vec3.normalize(centerToEye, centerToEye);
-        const strafe = vec3.cross(v3(), centerToEye, this._reference.up);
+        const strafe = vec3.cross(gl_matrix_extensions.v3(), centerToEye, this._reference.up);
 
-        const yaw = mat4.fromRotation(m4(), -magnitudes[0], this._reference.up);
-        const pitch = mat4.fromRotation(m4(), magnitudes[1], strafe);
+        const yaw = mat4.fromRotation(gl_matrix_extensions.m4(), -magnitudes[0], this._reference.up);
+        const pitch = mat4.fromRotation(gl_matrix_extensions.m4(), magnitudes[1], strafe);
 
         mat4.mul(this._rotation, pitch, yaw);
 
@@ -77,13 +77,13 @@ export class FirstPersonModifier extends CameraModifier {
             return;
         }
 
-        const T = mat4.fromTranslation(m4(), this._reference.eye);
+        const T = mat4.fromTranslation(gl_matrix_extensions.m4(), this._reference.eye);
         mat4.multiply(T, T, this._rotation);
-        mat4.translate(T, T, vec3.negate(v3(), this._reference.eye));
+        mat4.translate(T, T, vec3.negate(gl_matrix_extensions.v3(), this._reference.eye));
 
-        // const up = vec3.transformMat4(v3(), [0.0, 1.0, 0.0], this._rotation);
-        // const eye = vec3.transformMat4(v3(), this._reference.eye, T);
-        const center = vec3.transformMat4(v3(), this._reference.center, T);
+        // const up = vec3.transformMat4(gl_matrix_extensions.v3(), [0.0, 1.0, 0.0], this._rotation);
+        // const eye = vec3.transformMat4(gl_matrix_extensions.v3(), this._reference.eye, T);
+        const center = vec3.transformMat4(gl_matrix_extensions.v3(), this._reference.center, T);
 
 
         // this._camera.up = up;

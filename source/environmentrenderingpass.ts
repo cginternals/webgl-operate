@@ -1,5 +1,7 @@
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { Camera } from './camera';
 import { Context } from './context';
 import { Initializable } from './initializable';

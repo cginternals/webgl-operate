@@ -6,7 +6,8 @@ import { vec2 } from 'gl-matrix';
 import { Observable, Subscription } from 'rxjs';
 
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { EyeGazeEvent } from './eyegazeevent';
 import { EyeGazeEventProvider } from './eyegazeeventprovider';

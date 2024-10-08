@@ -5,15 +5,17 @@ import { Observable, ReplaySubject } from 'rxjs';
 
 import { vec2, vec4 } from 'gl-matrix';
 
-import { assert, logIf, LogLevel } from './auxiliaries';
-import { clamp, v2 } from './gl-matrix-extensions';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
 import { ChangeLookup } from './changelookup';
 import { Context } from './context';
 import { Controllable } from './controller';
 import { EventProvider } from './eventhandler'
 import { Initializable } from './initializable';
-import { GLclampf4, GLfloat2, GLsizei2, tuple2 } from './tuples';
+import { tuples } from './tuples';
 import { Wizard } from './wizard';
 
 /* spellchecker: enable */
@@ -78,14 +80,14 @@ export abstract class Renderer extends Initializable implements Controllable {
      * Targeted resolution for image synthesis. This might differ from the canvas resolution and should be used in
      * frame calls of inheritors.
      */
-    protected _frameSize: GLsizei2 = [0, 0];
+    protected _frameSize: tuples.GLsizei2 = [0, 0];
 
     /**
      * Actual, native resolution for the canvas currently in charge of controlling the renderer. This might differ from
      * the targeted frame resolution but is required, e.g., for specific non-proportional ratios between frame size and
      * canvas size.
      */
-    protected _canvasSize: GLsizei2 = [0, 0];
+    protected _canvasSize: tuples.GLsizei2 = [0, 0];
 
     /**
      * Targeted frame precision, e.g., used for frame accumulation. Note that any renderer is currently
@@ -97,7 +99,7 @@ export abstract class Renderer extends Initializable implements Controllable {
     /**
      * The clear color, provided by the canvas the renderer is bound to. This is used in frame calls of inheritors.
      */
-    protected _clearColor: GLclampf4 = [0.0, 0.0, 0.0, 1.0];
+    protected _clearColor: tuples.GLclampf4 = [0.0, 0.0, 0.0, 1.0];
 
 
     /**
@@ -150,7 +152,7 @@ export abstract class Renderer extends Initializable implements Controllable {
         return this._context;
     }
 
-    protected get canvasSize(): GLsizei2 {
+    protected get canvasSize(): tuples.GLsizei2 {
         this.assertInitialized();
         return this._canvasSize;
     }
@@ -331,11 +333,11 @@ export abstract class Renderer extends Initializable implements Controllable {
      * @param x - Horizontal coordinate for the upper left corner of the viewport origin.
      * @param y - Vertical coordinate for the upper left corner of the viewport origin.
      */
-    frameCoords(x: GLint, y: GLint): GLfloat2 {
-        const position = vec2.divide(v2(), this._frameSize, this.canvasSize);
+    frameCoords(x: GLint, y: GLint): tuples.GLfloat2 {
+        const position = vec2.divide(gl_matrix_extensions.v2(), this._frameSize, this.canvasSize);
         vec2.floor(position, vec2.multiply(position, [x + 0.5, y + 0.5], position));
         vec2.add(position, position, [0.5, 0.5]);
-        return tuple2<GLfloat>(position);
+        return tuples.tuple2<GLfloat>(position);
     }
 
     // /**
@@ -367,7 +369,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      *
      * @param size - Resolution of the framebuffer.
      */
-    set frameSize(size: GLsizei2) {
+    set frameSize(size: tuples.GLsizei2) {
         this.assertInitialized();
         if (vec2.equals(this._frameSize, size)) {
             return;
@@ -396,7 +398,7 @@ export abstract class Renderer extends Initializable implements Controllable {
      * bound to. Changing the frame size invalidates the renderer.
      * @param color - Red, green, blue, and alpha color components.
      */
-    set clearColor(color: GLclampf4) {
+    set clearColor(color: tuples.GLclampf4) {
         this.assertInitialized();
         if (vec4.equals(this._clearColor, color)) {
             return;
@@ -435,10 +437,10 @@ export abstract class Renderer extends Initializable implements Controllable {
         if (this._debugTexture === index) {
             return;
         }
-        logIf(index >= this._debugTextures.length, LogLevel.Error, `invalid texture index, ` +
+        auxiliaries.logIf(index >= this._debugTextures.length, auxiliaries.LogLevel.Error, `invalid texture index, ` +
             `debug texture disabled (index set to -1) | ${index} not in [-1,+${this._debugTextures.length - 1}]`);
         this._debugTexture = index < this._debugTextures.length ?
-            clamp(index, -1, this._debugTextures.length - 1) : -1;
+            gl_matrix_extensions.clamp(index, -1, this._debugTextures.length - 1) : -1;
         this._altered.alter('debugTexture');
         this.invalidate();
     }

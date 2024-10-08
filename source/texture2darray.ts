@@ -1,9 +1,11 @@
 
 /* spellchecker: disable */
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { byteSizeOfFormat } from './formatbytesizes';
-import { GLsizei3 } from './tuples';
+import { tuples } from './tuples';
 
 import { Bindable } from './bindable';
 import { TexImage2DData } from './gl2facade';
@@ -166,7 +168,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onerror = () => {
-                log(LogLevel.Error, `loading image from '${image.src}' failed`);
+                auxiliaries.log(auxiliaries.LogLevel.Error, `loading image from '${image.src}' failed`);
                 reject();
             };
 
@@ -368,7 +370,7 @@ export class Texture2DArray extends AbstractObject<WebGLTexture> implements Bind
      * @see {@link height}
      * @see {@link depth}
      */
-    get size(): GLsizei3 {
+    get size(): tuples.GLsizei3 {
         this.assertInitialized();
         return [this._width, this._height, this._depth];
     }

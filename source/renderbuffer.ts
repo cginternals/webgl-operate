@@ -1,9 +1,11 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { byteSizeOfFormat } from './formatbytesizes';
-import { GLsizei2 } from './tuples';
+import { tuples } from './tuples';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
@@ -195,7 +197,7 @@ export class Renderbuffer extends AbstractObject<WebGLRenderbuffer> implements B
      * @see {@link width}
      * @see {@link heigth}
      */
-    get size(): GLsizei2 {
+    get size(): tuples.GLsizei2 {
         return [this.width, this.height];
     }
 

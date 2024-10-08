@@ -1,12 +1,17 @@
 
 /* spellchecker: disable */
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 import { byteSizeOfFormat } from './formatbytesizes';
 
 import { AllocationRegister } from './allocationregister';
 import { ContextMasquerade } from './contextmasquerade';
-import { WEBGL1_EXTENSIONS, WEBGL2_DEFAULT_EXTENSIONS, WEBGL2_EXTENSIONS } from './extensions';
+
+import { extensions } from './extensions';
+import WEBGL1_EXTENSIONS = extensions.WEBGL1_EXTENSIONS;
+import WEBGL2_DEFAULT_EXTENSIONS = extensions.WEBGL2_DEFAULT_EXTENSIONS;
+import WEBGL2_EXTENSIONS = extensions.WEBGL2_EXTENSIONS;
+
 import { ExtensionsHash } from './extensionshash';
 import { GL2Facade } from './gl2facade';
 
@@ -117,7 +122,7 @@ export class Context {
             dataset.backend ? (dataset.backend as string).toLowerCase() : 'auto';
 
         if (!(request in Context.BackendRequestType)) {
-            log(LogLevel.Warning,
+            auxiliaries.log(auxiliaries.LogLevel.Warning,
                 `unknown backend '${dataset.backend}' changed to '${Context.BackendRequestType.auto}'`);
             request = 'auto';
         }
@@ -144,11 +149,11 @@ export class Context {
         }
         if (!context) {
             context = this.requestWebGL1(element, attributes);
-            logIf(context !== undefined && request === Context.BackendRequestType.webgl2, LogLevel.Info,
+            auxiliaries.logIf(context !== undefined && request === Context.BackendRequestType.webgl2, auxiliaries.LogLevel.Info,
                 `backend changed to '${Context.BackendRequestType.webgl}', given '${request}'`);
         }
 
-        assert(!!context, `creating a context failed`);
+        auxiliaries.assert(!!context, `creating a context failed`);
         return new Context(context, mask);
     }
 
@@ -200,7 +205,7 @@ export class Context {
 
         // Some browsers, e.g., Brave, might disable querying the attributes.
         if (attributes === null) {
-            log(LogLevel.Error, `querying context attributes failed (probably blocked)`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `querying context attributes failed (probably blocked)`);
             return;
         }
 
@@ -301,13 +306,13 @@ export class Context {
 
         switch (this._backend) {
             case Context.BackendType.WebGL1:
-                assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL1`);
+                auxiliaries.assert(WEBGL1_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL1`);
                 break;
 
             case Context.BackendType.WebGL2:
-                assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
+                auxiliaries.assert(WEBGL2_DEFAULT_EXTENSIONS.indexOf(extension) === -1,
                     `extension ${extension} supported by default in WebGL2`);
-                assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL2`);
+                auxiliaries.assert(WEBGL2_EXTENSIONS.indexOf(extension) > -1, `extension ${extension} not available to WebGL2`);
                 break;
 
             default:
@@ -351,7 +356,7 @@ export class Context {
 
         // Some browsers, e.g., Brave, might disable querying the supported extensions.
         if (extensions === null) {
-            log(LogLevel.Error, `querying supported extensions failed (probably blocked)`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `querying supported extensions failed (probably blocked)`);
             return;
         }
 
@@ -418,7 +423,7 @@ export class Context {
      */
     protected extension(out: any, extension: string): any {
         if (out === undefined) {
-            assert(this.supports(extension), `extension ${extension} expected to be supported`);
+            auxiliaries.assert(this.supports(extension), `extension ${extension} expected to be supported`);
             out = this._context!.getExtension(extension);
         }
         return out;
@@ -444,7 +449,7 @@ export class Context {
             this._backend = webgl1 ? Context.BackendType.WebGL1 : webgl2 ? Context.BackendType.WebGL2 : undefined;
         }
 
-        assert(this._backend !== undefined && this._backend.valueOf() !== Context.BackendType.Invalid.valueOf(),
+        auxiliaries.assert(this._backend !== undefined && this._backend.valueOf() !== Context.BackendType.Invalid.valueOf(),
             `context is neither webgl nor webgl2, given ${contextString}`);
 
         this.queryAttributes();
@@ -875,7 +880,7 @@ export class Context {
     // PARAMETER QUERIES
 
     param(pname: GLenum): any {
-        assert(!!this._context, `expected context to be valid`);
+        auxiliaries.assert(!!this._context, `expected context to be valid`);
         return this._context!.getParameter(pname);
     }
 
@@ -900,7 +905,7 @@ export class Context {
             return new Array<[string, number | string]>();
         }
 
-        assert(!!this._context, `expected context to be valid`);
+        auxiliaries.assert(!!this._context, `expected context to be valid`);
         const context = this._context!;
 
         const pNamesAndValues = new Array<[string, number | string]>();
@@ -1089,8 +1094,8 @@ export class Context {
      * Logs a well formated list of all queried about params (names and associated values).
      * @param verbosity - Log verbosity that is to be used for logging.
      */
-    logAbout(verbosity: LogLevel = LogLevel.Info): void {
-        log(verbosity, `context.about\n\n` + this.aboutString());
+    logAbout(verbosity: auxiliaries.LogLevel = auxiliaries.LogLevel.Info): void {
+        auxiliaries.log(verbosity, `context.about\n\n` + this.aboutString());
     }
 
     /**
@@ -1098,8 +1103,8 @@ export class Context {
      * @param statement - Result of an expression expected to be true in order to invoke logPerformanceStop.
      * @param verbosity - Log verbosity that is to be used for logging.
      */
-    logAboutIf(statement: boolean, verbosity: LogLevel = LogLevel.Info): void {
-        logIf(statement, verbosity, `context.about\n\n` + this.aboutString());
+    logAboutIf(statement: boolean, verbosity: auxiliaries.LogLevel = auxiliaries.LogLevel.Info): void {
+        auxiliaries.logIf(statement, verbosity, `context.about\n\n` + this.aboutString());
     }
 
 

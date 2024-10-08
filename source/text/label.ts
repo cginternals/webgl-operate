@@ -5,7 +5,7 @@ import { mat4, vec3 } from 'gl-matrix';
 
 import { ChangeLookup } from '../changelookup';
 import { Color } from '../color';
-import { GLclampf4 } from '../tuples';
+import { tuples } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -21,7 +21,7 @@ import { Text } from './text';
  */
 export abstract class Label {
 
-    private static readonly DEFAULT_COLOR: GLclampf4 = [0.1098, 0.4588, 0.7373, 1.0];
+    private static readonly DEFAULT_COLOR: tuples.GLclampf4 = [0.1098, 0.4588, 0.7373, 1.0];
 
     private static readonly DEFAULT_ELLIPSIS = '...';
 

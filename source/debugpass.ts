@@ -2,7 +2,8 @@
 /* spellchecker: disable */
 
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';

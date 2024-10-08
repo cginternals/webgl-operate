@@ -1,7 +1,8 @@
 
 /* spellchecker: disable */
 
-import { assert, logIf, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { Context } from './context';
 
@@ -370,8 +371,8 @@ export class GL2Facade {
             this.bufferSubData = (target: GLenum, dstByteOffset: GLintptr,
                 srcData: ArrayBufferView | ArrayBuffer, srcOffset: GLuint = 0, length: GLuint = 0) => {
 
-                logIf(srcOffset !== 0, LogLevel.Warning, `srcOffset ignored (not supported in WebGL)`);
-                logIf(length !== 0, LogLevel.Warning, `length ignored (not supported in WebGL)`);
+                auxiliaries.logIf(srcOffset !== 0, auxiliaries.LogLevel.Warning, `srcOffset ignored (not supported in WebGL)`);
+                auxiliaries.logIf(length !== 0, auxiliaries.LogLevel.Warning, `length ignored (not supported in WebGL)`);
                 return gl.bufferSubData(target, dstByteOffset, srcData);
             };
         }

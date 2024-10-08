@@ -4,10 +4,10 @@
 import { Observable, ReplaySubject } from 'rxjs';
 
 import { vec2, vec4 } from 'gl-matrix';
-import { clamp2, parseVec2, parseVec4 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
-import { assert, log, logIf, LogLevel } from './auxiliaries';
-import { GLclampf2, GLsizei2, tuple2, tuple4 } from './tuples';
+import { auxiliaries } from './auxiliaries';
+import { tuples } from './tuples';
 
 
 import { Color } from './color';
@@ -86,22 +86,22 @@ export class Canvas extends Resizable {
      * for rendering, which might lead to rendering on an [1, 1] canvas before the first 'real' size is set (e.g., via
      * resize event), resulting in visually unpleasant initial frames in some (slow) applications.
      */
-    protected _size: GLsizei2 = [0, 0];
-    protected _sizeSubject = new ReplaySubject<GLsizei2>(1);
+    protected _size: tuples.GLsizei2 = [0, 0];
+    protected _sizeSubject = new ReplaySubject<tuples.GLsizei2>(1);
 
     /**
      * @see {@link frameScale}
      * This property can be observed, `aCanvas.frameScaleObservable.subscribe()`.
      */
-    protected _frameScale: GLclampf2;
-    protected _frameScaleSubject = new ReplaySubject<GLclampf2>(1);
+    protected _frameScale: tuples.GLclampf2;
+    protected _frameScaleSubject = new ReplaySubject<tuples.GLclampf2>(1);
 
     /**
      * @see {@link frameSize}
      * This property can be observed, `aCanvas.frameSizeObservable.subscribe()`.
      */
-    protected _frameSize: GLsizei2;
-    protected _frameSizeSubject = new ReplaySubject<GLsizei2>(1);
+    protected _frameSize: tuples.GLsizei2;
+    protected _frameSizeSubject = new ReplaySubject<tuples.GLsizei2>(1);
 
     /**
      * Flag used to determine whether frame size or frame scale is the dominant configuration.
@@ -189,19 +189,19 @@ export class Canvas extends Resizable {
         /* Retrieve clear color from data attributes or set default. */
         let dataClearColor: vec4 | undefined;
         if (dataset.clearColor) {
-            dataClearColor = parseVec4(dataset.clearColor);
-            logIf(dataClearColor === undefined, LogLevel.Warning,
+            dataClearColor = gl_matrix_extensions.parseVec4(dataset.clearColor);
+            auxiliaries.logIf(dataClearColor === undefined, auxiliaries.LogLevel.Warning,
                 `data-clear-color could not be parsed, given '${dataset.clearColor}'`);
         }
         this._clearColor = dataClearColor ?
-            new Color(tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
+            new Color(tuples.tuple4<GLclampf>(dataClearColor)) : Canvas.DEFAULT_CLEAR_COLOR;
 
         /* Retrieve frame precision (e.g., accumulation format) from data attributes or set default */
         let dataFramePrecision = dataset.accumulationFormat ?
             dataset.accumulationFormat as Wizard.Precision : Canvas.DEFAULT_FRAME_PRECISION;
         if (!(dataFramePrecision in Wizard.Precision)) {
             dataFramePrecision = Canvas.DEFAULT_FRAME_PRECISION;
-            log(LogLevel.Warning,
+            auxiliaries.log(auxiliaries.LogLevel.Warning,
                 `unknown frame precision '${dataset.accumulationFormat}' changed to '${dataFramePrecision}'`);
         }
         this._framePrecision = dataFramePrecision;
@@ -222,7 +222,7 @@ export class Canvas extends Resizable {
         let dataMFNum: number | undefined;
         if (dataset.multiFrameNumber) {
             dataMFNum = parseInt(dataset.multiFrameNumber, 10);
-            logIf(isNaN(dataMFNum), LogLevel.Warning,
+            auxiliaries.logIf(isNaN(dataMFNum), auxiliaries.LogLevel.Warning,
                 `data-multi-frame-number could not be parsed, given '${dataset.multiFrameNumber}'`);
         }
 
@@ -230,7 +230,7 @@ export class Canvas extends Resizable {
         let dataDFNum: number | undefined;
         if (dataset.debugFrameNumber) {
             dataDFNum = parseInt(dataset.debugFrameNumber, 10);
-            logIf(isNaN(dataDFNum), LogLevel.Warning,
+            auxiliaries.logIf(isNaN(dataDFNum), auxiliaries.LogLevel.Warning,
                 `data-debug-frame-number could not be parsed, given '${dataset.debugFrameNumber}'`);
         }
 
@@ -238,11 +238,11 @@ export class Canvas extends Resizable {
         this._controller.debugFrameNumber = dataDFNum ? dataDFNum : 0;
 
         const mfNumChanged = dataMFNum ? dataMFNum !== this._controller.multiFrameNumber : false;
-        logIf(mfNumChanged, LogLevel.Warning, `data-multi-frame-number changed to `
+        auxiliaries.logIf(mfNumChanged, auxiliaries.LogLevel.Warning, `data-multi-frame-number changed to `
             + `${this._controller.multiFrameNumber}, given '${dataset.multiFrameNumber}'`);
 
         const dfNumChanged = dataDFNum ? dataDFNum !== this._controller.debugFrameNumber : false;
-        logIf(dfNumChanged, LogLevel.Warning, `data-debug-frame-number changed to `
+        auxiliaries.logIf(dfNumChanged, auxiliaries.LogLevel.Warning, `data-debug-frame-number changed to `
             + `${this._controller.debugFrameNumber}, given '${dataset.debugFrameNumber}'`);
     }
 
@@ -257,21 +257,21 @@ export class Canvas extends Resizable {
         /* Setup frame scale with respect to the canvas size. */
         let dataFrameScale: vec2 | undefined;
         if (dataset.frameScale) {
-            dataFrameScale = parseVec2(dataset.frameScale);
-            logIf(dataset.frameScale !== undefined && dataFrameScale === undefined, LogLevel.Warning,
+            dataFrameScale = gl_matrix_extensions.parseVec2(dataset.frameScale);
+            auxiliaries.logIf(dataset.frameScale !== undefined && dataFrameScale === undefined, auxiliaries.LogLevel.Warning,
                 `data-frame-scale could not be parsed, given '${dataset.frameScale}'`);
         }
-        this._frameScale = dataFrameScale ? tuple2<GLfloat>(dataFrameScale) : [1.0, 1.0];
+        this._frameScale = dataFrameScale ? tuples.tuple2<GLfloat>(dataFrameScale) : [1.0, 1.0];
 
         /* Setup frame size. */
         let dataFrameSize: vec2 | undefined;
         if (dataset.frameSize) {
-            dataFrameSize = parseVec2(dataset.frameSize);
-            logIf(dataset.frameSize !== undefined && dataFrameSize === undefined, LogLevel.Warning,
+            dataFrameSize = gl_matrix_extensions.parseVec2(dataset.frameSize);
+            auxiliaries.logIf(dataset.frameSize !== undefined && dataFrameSize === undefined, auxiliaries.LogLevel.Warning,
                 `data-frame-size could not be parsed, given '${dataset.frameSize}'`);
         }
         this._favorSizeOverScale = dataFrameSize !== undefined;
-        this._frameSize = dataFrameSize ? tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
+        this._frameSize = dataFrameSize ? tuples.tuple2<GLsizei>(dataFrameSize) : [this._size[0], this._size[1]];
 
         this.onResize(); // invokes frameScaleNext and frameSizeNext
     }
@@ -303,7 +303,7 @@ export class Canvas extends Resizable {
      * This is for both natural and emulated lost contexts.
      */
     protected onContextLost(): void {
-        log(LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
+        auxiliaries.log(auxiliaries.LogLevel.Warning, 'WebGL Context lost. Discarding renderer...');
         this._controller.cancel();
         this._controller.block();
 
@@ -317,7 +317,7 @@ export class Canvas extends Resizable {
      * This is for both natural and emulated restored contexts.
      */
     protected onContextRestore(): void {
-        log(LogLevel.Warning, 'WebGL Context restored. Reinitializing renderer...');
+        auxiliaries.log(auxiliaries.LogLevel.Warning, 'WebGL Context restored. Reinitializing renderer...');
         const renderer = this._renderer;
         this.unbind();
         this.bind(renderer);
@@ -362,7 +362,7 @@ export class Canvas extends Resizable {
         /* If the canvas does not have a size, block rendering. This can happen if the canvas is, e.g., hidden and
         DOM layouting leads to width of zero. */
         if (this._size[0] === 0 || this._size[1] === 0) {
-            log(LogLevel.Debug, `canvas width or height is invalid, resize discarded and controller blocked`);
+            auxiliaries.log(auxiliaries.LogLevel.Debug, `canvas width or height is invalid, resize discarded and controller blocked`);
             this._controller.block();
             return;
         }
@@ -437,7 +437,7 @@ export class Canvas extends Resizable {
         if (renderer === undefined) {
             return;
         }
-        assert(this._controller.blocked, `expected controller to be blocked`);
+        auxiliaries.assert(this._controller.blocked, `expected controller to be blocked`);
         this._renderer = renderer;
 
         /**
@@ -536,7 +536,7 @@ export class Canvas extends Resizable {
      * `canvas.frameScaleObservable.subscribe()`.
      * @returns - The frame scale in [0.0, 1.0].
      */
-    get frameScale(): GLclampf2 {
+    get frameScale(): tuples.GLclampf2 {
         return this._frameScale;
     }
 
@@ -549,19 +549,19 @@ export class Canvas extends Resizable {
      * @param frameScale - Scale of rendering.
      * @returns - The frame scale in [0.0,1.0].
      */
-    set frameScale(frameScale: GLclampf2) {
+    set frameScale(frameScale: tuples.GLclampf2) {
         if (!isFinite(frameScale[0]) || !isFinite(frameScale[1])) {
-            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameScale}]`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameScale}]`);
             return;
         }
         /* Always apply frame scale, e.g., when canvas is resized scale remains same, but frame size will change. */
-        logIf(frameScale[0] < 0.0 || frameScale[0] > 8.0, LogLevel.Info,
+        auxiliaries.logIf(frameScale[0] < 0.0 || frameScale[0] > 8.0, auxiliaries.LogLevel.Info,
             `frame width scale clamped to [0.0,2.0], given ${frameScale[0]}`);
-        logIf(frameScale[1] < 0.0 || frameScale[1] > 8.0, LogLevel.Info,
+        auxiliaries.logIf(frameScale[1] < 0.0 || frameScale[1] > 8.0, auxiliaries.LogLevel.Info,
             `frame height scale clamped to [0.0,2.0], given ${frameScale[0]}`);
 
         const scale = vec2.create();
-        clamp2(scale, frameScale, [0.0, 0.0], [8.0, 8.0]);
+        gl_matrix_extensions.clamp2(scale, frameScale, [0.0, 0.0], [8.0, 8.0]);
 
         const size = vec2.create();
         vec2.mul(size, this._size, scale);
@@ -570,11 +570,11 @@ export class Canvas extends Resizable {
 
         /* Adjust scale based on rounded (integer) frame size. */
         vec2.div(scale, size, this._size);
-        logIf(!vec2.exactEquals(scale, frameScale), 2,
+        auxiliaries.logIf(!vec2.exactEquals(scale, frameScale), 2,
             `frame scale was adjusted to ${scale.toString()}, given ${frameScale.toString()}`);
 
-        this._frameScale = tuple2<GLclampf>(scale);
-        this._frameSize = tuple2<GLsizei>(size);
+        this._frameScale = tuples.tuple2<GLclampf>(scale);
+        this._frameSize = tuples.tuple2<GLsizei>(size);
         this._favorSizeOverScale = false;
 
         this.frameScaleNext();
@@ -588,7 +588,7 @@ export class Canvas extends Resizable {
     /**
      * Observable that can be used to subscribe to frame scale changes.
      */
-    get frameScale$(): Observable<GLclampf2> {
+    get frameScale$(): Observable<tuples.GLclampf2> {
         return this._frameScaleSubject.asObservable();
     }
 
@@ -598,7 +598,7 @@ export class Canvas extends Resizable {
      * `canvas.frameSizeObservable.subscribe()`.
      * @returns - The frame size in pixel (must not be physical/native pixels).
      */
-    get frameSize(): GLsizei2 {
+    get frameSize(): tuples.GLsizei2 {
         return this._frameSize;
     }
 
@@ -610,28 +610,28 @@ export class Canvas extends Resizable {
      * @param frameSize - Size for rendering in pixel (must not be physical/native pixels).
      * @returns - The frame size in [1, canvas-size].
      */
-    set frameSize(frameSize: GLsizei2) {
+    set frameSize(frameSize: tuples.GLsizei2) {
         if (!isFinite(frameSize[0]) || !isFinite(frameSize[1])) {
-            log(LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameSize}]`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `expected finite frame size, non-finite values ignored, given [${frameSize}]`);
             return;
         }
-        logIf(frameSize[0] < 1 || frameSize[0] > 8 * this._size[0], LogLevel.Info,
+        auxiliaries.logIf(frameSize[0] < 1 || frameSize[0] > 8 * this._size[0], auxiliaries.LogLevel.Info,
             `frame width scale clamped to [1,${this._size[0]}], given ${frameSize[0]}`);
-        logIf(frameSize[1] < 1 || frameSize[1] > 8 * this._size[1], LogLevel.Info,
+        auxiliaries.logIf(frameSize[1] < 1 || frameSize[1] > 8 * this._size[1], auxiliaries.LogLevel.Info,
             `frame height scale clamped to [1, ${this._size[1]}], given ${frameSize[1]}`);
 
         const size = vec2.create();
-        clamp2(size, frameSize, [1.0, 1.0], [8 * this._size[0], 8 * this._size[1]]);
+        gl_matrix_extensions.clamp2(size, frameSize, [1.0, 1.0], [8 * this._size[0], 8 * this._size[1]]);
         vec2.round(size, size);
 
-        logIf(!vec2.exactEquals(size, frameSize), LogLevel.Warning,
+        auxiliaries.logIf(!vec2.exactEquals(size, frameSize), auxiliaries.LogLevel.Warning,
             `frame size was adjusted to ${size.toString()}, given ${frameSize.toString()}`);
 
         const scale = vec2.create();
         vec2.div(scale, size, this._size);
 
-        this._frameScale = tuple2<GLclampf>(scale);
-        this._frameSize = tuple2<GLsizei>(size);
+        this._frameScale = tuples.tuple2<GLclampf>(scale);
+        this._frameSize = tuples.tuple2<GLsizei>(size);
         /* Switch back to default mode (scale based) when frame size matches canvas size. */
         this._favorSizeOverScale = !vec2.exactEquals(this._frameSize, this._size);
 
@@ -646,7 +646,7 @@ export class Canvas extends Resizable {
     /**
      * Observable that can be used to subscribe to frame size changes.
      */
-    get frameSize$(): Observable<GLsizei2> {
+    get frameSize$(): Observable<tuples.GLsizei2> {
         return this._frameSizeSubject.asObservable();
     }
 
@@ -729,14 +729,14 @@ export class Canvas extends Resizable {
      * This property can be observed, e.g., `allocationRegister.bytesObservable.subscribe()`.
      * @returns - The canvas width and height in physical/native screen pixels as 2-tuple.
      */
-    get size(): GLsizei2 {
+    get size(): tuples.GLsizei2 {
         return this._size;
     }
 
     /**
      * Observable that can be used to subscribe to canvas size changes.
      */
-    get size$(): Observable<GLsizei2> {
+    get size$(): Observable<tuples.GLsizei2> {
         return this._sizeSubject.asObservable();
     }
 

@@ -1,8 +1,10 @@
 import { vec2 } from 'gl-matrix';
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { Context } from './context';
-import { v2 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 import { Initializable } from './initializable';
 import { NdcFillingTriangle } from './ndcfillingtriangle';
 import { Program } from './program';
@@ -205,7 +207,7 @@ export class GaussFilter extends Initializable {
         texture.bind(gl.TEXTURE0);
 
         // delta = 1.0 / textureSize * direction = direction / textureSize
-        gl.uniform2fv(this._uDelta, vec2.divide(v2(), directionVectors[direction], texture.size));
+        gl.uniform2fv(this._uDelta, vec2.divide(gl_matrix_extensions.v2(), directionVectors[direction], texture.size));
 
         this._ndcTriangle.bind();
         this._ndcTriangle.draw();

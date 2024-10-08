@@ -1,14 +1,16 @@
 
 /* spellchecker: disable */
 
-import { assert } from '../auxiliaries';
-import { GLfloat2, GLfloat4, GLsizei2 } from '../tuples';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
+
+import { tuples } from '../tuples';
 
 import { Context } from '../context';
 import { Texture2D } from '../texture2d';
 import { Wizard } from '../wizard';
 
-import { fetchAsync } from '../fetch';
+import { fetch } from '../fetch';
 import { FontFaceLoader } from './fontfaceloader';
 import { Glyph } from './glyph';
 
@@ -52,10 +54,10 @@ export class FontFace {
     protected _lineGap = 0.0;
 
     /** @see {@link glyphTextureExtent} */
-    protected _glyphTextureExtent: GLfloat2 = [0.0, 0.0];
+    protected _glyphTextureExtent: tuples.GLfloat2 = [0.0, 0.0];
 
     /** @see {@link glyphTexturePadding} */
-    protected _glyphTexturePadding: GLfloat4 = [0.0, 0.0, 0.0, 0.0];
+    protected _glyphTexturePadding: tuples.GLfloat4 = [0.0, 0.0, 0.0, 0.0];
 
     /** @see {@link glyphTexturePadding} */
     protected _glyphTexture: Texture2D;
@@ -92,7 +94,7 @@ export class FontFace {
                 .catch((reason: any) => Promise.reject(`processing font face data failed: ${reason}`));
         };
 
-        return fetchAsync<FontFace>(url, 'text').then(transform);
+        return fetch.fetchAsync<FontFace>(url, 'text').then(transform);
     }
 
 
@@ -106,7 +108,7 @@ export class FontFace {
                 .catch((reason: any) => Promise.reject(`processing font face data failed: ${reason}`));
         };
 
-        return fetchAsync<FontFace>(fontFileUrl, 'text').then(transform);
+        return fetch.fetchAsync<FontFace>(fontFileUrl, 'text').then(transform);
     }
 
     /**
@@ -319,7 +321,7 @@ export class FontFace {
      * Sets the glyph texture atlas extent.
      * @param extent - The texture extent in px
      */
-    set glyphTextureExtent(extent: GLsizei2) {
+    set glyphTextureExtent(extent: tuples.GLsizei2) {
         assert(extent[0] > 0, `expected extent.x to be greater than 0.0, given ${extent[0]}`);
         assert(extent[1] > 0, `expected extent.y to be greater than 0.0, given ${extent[1]}`);
         this._glyphTextureExtent = extent;
@@ -328,7 +330,7 @@ export class FontFace {
      * The size/extent of the glyph texture in px.
      * @returns - The size/extent of the glyph texture in px.
      */
-    get glyphTextureExtent(): GLsizei2 {
+    get glyphTextureExtent(): tuples.GLsizei2 {
         return this._glyphTextureExtent;
     }
 
@@ -337,14 +339,14 @@ export class FontFace {
      * @param padding - CSS style (top, right, bottom, left) padding applied to every glyph within the texture in
      * px.
      */
-    set glyphTexturePadding(padding: GLfloat4) {
+    set glyphTexturePadding(padding: tuples.GLfloat4) {
         assert(padding[0] >= 0.0, `expected padding[0] to be greater than 0.0, given ${padding[0]}`);
         assert(padding[1] >= 0.0, `expected padding[1] to be greater than 0.0, given ${padding[1]}`);
         assert(padding[2] >= 0.0, `expected padding[2] to be greater than 0.0, given ${padding[2]}`);
         assert(padding[3] >= 0.0, `expected padding[3] to be greater than 0.0, given ${padding[3]}`);
         this._glyphTexturePadding = padding;
     }
-    get glyphTexturePadding(): GLfloat4 {
+    get glyphTexturePadding(): tuples.GLfloat4 {
         return this._glyphTexturePadding;
     }
 

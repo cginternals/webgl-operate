@@ -1,7 +1,9 @@
 
 /* spellchecker: disable */
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { byteSizeOfFormat } from './formatbytesizes';
 
 import { Bindable } from './bindable';
@@ -164,7 +166,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
-            console.log(LogLevel.Warning, '2D context creation failed when cropping image.');
+            console.log(auxiliaries.LogLevel.Warning, '2D context creation failed when cropping image.');
             return new ImageData(0, 0);
         }
 
@@ -291,12 +293,12 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
                     const size = this.calculateMipLevelSize(mipLevel);
 
                     if (image.width !== image.height) {
-                        log(LogLevel.Warning, `image ignored, width and height expected to be equal (square image)`);
+                        auxiliaries.log(auxiliaries.LogLevel.Warning, `image ignored, width and height expected to be equal (square image)`);
                         return;
                     }
 
                     if (image.width !== size) {
-                        log(LogLevel.Warning, `image ignored, width and height expected to match ` +
+                        auxiliaries.log(auxiliaries.LogLevel.Warning, `image ignored, width and height expected to match ` +
                             `this texture's size ${size}, given ${image.width}`);
                         return;
                     }
@@ -343,7 +345,7 @@ export class TextureCube extends AbstractObject<WebGLTexture> implements Bindabl
 
             image.onload = () => {
                 if (image.width !== image.height * 2) {
-                    log(LogLevel.Warning, `Mipmap atlas expected to have dimensions of 2x1.`);
+                    auxiliaries.log(auxiliaries.LogLevel.Warning, `Mipmap atlas expected to have dimensions of 2x1.`);
                     return;
                 }
 

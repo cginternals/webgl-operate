@@ -1,7 +1,8 @@
 
 /* spellchecker: disable */
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { Context } from './context';
 import { AbstractObject } from './object';
@@ -129,7 +130,7 @@ export class Shader extends AbstractObject<WebGLShader> {
         this._compiled = gl.getShaderParameter(this._object, gl.COMPILE_STATUS);
         if (!this._compiled) {
             const infoLog: string = gl.getShaderInfoLog(this._object);
-            log(LogLevel.Error, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `compilation of shader '${this._identifier}' failed: ${infoLog}`);
         }
     }
 

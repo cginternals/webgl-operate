@@ -1,11 +1,12 @@
 
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
-import { m4 } from './gl-matrix-extensions';
-import { log, LogLevel, assert, upperPowerOfTwo } from './auxiliaries';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 import { Camera } from './camera';
-import { GLsizei2, GLsizei4 } from './tuples';
+import { tuples } from './tuples';
 
 
 /**
@@ -44,10 +45,10 @@ export class TileCameraGenerator {
     /** @see {@link sourceCamera} */
     protected _sourceCamera: Camera | undefined;
     /** @see {@link sourceViewport} */
-    protected _sourceViewport: GLsizei2 | undefined;
+    protected _sourceViewport: tuples.GLsizei2 | undefined;
 
     /** @see {@link tileSize} */
-    protected _tileSize: GLsizei2 = [0, 0];
+    protected _tileSize: tuples.GLsizei2 = [0, 0];
     /** @see {@link padding} */
     protected _padding: vec4 = vec4.fromValues(0, 0, 0, 0);
 
@@ -62,7 +63,7 @@ export class TileCameraGenerator {
 
     protected _valid: boolean;
 
-    protected _offset: GLsizei2 = [0, 0];
+    protected _offset: tuples.GLsizei2 = [0, 0];
     protected _indices: Uint16Array;
 
 
@@ -107,7 +108,7 @@ export class TileCameraGenerator {
         const tableSize = Math.max(numX, numY);
         const recursionDepth = Math.ceil(Math.log2(tableSize));
 
-        const uPow2 = upperPowerOfTwo(tableSize);
+        const uPow2 = auxiliaries.upperPowerOfTwo(tableSize);
         this.hilbertIndices(indices, numX, numY, 0, 0, uPow2, 0, 0, uPow2, recursionDepth, 0);
     }
 
@@ -201,7 +202,7 @@ export class TileCameraGenerator {
      * Converts the tile index from the selected Algorithm to table indices.
      * @returns - The converted tile index.
      */
-    protected tableIndices(): GLsizei2 {
+    protected tableIndices(): tuples.GLsizei2 {
         this.ensureValidIterationIndices();
         const i = this.tile * 2;
         return [this._indices[i + 0], this._indices[i + 1]];
@@ -270,7 +271,7 @@ export class TileCameraGenerator {
      * If the tile is too high, the camera is not updated and remains in the last valid state.
      * @returns - the offset of the new camera tile.
      */
-    public update(): GLsizei2 {
+    public update(): tuples.GLsizei2 {
         // do nothing and return the last offset if no property has changed.
         if (this._valid) {
             return this._offset;
@@ -278,7 +279,7 @@ export class TileCameraGenerator {
 
         // If an invalid index is requested: Do not change the camera and return the last valid tile offset.
         if (this.numTiles <= this.tile || 0 > this.tile) {
-            log(LogLevel.Warning, `index ${this.tile} is out of bounds ${this.numTiles}, returning first tile`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `index ${this.tile} is out of bounds ${this.numTiles}, returning first tile`);
             return this._offset;
         }
 
@@ -313,8 +314,8 @@ export class TileCameraGenerator {
         const translationVec = vec3.fromValues(-paddedTileCenterNDC[0], -paddedTileCenterNDC[1], 0);
 
         // Combine the translation ans scale into the matrix.
-        const tileNDCCorrectionMatrix = mat4.scale(m4(), mat4.identity(m4()), scaleVec);
-        const translateMatrix = mat4.translate(m4(), tileNDCCorrectionMatrix, translationVec);
+        const tileNDCCorrectionMatrix = mat4.scale(gl_matrix_extensions.m4(), mat4.identity(gl_matrix_extensions.m4()), scaleVec);
+        const translateMatrix = mat4.translate(gl_matrix_extensions.m4(), tileNDCCorrectionMatrix, translationVec);
 
         // Set the postViewProjection matrix and offset to the new calculated values.
         this._camera!.postViewProjection = translateMatrix;
@@ -362,7 +363,7 @@ export class TileCameraGenerator {
      * Returns the offset of the current tile. The padding is not included in the offset.
      * @returns - Current tile offset.
      */
-    get offset(): GLsizei2 {
+    get offset(): tuples.GLsizei2 {
         return this._offset;
     }
 
@@ -378,7 +379,7 @@ export class TileCameraGenerator {
      * Creates a 4-tuple with x0, y0, and width and height of the viewport for the current tile and camera.
      * @returns - 4-tuple with [x0, y0, width, height] based on the current tile.
      */
-    get viewport(): GLsizei4 {
+    get viewport(): tuples.GLsizei4 {
         return [this.offset[0], this.offset[1], this.tileSize[0], this.tileSize[1]];
     }
 
@@ -432,7 +433,7 @@ export class TileCameraGenerator {
      * If the viewport has not been set, it returns [-1, -1].
      * @returns - Size of the Viewport.
      */
-    get sourceViewport(): GLsizei2 | undefined {
+    get sourceViewport(): tuples.GLsizei2 | undefined {
         return this._sourceViewport;
     }
 
@@ -441,7 +442,7 @@ export class TileCameraGenerator {
      * It checks if the sourceViewport is compatible with the selected algorithm
      * and eventually adjusts the tileSize to match the conditions of the algorithm.
      */
-    set sourceViewport(viewport: GLsizei2 | undefined) {
+    set sourceViewport(viewport: tuples.GLsizei2 | undefined) {
         if (this._sourceViewport !== undefined && viewport !== undefined &&
             this._sourceViewport[0] === viewport[0] && this._sourceViewport[1] === viewport[1]) {
             return;
@@ -454,14 +455,14 @@ export class TileCameraGenerator {
      * Returns the tileSize.
      * @returns - [-1, -1] as invalid.
      */
-    get tileSize(): GLsizei2 {
+    get tileSize(): tuples.GLsizei2 {
         return this._tileSize;
     }
 
     /**
      * Sets the tileSize. The tileSize eventually changes to match the selected algorithms constraints.
      */
-    set tileSize(tileSize: GLsizei2) {
+    set tileSize(tileSize: tuples.GLsizei2) {
         if (this._tileSize[0] === tileSize[0] && this._tileSize[1] === tileSize[1]) {
             return;
         }

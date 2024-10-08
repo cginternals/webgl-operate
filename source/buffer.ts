@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { assert } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 
 import { Bindable } from './bindable';
 import { Initializable } from './initializable';
@@ -35,7 +35,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
         this._valid = this._object instanceof WebGLBuffer;
 
         if (this._valid) {
-            assert(target === gl.ARRAY_BUFFER || target === gl.ELEMENT_ARRAY_BUFFER,
+            auxiliaries.assert(target === gl.ARRAY_BUFFER || target === gl.ELEMENT_ARRAY_BUFFER,
                 `either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER expected as buffer target`);
             this._target = target;
         }
@@ -46,7 +46,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      * Delete the buffer object on the GPU. This should have the reverse effect of `create`.
      */
     protected delete(): void {
-        assert(this._object instanceof WebGLBuffer, `expected WebGLBuffer object`);
+        auxiliaries.assert(this._object instanceof WebGLBuffer, `expected WebGLBuffer object`);
         this._context.gl.deleteBuffer(this._object);
 
         this._object = undefined;
@@ -60,7 +60,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      */
     @Initializable.assert_initialized()
     bind(): void {
-        assert(this._target === this._context.gl.ARRAY_BUFFER || this._target === this._context.gl.ELEMENT_ARRAY_BUFFER,
+        auxiliaries.assert(this._target === this._context.gl.ARRAY_BUFFER || this._target === this._context.gl.ELEMENT_ARRAY_BUFFER,
             `expected either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER as buffer target`);
         this._context.gl.bindBuffer(this._target, this._object);
     }
@@ -167,7 +167,7 @@ export class Buffer extends AbstractObject<WebGLBuffer> implements Bindable {
      */
     @Initializable.assert_initialized()
     attribEnableInt(index: GLuint, size: GLint, type: GLenum,
-         stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
+        stride: GLsizei = 0, offset: GLintptr = 0, bind: boolean = true, unbind: boolean = true): void {
 
         const gl = this.context.gl;
         if (bind) {

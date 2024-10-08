@@ -1,7 +1,9 @@
 
 /* spellchecker: disable */
 
-import { assert, rand } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { KernelF32 } from './kernel';
 
 /* spellchecker: enable */
@@ -37,7 +39,7 @@ export class RandomSquareKernel extends KernelF32 {
         assert(this.width > 0, `expected every kernel to comprise at least one element`);
         this.set([0.0, 0.0], 0);
         for (let i = 1; i < this.width; ++i) {
-            this.set([rand(-0.5, +0.5), rand(-0.5, +0.5)], i);
+            this.set([auxiliaries.rand(-0.5, +0.5), auxiliaries.rand(-0.5, +0.5)], i);
         }
     }
 

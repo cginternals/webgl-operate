@@ -2,10 +2,11 @@
 /* spellchecker: disable */
 
 import { mat4, vec3 } from 'gl-matrix';
-import { m4 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
+import m4 = gl_matrix_extensions.m4;
 
-import { DEG2RAD, log, LogLevel, RAD2DEG } from './auxiliaries';
-import { duplicate2, GLsizei2 } from './tuples';
+import { auxiliaries } from './auxiliaries';
+import { tuples } from './tuples';
 
 /* spellchecker: enable */
 
@@ -47,7 +48,7 @@ export class Camera {
     protected _far = Camera.DEFAULT_FAR;
 
     /** @see {@link viewport} */
-    protected _viewport: GLsizei2 = [1, 1];
+    protected _viewport: tuples.GLsizei2 = [1, 1];
 
     /** @see {@link aspect} */
     protected _aspect: GLfloat = 1.0;
@@ -199,10 +200,10 @@ export class Camera {
      * Note that internally, this will be translated to the corresponding the vertical field.
      */
     set fovx(fovx: GLfloat) {
-        const horizontalAngle = fovx * DEG2RAD;
+        const horizontalAngle = fovx * auxiliaries.DEG2RAD;
         const verticalAngle = 2.0 * Math.atan(Math.tan(horizontalAngle / 2.0) * (1.0 / this.aspect));
 
-        const fovy = verticalAngle * RAD2DEG;
+        const fovy = verticalAngle * auxiliaries.RAD2DEG;
         if (this._fovy === fovy) {
             return;
         }
@@ -221,7 +222,7 @@ export class Camera {
      */
     fovFromLens(sensorWidth: number, focalLength: number): void {
         const horizontalAngle = 2.0 * Math.atan(sensorWidth / (2.0 * focalLength));
-        this.fovx = horizontalAngle * RAD2DEG;
+        this.fovx = horizontalAngle * auxiliaries.RAD2DEG;
     }
 
     /**
@@ -239,7 +240,7 @@ export class Camera {
             return;
         }
         if (near >= this._far) {
-            log(LogLevel.Warning, `near expected to be smaller than far (${this._far}), given ${near}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `near expected to be smaller than far (${this._far}), given ${near}`);
         }
         this._near = near;
         this.invalidate(false, true);
@@ -260,7 +261,7 @@ export class Camera {
             return;
         }
         if (this._near >= far) {
-            log(LogLevel.Warning, `far expected to be greater than near (${this._near}), given ${far}`);
+            auxiliaries.log(auxiliaries.LogLevel.Warning, `far expected to be greater than near (${this._near}), given ${far}`);
         }
         this._far = far;
         this.invalidate(false, true);
@@ -269,11 +270,11 @@ export class Camera {
     /**
      * Sets the viewport size. Invalidates the projection.
      */
-    set viewport(size: GLsizei2) {
+    set viewport(size: tuples.GLsizei2) {
         if (this._viewport[0] === size[0] && this._viewport[1] === size[1]) {
             return;
         }
-        this._viewport = duplicate2<GLsizei>(size);
+        this._viewport = tuples.duplicate2<GLsizei>(size);
         this.invalidate(false, true);
     }
 
@@ -281,7 +282,7 @@ export class Camera {
      * The size of the target viewport used to determine the aspect ratio for subsequent perspective matrix projection
      * computation.
      */
-    get viewport(): GLsizei2 {
+    get viewport(): tuples.GLsizei2 {
         return this._viewport;
     }
 
@@ -346,7 +347,7 @@ export class Camera {
         if (this._projection) { // return cached value
             return this._projection;
         }
-        this._projection = mat4.perspective(m4(), this.fovy * DEG2RAD, this.aspect, this.near, this.far);
+        this._projection = mat4.perspective(m4(), this.fovy * auxiliaries.DEG2RAD, this.aspect, this.near, this.far);
         return this._projection;
     }
 

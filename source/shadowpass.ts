@@ -1,5 +1,7 @@
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
 import { GaussFilter } from './gaussfilter';
@@ -8,7 +10,7 @@ import { Renderbuffer } from './renderbuffer';
 import { Texture2D } from './texture2d';
 import { Wizard } from './wizard';
 
-import { GLsizei2 } from './tuples';
+import { tuples } from './tuples';
 
 
 export class ShadowPass extends Initializable {
@@ -16,8 +18,8 @@ export class ShadowPass extends Initializable {
     protected _context: Context;
 
     protected _shadowType: ShadowPass.ShadowMappingType;
-    protected _shadowMapSize: GLsizei2;
-    protected _blurredShadowMapSize: GLsizei2;
+    protected _shadowMapSize: tuples.GLsizei2;
+    protected _blurredShadowMapSize: tuples.GLsizei2;
 
     protected _shadowMapFBO: Framebuffer;
     protected _shadowMapTexture: Texture2D;
@@ -68,14 +70,14 @@ export class ShadowPass extends Initializable {
     }
 
     @Initializable.assert_initialized()
-    resize(size: GLsizei2, bind: boolean = true, unbind: boolean = true): void {
+    resize(size: tuples.GLsizei2, bind: boolean = true, unbind: boolean = true): void {
         assert(size[0] > 0 && size[1] > 0, 'Size has to be > 0.');
         this._shadowMapSize = size;
         this._shadowMapFBO.resize(this._shadowMapSize[0], this._shadowMapSize[1], bind, unbind);
     }
 
     @Initializable.assert_initialized()
-    resizeBlurTexture(size: GLsizei2, bind: boolean = true, unbind: boolean = true): void {
+    resizeBlurTexture(size: tuples.GLsizei2, bind: boolean = true, unbind: boolean = true): void {
         assert(size[0] > 0 && size[1] > 0, 'Size has to be > 0.');
         this._blurredShadowMapSize = size;
         this._intermediateBlurFBO.resize(this._blurredShadowMapSize[0], this._blurredShadowMapSize[1], bind, unbind);
@@ -84,8 +86,8 @@ export class ShadowPass extends Initializable {
 
     @Initializable.initialize()
     initialize(shadowType: ShadowPass.ShadowMappingType,
-        shadowMapSize: GLsizei2,
-        blurredShadowMapSize?: GLsizei2): boolean {
+        shadowMapSize: tuples.GLsizei2,
+        blurredShadowMapSize?: tuples.GLsizei2): boolean {
 
         assert(shadowMapSize[0] > 0 && shadowMapSize[1] > 0, 'Size has to be > 0.');
 
@@ -122,11 +124,11 @@ export class ShadowPass extends Initializable {
 
         const [internalFormat, type] = Wizard.queryInternalTextureFormat(this._context, format, Wizard.Precision.float);
         if (this._shadowType !== ShadowPass.ShadowMappingType.HardLinear && type !== gl.FLOAT) {
-            log(LogLevel.Warning, 'floating point textures are not supported, falling back to HardLinear');
+            auxiliaries.log(auxiliaries.LogLevel.Warning, 'floating point textures are not supported, falling back to HardLinear');
             this._shadowType = ShadowPass.ShadowMappingType.HardLinear;
         }
 
-        let filter = gl.LINEAR;
+        let filter: number = gl.LINEAR;
         if (type === gl.FLOAT && !this._context.supportsTextureFloatLinear) {
             filter = gl.NEAREST;
         }

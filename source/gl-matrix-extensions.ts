@@ -7,7 +7,7 @@ import { mat2, mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
 
 
 /** Namespace that comprises various gl-matrix extensions (also cleans up documentation). */
-namespace gl_matrix_extensions {
+export namespace gl_matrix_extensions {
 
     // GLSL sign https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/sign.xhtml
 
@@ -389,4 +389,4 @@ namespace gl_matrix_extensions {
 
 }
 
-export = gl_matrix_extensions;
+export default gl_matrix_extensions;

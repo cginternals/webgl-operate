@@ -1,8 +1,10 @@
 
 /* spellchecker: disable */
 
-import { assert, bitInBitfield, logIf, LogLevel } from './auxiliaries';
-import { GLclampf4, GLsizei2 } from './tuples';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
+
+import { tuples } from './tuples';
 
 import { Bindable } from './bindable';
 import { Context } from './context';
@@ -45,7 +47,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      */
     protected _clearDepth: GLfloat;
     protected _clearStencil: GLint;
-    protected _clearColors: Array<GLclampf4>;
+    protected _clearColors: Array<tuples.GLclampf4>;
     /**
      * Queue of all draw buffers that are to be cleared on `clear`.
      */
@@ -117,7 +119,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
         /* Initialize clearing. */
 
-        this._clearColors = new Array<GLclampf4>(gl2facade.COLOR_ATTACHMENT_MAX - gl2facade.COLOR_ATTACHMENT0);
+        this._clearColors = new Array<tuples.GLclampf4>(gl2facade.COLOR_ATTACHMENT_MAX - gl2facade.COLOR_ATTACHMENT0);
         this._clearDepth = 1.0;
         this._clearStencil = 0;
 
@@ -167,7 +169,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
         /* Check status and cache minimum renderable area. */
         const status: GLenum = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         this._valid = gl.isFramebuffer(this._object) && (status === gl.FRAMEBUFFER_COMPLETE);
-        logIf(!this._valid, LogLevel.Warning, Framebuffer.statusString(this.context, status));
+        auxiliaries.logIf(!this._valid, auxiliaries.LogLevel.Warning, Framebuffer.statusString(this.context, status));
 
         if (gl2facade.drawBuffers) {
             gl2facade.drawBuffers(this._drawBuffers);
@@ -201,9 +203,9 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
     protected es2Clear(mask: GLbitfield, bind: boolean = true, unbind: boolean = true): void {
         const gl = this.context.gl;
 
-        const clearDepth = bitInBitfield(mask, gl.DEPTH_BUFFER_BIT);
-        const clearStencil = bitInBitfield(mask, gl.STENCIL_BUFFER_BIT);
-        const clearColor = bitInBitfield(mask, gl.COLOR_BUFFER_BIT);
+        const clearDepth = auxiliaries.bitInBitfield(mask, gl.DEPTH_BUFFER_BIT);
+        const clearStencil = auxiliaries.bitInBitfield(mask, gl.STENCIL_BUFFER_BIT);
+        const clearColor = auxiliaries.bitInBitfield(mask, gl.COLOR_BUFFER_BIT);
 
         if (!clearColor && !clearDepth && !clearStencil) {
             return;
@@ -245,9 +247,9 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
 
         const gl = this.context.gl;
 
-        const clearDepth = bitInBitfield(mask, gl.DEPTH_BUFFER_BIT);
-        const clearStencil = bitInBitfield(mask, gl.STENCIL_BUFFER_BIT);
-        const clearColor = bitInBitfield(mask, gl.COLOR_BUFFER_BIT);
+        const clearDepth = auxiliaries.bitInBitfield(mask, gl.DEPTH_BUFFER_BIT);
+        const clearStencil = auxiliaries.bitInBitfield(mask, gl.STENCIL_BUFFER_BIT);
+        const clearColor = auxiliaries.bitInBitfield(mask, gl.COLOR_BUFFER_BIT);
 
         if (!clearColor && !clearDepth && !clearStencil) {
             return;
@@ -357,14 +359,14 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      * @param drawBuffer - The draw buffer index. If no index is provided, the color will be applied to all buffers.
      */
     @Initializable.assert_initialized()
-    clearColor(color: GLclampf4, drawBuffer?: GLint): void {
+    clearColor(color: tuples.GLclampf4, drawBuffer?: GLint): void {
         assert(drawBuffer === undefined || drawBuffer === 0 || this.context.isWebGL2 ||
             this.context.supportsDrawBuffers, `WebGL2 context expected for clearing multiple color attachments.`);
 
         const alphaIssue: boolean = color[3] < 1.0 && !this.context.alpha;
-        logIf(alphaIssue, LogLevel.Warning, `context has alpha disabled, clear color alpha is ignored`);
+        auxiliaries.logIf(alphaIssue, auxiliaries.LogLevel.Warning, `context has alpha disabled, clear color alpha is ignored`);
 
-        const color2: GLclampf4 = [color[0], color[1], color[2], alphaIssue ? 1.0 : color[3]];
+        const color2: tuples.GLclampf4 = [color[0], color[1], color[2], alphaIssue ? 1.0 : color[3]];
 
         if (this.context.premultipliedAlpha && !alphaIssue) {
             /* Premultiply alpha. */
@@ -470,7 +472,7 @@ export class Framebuffer extends AbstractObject<WebGLFramebuffer> implements Bin
      * @see {@link width}
      * @see {@link heigth}
      */
-    get size(): GLsizei2 {
+    get size(): tuples.GLsizei2 {
         return [this.width, this.height];
     }
 

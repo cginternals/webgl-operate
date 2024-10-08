@@ -2,14 +2,14 @@
 /* spellchecker: disable */
 
 import { vec2, vec3, vec4 } from 'gl-matrix';
-import { clamp, clamp2, clamp3, clamp4 } from './gl-matrix-extensions';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
 
-import { assert, logIf, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 
 /* spellchecker: enable */
 
 
-namespace tuples {
+export namespace tuples {
 
     /**
      * Auxiliary 2-tuple of GLsizei values.
@@ -69,7 +69,7 @@ namespace tuples {
      * @returns - 2-tuple of specified type (GLsizei, GLfloat, or GLclampf).
      */
     export function tuple2<T extends GLsizei | GLclampf | GLfloat>(buffer: Float32Array | vec2): [T, T] {
-        assert(buffer.length === 2, `expected length of buffer to be 2, given ${buffer.length}`);
+        auxiliaries.assert(buffer.length === 2, `expected length of buffer to be 2, given ${buffer.length}`);
         return [buffer[0] as T, buffer[1] as T];
     }
 
@@ -79,7 +79,7 @@ namespace tuples {
      * @returns - 3-tuple of specified type (GLsizei, GLfloat, or GLclampf).
      */
     export function tuple3<T extends GLsizei | GLclampf | GLfloat>(buffer: Float32Array | vec3): [T, T, T] {
-        assert(buffer.length === 3, `expected length of buffer to be 3, given ${buffer.length}`);
+        auxiliaries.assert(buffer.length === 3, `expected length of buffer to be 3, given ${buffer.length}`);
         return [buffer[0] as T, buffer[1] as T, buffer[2] as T];
     }
 
@@ -89,7 +89,7 @@ namespace tuples {
      * @returns - 4-tuple of specified type (GLsizei, GLfloat, or GLclampf).
      */
     export function tuple4<T extends GLsizei | GLclampf | GLfloat>(buffer: Float32Array | vec4): [T, T, T, T] {
-        assert(buffer.length === 4, `expected length of buffer to be 4, given ${buffer.length}`);
+        auxiliaries.assert(buffer.length === 4, `expected length of buffer to be 4, given ${buffer.length}`);
         return [buffer[0] as T, buffer[1] as T, buffer[2] as T, buffer[3] as T];
     }
 
@@ -102,8 +102,8 @@ namespace tuples {
      * @returns - Clamped value.
      */
     export function clampf(value: GLclampf | GLfloat, semantic?: string): GLclampf | GLfloat {
-        const valueV1 = clamp(value, 0.0, 1.0);
-        logIf(semantic !== undefined && value < 0.0 || value > 1.0, LogLevel.Info,
+        const valueV1 = gl_matrix_extensions.clamp(value, 0.0, 1.0);
+        auxiliaries.logIf(semantic !== undefined && value < 0.0 || value > 1.0, auxiliaries.LogLevel.Info,
             `${semantic} clamped to [${valueV1}], given [${value}]`);
         return valueV1;
     }
@@ -118,8 +118,8 @@ namespace tuples {
     export function clampf2(tuple: GLclampf2 | GLfloat2, semantic?: string): GLclampf2 | GLfloat2 {
         const tupleV2: vec2 = vec2.fromValues(tuple[0], tuple[1]);
         if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0) {
-            clamp2(tupleV2, tupleV2, vec2.fromValues(0.0, 0.0), vec2.fromValues(1.0, 1.0));
-            logIf(semantic !== undefined, LogLevel.Info, `${semantic} clamped to [${tupleV2}], given [${tuple}]`);
+            gl_matrix_extensions.clamp2(tupleV2, tupleV2, vec2.fromValues(0.0, 0.0), vec2.fromValues(1.0, 1.0));
+            auxiliaries.logIf(semantic !== undefined, auxiliaries.LogLevel.Info, `${semantic} clamped to [${tupleV2}], given [${tuple}]`);
         }
         return tuple2<typeof tuple[0]>(tupleV2);
     }
@@ -134,8 +134,8 @@ namespace tuples {
     export function clampf3(tuple: GLclampf3 | GLfloat3, semantic?: string): GLclampf3 | GLfloat3 {
         const tupleV3: vec3 = vec3.fromValues(tuple[0], tuple[1], tuple[2]);
         if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 || tuple[2] < 0.0 || tuple[2] > 1.0) {
-            clamp3(tupleV3, tupleV3, vec3.fromValues(0.0, 0.0, 0.0), vec3.fromValues(1.0, 1.0, 1.0));
-            logIf(semantic !== undefined, LogLevel.Info, `${semantic} clamped to [${tupleV3}], given [${tuple}]`);
+            gl_matrix_extensions.clamp3(tupleV3, tupleV3, vec3.fromValues(0.0, 0.0, 0.0), vec3.fromValues(1.0, 1.0, 1.0));
+            auxiliaries.logIf(semantic !== undefined, auxiliaries.LogLevel.Info, `${semantic} clamped to [${tupleV3}], given [${tuple}]`);
         }
         return tuple3<typeof tuple[0]>(tupleV3);
     }
@@ -151,8 +151,8 @@ namespace tuples {
         const tupleV4: vec4 = vec4.fromValues(tuple[0], tuple[1], tuple[2], tuple[3]);
         if (tuple[0] < 0.0 || tuple[0] > 1.0 || tuple[1] < 0.0 || tuple[1] > 1.0 ||
             tuple[2] < 0.0 || tuple[2] > 1.0 || tuple[3] < 0.0 || tuple[3] > 1.0) {
-            clamp4(tupleV4, tupleV4, vec4.fromValues(0.0, 0.0, 0.0, 0.0), vec4.fromValues(1.0, 1.0, 1.0, 1.0));
-            logIf(semantic !== undefined, LogLevel.Info, `${semantic} clamped to [${tupleV4}], given [${tuple}]`);
+            gl_matrix_extensions.clamp4(tupleV4, tupleV4, vec4.fromValues(0.0, 0.0, 0.0, 0.0), vec4.fromValues(1.0, 1.0, 1.0, 1.0));
+            auxiliaries.logIf(semantic !== undefined, auxiliaries.LogLevel.Info, `${semantic} clamped to [${tupleV4}], given [${tuple}]`);
         }
         return tuple4<typeof tuple[0]>(tupleV4);
     }
@@ -215,4 +215,4 @@ namespace tuples {
 
 }
 
-export = tuples;
+export default tuples;

@@ -1,12 +1,13 @@
 
 /* spellchecker: disable */
 
-import { assert } from '../auxiliaries';
+import { auxiliaries } from '../auxiliaries';
+import assert = auxiliaries.assert;
 
 /* spellchecker: enable */
 
 
-namespace viewer {
+export namespace viewer {
 
     /**
      * Utility class providing simplified access to the clients fullscreen API. The toggle can be used to toggle
@@ -206,4 +207,4 @@ namespace viewer {
 
 }
 
-export = viewer;
+export default viewer;

@@ -1,9 +1,9 @@
-import { log, LogLevel } from '../auxiliaries';
+import { auxiliaries } from '../auxiliaries';
 
 export class GLTFHelper {
     static modeToEnum(gl: any, mode: number): GLenum {
         if (mode < 0 || mode > 6) {
-            log(LogLevel.Error, `Specified draw mode is ${mode} but is required to be between 0 and 6`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `Specified draw mode is ${mode} but is required to be between 0 and 6`);
         }
 
         if (mode === 0) {
@@ -67,7 +67,7 @@ export class GLTFHelper {
             return 8;
         }
 
-        log(LogLevel.Warning, `Unknown attribute name '${name}' encountered. \
+        auxiliaries.log(auxiliaries.LogLevel.Warning, `Unknown attribute name '${name}' encountered. \
             Possibly this model uses an unsupported extension.`);
 
         return -1;

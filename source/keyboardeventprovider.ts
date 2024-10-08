@@ -3,7 +3,8 @@
 
 import { Observable, ReplaySubject } from 'rxjs';
 
-import { assert, bitInBitfield } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
+import assert = auxiliaries.assert;
 
 /* spellchecker: enable */
 
@@ -50,7 +51,7 @@ export class KeyboardEventProvider {
      * @param event - Actual event to prevent default handling on (if masked).
      */
     protected preventDefaultOnEvent(type: KeyboardEventType, event: KeyboardEvent): void {
-        if (bitInBitfield(this._preventDefaultMask, type)) {
+        if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
             event.preventDefault();
         }
     }
@@ -61,7 +62,7 @@ export class KeyboardEventProvider {
      */
     preventDefault(...types: KeyboardEventType[]): void {
         for (const type of types) {
-            if (!bitInBitfield(this._preventDefaultMask, type)) {
+            if (!auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask |= type;
             }
         }
@@ -73,7 +74,7 @@ export class KeyboardEventProvider {
      */
     allowDefault(...types: KeyboardEventType[]): void {
         for (const type of types) {
-            if (bitInBitfield(this._preventDefaultMask, type)) {
+            if (auxiliaries.bitInBitfield(this._preventDefaultMask, type)) {
                 this._preventDefaultMask &= ~type;
             }
         }

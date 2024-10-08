@@ -3,8 +3,9 @@
 
 import { vec4 } from 'gl-matrix';
 
-import { assert, logIf, LogLevel } from './auxiliaries';
-import { v4 } from './gl-matrix-extensions';
+import { auxiliaries } from './auxiliaries';
+import { gl_matrix_extensions } from './gl-matrix-extensions';
+import v4 = gl_matrix_extensions.v4;
 
 import { Context } from './context';
 import { Framebuffer } from './framebuffer';
@@ -156,7 +157,7 @@ export class BlitPass extends Initializable {
             this.createProgram();
         }
 
-        assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
+        auxiliaries.assert(this._ndcTriangle && this._ndcTriangle.initialized, `expected an initialized ndc triangle`);
         const gl = this._context.gl;
 
         const srcBounds: vec4 = this._srcBounds ? this._srcBounds :
@@ -204,7 +205,7 @@ export class BlitPass extends Initializable {
      * undefined.
      */
     protected createProgram(): boolean {
-        assert(this._program === undefined, `expected blit program to be undefined before its creation`);
+        auxiliaries.assert(this._program === undefined, `expected blit program to be undefined before its creation`);
         const gl = this._context.gl;
 
         const vert = new Shader(this._context, gl.VERTEX_SHADER, 'blit.vert (blit)');
@@ -274,8 +275,8 @@ export class BlitPass extends Initializable {
      */
     @Initializable.assert_initialized()
     frame(): void {
-        logIf(!this._target || !this._target.valid, LogLevel.Warning, `valid target expected, given ${this._target}`);
-        logIf(!this._framebuffer || !this._framebuffer.valid, LogLevel.Warning,
+        auxiliaries.logIf(!this._target || !this._target.valid, auxiliaries.LogLevel.Warning, `valid target expected, given ${this._target}`);
+        auxiliaries.logIf(!this._framebuffer || !this._framebuffer.valid, auxiliaries.LogLevel.Warning,
             `valid framebuffer for blitting from expected, given ${this._framebuffer}`);
 
         const gl = this._context.gl;

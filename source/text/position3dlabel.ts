@@ -3,9 +3,9 @@
 
 import { mat4, vec3 } from 'gl-matrix';
 
-import { logIf, LogLevel } from '../auxiliaries';
-import { m4, v3 } from '../gl-matrix-extensions';
-import { GLfloat3 } from '../tuples';
+import { auxiliaries } from '../auxiliaries';
+import { gl_matrix_extensions } from '../gl-matrix-extensions';
+import { tuples } from '../tuples';
 
 import { FontFace } from './fontface';
 import { GlyphVertices } from './glyphvertices';
@@ -70,8 +70,8 @@ export class Position3DLabel extends Label {
 
         /* Compute position and direction transform. */
 
-        mat4.translate(transform, m4(), this._position);
-        const normal = vec3.cross(v3(), this._direction, this._up);
+        mat4.translate(transform, gl_matrix_extensions.m4(), this._position);
+        const normal = vec3.cross(gl_matrix_extensions.v3(), this._direction, this._up);
 
         const rotation = mat4.fromValues(
             this._direction[0], this._direction[1], this._direction[2], 0.0,
@@ -84,10 +84,10 @@ export class Position3DLabel extends Label {
         switch (this._type) {
             case Label.Type.Static:
                 this.staticTransform = mat4.clone(transform);
-                this.dynamicTransform = m4();
+                this.dynamicTransform = gl_matrix_extensions.m4();
                 break;
             case Label.Type.Dynamic:
-                this.staticTransform = m4();
+                this.staticTransform = gl_matrix_extensions.m4();
                 this.dynamicTransform = mat4.clone(transform);
                 break;
             default:
@@ -111,33 +111,33 @@ export class Position3DLabel extends Label {
     /**
      * Sets the 3D position of the label's reference point.
      */
-    set position(position: vec3 | GLfloat3) {
+    set position(position: vec3 | tuples.GLfloat3) {
         this._position = vec3.clone(position);
         this._altered.alter(this._type);
     }
-    get position(): vec3 | GLfloat3 {
+    get position(): vec3 | tuples.GLfloat3 {
         return this._position;
     }
 
     /**
      * Sets the 3D direction of the label, i.e., the direction of the baseline.
      */
-    set direction(direction: vec3 | GLfloat3) {
+    set direction(direction: vec3 | tuples.GLfloat3) {
         vec3.normalize(this._direction, direction);
         this._altered.alter(this._type);
     }
-    get direction(): vec3 | GLfloat3 {
+    get direction(): vec3 | tuples.GLfloat3 {
         return this._direction;
     }
 
     /**
      * Sets the up-vector of the label. It should be orthogonal to the direction to ensure that the label is not skewed.
      */
-    set up(up: vec3 | GLfloat3) {
+    set up(up: vec3 | tuples.GLfloat3) {
         this._up = vec3.normalize(this._up, up);
         this._altered.alter(this._type);
     }
-    get up(): vec3 | GLfloat3 {
+    get up(): vec3 | tuples.GLfloat3 {
         return this._up;
     }
 
@@ -148,7 +148,7 @@ export class Position3DLabel extends Label {
      * @param unit - Unit to be used, though, this label type only supports world units.
      */
     set fontSizeUnit(unit: Label.Unit) {
-        logIf(unit !== Label.Unit.World, LogLevel.Warning,
+        auxiliaries.logIf(unit !== Label.Unit.World, auxiliaries.LogLevel.Warning,
             `font size unit other than 'world' are not supported in position-3d-label, given ${unit}`);
     }
     get fontSizeUnit(): Label.Unit {

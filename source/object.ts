@@ -1,7 +1,7 @@
 
 /* spellchecker: disable */
 
-import { assert, log, LogLevel } from './auxiliaries';
+import { auxiliaries } from './auxiliaries';
 
 import { Context } from './context';
 import { Initializable } from './initializable';
@@ -74,7 +74,7 @@ export abstract class AbstractObject<T> extends Initializable {
 
         if (!this._valid) {
             this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
-            log(LogLevel.Error, `initialization of '${this._identifier}' failed`);
+            auxiliaries.log(auxiliaries.LogLevel.Error, `initialization of '${this._identifier}' failed`);
         }
         return this._valid;
     }
@@ -91,8 +91,8 @@ export abstract class AbstractObject<T> extends Initializable {
         this._context.allocationRegister.deleteUniqueIdentifier(this._identifier);
 
         this.delete();
-        assert(this._object === undefined, `expected object '${this._identifier}' to be undefined after delete`);
-        assert(this._valid === false, `expected object '${this._identifier}' to be invalid after delete`);
+        auxiliaries.assert(this._object === undefined, `expected object '${this._identifier}' to be undefined after delete`);
+        auxiliaries.assert(this._valid === false, `expected object '${this._identifier}' to be invalid after delete`);
     }
 
 
@@ -117,7 +117,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * Read-only access to the WebGL object handle.
      */
     get object(): T {
-        assert(this._object !== undefined, `access to undefined object`);
+        auxiliaries.assert(this._object !== undefined, `access to undefined object`);
         return this._object as T;
     }
 
@@ -133,7 +133,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * Increment the reference count of this object.
      */
     ref(): void {
-        assert(this.initialized, `expected object to be initialized in order to be referenced`);
+        auxiliaries.assert(this.initialized, `expected object to be initialized in order to be referenced`);
         ++this._referenceCount;
     }
 
@@ -141,7 +141,7 @@ export abstract class AbstractObject<T> extends Initializable {
      * Decrement the reference count of this object.
      */
     unref(): void {
-        assert(this._referenceCount > 0, `expected object to be referenced in order to decrease its reference count`);
+        auxiliaries.assert(this._referenceCount > 0, `expected object to be referenced in order to decrease its reference count`);
         --this._referenceCount;
     }
 
