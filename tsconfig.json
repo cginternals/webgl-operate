@@ -10,7 +10,7 @@
         "sourceMap": true,
         "declaration": false,
         "alwaysStrict": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "noImplicitAny": true,
         "noUnusedParameters": false,
         "noUnusedLocals": true,
