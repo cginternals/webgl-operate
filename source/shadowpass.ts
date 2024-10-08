@@ -126,7 +126,7 @@ export class ShadowPass extends Initializable {
             this._shadowType = ShadowPass.ShadowMappingType.HardLinear;
         }
 
-        let filter = gl.LINEAR;
+        let filter: number = gl.LINEAR;
         if (type === gl.FLOAT && !this._context.supportsTextureFloatLinear) {
             filter = gl.NEAREST;
         }
