@@ -1,0 +1,9 @@
+extends demo.pug
+
+
+block canvas
+
+  canvas(id = 'demo-canvas', data-backend = 'auto').img-fluid.w-100
+
+block onload
+  script window.onload = function () { clipboard(); demo(new MetaballsDemo(), 'demo-canvas'); }
